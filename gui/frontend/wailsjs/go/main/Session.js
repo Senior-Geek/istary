@@ -42,6 +42,10 @@ export function FinishStats() {
   return window['go']['main']['Session']['FinishStats']();
 }
 
+export function ListBackups() {
+  return window['go']['main']['Session']['ListBackups']();
+}
+
 export function ReloadRoster() {
   return window['go']['main']['Session']['ReloadRoster']();
 }
@@ -50,8 +54,16 @@ export function RemovePoint(arg1) {
   return window['go']['main']['Session']['RemovePoint'](arg1);
 }
 
+export function RenameCharacter(arg1, arg2) {
+  return window['go']['main']['Session']['RenameCharacter'](arg1, arg2);
+}
+
 export function ResetRoster() {
   return window['go']['main']['Session']['ResetRoster']();
+}
+
+export function RestoreBackup(arg1) {
+  return window['go']['main']['Session']['RestoreBackup'](arg1);
 }
 
 export function SetName(arg1) {

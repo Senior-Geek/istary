@@ -1,5 +1,27 @@
 export namespace main {
 	
+	export class BackupInfo {
+	    file: string;
+	    date: string;
+	    characters: number;
+	    names: string[];
+	    readable: boolean;
+	    problem: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new BackupInfo(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.file = source["file"];
+	        this.date = source["date"];
+	        this.characters = source["characters"];
+	        this.names = source["names"];
+	        this.readable = source["readable"];
+	        this.problem = source["problem"];
+	    }
+	}
 	export class ItemView {
 	    name: string;
 	    equipped: boolean;
@@ -19,6 +41,7 @@ export namespace main {
 	    }
 	}
 	export class CharacterView {
+	    index: number;
 	    name: string;
 	    race: string;
 	    alignment: string;
@@ -52,6 +75,7 @@ export namespace main {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.index = source["index"];
 	        this.name = source["name"];
 	        this.race = source["race"];
 	        this.alignment = source["alignment"];

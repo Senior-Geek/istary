@@ -22,11 +22,17 @@ export function DeleteCharacter(arg1:string,arg2:string):Promise<main.View>;
 
 export function FinishStats():Promise<main.View>;
 
+export function ListBackups():Promise<Array<main.BackupInfo>>;
+
 export function ReloadRoster():Promise<main.View>;
 
 export function RemovePoint(arg1:number):Promise<main.View>;
 
+export function RenameCharacter(arg1:number,arg2:string):Promise<main.View>;
+
 export function ResetRoster():Promise<main.View>;
+
+export function RestoreBackup(arg1:string):Promise<main.View>;
 
 export function SetName(arg1:string):Promise<main.View>;
 
