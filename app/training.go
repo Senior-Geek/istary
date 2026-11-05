@@ -256,6 +256,19 @@ func (c *Controller) ConfirmDeleteCharacter(yes bool) error {
 	return nil
 }
 
+// CloseNamePrompt closes the Training Grounds "NAME >" prompt without
+// entering a name, as ESC does.
+func (c *Controller) CloseNamePrompt() error {
+	town := c.Game.Town
+	if c.Game.Phase != engine.PhaseTown || town.InputMode != engine.InputTrainingName {
+		return ErrWrongState
+	}
+	town.InputMode = engine.InputNone
+	town.InputBuf = ""
+	town.Message = ""
+	return nil
+}
+
 // CloseRoster leaves the *ROSTER listing and returns to the name prompt.
 func (c *Controller) CloseRoster() error {
 	town := c.Game.Town
@@ -325,9 +338,7 @@ func (c *Controller) trainingPromptKey(k Key) {
 	case engine.InputTrainingName:
 		switch k.Kind {
 		case KeyEscape:
-			town.InputMode = engine.InputNone
-			town.InputBuf = ""
-			town.Message = ""
+			c.CloseNamePrompt()
 		case KeyBackspace:
 			town.InputBuf = backspace(town.InputBuf)
 		case KeyEnter:

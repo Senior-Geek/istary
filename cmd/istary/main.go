@@ -3917,7 +3917,7 @@ func handleCombatChoose(game *engine.GameState, ev *tcell.EventKey) {
 	case 'F': // Fight — only front row (positions 1-3, index 0-2) can melee
 		// Dead characters sort to back each round (Pascal DSPPARTY),
 		// so back row naturally fills forward positions as front row dies.
-		if combat.CurrentActor >= 3 {
+		if combat.CurrentActor >= app.FrontRowSize {
 			return // back row — can't melee
 		}
 		targetGroup := combat.FirstAliveGroup()

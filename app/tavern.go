@@ -11,7 +11,12 @@ import (
 // Inspecting a member opens the character sheet, which is still
 // terminal-only.
 
-const maxPartySize = 6
+// MaxPartySize is the most characters a party can hold.
+const MaxPartySize = 6
+
+// FrontRowSize is how many leading party slots form the front row; only
+// they can melee (FIGHT) in combat.
+const FrontRowSize = 3
 
 // PartyAlignment returns the party's alignment per Pascal GETALIGN: the last
 // non-neutral member's alignment wins; empty or all-neutral is Neutral.
@@ -51,7 +56,7 @@ func (c *Controller) BeginAddMember() error {
 	}
 	town := c.Game.Town
 	town.Message = ""
-	if town.Party.Size() >= maxPartySize {
+	if town.Party.Size() >= MaxPartySize {
 		town.Message = "** PARTY IS FULL **"
 		return ErrPartyFull
 	}
@@ -104,33 +109,14 @@ func (c *Controller) submitAddMember() {
 		if !strings.EqualFold(ch.Name, name) {
 			continue
 		}
-		inParty := false
-		for _, m := range town.Party.Members {
-			if m == ch {
-				inParty = true
-				break
-			}
-		}
-		switch {
-		case inParty:
-			town.Message = fmt.Sprintf("%s IS ALREADY IN THE PARTY!", ch.Name)
-		case ch.InMaze || ch.MazeLevel != 0:
-			// Pascal line 170-172: INMAZE or LOSTXYL.LOCATION[3] <> 0
-			town.Message = "** OUT **"
-		case c.Game.Scenario.ScenarioNum == 3 && !ch.IsLegacy:
-			town.Message = "** ONLY A MEMORY **"
-		default:
-			// Pascal line 174-177: alignment check
-			partyAlign := PartyAlignment(town)
-			if partyAlign != engine.Neutral && ch.Alignment != engine.Neutral && partyAlign != ch.Alignment {
-				town.Message = "** BAD ALIGNMENT **"
-			} else {
-				// From p-code CASTLE proc 30 (IC 1416-1468): "ENTER PASSWORD  >"
-				town.EditChar = ch
-				town.InputMode = engine.InputTavernPassword
-				town.InputBuf = ""
-				return
-			}
+		if msg := c.memberRefusal(ch); msg != "" {
+			town.Message = msg
+		} else {
+			// From p-code CASTLE proc 30 (IC 1416-1468): "ENTER PASSWORD  >"
+			town.EditChar = ch
+			town.InputMode = engine.InputTavernPassword
+			town.InputBuf = ""
+			return
 		}
 		found = true
 		break
@@ -140,6 +126,66 @@ func (c *Controller) submitAddMember() {
 	}
 	town.InputMode = engine.InputNone
 	town.InputBuf = ""
+}
+
+// memberRefusal applies the Tavern's checks to a found character (Pascal
+// ADDPARTY): already in the party, OUT, Wiz 3 legacy, alignment. It returns
+// the refusal message, or "" when the character may proceed to the password.
+func (c *Controller) memberRefusal(ch *engine.Character) string {
+	town := c.Game.Town
+	if InParty(town, ch) {
+		return fmt.Sprintf("%s IS ALREADY IN THE PARTY!", ch.Name)
+	}
+	if ch.InMaze || ch.MazeLevel != 0 {
+		// Pascal line 170-172: INMAZE or LOSTXYL.LOCATION[3] <> 0
+		return "** OUT **"
+	}
+	if c.Game.Scenario.ScenarioNum == 3 && !ch.IsLegacy {
+		return "** ONLY A MEMORY **"
+	}
+	// Pascal line 174-177: alignment check
+	partyAlign := PartyAlignment(town)
+	if partyAlign != engine.Neutral && ch.Alignment != engine.Neutral && partyAlign != ch.Alignment {
+		return "** BAD ALIGNMENT **"
+	}
+	return ""
+}
+
+// JoinRefusal reports what the Tavern would say if ch tried to join the
+// party now, in the same order as A)DD then a name: party full, LOST
+// (the search skips them: "** WHO? **"), then memberRefusal. "" means the
+// character may join, subject to its password. Read-only.
+func (c *Controller) JoinRefusal(ch *engine.Character) string {
+	town := c.Game.Town
+	if town.Party.Size() >= MaxPartySize {
+		return "** PARTY IS FULL **"
+	}
+	if ch == nil || ch.Status == engine.Lost {
+		return "** WHO? **"
+	}
+	return c.memberRefusal(ch)
+}
+
+// InParty reports whether ch is in the party list. Use this, not
+// Character.InMaze, to decide membership: joining sets InMaze (as in the
+// original), but so does being out in the dungeon.
+func InParty(town *engine.TownState, ch *engine.Character) bool {
+	for _, m := range town.Party.Members {
+		if m != nil && m == ch {
+			return true
+		}
+	}
+	return false
+}
+
+// PartySlot returns ch's 0-based position in the party, or -1.
+func PartySlot(town *engine.TownState, ch *engine.Character) int {
+	for i, m := range town.Party.Members {
+		if m != nil && m == ch {
+			return i
+		}
+	}
+	return -1
 }
 
 // SubmitTavernPassword answers the joining character's password prompt.
@@ -207,7 +253,7 @@ func (c *Controller) RemoveMember(slot int) error {
 	if c.Game.Phase != engine.PhaseTown || !(c.inTown(engine.Tavern) || town.InputMode == engine.InputRemoveMember) {
 		return ErrWrongState
 	}
-	if slot < 0 || slot >= maxPartySize || slot >= len(town.Party.Members) || town.Party.Members[slot] == nil {
+	if slot < 0 || slot >= MaxPartySize || slot >= len(town.Party.Members) || town.Party.Members[slot] == nil {
 		if town.Party.Size() == 0 {
 			return ErrPartyEmpty
 		}
