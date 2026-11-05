@@ -4218,19 +4218,10 @@ func handleUtilInput(game *engine.GameState, ev *tcell.EventKey) {
 
 	case engine.UtilRenameNew:
 		handleUtilTextInput(util, ev, func(newName string) {
-			newName = strings.ToUpper(strings.TrimSpace(newName))
-			if newName == "" {
-				util.Message = "NAME CANNOT BE EMPTY"
+			if err := app.New(game).RenameCharacter(util.SelectedChar, newName); err != nil {
+				util.Message = strings.ToUpper(err.Error())
 				return
 			}
-			// Check for duplicate
-			for _, c := range game.Town.Roster.Characters {
-				if c != nil && c.Name == newName {
-					util.Message = "NAME ALREADY IN USE"
-					return
-				}
-			}
-			game.Town.Roster.Characters[util.SelectedChar].Name = newName
 			util.Message = "NAME CHANGED!"
 			game.Save()
 		}, func() { util.Step = engine.UtilRename })

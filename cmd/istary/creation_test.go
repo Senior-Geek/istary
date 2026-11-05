@@ -265,3 +265,30 @@ func TestCharacterEditPasswordAndDeleteKeys(t *testing.T) {
 		t.Errorf("delete: roster=%d msg=%q", len(g.Town.Roster.Characters), g.Town.Message)
 	}
 }
+
+// Utilities C)HANGE NAME, which now calls app.RenameCharacter.
+func TestUtilitiesRenameKeys(t *testing.T) {
+	t.Setenv("HOME", t.TempDir()) // this test saves
+	g := newGame(t, 1)
+	g.Town.Roster.Add(character("OLDNAME", engine.Human, engine.Fighter, engine.Good))
+	g.Town.Roster.Add(character("TAKEN", engine.Human, engine.Fighter, engine.Good))
+	g.Phase = engine.PhaseUtilities
+	g.Util = engine.NewUtilState()
+	d := newDriver(t, g)
+
+	d.keys("C").keys("1").keys("taken").enter()
+	if g.Util.Message != "NAME ALREADY IN USE" || g.Town.Roster.Characters[0].Name != "OLDNAME" {
+		t.Fatalf("duplicate: msg=%q name=%q", g.Util.Message, g.Town.Roster.Characters[0].Name)
+	}
+	g.Util.InputBuf = ""
+	d.keys(" newname ").enter()
+	if g.Util.Message != "NAME CHANGED!" || g.Town.Roster.Characters[0].Name != "NEWNAME" {
+		t.Fatalf("rename: msg=%q name=%q", g.Util.Message, g.Town.Roster.Characters[0].Name)
+	}
+	// Saved immediately, as before.
+	g2 := newGame(t, 1)
+	g2.Load()
+	if len(g2.Town.Roster.Characters) != 2 || g2.Town.Roster.Characters[0].Name != "NEWNAME" {
+		t.Errorf("rename not saved: %+v", g2.Town.Roster.Characters)
+	}
+}
