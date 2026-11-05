@@ -723,29 +723,6 @@ func handleTownInput(game *engine.GameState, ev *tcell.EventKey) bool {
 			return true
 		}
 
-	case engine.Tavern:
-		switch ch {
-		case 'A': // Add member
-			if town.Party.Size() >= 6 {
-				town.Message = "** PARTY IS FULL **"
-			} else {
-				town.InputMode = engine.InputAddMember
-				town.InputBuf = ""
-			}
-		case 'R': // Remove member — "WHO WILL LEAVE" (CASTLE byte 1619)
-			if town.Party.Size() > 0 {
-				town.InputMode = engine.InputRemoveMember
-				town.Message = ""
-			}
-		case '1', '2', '3', '4', '5', '6': // #) SEE A MEMBER — full inspect screen
-			idx := int(ch-'0') - 1
-			if idx < len(town.Party.Members) && town.Party.Members[idx] != nil {
-				town.EditChar = town.Party.Members[idx]
-				town.InputMode = engine.InputInspect
-				town.Message = ""
-			}
-		}
-
 	case engine.Inn:
 		handleInnInput(game, town, ch)
 
@@ -785,40 +762,6 @@ func handleTownInput(game *engine.GameState, ev *tcell.EventKey) bool {
 func handleTownPrompt(game *engine.GameState, ev *tcell.EventKey) bool {
 	town := game.Town
 
-	// Tavern password check — from CASTLE proc 30 (IC 1416-1468)
-	if town.InputMode == engine.InputTavernPassword {
-		switch ev.Key() {
-		case tcell.KeyBackspace, tcell.KeyBackspace2:
-			if len(town.InputBuf) > 0 {
-				town.InputBuf = town.InputBuf[:len(town.InputBuf)-1]
-			}
-		case tcell.KeyEnter:
-			if town.EditChar != nil && town.InputBuf == town.EditChar.Password {
-				town.EditChar.InMaze = true // Pascal line 179: INMAZE := TRUE
-				town.Party.Members = append(town.Party.Members, town.EditChar)
-				town.Message = fmt.Sprintf("%s JOINS THE PARTY!", town.EditChar.Name)
-			} else {
-				town.Message = "** THATS NOT IT **"
-			}
-			town.EditChar = nil
-			town.InputMode = engine.InputNone
-			town.InputBuf = ""
-		case tcell.KeyEscape:
-			town.EditChar = nil
-			town.InputMode = engine.InputNone
-			town.InputBuf = ""
-		case tcell.KeyRune:
-			ch := ev.Rune()
-			if ch >= 'a' && ch <= 'z' {
-				ch -= 32
-			}
-			if len(town.InputBuf) < 15 {
-				town.InputBuf += string(ch)
-			}
-		}
-		return false
-	}
-
 	// Shop purchase sub-mode — "PURCHASE WHICH ITEM ([RETURN] EXITS) ? >"
 	// p-code CLP 15 (IC 1627): selection 1-6 maps to ShopPage slot
 	if town.InputMode == engine.InputShopPurchase {
@@ -828,28 +771,6 @@ func handleTownPrompt(game *engine.GameState, ev *tcell.EventKey) bool {
 				slot := int(ch - '1')
 				shopBuyItem(game, town, slot)
 				town.InputMode = engine.InputNone
-			}
-		}
-		if ev.Key() == tcell.KeyEnter || ev.Key() == tcell.KeyEscape {
-			town.InputMode = engine.InputNone
-			town.Message = ""
-		}
-		return false
-	}
-
-	// Remove member — "WHO WILL LEAVE ([RETURN] EXITS) >" (CASTLE byte 1619)
-	if town.InputMode == engine.InputRemoveMember {
-		if ev.Key() == tcell.KeyRune {
-			ch := ev.Rune()
-			if ch >= '1' && ch <= '6' {
-				idx := int(ch-'0') - 1
-				if idx < len(town.Party.Members) && town.Party.Members[idx] != nil {
-					removed := town.Party.Members[idx]
-					removed.InMaze = false // Pascal line 204: INMAZE := FALSE
-					town.Party.Members = append(town.Party.Members[:idx], town.Party.Members[idx+1:]...)
-					town.Message = fmt.Sprintf("%s LEAVES THE PARTY.", removed.Name)
-					town.InputMode = engine.InputNone
-				}
 			}
 		}
 		if ev.Key() == tcell.KeyEnter || ev.Key() == tcell.KeyEscape {
@@ -1210,67 +1131,6 @@ func handleTownPrompt(game *engine.GameState, ev *tcell.EventKey) bool {
 			town.InputBuf = town.InputBuf[:len(town.InputBuf)-1]
 		}
 	case tcell.KeyEnter:
-		switch town.InputMode {
-		case engine.InputAddMember:
-			name := strings.TrimSpace(town.InputBuf)
-			if name == "" {
-				town.InputMode = engine.InputNone
-				return false
-			}
-			// Pascal ADDPARTY (CASTLE.TEXT lines 148-191):
-			// Search roster for name, skip LOST characters.
-			// Checks: OUT (InMaze/lost in maze), BAD ALIGNMENT, then password.
-			found := false
-			for _, c := range town.Roster.Characters {
-				if c == nil {
-					continue
-				}
-				// Pascal line 160: skip LOST characters in search
-				if c.Status == engine.Lost {
-					continue
-				}
-				if strings.EqualFold(c.Name, name) {
-					// Check not already in party
-					inParty := false
-					for _, m := range town.Party.Members {
-						if m == c {
-							inParty = true
-							break
-						}
-					}
-					if inParty {
-						town.Message = fmt.Sprintf("%s IS ALREADY IN THE PARTY!", c.Name)
-					} else if c.InMaze || c.MazeLevel != 0 {
-						// Pascal line 170-172: INMAZE or LOSTXYL.LOCATION[3] <> 0
-						town.Message = "** OUT **"
-					} else if game.Scenario.ScenarioNum == 3 && !c.IsLegacy {
-						town.Message = "** ONLY A MEMORY **"
-					} else {
-						// Pascal line 174-177: alignment check
-						partyAlign := partyAlignment(town)
-						if partyAlign != engine.Neutral && c.Alignment != engine.Neutral && partyAlign != c.Alignment {
-							town.Message = "** BAD ALIGNMENT **"
-						} else {
-							// From p-code CASTLE proc 30 (IC 1416-1468):
-							// Prompt "ENTER PASSWORD  >"
-							town.EditChar = c
-							town.InputMode = engine.InputTavernPassword
-							town.InputBuf = ""
-							return false
-						}
-					}
-					found = true
-					break
-				}
-			}
-			if !found {
-				town.Message = "** WHO? **"
-			}
-			town.InputMode = engine.InputNone
-			town.InputBuf = ""
-			return false
-
-		}
 		town.InputMode = engine.InputNone
 		town.InputBuf = ""
 	case tcell.KeyRune:
@@ -1285,18 +1145,6 @@ func handleTownPrompt(game *engine.GameState, ev *tcell.EventKey) bool {
 		}
 	}
 	return false
-}
-
-// partyAlignment returns the party's alignment per Pascal GETALIGN:
-// scan all members, last non-Neutral alignment wins. Empty/all-Neutral → Neutral.
-func partyAlignment(town *engine.TownState) engine.Alignment {
-	align := engine.Neutral
-	for _, m := range town.Party.Members {
-		if m != nil && m.Alignment != engine.Neutral {
-			align = m.Alignment
-		}
-	}
-	return align
 }
 
 // handleInnInput handles key presses at the inn based on current InnStep.

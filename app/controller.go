@@ -50,9 +50,15 @@ func (c *Controller) townKey(k Key) bool {
 		case engine.Training:
 			c.trainingMenuKey(k)
 			return true
+		case engine.Tavern:
+			c.tavernMenuKey(k)
+			return true
 		}
 	case engine.InputTrainingName, engine.InputRoster, engine.InputConfirmCreate:
 		c.trainingPromptKey(k)
+		return true
+	case engine.InputAddMember, engine.InputTavernPassword, engine.InputRemoveMember:
+		c.tavernPromptKey(k)
 		return true
 	}
 	return false
