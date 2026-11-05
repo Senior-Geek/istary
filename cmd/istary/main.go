@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gdamore/tcell/v2"
+	"github.com/Senior-Geek/istary/app"
 	"github.com/Senior-Geek/istary/data"
 	"github.com/Senior-Geek/istary/engine"
 	"github.com/Senior-Geek/istary/render"
@@ -166,6 +167,8 @@ func main() {
 	innTicker := time.NewTicker(700 * time.Millisecond)
 	defer innTicker.Stop()
 
+	ctrl := app.New(game)
+
 	for {
 		select {
 		case ev := <-eventCh:
@@ -178,27 +181,10 @@ func main() {
 					return
 				}
 
-				switch game.Phase {
-				case engine.PhaseTitle:
-					handleTitleInput(screen, game, ev)
-				case engine.PhaseTown:
-					if handleTownInput(game, ev) {
-						return
-					}
-				case engine.PhaseCamp:
-					handleCampInput(game, ev)
-				case engine.PhaseMaze:
-					if handleMazeInput(screen, game, ev) {
-						return
-					}
-				case engine.PhaseCombat:
-					handleCombatInput(game, ev)
-				case engine.PhaseUtilities:
-					handleUtilInput(game, ev)
-				case engine.PhaseCreation:
-					handleCreationInput(game, ev)
+				if dispatchKey(ctrl, screen, ev) {
+					return
 				}
-				game.Save() // auto-save after every action
+				ctrl.Save() // auto-save after every action
 				redraw(screen, game)
 			}
 

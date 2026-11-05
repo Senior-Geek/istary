@@ -14,6 +14,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/Senior-Geek/istary/app"
 	"github.com/Senior-Geek/istary/engine"
 	"github.com/Senior-Geek/istary/render"
 	"github.com/gdamore/tcell/v2"
@@ -50,40 +51,25 @@ func newGame(t *testing.T, num int) *engine.GameState {
 	return g
 }
 
-// driver feeds key events through the same per-phase dispatch as the main
-// event loop. Keep dispatch in sync with main() until the controller is
-// extracted.
+// driver feeds key events through dispatchKey, the same entry point the
+// main event loop uses.
 type driver struct {
 	t      *testing.T
 	game   *engine.GameState
+	ctrl   *app.Controller
 	screen *simScreen // nil unless the test needs one
 	quit   bool
 }
 
 func (d *driver) dispatch(ev *tcell.EventKey) {
-	g := d.game
-	switch g.Phase {
-	case engine.PhaseTown:
-		if handleTownInput(g, ev) {
-			d.quit = true
-		}
-	case engine.PhaseCamp:
-		handleCampInput(g, ev)
-	case engine.PhaseMaze:
-		if d.screen == nil {
-			d.t.Fatal("maze input needs a screen; use newDriverWithScreen")
-		}
-		if handleMazeInput(d.screen.Screen, g, ev) {
-			d.quit = true
-		}
-	case engine.PhaseCombat:
-		handleCombatInput(g, ev)
-	case engine.PhaseUtilities:
-		handleUtilInput(g, ev)
-	case engine.PhaseCreation:
-		handleCreationInput(g, ev)
-	default:
-		d.t.Fatalf("dispatch: unsupported phase %v", g.Phase)
+	var screen *render.Screen
+	if d.screen != nil {
+		screen = d.screen.Screen
+	} else if d.game.Phase == engine.PhaseMaze || d.game.Phase == engine.PhaseTitle {
+		d.t.Fatal("maze and title input need a screen; use newDriverWithScreen")
+	}
+	if dispatchKey(d.ctrl, screen, ev) {
+		d.quit = true
 	}
 }
 
@@ -104,7 +90,7 @@ func (d *driver) enter() *driver { return d.key(tcell.KeyEnter) }
 func (d *driver) esc() *driver   { return d.key(tcell.KeyEscape) }
 
 func newDriver(t *testing.T, g *engine.GameState) *driver {
-	return &driver{t: t, game: g}
+	return &driver{t: t, game: g, ctrl: app.New(g)}
 }
 
 func checkGolden(t *testing.T, name string, got []byte) {
@@ -176,5 +162,5 @@ func (s *simScreen) lines() []string {
 func (s *simScreen) text() string { return strings.Join(s.lines(), "\n") }
 
 func newDriverWithScreen(t *testing.T, g *engine.GameState) *driver {
-	return &driver{t: t, game: g, screen: newSimScreen(t)}
+	return &driver{t: t, game: g, ctrl: app.New(g), screen: newSimScreen(t)}
 }
