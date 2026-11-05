@@ -56,8 +56,6 @@ func legacyDispatch(screen *render.Screen, game *engine.GameState, ev *tcell.Eve
 		handleCombatInput(game, ev)
 	case engine.PhaseUtilities:
 		handleUtilInput(game, ev)
-	case engine.PhaseCreation:
-		handleCreationInput(game, ev)
 	}
 	return false
 }

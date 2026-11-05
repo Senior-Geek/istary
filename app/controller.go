@@ -31,5 +31,10 @@ func (c *Controller) Save() error {
 // the current phase or prompt is still handled by the front end's legacy
 // input code.
 func (c *Controller) HandleKey(k Key) bool {
+	switch c.Game.Phase {
+	case engine.PhaseCreation:
+		c.creationKey(k)
+		return true
+	}
 	return false
 }
