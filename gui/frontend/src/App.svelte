@@ -9,6 +9,10 @@
   let password = $state('')
   let confirm = $state('')
   let editName = $state('')
+  let selected = $state('')        // name of the roster row being viewed
+  let deleting = $state(false)     // delete confirmation open
+  let deletePassword = $state('')
+  let resetting = $state(false)    // reset confirmation open
 
   async function call(fn, ...args) {
     busy = true
@@ -24,6 +28,28 @@
   call(S.State)
 
   const c = $derived(view?.creation)
+  const sel = $derived(view?.roster?.find((ch) => ch.name === selected))
+
+  function select(name) {
+    selected = selected === name ? '' : name
+    deleting = false
+    deletePassword = ''
+  }
+
+  async function deleteSelected() {
+    await call(S.DeleteCharacter, selected, deletePassword)
+    deletePassword = ''
+    if (!view.error) { deleting = false; selected = '' }
+  }
+
+  async function resetRoster() {
+    await call(S.ResetRoster)
+    resetting = false
+    selected = ''
+  }
+
+  const spellSlots = (cur, max) =>
+    max.map((m, i) => (m ? `L${i + 1} ${cur[i]}/${m}` : '')).filter(Boolean).join('  ') || 'none'
   const letter = (i) => String.fromCharCode(65 + i)
 </script>
 
@@ -100,7 +126,8 @@
             </thead>
             <tbody>
               {#each view.roster as ch}
-                <tr>
+                <tr class="pick" class:selected={ch.name === selected}
+                  onclick={() => view.screen === 'roster' && select(ch.name)}>
                   <td>{ch.name}</td><td>{ch.short}</td><td>{ch.race}</td>
                   <td class="num">{ch.level}</td><td class="num">{ch.hp}/{ch.maxHp}</td>
                   <td class="num">{ch.ac}</td><td>{ch.status}</td>
@@ -114,11 +141,77 @@
           <p class="muted">No characters yet.</p>
         {/if}
         {#if view.screen === 'roster'}
-          <div class="row" style="margin-top:10px">
+          {#if view.roster?.length}<p class="muted">Click a character to see details.</p>{/if}
+          <div class="row" style="margin-top:6px">
             <button disabled={busy} onclick={() => call(S.ReloadRoster)}>Reload from disk</button>
+            <button disabled={busy} onclick={() => { resetting = true }}>Reset roster…</button>
           </div>
+          {#if resetting}
+            <div class="banner message confirm">
+              Back up the current roster to <b>{view.saveDir}/backups</b> and start an empty roster?
+              <div class="row" style="margin-top:8px">
+                <button class="danger" disabled={busy} onclick={resetRoster}>Back up and reset</button>
+                <button disabled={busy} onclick={() => { resetting = false }}>Cancel</button>
+              </div>
+            </div>
+          {/if}
         {/if}
       </section>
+
+      {#if view.screen === 'roster' && sel}
+        <section>
+          <h2>{sel.name}</h2>
+          <div class="details">
+            <div><span>Race</span>{sel.race}</div>
+            <div><span>Class</span>{sel.class}</div>
+            <div><span>Alignment</span>{sel.alignment}</div>
+            <div><span>Level</span>{sel.level}</div>
+            <div><span>Experience</span>{sel.xp}{#if sel.nextXp}{' '}(next level {sel.nextXp}){/if}</div>
+            <div><span>Hit points</span>{sel.hp} / {sel.maxHp}</div>
+            <div><span>Armour class</span>{sel.ac}</div>
+            <div><span>Status</span>{sel.status}{#if sel.poison} (poisoned {sel.poison}){/if}</div>
+            <div><span>Gold</span>{sel.gold}</div>
+            <div><span>Age</span>{sel.age} years</div>
+            <div><span>Password</span>{sel.hasPassword ? 'set' : 'none'}</div>
+            {#if sel.mazeLevel}<div><span>Location</span>In the maze, level {sel.mazeLevel}</div>{/if}
+            {#if sel.legacy}<div><span>Legacy</span>yes</div>{/if}
+          </div>
+          <table style="width:auto; margin-top:10px">
+            <tbody>
+              <tr>{#each view.statNames as s}<th class="num">{s}</th>{/each}</tr>
+              <tr>{#each sel.stats as v}<td class="num"><b>{v}</b></td>{/each}</tr>
+            </tbody>
+          </table>
+          <div class="details" style="margin-top:10px">
+            <div><span>Mage spell slots</span>{spellSlots(sel.mageSpells, sel.maxMage)}</div>
+            <div><span>Priest spell slots</span>{spellSlots(sel.priestSpells, sel.maxPriest)}</div>
+            <div class="wide"><span>Known spells</span>{sel.spells?.join(', ') || 'none'}</div>
+            <div class="wide"><span>Items</span>
+              {#if sel.items?.length}
+                {#each sel.items as it, i}{i ? ', ' : ''}{it.equipped ? '*' : ''}{it.name}{it.cursed ? ' (cursed)' : ''}{/each}
+                <span class="muted key">* = equipped</span>
+              {:else}none{/if}
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:12px">
+            {#if !deleting}
+              <button class="danger" disabled={busy} onclick={() => { deleting = true }}>Delete…</button>
+              <button disabled={busy} onclick={() => select(sel.name)}>Close</button>
+            {/if}
+          </div>
+          {#if deleting}
+            <form class="banner message confirm" onsubmit={(e) => { e.preventDefault(); deleteSelected() }}>
+              Delete <b>{sel.name}</b> permanently? Enter the character's password to confirm.
+              <div class="row" style="margin-top:8px">
+                <input type="password" maxlength={view.nameMax} bind:value={deletePassword} placeholder="password (blank if none)" />
+                <button class="danger" type="submit" disabled={busy}>Delete</button>
+                <button type="button" disabled={busy} onclick={() => { deleting = false; deletePassword = '' }}>Cancel</button>
+              </div>
+            </form>
+          {/if}
+        </section>
+      {/if}
 
       {#if view.screen === 'roster'}
         <section>

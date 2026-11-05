@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/Senior-Geek/istary/app"
+	"github.com/Senior-Geek/istary/data"
 	"github.com/Senior-Geek/istary/engine"
 )
 
@@ -41,6 +42,30 @@ type CharacterView struct {
 	Gold      int    `json:"gold"`
 	Age       int    `json:"age"` // years
 	Stats     [6]int `json:"stats"`
+
+	// Details for the selected-character panel.
+	XP           int        `json:"xp"`
+	NextXP       int        `json:"nextXp"` // XP needed for the next level (0 if unknown)
+	HasPassword  bool       `json:"hasPassword"`
+	MageSpells   [7]int     `json:"mageSpells"`
+	MaxMage      [7]int     `json:"maxMage"`
+	PriestSpells [7]int     `json:"priestSpells"`
+	MaxPriest    [7]int     `json:"maxPriest"`
+	Spells       []string   `json:"spells"` // known spells
+	Items        []ItemView `json:"items"`
+	Poison       int        `json:"poison"`
+	InMaze       bool       `json:"inMaze"`
+	MazeLevel    int        `json:"mazeLevel"` // 1-based when lost in the maze
+	Legacy       bool       `json:"legacy"`
+}
+
+// ItemView is one possession. Unidentified items show their unknown name, as
+// the game does.
+type ItemView struct {
+	Name       string `json:"name"`
+	Equipped   bool   `json:"equipped"`
+	Cursed     bool   `json:"cursed"`
+	Identified bool   `json:"identified"`
 }
 
 type CreationView struct {
@@ -132,6 +157,39 @@ func pointMoves(cs *engine.CreationState) (canAdd, canRemove [6]bool) {
 	return canAdd, canRemove
 }
 
+func knownSpells(ch *engine.Character) []string {
+	var names []string
+	for i, known := range ch.SpellKnown {
+		if known && i < len(engine.SpellTable) {
+			names = append(names, engine.SpellTable[i].Name)
+		}
+	}
+	return names
+}
+
+func itemViews(ch *engine.Character, items []data.Item) []ItemView {
+	var out []ItemView
+	for i := 0; i < ch.ItemCount && i < len(ch.Items); i++ {
+		p := ch.Items[i]
+		name := fmt.Sprintf("ITEM #%d", p.ItemIndex)
+		if p.ItemIndex >= 0 && p.ItemIndex < len(items) {
+			name = items[p.ItemIndex].Name
+			if !p.Identified && items[p.ItemIndex].NameUnknown != "" {
+				name = items[p.ItemIndex].NameUnknown
+			}
+		}
+		out = append(out, ItemView{Name: name, Equipped: p.Equipped, Cursed: p.Cursed && p.Identified, Identified: p.Identified})
+	}
+	return out
+}
+
+func mazeLevel(ch *engine.Character) int {
+	if ch.InMaze || ch.MazeLevel != 0 {
+		return ch.MazeLevel + 1
+	}
+	return 0
+}
+
 var stepNames = map[engine.CreationStep]string{
 	engine.StepName:      "name",
 	engine.StepPassword:  "password",
@@ -179,6 +237,20 @@ func (s *Session) view(err error) View {
 			Gold:      ch.Gold,
 			Age:       ch.Age / 52,
 			Stats:     [6]int{ch.Strength, ch.IQ, ch.Piety, ch.Vitality, ch.Agility, ch.Luck},
+
+			XP:           ch.XP,
+			NextXP:       engine.XPForNextLevel(ch, g),
+			HasPassword:  ch.Password != "",
+			MageSpells:   ch.MageSpells,
+			MaxMage:      ch.MaxMageSpells,
+			PriestSpells: ch.PriestSpells,
+			MaxPriest:    ch.MaxPriestSpells,
+			Spells:       knownSpells(ch),
+			Items:        itemViews(ch, g.Scenario.Items),
+			Poison:       ch.PoisonAmt,
+			InMaze:       ch.InMaze,
+			MazeLevel:    mazeLevel(ch),
+			Legacy:       ch.IsLegacy,
 		})
 	}
 

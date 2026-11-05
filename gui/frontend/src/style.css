@@ -101,3 +101,14 @@ button.step {
   min-width: 28px;
 }
 button.step.up:not(:disabled) { color: var(--accent); border-color: var(--accent); }
+
+tr.pick { cursor: pointer; }
+tr.pick:hover td { background: #242424; }
+tr.pick.selected td { background: #1e2a1e; }
+button.danger { border-color: var(--error); color: var(--error); }
+.banner.confirm { color: var(--text); }
+.details { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 4px 16px; }
+.details span { display: inline-block; width: 120px; color: var(--muted); }
+.details .wide { grid-column: 1 / -1; display: flex; }
+.details .wide span { flex: 0 0 120px; }
+.details .wide span.key { flex: none; width: auto; margin-left: 12px; font-size: 12px; }

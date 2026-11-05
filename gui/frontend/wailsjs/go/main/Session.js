@@ -34,6 +34,10 @@ export function Confirm(arg1) {
   return window['go']['main']['Session']['Confirm'](arg1);
 }
 
+export function DeleteCharacter(arg1, arg2) {
+  return window['go']['main']['Session']['DeleteCharacter'](arg1, arg2);
+}
+
 export function FinishStats() {
   return window['go']['main']['Session']['FinishStats']();
 }
@@ -44,6 +48,10 @@ export function ReloadRoster() {
 
 export function RemovePoint(arg1) {
   return window['go']['main']['Session']['RemovePoint'](arg1);
+}
+
+export function ResetRoster() {
+  return window['go']['main']['Session']['ResetRoster']();
 }
 
 export function SetName(arg1) {

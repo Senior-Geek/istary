@@ -18,11 +18,15 @@ export function ChooseRace(arg1:number):Promise<main.View>;
 
 export function Confirm(arg1:boolean):Promise<main.View>;
 
+export function DeleteCharacter(arg1:string,arg2:string):Promise<main.View>;
+
 export function FinishStats():Promise<main.View>;
 
 export function ReloadRoster():Promise<main.View>;
 
 export function RemovePoint(arg1:number):Promise<main.View>;
+
+export function ResetRoster():Promise<main.View>;
 
 export function SetName(arg1:string):Promise<main.View>;
 

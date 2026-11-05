@@ -3,8 +3,11 @@ package main
 import (
 	"errors"
 	"fmt"
+	"os"
 	"path/filepath"
+	"strings"
 	"sync"
+	"time"
 
 	"github.com/Senior-Geek/istary/app"
 	"github.com/Senior-Geek/istary/data"
@@ -206,4 +209,93 @@ func (s *Session) Confirm(keep bool) View {
 		}
 		return err
 	})
+}
+
+// DeleteCharacter deletes name from the roster through the Training Grounds
+// flow: look up the name, answer its password, confirm the delete. The
+// password check is the game's own rule for opening a character.
+func (s *Session) DeleteCharacter(name, password string) View {
+	return s.do(func() error {
+		c := s.ctrl
+		if c.Game.Phase != engine.PhaseTown {
+			return app.ErrWrongState
+		}
+		if c.Game.Town.Location != engine.Training {
+			if err := c.EnterTrainingGrounds(); err != nil {
+				return err
+			}
+		}
+		result, err := c.TrainingEnterName(name)
+		if err != nil {
+			return err
+		}
+		if result != app.NameNeedsPassword {
+			// Close whatever prompt the lookup opened, via the game's own steps.
+			switch result {
+			case app.NameOfferCreate:
+				c.ConfirmCreate(false)
+			case app.NameRoster:
+				c.CloseRoster()
+			}
+			return fmt.Errorf("No character named %s is on the roster.", strings.ToUpper(strings.TrimSpace(name)))
+		}
+		if err := c.SubmitCharacterPassword(password); err != nil {
+			return err
+		}
+		deleted := c.EditCharacter().Name
+		if err := c.BeginDeleteCharacter(); err != nil {
+			return err
+		}
+		if err := c.ConfirmDeleteCharacter(true); err != nil {
+			return err
+		}
+		s.notice = fmt.Sprintf("%s was deleted.", deleted)
+		return nil
+	})
+}
+
+// ResetRoster backs up the current roster file into <saveDir>/backups, then
+// starts an empty roster. Nothing is cleared if the backup fails.
+func (s *Session) ResetRoster() View {
+	return s.do(func() error {
+		c := s.ctrl
+		if c.Game.Phase != engine.PhaseTown {
+			return errors.New("Finish or discard the character being created first.")
+		}
+		// Make sure the file on disk matches memory before copying it.
+		if err := c.Save(); err != nil {
+			return fmt.Errorf("Could not save before backup: %w", err)
+		}
+		backup, err := s.backupPath()
+		if err != nil {
+			return err
+		}
+		if err := engine.BackupRoster(c.Game, backup); err != nil {
+			return fmt.Errorf("Backup failed, roster not reset: %w", err)
+		}
+		if err := c.ClearRoster(); err != nil {
+			return err
+		}
+		s.notice = fmt.Sprintf("Roster backed up to %s and reset.", backup)
+		return nil
+	})
+}
+
+// backupPath returns a new, unused file name under <saveDir>/backups.
+func (s *Session) backupPath() (string, error) {
+	dir := filepath.Join(s.saveDir, "backups")
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return "", fmt.Errorf("Could not create backup folder: %w", err)
+	}
+	stamp := time.Now().Format("20060102-150405")
+	for n := 0; ; n++ {
+		name := fmt.Sprintf("roster1-%s.json", stamp)
+		if n > 0 {
+			name = fmt.Sprintf("roster1-%s-%d.json", stamp, n)
+		}
+		path := filepath.Join(dir, name)
+		if _, err := os.Stat(path); os.IsNotExist(err) {
+			return path, nil
+		}
+	}
 }

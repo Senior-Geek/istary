@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -117,13 +118,29 @@ func TestCreateSaveAndReload(t *testing.T) {
 	// A new session (as on app restart) reads it back.
 	again := NewSession(dir)
 	v2 := again.State()
-	if len(v2.Roster) != 1 || v2.Roster[0] != v.Roster[0] {
+	if len(v2.Roster) != 1 || !sameExceptSpells(v2.Roster[0], v.Roster[0]) {
 		t.Errorf("reloaded roster = %+v, want %+v", v2.Roster, v.Roster)
 	}
-	// ReloadRoster in the same session also matches.
-	if v3 := s.ReloadRoster(); len(v3.Roster) != 1 || v3.Roster[0] != v.Roster[0] {
+	// Existing engine behavior: Load rebuilds known spells from spell slots,
+	// so the new mage knows HALITO and KATINO before a reload and every
+	// level-1 mage spell after it.
+	if got := v.Roster[0].Spells; !reflect.DeepEqual(got, []string{"HALITO", "KATINO"}) {
+		t.Errorf("spells before reload = %v", got)
+	}
+	if got := v2.Roster[0].Spells; !reflect.DeepEqual(got, []string{"HALITO", "MOGREF", "KATINO", "DUMAPIC"}) {
+		t.Errorf("spells after reload = %v", got)
+	}
+	// ReloadRoster in the same session matches a fresh session.
+	if v3 := s.ReloadRoster(); len(v3.Roster) != 1 || !reflect.DeepEqual(v3.Roster[0], v2.Roster[0]) {
 		t.Errorf("ReloadRoster = %+v", v3.Roster)
 	}
+}
+
+// sameExceptSpells compares two roster rows ignoring known spells (see the
+// reload note in TestCreateSaveAndReload).
+func sameExceptSpells(a, b CharacterView) bool {
+	a.Spells, b.Spells = nil, nil
+	return reflect.DeepEqual(a, b)
 }
 
 func TestTerminalSavesUntouched(t *testing.T) {

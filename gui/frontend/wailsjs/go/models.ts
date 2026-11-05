@@ -1,5 +1,23 @@
 export namespace main {
 	
+	export class ItemView {
+	    name: string;
+	    equipped: boolean;
+	    cursed: boolean;
+	    identified: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new ItemView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.equipped = source["equipped"];
+	        this.cursed = source["cursed"];
+	        this.identified = source["identified"];
+	    }
+	}
 	export class CharacterView {
 	    name: string;
 	    race: string;
@@ -14,6 +32,19 @@ export namespace main {
 	    gold: number;
 	    age: number;
 	    stats: number[];
+	    xp: number;
+	    nextXp: number;
+	    hasPassword: boolean;
+	    mageSpells: number[];
+	    maxMage: number[];
+	    priestSpells: number[];
+	    maxPriest: number[];
+	    spells: string[];
+	    items: ItemView[];
+	    poison: number;
+	    inMaze: boolean;
+	    mazeLevel: number;
+	    legacy: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new CharacterView(source);
@@ -34,7 +65,38 @@ export namespace main {
 	        this.gold = source["gold"];
 	        this.age = source["age"];
 	        this.stats = source["stats"];
+	        this.xp = source["xp"];
+	        this.nextXp = source["nextXp"];
+	        this.hasPassword = source["hasPassword"];
+	        this.mageSpells = source["mageSpells"];
+	        this.maxMage = source["maxMage"];
+	        this.priestSpells = source["priestSpells"];
+	        this.maxPriest = source["maxPriest"];
+	        this.spells = source["spells"];
+	        this.items = this.convertValues(source["items"], ItemView);
+	        this.poison = source["poison"];
+	        this.inMaze = source["inMaze"];
+	        this.mazeLevel = source["mazeLevel"];
+	        this.legacy = source["legacy"];
 	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	export class GuideRow {
 	    class: string;
@@ -112,6 +174,7 @@ export namespace main {
 		    return a;
 		}
 	}
+	
 	
 	export class View {
 	    saveDir: string;
