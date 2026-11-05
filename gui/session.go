@@ -119,10 +119,8 @@ func (s *Session) ReloadRoster() View {
 func (s *Session) StartCreation(name string) View {
 	return s.do(func() error {
 		c := s.ctrl
-		if c.Game.Town.Location != engine.Training {
-			if err := c.EnterTrainingGrounds(); err != nil {
-				return err
-			}
+		if err := s.goTo(engine.Training); err != nil {
+			return err
 		}
 		result, err := c.TrainingEnterName(name)
 		switch result {
@@ -217,13 +215,8 @@ func (s *Session) Confirm(keep bool) View {
 func (s *Session) DeleteCharacter(name, password string) View {
 	return s.do(func() error {
 		c := s.ctrl
-		if c.Game.Phase != engine.PhaseTown {
-			return app.ErrWrongState
-		}
-		if c.Game.Town.Location != engine.Training {
-			if err := c.EnterTrainingGrounds(); err != nil {
-				return err
-			}
+		if err := s.goTo(engine.Training); err != nil {
+			return err
 		}
 		result, err := c.TrainingEnterName(name)
 		if err != nil {

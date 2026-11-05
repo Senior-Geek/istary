@@ -26,6 +26,26 @@ type View struct {
 	Classes    []string        `json:"classes"`
 	StatNames  []string        `json:"statNames"`
 	NameMax    int             `json:"nameMax"`
+
+	// Party (Gilgamesh's Tavern).
+	Party          []PartySlotView `json:"party"`
+	PartyAlignment string          `json:"partyAlignment"`
+	PartyMax       int             `json:"partyMax"`
+	FrontRow       int             `json:"frontRow"`    // slots 1..FrontRow are the front row
+	PendingJoin    string          `json:"pendingJoin"` // name waiting for its password
+}
+
+// PartySlotView is one party position.
+type PartySlotView struct {
+	Slot   int    `json:"slot"`  // 1-based
+	Index  int    `json:"index"` // roster position of this character
+	Name   string `json:"name"`
+	Short  string `json:"short"`
+	HP     int    `json:"hp"`
+	MaxHP  int    `json:"maxHp"`
+	AC     int    `json:"ac"`
+	Status string `json:"status"`
+	Front  bool   `json:"front"`
 }
 
 type CharacterView struct {
@@ -58,6 +78,13 @@ type CharacterView struct {
 	InMaze       bool       `json:"inMaze"`
 	MazeLevel    int        `json:"mazeLevel"` // 1-based when lost in the maze
 	Legacy       bool       `json:"legacy"`
+
+	// Party membership comes from the party list (app.InParty), never from
+	// InMaze. JoinRefusal is the Tavern's answer if this character tried to
+	// join now ("" = may join, password still required).
+	InParty     bool   `json:"inParty"`
+	PartySlot   int    `json:"partySlot"` // 1-based, 0 if not in the party
+	JoinRefusal string `json:"joinRefusal"`
 }
 
 // ItemView is one possession. Unidentified items show their unknown name, as
@@ -253,7 +280,32 @@ func (s *Session) view(err error) View {
 			InMaze:       ch.InMaze,
 			MazeLevel:    mazeLevel(ch),
 			Legacy:       ch.IsLegacy,
+			InParty:      app.InParty(g.Town, ch),
+			PartySlot:    app.PartySlot(g.Town, ch) + 1,
+			JoinRefusal:  s.ctrl.JoinRefusal(ch),
 		})
+	}
+
+	v.PartyAlignment = app.PartyAlignment(g.Town).String()
+	v.PartyMax = app.MaxPartySize
+	v.FrontRow = app.FrontRowSize
+	for i, m := range g.Town.Party.Members {
+		if m == nil {
+			continue
+		}
+		index := -1
+		for ri, rc := range g.Town.Roster.Characters {
+			if rc == m {
+				index = ri
+			}
+		}
+		v.Party = append(v.Party, PartySlotView{
+			Slot: i + 1, Index: index, Name: m.Name, Short: engine.AlignClass(m.Alignment, m.Class),
+			HP: m.HP, MaxHP: m.MaxHP, AC: m.AC, Status: m.Status.String(), Front: i < app.FrontRowSize,
+		})
+	}
+	if g.Phase == engine.PhaseTown && g.Town.InputMode == engine.InputTavernPassword && g.Town.EditChar != nil {
+		v.PendingJoin = g.Town.EditChar.Name
 	}
 
 	switch {
@@ -314,6 +366,10 @@ func errorText(err error) string {
 		return "Names may use up to 15 letters, digits, spaces, hyphens and apostrophes."
 	case errors.Is(err, app.ErrNoSuchCharacter):
 		return "That character is no longer on the roster."
+	case errors.Is(err, app.ErrPartyEmpty):
+		return "The party is empty."
+	case errors.Is(err, app.ErrNoSuchPartyMember):
+		return "No party member in that slot."
 	case errors.Is(err, app.ErrWrongState):
 		return "That action is not available right now."
 	}
