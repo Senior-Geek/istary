@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/gdamore/tcell/v2"
 	"github.com/Senior-Geek/istary/engine"
+	"github.com/gdamore/tcell/v2"
 )
 
 // toTrainingName walks Castle -> Edge of Town -> Training Grounds and types a

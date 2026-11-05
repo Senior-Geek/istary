@@ -1,0 +1,125 @@
+=== castle, no party
++--------------------------------------+
+! CASTLE                        MARKET !
++----------- CURRENT PARTY: -----------+
+
+ # CHARACTER NAME  CLASS AC HITS STATUS
+
+
+
+
+
+
++--------------------------------------+
+
+             YOU MAY GO TO:
+
+THE A)DVENTURER'S INN, G)ILGAMESH'S
+TAVERN, B)OLTAC'S TRADING POST, THE
+TEMPLE OF C)ANT, OR THE E)DGE OF TOWN.
+
+
+
+
+
+
+=== tavern with party
++--------------------------------------+
+! CASTLE                        TAVERN !
++----------- CURRENT PARTY: -----------+
+
+ # CHARACTER NAME  CLASS AC HITS STATUS
+ 1 FIGHTER A       N-FIG 10  22   22
+ 2 FIGHTER B       N-FIG 10  24   24
+ 3 THIEF           N-THI 10  12   12
+
+
+
++--------------------------------------+
+
+YOU MAY A)DD A MEMBER,
+        R)EMOVE A MEMBER,
+        #) SEE A MEMBER,
+
+OR PRESS [RETURN] TO LEAVE
+
+
+
+
+
+
+=== create prompt
+            TRAINING GROUNDS
+
+YOU MAY ENTER A CHARACTER NAME TO ADD,
+        INSPECT OR EDIT,
+
+        "*ROSTER" TO SEE ROSTER,
+
+OR PRESS [RET] FOR CASTLE.
+
+             NAME >_
+
+THAT CHARACTER DOES NOT EXIST. DO YOU
+WANT TO CREATE IT (Y/N) ?>
+
+
+
+
+
+
+
+
+
+
+
+=== creation stats
+     NAME NEWHERO
+ PASSWORD
+     RACE GNOME
+   POINTS  8
+
+ STRENGTH  7 <--
+     I.Q.  7
+    PIETY 10
+ VITALITY  8
+  AGILITY 10
+     LUCK  7
+
+ALIGNMENT EVIL
+    CLASS
+
+ENTER [+,-] TO ALTER A SCORE,
+      [RET] TO GO TO NEXT SCORE,
+      [ESC] TO GO ON WHEN POINTS USED UP
+
+
+
+
+
+
+=== creation class
+     NAME NEWHERO
+ PASSWORD
+     RACE GNOME
+   POINTS  0
+
+ STRENGTH  7
+     I.Q. 15        B) MAGE
+    PIETY 10
+ VITALITY  8
+  AGILITY 10
+     LUCK  7
+
+ALIGNMENT EVIL
+    CLASS
+
+CHOOSE A CLASS >
+
+
+
+
+
+
+
+

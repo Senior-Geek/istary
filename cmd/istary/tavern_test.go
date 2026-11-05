@@ -183,7 +183,7 @@ func TestDeleteCharacterRemovesFromRosterAndParty(t *testing.T) {
 	c := character("DOOMED", engine.Human, engine.Fighter, engine.Good)
 	g, d := tavernGame(t, 1, c)
 	addMember(d, "DOOMED", "")
-	d.enter() // back to castle
+	d.enter()                                   // back to castle
 	toTrainingName(d, "DOOMED").enter().enter() // empty password
 	if g.Town.InputMode != engine.InputCharEdit {
 		t.Fatalf("mode = %v, want character edit", g.Town.InputMode)

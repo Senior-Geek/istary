@@ -14,9 +14,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gdamore/tcell/v2"
 	"github.com/Senior-Geek/istary/engine"
 	"github.com/Senior-Geek/istary/render"
+	"github.com/gdamore/tcell/v2"
 )
 
 var update = flag.Bool("update", false, "rewrite golden files in testdata/")
