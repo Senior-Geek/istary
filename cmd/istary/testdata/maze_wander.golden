@@ -1,0 +1,724 @@
+000 F L1 (0,1) North phase=3 view="" msg=""|"" msgs=0
+001 F L1 (0,2) North phase=3 view="" msg=""|"" msgs=0
+002 F L1 (0,3) North phase=3 view="" msg=""|"" msgs=0
+003 F L1 (0,4) North phase=3 view="" msg=""|"" msgs=0
+004 L L1 (0,4) West  phase=3 view="" msg=""|"" msgs=0
+005 L L1 (0,4) South phase=3 view="" msg=""|"" msgs=0
+006 L L1 (0,4) East  phase=3 view="" msg=""|"" msgs=0
+007 L L1 (0,4) North phase=3 view="" msg=""|"" msgs=0
+008 K L1 (0,5) North phase=3 view="" msg=""|"" msgs=0
+009 F L1 (0,6) North phase=3 view="" msg=""|"" msgs=0
+010 F L1 (0,7) North phase=3 view="" msg=""|"" msgs=0
+011 F L1 (0,8) North phase=3 view="" msg=""|"" msgs=0
+012 L L1 (0,8) West  phase=3 view="" msg=""|"" msgs=0
+013 F L1 (0,8) West  phase=3 view="OUCH!" msg=""|"" msgs=0
+014 L L1 (0,8) South phase=3 view="" msg=""|"" msgs=0
+015 R L1 (0,8) West  phase=3 view="" msg=""|"" msgs=0
+016 F L1 (0,8) West  phase=3 view="OUCH!" msg=""|"" msgs=0
+017 K L1 (0,8) West  phase=3 view="OUCH!" msg=""|"" msgs=0
+018 L L1 (0,8) South phase=3 view="" msg=""|"" msgs=0
+019 F L1 (0,7) South phase=3 view="" msg=""|"" msgs=0
+020 F L1 (0,6) South phase=3 view="" msg=""|"" msgs=0
+021 F L1 (0,5) South phase=3 view="" msg=""|"" msgs=0
+022 L L1 (0,5) East  phase=3 view="" msg=""|"" msgs=0
+023 R L1 (0,5) South phase=3 view="" msg=""|"" msgs=0
+024 F L1 (0,4) South phase=3 view="" msg=""|"" msgs=0
+025 F L1 (0,3) South phase=3 view="" msg=""|"" msgs=0
+026 R L1 (0,3) West  phase=3 view="" msg=""|"" msgs=0
+027 K L1 (0,3) West  phase=3 view="OUCH!" msg=""|"" msgs=0
+028 L L1 (0,3) South phase=3 view="" msg=""|"" msgs=0
+029 F L1 (0,2) South phase=3 view="" msg=""|"" msgs=0
+030 F L1 (0,1) South phase=3 view="" msg=""|"" msgs=0
+031 F L1 (0,0) South phase=3 view="" msg="STAIRS GOING UP."|"TAKE THEM (Y/N) ?" msgs=0
+032 L L1 (0,0) East  phase=3 view="" msg=""|"" msgs=0
+033 F L1 (1,0) East  phase=3 view="" msg=""|"" msgs=0
+034 F L1 (2,0) East  phase=3 view="" msg=""|"" msgs=0
+035 F L1 (3,0) East  phase=3 view="" msg=""|"" msgs=0
+036 F L1 (4,0) East  phase=3 view="" msg=""|"" msgs=0
+037 F L1 (5,0) East  phase=3 view="" msg=""|"" msgs=0
+038 F L1 (6,0) East  phase=3 view="" msg=""|"" msgs=0
+039 L L1 (6,0) North phase=3 view="" msg=""|"" msgs=0
+040 F L1 (6,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+041 F L1 (6,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+042 F L1 (6,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+043 F L1 (6,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+044 F L1 (6,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+045 F L1 (6,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+046 F L1 (6,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+047 F L1 (6,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+048 F L1 (6,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+049 F L1 (6,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+050 R L1 (6,0) East  phase=3 view="" msg=""|"" msgs=0
+051 K L1 (7,0) East  phase=3 view="" msg=""|"" msgs=0
+052 R L1 (7,0) South phase=3 view="" msg=""|"" msgs=0
+053 R L1 (7,0) West  phase=3 view="" msg=""|"" msgs=0
+054 L L1 (7,0) South phase=3 view="" msg=""|"" msgs=0
+055 F L1 (7,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+056 L L1 (7,0) East  phase=3 view="" msg=""|"" msgs=0
+057 R L1 (7,0) South phase=3 view="" msg=""|"" msgs=0
+058 F L1 (7,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+059 R L1 (7,0) West  phase=3 view="" msg=""|"" msgs=0
+060 F L1 (6,0) West  phase=3 view="" msg=""|"" msgs=0
+061 F L1 (5,0) West  phase=3 view="" msg=""|"" msgs=0
+062 L L1 (5,0) South phase=3 view="" msg=""|"" msgs=0
+063 F L1 (5,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+064 F L1 (5,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+065 F L1 (5,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+066 R L1 (5,0) West  phase=3 view="" msg=""|"" msgs=0
+067 F L1 (4,0) West  phase=3 view="" msg=""|"" msgs=0
+068 F L1 (3,0) West  phase=3 view="" msg=""|"" msgs=0
+069 R L1 (3,0) North phase=3 view="" msg=""|"" msgs=0
+070 F L1 (3,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+071 L L1 (3,0) West  phase=3 view="" msg=""|"" msgs=0
+072 R L1 (3,0) North phase=3 view="" msg=""|"" msgs=0
+073 F L1 (3,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+074 F L1 (3,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+075 F L1 (3,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+076 F L1 (3,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+077 R L1 (3,0) East  phase=3 view="" msg=""|"" msgs=0
+078 F L1 (4,0) East  phase=3 view="" msg=""|"" msgs=0
+079 R L1 (4,0) South phase=3 view="" msg=""|"" msgs=0
+080 F L1 (4,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+081 R L1 (4,0) West  phase=3 view="" msg=""|"" msgs=0
+082 R L1 (4,0) North phase=3 view="" msg=""|"" msgs=0
+083 F L1 (4,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+084 R L1 (4,0) East  phase=3 view="" msg=""|"" msgs=0
+085 F L1 (5,0) East  phase=3 view="" msg=""|"" msgs=0
+086 F L1 (6,0) East  phase=3 view="" msg=""|"" msgs=0
+087 K L1 (7,0) East  phase=3 view="" msg=""|"" msgs=0
+088 K L1 (8,0) East  phase=3 view="" msg=""|"" msgs=0
+089 R L1 (8,0) South phase=3 view="" msg=""|"" msgs=0
+090 K L1 (8,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+091 F L1 (8,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+092 R L1 (8,0) West  phase=3 view="" msg=""|"" msgs=0
+093 F L1 (7,0) West  phase=3 view="" msg=""|"" msgs=0
+094 K L1 (6,0) West  phase=3 view="" msg=""|"" msgs=0
+095 R L1 (6,0) North phase=3 view="" msg=""|"" msgs=0
+096 K L1 (6,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+097 F L1 (6,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+098 F L1 (6,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+099 F L1 (6,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+100 F L1 (6,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+101 F L1 (6,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+102 F L1 (6,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+103 F L1 (6,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+104 F L1 (6,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+105 F L1 (6,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+106 F L1 (6,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+107 R L1 (6,0) East  phase=3 view="" msg=""|"" msgs=0
+108 F L1 (7,0) East  phase=3 view="" msg=""|"" msgs=0
+109 F L1 (8,0) East  phase=3 view="" msg=""|"" msgs=0
+110 F L1 (8,0) East  phase=3 view="OUCH!" msg=""|"" msgs=0
+111 L L1 (8,0) North phase=3 view="" msg=""|"" msgs=0
+112 R L1 (8,0) East  phase=3 view="" msg=""|"" msgs=0
+113 R L1 (8,0) South phase=3 view="" msg=""|"" msgs=0
+114 K L1 (8,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+115 F L1 (8,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+116 R L1 (8,0) West  phase=3 view="" msg=""|"" msgs=0
+117 F L1 (7,0) West  phase=3 view="" msg=""|"" msgs=0
+118 K L1 (6,0) West  phase=3 view="" msg=""|"" msgs=0
+119 L L1 (6,0) South phase=3 view="" msg=""|"" msgs=0
+120 F L1 (6,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+121 F L1 (6,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+122 F L1 (6,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+123 F L1 (6,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+124 F L1 (6,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+125 F L1 (6,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+126 F L1 (6,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+127 F L1 (6,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+128 F L1 (6,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+129 L L1 (6,0) East  phase=3 view="" msg=""|"" msgs=0
+130 F L1 (7,0) East  phase=3 view="" msg=""|"" msgs=0
+131 F L1 (8,0) East  phase=3 view="" msg=""|"" msgs=0
+132 F L1 (8,0) East  phase=3 view="OUCH!" msg=""|"" msgs=0
+133 R L1 (8,0) South phase=3 view="" msg=""|"" msgs=0
+134 F L1 (8,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+135 K L1 (8,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+136 F L1 (8,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+137 F L1 (8,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+138 F L1 (8,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+139 K L1 (8,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+140 F L1 (8,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+141 L L1 (8,0) East  phase=3 view="" msg=""|"" msgs=0
+142 F L1 (8,0) East  phase=3 view="OUCH!" msg=""|"" msgs=0
+143 F L1 (8,0) East  phase=3 view="OUCH!" msg=""|"" msgs=0
+144 L L1 (8,0) North phase=3 view="" msg=""|"" msgs=0
+145 K L1 (8,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+146 F L1 (8,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+147 L L1 (8,0) West  phase=3 view="" msg=""|"" msgs=0
+148 F L1 (7,0) West  phase=4 view="" msg=""|"" msgs=0
+group: 2 x BUBBLY SLIME
+round 1
+  FIGHTER A SWINGS AT A
+  SLIME
+  AND HITS    1 TIMES FOR    1 DAMAGE!
+  FIGHTER B CHOPS AT A
+  SLIME
+  AND HITS    1 TIMES FOR    2 DAMAGE!
+  FIGHTER B KILLS ONE!
+  PRIEST PARRIED.
+  THIEF SLASHES AT A
+  SLIME
+  AND HITS    1 TIMES FOR    1 DAMAGE!
+  FIGHTER C PARRIED.
+  SLIME RIPS AT
+  THIEF
+  AND HITS FOR    1 DAMAGE!
+  MAGE PARRIED.
+  party: FIGHTER A 22/22 OK; FIGHTER B 24/24 OK; THIEF 11/12 OK; PRIEST 14/14 OK; MAGE 7/7 OK; FIGHTER C 20/20 OK
+round 2
+  FIGHTER A STABS AT A
+  SLIME
+  AND HITS    1 TIMES FOR    2 DAMAGE!
+  MAGE PARRIED.
+  THIEF SLASHES AT A
+  SLIME
+  AND HITS    1 TIMES FOR    2 DAMAGE!
+  THIEF KILLS ONE!
+  party: FIGHTER A 22/22 OK; FIGHTER B 24/24 OK; THIEF 11/12 OK; PRIEST 14/14 OK; MAGE 7/7 OK; FIGHTER C 20/20 OK
+end: phase=3 town="" maze=""
+party: FIGHTER A 22/22 OK; FIGHTER B 24/24 OK; THIEF 11/12 OK; PRIEST 14/14 OK; MAGE 7/7 OK; FIGHTER C 20/20 OK
+  FIGHTER A xp=18 gold=15 items=0
+  FIGHTER B xp=18 gold=15 items=0
+  THIEF xp=18 gold=15 items=0
+  PRIEST xp=18 gold=15 items=0
+  MAGE xp=18 gold=15 items=0
+  FIGHTER C xp=18 gold=15 items=0
+149 K L1 (6,0) West  phase=3 view="" msg=""|"" msgs=0
+150 F L1 (5,0) West  phase=3 view="" msg=""|"" msgs=0
+151 L L1 (5,0) South phase=3 view="" msg=""|"" msgs=0
+152 F L1 (5,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+153 F L1 (5,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+154 F L1 (5,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+155 F L1 (5,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+156 F L1 (5,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+157 L L1 (5,0) East  phase=3 view="" msg=""|"" msgs=0
+158 L L1 (5,0) North phase=3 view="" msg=""|"" msgs=0
+159 F L1 (5,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+160 L L1 (5,0) West  phase=3 view="" msg=""|"" msgs=0
+161 K L1 (4,0) West  phase=3 view="" msg=""|"" msgs=0
+162 F L1 (3,0) West  phase=3 view="" msg=""|"" msgs=0
+163 K L1 (2,0) West  phase=3 view="" msg=""|"" msgs=0
+164 R L1 (2,0) North phase=3 view="" msg=""|"" msgs=0
+165 L L1 (2,0) West  phase=3 view="" msg=""|"" msgs=0
+166 F L1 (1,0) West  phase=3 view="" msg=""|"" msgs=0
+167 F L1 (0,0) West  phase=3 view="" msg="STAIRS GOING UP."|"TAKE THEM (Y/N) ?" msgs=0
+168 F L1 (0,0) West  phase=3 view="OUCH!" msg=""|"" msgs=0
+169 L L1 (0,0) South phase=3 view="" msg=""|"" msgs=0
+170 F L1 (0,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+171 F L1 (0,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+172 K L1 (0,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+173 F L1 (0,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+174 R L1 (0,0) West  phase=3 view="" msg=""|"" msgs=0
+175 L L1 (0,0) South phase=3 view="" msg=""|"" msgs=0
+176 L L1 (0,0) East  phase=3 view="" msg=""|"" msgs=0
+177 F L1 (1,0) East  phase=3 view="" msg=""|"" msgs=0
+178 K L1 (2,0) East  phase=3 view="" msg=""|"" msgs=0
+179 F L1 (3,0) East  phase=4 view="" msg=""|"" msgs=0
+group: 5 x KOBOLD
+round 1
+  FIGHTER C PARRIED.
+  SMALL HUMANOID CLAWS AT
+  FIGHTER B
+  AND HITS FOR    2 DAMAGE!
+  PRIEST PARRIED.
+  FIGHTER A THRUSTS AT A
+  SMALL HUMANOID
+  AND MISSES!
+  FIGHTER B CHOPS AT A
+  SMALL HUMANOID
+  AND HITS    1 TIMES FOR    2 DAMAGE!
+  THIEF SLASHES AT A
+  SMALL HUMANOID
+  AND MISSES!
+  MAGE PARRIED.
+  SMALL HUMANOID BITES AT
+  THIEF
+  AND HITS FOR    2 DAMAGE!
+  SMALL HUMANOID TEARS AT
+  FIGHTER B
+  AND HITS FOR    2 DAMAGE!
+  party: FIGHTER A 22/22 OK; FIGHTER B 20/24 OK; THIEF 9/12 OK; PRIEST 14/14 OK; MAGE 7/7 OK; FIGHTER C 20/20 OK
+round 2
+  FIGHTER B SWINGS AT A
+  KOBOLD
+  AND HITS    1 TIMES FOR    1 DAMAGE!
+  THIEF CHOPS AT A
+  KOBOLD
+  AND MISSES!
+  PRIEST PARRIED.
+  KOBOLD BITES AT
+  THIEF
+  AND HITS FOR    1 DAMAGE!
+  KOBOLD RIPS AT
+  FIGHTER B
+  AND HITS FOR    1 DAMAGE!
+  KOBOLD RIPS AT
+  FIGHTER B
+  AND HITS FOR    1 DAMAGE!
+  FIGHTER C PARRIED.
+  MAGE PARRIED.
+  KOBOLD TEARS AT
+  FIGHTER B
+  AND HITS FOR    2 DAMAGE!
+  FIGHTER A SLASHES AT A
+  KOBOLD
+  AND MISSES!
+  KOBOLD TEARS AT
+  FIGHTER B
+  AND HITS FOR    1 DAMAGE!
+  party: FIGHTER A 22/22 OK; FIGHTER B 15/24 OK; THIEF 8/12 OK; PRIEST 14/14 OK; MAGE 7/7 OK; FIGHTER C 20/20 OK
+round 3
+  KOBOLD TEARS AT
+  FIGHTER B
+  AND HITS FOR    1 DAMAGE!
+  FIGHTER A CHOPS AT A
+  KOBOLD
+  AND MISSES!
+  PRIEST PARRIED.
+  FIGHTER C PARRIED.
+  MAGE PARRIED.
+  KOBOLD RIPS AT
+  FIGHTER B
+  AND HITS FOR    1 DAMAGE!
+  KOBOLD RIPS AT
+  FIGHTER B
+  AND HITS FOR    2 DAMAGE!
+  THIEF THRUSTS AT A
+  KOBOLD
+  AND MISSES!
+  FIGHTER B STABS AT A
+  KOBOLD
+  AND HITS    1 TIMES FOR    2 DAMAGE!
+  FIGHTER B KILLS ONE!
+  KOBOLD TEARS AT
+  THIEF
+  AND HITS FOR    2 DAMAGE!
+  KOBOLD TEARS AT
+  THIEF
+  AND HITS FOR    1 DAMAGE!
+  KOBOLD BITES AT
+  FIGHTER B
+  AND HITS FOR    2 DAMAGE!
+  KOBOLD BITES AT
+  FIGHTER B
+  AND HITS FOR    2 DAMAGE!
+  party: FIGHTER A 22/22 OK; FIGHTER B 7/24 OK; THIEF 5/12 OK; PRIEST 14/14 OK; MAGE 7/7 OK; FIGHTER C 20/20 OK
+round 4
+  FIGHTER B THRUSTS AT A
+  KOBOLD
+  AND HITS    1 TIMES FOR    1 DAMAGE!
+  THIEF CHOPS AT A
+  KOBOLD
+  AND HITS    1 TIMES FOR    2 DAMAGE!
+  FIGHTER C PARRIED.
+  KOBOLD BITES AT
+  FIGHTER A
+  AND HITS FOR    1 DAMAGE!
+  PRIEST PARRIED.
+  KOBOLD BITES AT
+  FIGHTER B
+  AND HITS FOR    2 DAMAGE!
+  KOBOLD BITES AT
+  FIGHTER B
+  AND HITS FOR    1 DAMAGE!
+  KOBOLD CLAWS AT
+  FIGHTER A
+  AND HITS FOR    1 DAMAGE!
+  KOBOLD CLAWS AT
+  FIGHTER A
+  AND HITS FOR    1 DAMAGE!
+  KOBOLD BITES AT
+  FIGHTER A
+  AND HITS FOR    1 DAMAGE!
+  FIGHTER A CHOPS AT A
+  KOBOLD
+  AND MISSES!
+  MAGE PARRIED.
+  party: FIGHTER A 18/22 OK; FIGHTER B 4/24 OK; THIEF 5/12 OK; PRIEST 14/14 OK; MAGE 7/7 OK; FIGHTER C 20/20 OK
+round 5
+  FIGHTER A STABS AT A
+  KOBOLD
+  AND HITS    1 TIMES FOR    2 DAMAGE!
+  FIGHTER A KILLS ONE!
+  FIGHTER B THRUSTS AT A
+  KOBOLD
+  AND MISSES!
+  THIEF THRUSTS AT A
+  KOBOLD
+  AND HITS    1 TIMES FOR    1 DAMAGE!
+  FIGHTER C PARRIED.
+  KOBOLD RIPS AT
+  FIGHTER A
+  AND HITS FOR    2 DAMAGE!
+  KOBOLD RIPS AT
+  FIGHTER A
+  AND HITS FOR    1 DAMAGE!
+  KOBOLD BITES AT
+  FIGHTER A
+  AND HITS FOR    2 DAMAGE!
+  KOBOLD RIPS AT
+  FIGHTER A
+  AND HITS FOR    1 DAMAGE!
+  KOBOLD TEARS AT
+  THIEF
+  AND HITS FOR    1 DAMAGE!
+  PRIEST PARRIED.
+  MAGE PARRIED.
+  party: FIGHTER A 12/22 OK; FIGHTER B 4/24 OK; THIEF 4/12 OK; PRIEST 14/14 OK; MAGE 7/7 OK; FIGHTER C 20/20 OK
+round 6
+  FIGHTER B STABS AT A
+  KOBOLD
+  AND HITS    1 TIMES FOR    2 DAMAGE!
+  KOBOLD RIPS AT
+  THIEF
+  AND HITS FOR    1 DAMAGE!
+  KOBOLD CLAWS AT
+  FIGHTER B
+  AND HITS FOR    1 DAMAGE!
+  KOBOLD CLAWS AT
+  FIGHTER B
+  AND HITS FOR    1 DAMAGE!
+  FIGHTER A CHOPS AT A
+  KOBOLD
+  AND HITS    1 TIMES FOR    2 DAMAGE!
+  PRIEST PARRIED.
+  FIGHTER C PARRIED.
+  KOBOLD BITES AT
+  FIGHTER A
+  AND HITS FOR    1 DAMAGE!
+  KOBOLD BITES AT
+  FIGHTER A
+  AND HITS FOR    1 DAMAGE!
+  KOBOLD RIPS AT
+  FIGHTER A
+  AND HITS FOR    1 DAMAGE!
+  KOBOLD RIPS AT
+  FIGHTER A
+  AND HITS FOR    2 DAMAGE!
+  KOBOLD RIPS AT
+  FIGHTER A
+  AND HITS FOR    2 DAMAGE!
+  KOBOLD RIPS AT
+  FIGHTER A
+  AND HITS FOR    1 DAMAGE!
+  THIEF CHOPS AT A
+  KOBOLD
+  AND HITS    1 TIMES FOR    1 DAMAGE!
+  THIEF KILLS ONE!
+  MAGE PARRIED.
+  party: FIGHTER A 4/22 OK; FIGHTER B 2/24 OK; THIEF 3/12 OK; PRIEST 14/14 OK; MAGE 7/7 OK; FIGHTER C 20/20 OK
+round 7
+  KOBOLD GNAWS AT
+  FIGHTER A
+  AND HITS FOR    1 DAMAGE!
+  KOBOLD GNAWS AT
+  FIGHTER A
+  AND HITS FOR    2 DAMAGE!
+  KOBOLD BITES AT
+  FIGHTER A
+  AND HITS FOR    1 DAMAGE!
+  FIGHTER A IS SLAIN!
+  KOBOLD RIPS AT
+  THIEF
+  AND HITS FOR    1 DAMAGE!
+  FIGHTER B SWINGS AT A
+  KOBOLD
+  AND MISSES!
+  THIEF THRUSTS AT A
+  KOBOLD
+  AND MISSES!
+  PRIEST PARRIED.
+  KOBOLD RIPS AT
+  THIEF
+  AND HITS FOR    2 DAMAGE!
+  THIEF IS SLAIN!
+  KOBOLD RIPS AT
+  FIGHTER B
+  AND HITS FOR    2 DAMAGE!
+  FIGHTER B IS SLAIN!
+  MAGE PARRIED.
+  FIGHTER C PARRIED.
+  party: FIGHTER A 0/22 DEAD; FIGHTER B 0/24 DEAD; THIEF 0/12 DEAD; PRIEST 14/14 OK; MAGE 7/7 OK; FIGHTER C 20/20 OK
+round 8
+  MAGE SWINGS AT A
+  KOBOLD
+  AND HITS    1 TIMES FOR    2 DAMAGE!
+  PRIEST STABS AT A
+  KOBOLD
+  AND HITS    1 TIMES FOR    2 DAMAGE!
+  PRIEST KILLS ONE!
+  KOBOLD GNAWS AT
+  PRIEST
+  AND HITS FOR    2 DAMAGE!
+  KOBOLD GNAWS AT
+  PRIEST
+  AND HITS FOR    1 DAMAGE!
+  KOBOLD RIPS AT
+  PRIEST
+  AND HITS FOR    2 DAMAGE!
+  KOBOLD TEARS AT
+  PRIEST
+  AND HITS FOR    1 DAMAGE!
+  FIGHTER C THRUSTS AT A
+  KOBOLD
+  AND HITS    1 TIMES FOR    1 DAMAGE!
+  party: PRIEST 8/14 OK; MAGE 7/7 OK; FIGHTER C 20/20 OK; FIGHTER A 0/22 DEAD; FIGHTER B 0/24 DEAD; THIEF 0/12 DEAD
+round 9
+  MAGE SLASHES AT A
+  KOBOLD
+  AND HITS    1 TIMES FOR    1 DAMAGE!
+  PRIEST CHOPS AT A
+  KOBOLD
+  AND MISSES!
+  FIGHTER C STABS AT A
+  KOBOLD
+  AND MISSES!
+  KOBOLD BITES AT
+  PRIEST
+  AND HITS FOR    1 DAMAGE!
+  KOBOLD BITES AT
+  PRIEST
+  AND HITS FOR    2 DAMAGE!
+  KOBOLD TEARS AT
+  PRIEST
+  AND HITS FOR    2 DAMAGE!
+  KOBOLD TEARS AT
+  PRIEST
+  AND HITS FOR    1 DAMAGE!
+  KOBOLD BITES AT
+  PRIEST
+  AND HITS FOR    1 DAMAGE!
+  party: PRIEST 1/14 OK; MAGE 7/7 OK; FIGHTER C 20/20 OK; FIGHTER A 0/22 DEAD; FIGHTER B 0/24 DEAD; THIEF 0/12 DEAD
+round 10
+  KOBOLD TEARS AT
+  PRIEST
+  AND HITS FOR    1 DAMAGE!
+  PRIEST IS SLAIN!
+  KOBOLD TEARS AT
+  MAGE
+  AND HITS FOR    2 DAMAGE!
+  KOBOLD GNAWS AT
+  MAGE
+  AND HITS FOR    1 DAMAGE!
+  KOBOLD GNAWS AT
+  MAGE
+  AND HITS FOR    1 DAMAGE!
+  KOBOLD RIPS AT
+  FIGHTER C
+  AND HITS FOR    1 DAMAGE!
+  KOBOLD GNAWS AT
+  MAGE
+  AND HITS FOR    1 DAMAGE!
+  KOBOLD GNAWS AT
+  MAGE
+  AND HITS FOR    2 DAMAGE!
+  MAGE IS SLAIN!
+  FIGHTER C SWINGS AT A
+  KOBOLD
+  AND MISSES!
+  party: PRIEST 0/14 DEAD; MAGE 0/7 DEAD; FIGHTER C 19/20 OK; FIGHTER A 0/22 DEAD; FIGHTER B 0/24 DEAD; THIEF 0/12 DEAD
+round 11
+  FIGHTER C THRUSTS AT A
+  KOBOLD
+  AND HITS    1 TIMES FOR    1 DAMAGE!
+  KOBOLD RIPS AT
+  FIGHTER C
+  AND HITS FOR    1 DAMAGE!
+  KOBOLD BITES AT
+  FIGHTER C
+  AND HITS FOR    2 DAMAGE!
+  KOBOLD GNAWS AT
+  FIGHTER C
+  AND HITS FOR    2 DAMAGE!
+  KOBOLD GNAWS AT
+  FIGHTER C
+  AND HITS FOR    1 DAMAGE!
+  KOBOLD GNAWS AT
+  FIGHTER C
+  AND HITS FOR    1 DAMAGE!
+  KOBOLD GNAWS AT
+  FIGHTER C
+  AND HITS FOR    2 DAMAGE!
+  party: FIGHTER C 10/20 OK; MAGE 0/7 DEAD; PRIEST 0/14 DEAD; FIGHTER A 0/22 DEAD; FIGHTER B 0/24 DEAD; THIEF 0/12 DEAD
+round 12
+  FIGHTER C THRUSTS AT A
+  KOBOLD
+  AND HITS    1 TIMES FOR    2 DAMAGE!
+  FIGHTER C KILLS ONE!
+  party: FIGHTER C 10/20 OK; MAGE 0/7 DEAD; PRIEST 0/14 DEAD; FIGHTER A 0/22 DEAD; FIGHTER B 0/24 DEAD; THIEF 0/12 DEAD
+end: phase=3 town="" maze=""
+party: FIGHTER C 10/20 OK; MAGE 0/7 DEAD; PRIEST 0/14 DEAD; FIGHTER A 0/22 DEAD; FIGHTER B 0/24 DEAD; THIEF 0/12 DEAD
+  FIGHTER C xp=363 gold=31 items=0
+  MAGE xp=18 gold=15 items=0
+  PRIEST xp=18 gold=15 items=0
+  FIGHTER A xp=18 gold=15 items=0
+  FIGHTER B xp=18 gold=15 items=0
+  THIEF xp=18 gold=15 items=0
+180 F L1 (4,0) East  phase=3 view="" msg=""|"" msgs=0
+181 L L1 (4,0) North phase=3 view="" msg=""|"" msgs=0
+182 K L1 (4,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+183 R L1 (4,0) East  phase=3 view="" msg=""|"" msgs=0
+184 R L1 (4,0) South phase=3 view="" msg=""|"" msgs=0
+185 R L1 (4,0) West  phase=3 view="" msg=""|"" msgs=0
+186 F L1 (3,0) West  phase=3 view="" msg=""|"" msgs=0
+187 F L1 (2,0) West  phase=3 view="" msg=""|"" msgs=0
+188 L L1 (2,0) South phase=3 view="" msg=""|"" msgs=0
+189 R L1 (2,0) West  phase=3 view="" msg=""|"" msgs=0
+190 F L1 (1,0) West  phase=3 view="" msg=""|"" msgs=0
+191 F L1 (0,0) West  phase=3 view="" msg="STAIRS GOING UP."|"TAKE THEM (Y/N) ?" msgs=0
+192 K L1 (0,0) West  phase=3 view="OUCH!" msg=""|"" msgs=0
+193 F L1 (0,0) West  phase=3 view="OUCH!" msg=""|"" msgs=0
+194 F L1 (0,0) West  phase=3 view="OUCH!" msg=""|"" msgs=0
+195 K L1 (0,0) West  phase=3 view="OUCH!" msg=""|"" msgs=0
+196 K L1 (0,0) West  phase=3 view="OUCH!" msg=""|"" msgs=0
+197 L L1 (0,0) South phase=3 view="" msg=""|"" msgs=0
+198 L L1 (0,0) East  phase=3 view="" msg=""|"" msgs=0
+199 F L1 (1,0) East  phase=3 view="" msg=""|"" msgs=0
+200 R L1 (1,0) South phase=3 view="" msg=""|"" msgs=0
+201 K L1 (1,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+202 F L1 (1,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+203 L L1 (1,0) East  phase=3 view="" msg=""|"" msgs=0
+204 F L1 (2,0) East  phase=3 view="" msg=""|"" msgs=0
+205 F L1 (3,0) East  phase=3 view="" msg=""|"" msgs=0
+206 L L1 (3,0) North phase=3 view="" msg=""|"" msgs=0
+207 L L1 (3,0) West  phase=3 view="" msg=""|"" msgs=0
+208 L L1 (3,0) South phase=3 view="" msg=""|"" msgs=0
+209 F L1 (3,0) South phase=3 view="OUCH!" msg=""|"" msgs=0
+210 L L1 (3,0) East  phase=3 view="" msg=""|"" msgs=0
+211 L L1 (3,0) North phase=3 view="" msg=""|"" msgs=0
+212 F L1 (3,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+213 F L1 (3,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+214 F L1 (3,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+215 R L1 (3,0) East  phase=3 view="" msg=""|"" msgs=0
+216 F L1 (4,0) East  phase=3 view="" msg=""|"" msgs=0
+217 L L1 (4,0) North phase=3 view="" msg=""|"" msgs=0
+218 K L1 (4,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+219 K L1 (4,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+220 F L1 (4,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+221 F L1 (4,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+222 F L1 (4,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+223 F L1 (4,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+224 F L1 (4,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+225 L L1 (4,0) West  phase=3 view="" msg=""|"" msgs=0
+226 F L1 (3,0) West  phase=3 view="" msg=""|"" msgs=0
+227 R L1 (3,0) North phase=3 view="" msg=""|"" msgs=0
+228 F L1 (3,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+229 F L1 (3,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+230 F L1 (3,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+231 F L1 (3,0) North phase=3 view="OUCH!" msg=""|"" msgs=0
+232 L L1 (3,0) West  phase=3 view="" msg=""|"" msgs=0
+233 F L1 (2,0) West  phase=3 view="" msg=""|"" msgs=0
+234 F L1 (1,0) West  phase=3 view="" msg=""|"" msgs=0
+235 K L1 (0,0) West  phase=3 view="" msg="STAIRS GOING UP."|"TAKE THEM (Y/N) ?" msgs=0
+236 R L1 (0,0) North phase=3 view="" msg=""|"" msgs=0
+237 F L1 (0,1) North phase=3 view="" msg=""|"" msgs=0
+238 F L1 (0,2) North phase=3 view="" msg=""|"" msgs=0
+239 K L1 (0,3) North phase=3 view="" msg=""|"" msgs=0
+240 F L1 (0,4) North phase=3 view="" msg=""|"" msgs=0
+241 K L1 (0,5) North phase=3 view="" msg=""|"" msgs=0
+242 F L1 (0,6) North phase=3 view="" msg=""|"" msgs=0
+243 L L1 (0,6) West  phase=3 view="" msg=""|"" msgs=0
+244 K L1 (0,6) West  phase=3 view="OUCH!" msg=""|"" msgs=0
+245 F L1 (0,6) West  phase=3 view="OUCH!" msg=""|"" msgs=0
+246 K L1 (0,6) West  phase=3 view="OUCH!" msg=""|"" msgs=0
+247 K L1 (0,6) West  phase=3 view="OUCH!" msg=""|"" msgs=0
+248 F L1 (0,6) West  phase=3 view="OUCH!" msg=""|"" msgs=0
+249 F L1 (0,6) West  phase=3 view="OUCH!" msg=""|"" msgs=0
+250 K L1 (0,6) West  phase=3 view="OUCH!" msg=""|"" msgs=0
+251 F L1 (0,6) West  phase=3 view="OUCH!" msg=""|"" msgs=0
+252 F L1 (0,6) West  phase=3 view="OUCH!" msg=""|"" msgs=0
+253 F L1 (0,6) West  phase=3 view="OUCH!" msg=""|"" msgs=0
+254 L L1 (0,6) South phase=3 view="" msg=""|"" msgs=0
+255 F L1 (0,5) South phase=3 view="" msg=""|"" msgs=0
+256 L L1 (0,5) East  phase=3 view="" msg=""|"" msgs=0
+257 F L1 (0,5) East  phase=3 view="OUCH!" msg=""|"" msgs=0
+258 F L1 (0,5) East  phase=3 view="OUCH!" msg=""|"" msgs=0
+259 R L1 (0,5) South phase=3 view="" msg=""|"" msgs=0
+260 R L1 (0,5) West  phase=3 view="" msg=""|"" msgs=0
+261 L L1 (0,5) South phase=3 view="" msg=""|"" msgs=0
+262 R L1 (0,5) West  phase=3 view="" msg=""|"" msgs=0
+263 R L1 (0,5) North phase=3 view="" msg=""|"" msgs=0
+264 K L1 (0,6) North phase=3 view="" msg=""|"" msgs=0
+265 F L1 (0,7) North phase=3 view="" msg=""|"" msgs=0
+266 L L1 (0,7) West  phase=3 view="" msg=""|"" msgs=0
+267 F L1 (0,7) West  phase=3 view="OUCH!" msg=""|"" msgs=0
+268 F L1 (0,7) West  phase=3 view="OUCH!" msg=""|"" msgs=0
+269 R L1 (0,7) North phase=3 view="" msg=""|"" msgs=0
+270 F L1 (0,8) North phase=3 view="" msg=""|"" msgs=0
+271 F L1 (0,8) North phase=3 view="OUCH!" msg=""|"" msgs=0
+272 F L1 (0,8) North phase=3 view="OUCH!" msg=""|"" msgs=0
+273 F L1 (0,8) North phase=3 view="OUCH!" msg=""|"" msgs=0
+274 F L1 (0,8) North phase=3 view="OUCH!" msg=""|"" msgs=0
+275 K L1 (0,8) North phase=3 view="OUCH!" msg=""|"" msgs=0
+276 R L1 (0,8) East  phase=3 view="" msg=""|"" msgs=0
+277 F L1 (1,8) East  phase=3 view="" msg=""|"" msgs=0
+278 F L1 (2,8) East  phase=3 view="" msg=""|"" msgs=0
+279 F L1 (3,8) East  phase=3 view="" msg=""|"" msgs=0
+280 F L1 (4,8) East  phase=4 view="" msg=""|"" msgs=0
+group: 4 x BUBBLY SLIME
+round 1
+  FIGHTER C THRUSTS AT A
+  BUBBLY SLIME
+  AND HITS    1 TIMES FOR    1 DAMAGE!
+  BUBBLY SLIME RIPS AT
+  FIGHTER C
+  AND HITS FOR    1 DAMAGE!
+  BUBBLY SLIME CLAWS AT
+  FIGHTER C
+  AND HITS FOR    1 DAMAGE!
+  party: FIGHTER C 8/20 OK; MAGE 0/7 DEAD; PRIEST 0/14 DEAD; FIGHTER A 0/22 DEAD; FIGHTER B 0/24 DEAD; THIEF 0/12 DEAD
+round 2
+  BUBBLY SLIME RIPS AT
+  FIGHTER C
+  AND HITS FOR    1 DAMAGE!
+  FIGHTER C STABS AT A
+  BUBBLY SLIME
+  AND MISSES!
+  BUBBLY SLIME GNAWS AT
+  FIGHTER C
+  AND HITS FOR    1 DAMAGE!
+  party: FIGHTER C 6/20 OK; MAGE 0/7 DEAD; PRIEST 0/14 DEAD; FIGHTER A 0/22 DEAD; FIGHTER B 0/24 DEAD; THIEF 0/12 DEAD
+round 3
+  FIGHTER C THRUSTS AT A
+  BUBBLY SLIME
+  AND MISSES!
+  BUBBLY SLIME CLAWS AT
+  FIGHTER C
+  AND HITS FOR    1 DAMAGE!
+  party: FIGHTER C 5/20 OK; MAGE 0/7 DEAD; PRIEST 0/14 DEAD; FIGHTER A 0/22 DEAD; FIGHTER B 0/24 DEAD; THIEF 0/12 DEAD
+round 4
+  BUBBLY SLIME GNAWS AT
+  FIGHTER C
+  AND HITS FOR    1 DAMAGE!
+  BUBBLY SLIME GNAWS AT
+  FIGHTER C
+  AND HITS FOR    1 DAMAGE!
+  BUBBLY SLIME RIPS AT
+  FIGHTER C
+  AND HITS FOR    1 DAMAGE!
+  FIGHTER C THRUSTS AT A
+  BUBBLY SLIME
+  AND MISSES!
+  party: FIGHTER C 2/20 OK; MAGE 0/7 DEAD; PRIEST 0/14 DEAD; FIGHTER A 0/22 DEAD; FIGHTER B 0/24 DEAD; THIEF 0/12 DEAD
+round 5
+  BUBBLY SLIME TEARS AT
+  FIGHTER C
+  AND HITS FOR    1 DAMAGE!
+  FIGHTER C STABS AT A
+  BUBBLY SLIME
+  AND HITS    1 TIMES FOR    1 DAMAGE!
+  BUBBLY SLIME RIPS AT
+  FIGHTER C
+  AND HITS FOR    1 DAMAGE!
+  FIGHTER C IS SLAIN!
+  ** THE PARTY HAS PERISHED **
+  party: FIGHTER C 0/20 DEAD; MAGE 0/7 DEAD; PRIEST 0/14 DEAD; FIGHTER A 0/22 DEAD; FIGHTER B 0/24 DEAD; THIEF 0/12 DEAD
+end: phase=1 town="YOUR PARTY HAS PERISHED IN THE MAZE..." maze=""
+party: FIGHTER C 0/20 DEAD; MAGE 0/7 DEAD; PRIEST 0/14 DEAD; FIGHTER A 0/22 DEAD; FIGHTER B 0/24 DEAD; THIEF 0/12 DEAD
+  FIGHTER C xp=363 gold=31 items=0
+  MAGE xp=18 gold=15 items=0
+  PRIEST xp=18 gold=15 items=0
+  FIGHTER A xp=18 gold=15 items=0
+  FIGHTER B xp=18 gold=15 items=0
+  THIEF xp=18 gold=15 items=0
