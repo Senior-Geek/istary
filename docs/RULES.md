@@ -29,11 +29,11 @@ Locations are given as file and symbol so they survive edits.
 | Rule | Value | Location |
 |---|---|---|
 | Roster size | 20 | `engine/character.go` `Roster.Add`; also `app/training.go` `submitTrainingName`, `engine/utilities.go` (import/transfer) |
-| Party size | 6 | `app/tavern.go` `maxPartySize`; also `cmd/istary/main.go` I)NSPECT pick-up in `handleMazeInput` |
-| Party alignment | last non-neutral member's alignment; Good and Evil cannot mix | `app/tavern.go` `PartyAlignment`, `submitAddMember` |
-| Who may join | not LOST, not in the maze, Wiz 3 legacy only | `app/tavern.go` `submitAddMember` |
+| Party size | 6 | `app/tavern.go` `MaxPartySize`; also `cmd/istary/main.go` I)NSPECT pick-up in `handleMazeInput` |
+| Party alignment | last non-neutral member's alignment; Good and Evil cannot mix | `app/tavern.go` `PartyAlignment`, `memberRefusal` |
+| Who may join | not LOST, not in the maze, Wiz 3 legacy only | `app/tavern.go` `memberRefusal` (used by the join and `JoinRefusal`) |
 | Items per character | 8 | `engine/character.go` `AddItem`, `TradeItem` |
-| Front row (can melee) | first 3 members | `cmd/istary/main.go` `handleCombatChoose` |
+| Front row (can melee) | first 3 members | `app/tavern.go` `FrontRowSize`, used by `cmd/istary/main.go` `handleCombatChoose` |
 
 ## Town
 

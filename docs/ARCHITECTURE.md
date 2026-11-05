@@ -52,6 +52,7 @@ otherwise. Refusals that the original game shows as an in-game message return
 | `TrainingEnterName(name) (NameLookup, error)` | Look up a name: `NameLeft`, `NameRoster`, `NameNeedsPassword`, `NameOfferCreate`, `NameNotFound` (Wiz 2/3), `NameRosterFull` |
 | `ConfirmCreate(yes)` | Answer "create it?"; yes starts creation at the password step |
 | `CloseRoster()` | Leave the `*ROSTER` listing |
+| `CloseNamePrompt()` | Close the `NAME >` prompt without a name (terminal ESC) |
 | `CancelPasswordCheck()` | Back out of an existing character's password prompt (terminal ESC) |
 | `SubmitCharacterPassword(pw)` | Answer an existing character's password; opens the edit menu or refuses with `** THATS NOT IT **` |
 | `EditCharacter()`, `LeaveCharacterEdit()` | The character open in the edit menu; close the menu |
@@ -92,6 +93,9 @@ Eligibility for display: `Creation().ClassAvailability()`.
 | `InspectMember(slot)` | Open the character sheet (sheet itself is terminal-only) |
 | `BeginAddMember()`, `BeginRemoveMember()` | Open the prompts (used by the key map) |
 | `PartyAlignment(town)` | Party alignment rule (last non-neutral member) |
+| `JoinRefusal(ch)` | Read-only: the Tavern's answer if `ch` tried to join now (`""` = may join, password still asked). Shares its checks with the real join |
+| `InParty(town, ch)`, `PartySlot(town, ch)` | Membership from the party list. Never use `InMaze` for this: joining sets it, as does being out in the dungeon |
+| `MaxPartySize`, `FrontRowSize` | 6 members; the first 3 are the front row (only they can melee) |
 
 Persistence: call `Controller.Save()` after each action.
 
@@ -116,7 +120,10 @@ component (`gui/frontend/src/lib/CharacterSheet.svelte`) shown in a movable,
 resizable in-window panel; it takes data and callbacks only, ready to move to a
 native window under Wails v3. Roster backups live in `<saveDir>/backups`. Its
 `Session` type serialises all calls with a mutex, calls controller operations,
-saves after each one, and returns a `View` for Svelte to render. See
+saves after each one, and returns a `View` for Svelte to render. The GUI shows
+roster, Training Grounds and party together while the game has one current
+town location; `gui/location.go` (`goTo`) is the only code that changes it,
+always through the game's own leave/enter steps. See
 `gui/README.md`.
 
 ## Randomness
