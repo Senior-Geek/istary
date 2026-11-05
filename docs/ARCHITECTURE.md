@@ -18,6 +18,7 @@ cmd/istary ──► app ──► engine ──► data
 | `app` | Application controller: semantic operations plus a key map for migrated workflows | No (enforced by `app/deps_test.go`) |
 | `render` | Draws `engine.GameState` with tcell; Sixel graphics; terminal detection | Yes |
 | `cmd/istary` | Terminal front end: flags, event loop, timers, tcell key translation, legacy input handlers | Yes |
+| `gui` (separate module) | Wails + Svelte desktop prototype: Wizardry I character creation via `app.Controller` | No tcell; uses Wails/WebKit |
 
 ## Input flow
 
@@ -51,6 +52,7 @@ otherwise. Refusals that the original game shows as an in-game message return
 | `TrainingEnterName(name) (NameLookup, error)` | Look up a name: `NameLeft`, `NameRoster`, `NameNeedsPassword`, `NameOfferCreate`, `NameNotFound` (Wiz 2/3), `NameRosterFull` |
 | `ConfirmCreate(yes)` | Answer "create it?"; yes starts creation at the password step |
 | `CloseRoster()` | Leave the `*ROSTER` listing |
+| `CancelPasswordCheck()` | Back out of an existing character's password prompt (terminal ESC) |
 
 **Character creation** (`app/creation.go`)
 
@@ -96,6 +98,13 @@ Persistence: call `Controller.Save()` after each action.
 - `render` keeps package-level state (`SixelSupported`, `ColorMode`,
   `CellWidth`, `CellHeight`).
 
+## Desktop GUI
+
+`gui/` is its own Go module so Wails stays out of the terminal build. Its
+`Session` type serialises all calls with a mutex, calls controller operations,
+saves after each one, and returns a `View` for Svelte to render. See
+`gui/README.md`.
+
 ## Randomness
 
 All game randomness uses the global `math/rand` source and is unchanged.
@@ -106,5 +115,7 @@ order or number of random draws. Game logic must stay on one goroutine.
 ## Saves
 
 `~/.config/wizardry/roster<N>.json` (the upstream directory name is kept for
-compatibility). The legacy `~/.config/wizardry/wiz<N>/roster.json` is still
+compatibility). `engine.SetSaveDir` redirects saves for other front ends; the
+GUI uses `~/Library/Application Support/Istary/dev-saves` and refuses the
+terminal directory. The legacy `~/.config/wizardry/wiz<N>/roster.json` is still
 read. The format is pinned by `engine/testdata/save_roster1.golden.json`.
