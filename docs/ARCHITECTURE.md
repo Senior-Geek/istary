@@ -53,6 +53,14 @@ otherwise. Refusals that the original game shows as an in-game message return
 | `ConfirmCreate(yes)` | Answer "create it?"; yes starts creation at the password step |
 | `CloseRoster()` | Leave the `*ROSTER` listing |
 | `CancelPasswordCheck()` | Back out of an existing character's password prompt (terminal ESC) |
+| `SubmitCharacterPassword(pw)` | Answer an existing character's password; opens the edit menu or refuses with `** THATS NOT IT **` |
+| `EditCharacter()`, `LeaveCharacterEdit()` | The character open in the edit menu; close the menu |
+| `BeginDeleteCharacter()`, `ConfirmDeleteCharacter(yes)` | "ARE YOU SURE YOU WANT TO DELETE"; yes removes from roster and party |
+| `ClearRoster()` | Empty roster and party (GUI reset; caller backs up with `engine.BackupRoster` and saves) |
+
+Class guidance for creation: `ClassGuide()` (`app/classguide.go`) reports each
+class's minimums, allowed alignments, shortfalls, eligibility and whether it is
+reachable with the remaining or redistributed bonus points.
 
 **Character creation** (`app/creation.go`)
 
@@ -89,8 +97,8 @@ Persistence: call `Controller.Save()` after each action.
 
 - Every other phase and prompt goes through `legacyDispatch`: title, castle
   menu, inn, Boltac's, temple, Edge of Town, camp, maze, combat, utilities,
-  and the Training Grounds password check, character edit menu, class change,
-  reroll, delete and Rite of Passage.
+  and the rest of the Training Grounds edit menu (inspect, class change,
+  reroll, set password, Rite of Passage).
 - Timers live in the main loop: combat auto-advance (`combatTimerTick`), the
   Wiz 3 story pages, inn healing ticks and the title animation goroutine.
 - `handleMazeInput` takes a `*render.Screen` only to beep.
