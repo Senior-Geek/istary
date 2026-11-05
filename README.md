@@ -103,6 +103,11 @@ Terminals with Sixel graphics support:
 
 If your terminal does not support Sixel, the game falls back to Unicode half-block character rendering automatically.
 
+## Documentation
+
+- [Architecture and controller API](docs/ARCHITECTURE.md)
+- [Hard-coded game rules](docs/RULES.md)
+
 ## Building
 
 Requires Go 1.24 or later. Module path: `github.com/Senior-Geek/istary`.
