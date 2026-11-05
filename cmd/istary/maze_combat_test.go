@@ -63,6 +63,8 @@ func partyInMaze(t *testing.T) (*engine.GameState, *driver) {
 }
 
 func TestEntranceStairsPrompt(t *testing.T) {
+	// Seed: the walk below moves, which rolls for random encounters.
+	seed(5)
 	g, d := partyInMaze(t)
 	if g.MazeMessage2 != "" {
 		t.Fatalf("N should dismiss the stairs prompt, got %q", g.MazeMessage2)
