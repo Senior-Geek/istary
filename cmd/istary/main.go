@@ -189,69 +189,9 @@ func main() {
 			}
 
 		case <-combatTicker.C:
-			if game.Phase == engine.PhaseCombat && game.Combat != nil {
-				combat := game.Combat
-
-				// Compute delay based on combat phase.
-				// PAUSE1 (CombatInit/CombatExecute): T)IME-controlled (MazeDelay 1-5000 → ms).
-				// PAUSE2 (CombatChestResult/CombatVictory/CombatDefeat): fixed delay —
-				//   Pascal PAUSE2 hardcodes 3000, independent of T)IME setting.
-				delayMs := 1500 // default (PAUSE2 fixed, and PAUSE1 with no T)IME set)
-				if combat.Phase == engine.CombatInit || combat.Phase == engine.CombatExecute {
-					// PAUSE1: uses T)IME setting
-					if game.MazeDelay > 0 {
-						delayMs = game.MazeDelay * 3 / 10 // ~0.3ms per unit
-						if delayMs < 50 {
-							delayMs = 50 // minimum 50ms
-						}
-					}
-				}
-				elapsed := time.Since(lastCombatAdvance)
-				if elapsed < time.Duration(delayMs)*time.Millisecond {
-					continue // not enough time yet
-				}
-
-				if combat.Phase == engine.CombatInit {
-					// Auto-advance after delay (simulates Apple II disk I/O time)
-					lastCombatAdvance = time.Now()
-					if combat.Surprised == 2 {
-						combat.ExecuteRound(game)
-					} else {
-						combat.Phase = engine.CombatChoose
-						combat.CurrentActor = findNextActor(game, -1)
-					}
-					redraw(screen, game)
-				} else if combat.Phase == engine.CombatExecute && !combat.HamanSelecting {
-					lastCombatAdvance = time.Now()
-					advanceCombatMessages(game)
-					redraw(screen, game)
-				} else if combat.Phase == engine.CombatChestResult {
-					lastCombatAdvance = time.Now()
-					advanceChestMessages(game)
-					redraw(screen, game)
-				} else if combat.Phase == engine.CombatVictory {
-					lastCombatAdvance = time.Now()
-					if !combat.ChestPauseUsed {
-						combat.ChestPauseUsed = true
-					} else {
-						game.Combat = nil
-						game.Phase = engine.PhaseMaze
-						game.MazeMessage = ""
-						game.MazeMessage2 = ""
-					}
-					redraw(screen, game)
-				} else if combat.Phase == engine.CombatDefeat {
-					lastCombatAdvance = time.Now()
-					if !combat.ChestPauseUsed {
-						combat.ChestPauseUsed = true
-					} else {
-						game.Combat = nil
-						game.Phase = engine.PhaseTown
-						game.Town.Location = engine.Castle
-						game.Town.Message = "YOUR PARTY HAS PERISHED IN THE MAZE..."
-					}
-					redraw(screen, game)
-				}
+			if combatTimerTick(game, time.Since(lastCombatAdvance)) {
+				lastCombatAdvance = time.Now()
+				redraw(screen, game)
 			}
 
 		case <-storyTicker.C:
@@ -300,6 +240,70 @@ func main() {
 			}
 		}
 	}
+}
+
+// combatTimerTick runs one poll of the combat auto-advance timer. sinceLast is
+// the time since the last advance. It returns true when combat advanced (the
+// caller then resets its clock and redraws).
+func combatTimerTick(game *engine.GameState, sinceLast time.Duration) bool {
+	if game.Phase != engine.PhaseCombat || game.Combat == nil {
+		return false
+	}
+	combat := game.Combat
+
+	// Compute delay based on combat phase.
+	// PAUSE1 (CombatInit/CombatExecute): T)IME-controlled (MazeDelay 1-5000 → ms).
+	// PAUSE2 (CombatChestResult/CombatVictory/CombatDefeat): fixed delay —
+	//   Pascal PAUSE2 hardcodes 3000, independent of T)IME setting.
+	delayMs := 1500 // default (PAUSE2 fixed, and PAUSE1 with no T)IME set)
+	if combat.Phase == engine.CombatInit || combat.Phase == engine.CombatExecute {
+		// PAUSE1: uses T)IME setting
+		if game.MazeDelay > 0 {
+			delayMs = game.MazeDelay * 3 / 10 // ~0.3ms per unit
+			if delayMs < 50 {
+				delayMs = 50 // minimum 50ms
+			}
+		}
+	}
+	if sinceLast < time.Duration(delayMs)*time.Millisecond {
+		return false // not enough time yet
+	}
+
+	switch {
+	case combat.Phase == engine.CombatInit:
+		// Auto-advance after delay (simulates Apple II disk I/O time)
+		if combat.Surprised == 2 {
+			combat.ExecuteRound(game)
+		} else {
+			combat.Phase = engine.CombatChoose
+			combat.CurrentActor = findNextActor(game, -1)
+		}
+	case combat.Phase == engine.CombatExecute && !combat.HamanSelecting:
+		advanceCombatMessages(game)
+	case combat.Phase == engine.CombatChestResult:
+		advanceChestMessages(game)
+	case combat.Phase == engine.CombatVictory:
+		if !combat.ChestPauseUsed {
+			combat.ChestPauseUsed = true
+		} else {
+			game.Combat = nil
+			game.Phase = engine.PhaseMaze
+			game.MazeMessage = ""
+			game.MazeMessage2 = ""
+		}
+	case combat.Phase == engine.CombatDefeat:
+		if !combat.ChestPauseUsed {
+			combat.ChestPauseUsed = true
+		} else {
+			game.Combat = nil
+			game.Phase = engine.PhaseTown
+			game.Town.Location = engine.Castle
+			game.Town.Message = "YOUR PARTY HAS PERISHED IN THE MAZE..."
+		}
+	default:
+		return false
+	}
+	return true
 }
 
 func redraw(screen *render.Screen, game *engine.GameState) {

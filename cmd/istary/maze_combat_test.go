@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/Senior-Geek/istary/engine"
 )
@@ -145,44 +146,10 @@ func TestMazeWalkTrace(t *testing.T) {
 	checkGolden(t, "maze_walk.golden", []byte(out.String()))
 }
 
-// combatTick performs one tick of the main loop's combat timer without the
-// wall-clock delay. Keep in sync with the combatTicker case in main().
+// combatTick fires the main loop's combat timer with the delay already
+// elapsed.
 func combatTick(g *engine.GameState) {
-	combat := g.Combat
-	if g.Phase != engine.PhaseCombat || combat == nil {
-		return
-	}
-	switch {
-	case combat.Phase == engine.CombatInit:
-		if combat.Surprised == 2 {
-			combat.ExecuteRound(g)
-		} else {
-			combat.Phase = engine.CombatChoose
-			combat.CurrentActor = findNextActor(g, -1)
-		}
-	case combat.Phase == engine.CombatExecute && !combat.HamanSelecting:
-		advanceCombatMessages(g)
-	case combat.Phase == engine.CombatChestResult:
-		advanceChestMessages(g)
-	case combat.Phase == engine.CombatVictory:
-		if !combat.ChestPauseUsed {
-			combat.ChestPauseUsed = true
-		} else {
-			g.Combat = nil
-			g.Phase = engine.PhaseMaze
-			g.MazeMessage = ""
-			g.MazeMessage2 = ""
-		}
-	case combat.Phase == engine.CombatDefeat:
-		if !combat.ChestPauseUsed {
-			combat.ChestPauseUsed = true
-		} else {
-			g.Combat = nil
-			g.Phase = engine.PhaseTown
-			g.Town.Location = engine.Castle
-			g.Town.Message = "YOUR PARTY HAS PERISHED IN THE MAZE..."
-		}
-	}
+	combatTimerTick(g, time.Hour)
 }
 
 // fightToTheEnd plays a combat with a fixed policy: front row fights group 1,
@@ -311,4 +278,31 @@ func TestMazeWanderTrace(t *testing.T) {
 		}
 	}
 	checkGolden(t, "maze_wander.golden", []byte(out.String()))
+}
+
+func TestCombatTimerDelay(t *testing.T) {
+	seed(21)
+	g, _ := partyInMaze(t)
+	g.Combat = engine.NewCombat(g)
+	g.Phase = engine.PhaseCombat
+	g.Combat.Surprised = 0
+
+	// Default PAUSE1 is 1500ms.
+	if combatTimerTick(g, 1499*time.Millisecond) || g.Combat.Phase != engine.CombatInit {
+		t.Fatal("combat advanced before the default 1500ms delay")
+	}
+	if !combatTimerTick(g, 1500*time.Millisecond) || g.Combat.Phase != engine.CombatChoose {
+		t.Fatalf("combat should advance to Choose after 1500ms, phase=%v", g.Combat.Phase)
+	}
+	// Nothing to auto-advance while the player chooses actions.
+	if combatTimerTick(g, time.Hour) {
+		t.Error("timer should not advance during action selection")
+	}
+
+	// T)IME delay: MazeDelay*3/10 ms, minimum 50ms.
+	g.Combat.Phase = engine.CombatInit
+	g.MazeDelay = 100 // 30ms -> clamped to 50ms
+	if combatTimerTick(g, 49*time.Millisecond) || !combatTimerTick(g, 50*time.Millisecond) {
+		t.Error("T)IME delay should clamp to a 50ms minimum")
+	}
 }
