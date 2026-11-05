@@ -202,3 +202,91 @@ func TestDeclineAndBack(t *testing.T) {
 		t.Error("cancelled creation must not add a character")
 	}
 }
+
+func TestClassGuideInView(t *testing.T) {
+	s, _ := newTestSession(t)
+	mustOK(t, s.StartCreation("guide"), "confirmCreate")
+	mustOK(t, s.AnswerCreate(true), "creation")
+	mustOK(t, s.SetPassword("", ""), "creation")
+	v := mustOK(t, s.ChooseRace(0), "creation") // HUMAN
+	if v.Creation.Guide != nil {
+		t.Fatal("guide should not appear before alignment is chosen")
+	}
+	v = mustOK(t, s.ChooseAlignment(1), "creation") // NEUTRAL
+	g := v.Creation.Guide
+	if len(g) != 8 {
+		t.Fatalf("guide has %d rows, want 8", len(g))
+	}
+	for i, row := range g {
+		if row.Class != v.Classes[i] {
+			t.Errorf("row %d class %q, want %q", i, row.Class, v.Classes[i])
+		}
+		if (row.Status == "eligible") != v.Creation.ClassOK[i] {
+			t.Errorf("%s: status %q but classOk %v", row.Class, row.Status, v.Creation.ClassOK[i])
+		}
+	}
+	// Neutral characters cannot be Priest, Bishop, Lord or Ninja.
+	for _, i := range []int{2, 4, 6, 7} {
+		if g[i].Status != "alignment" || g[i].Note != "Not open to NEUTRAL characters" {
+			t.Errorf("%s: %q %q", g[i].Class, g[i].Status, g[i].Note)
+		}
+	}
+	if g[0].Alignments != "ANY" || g[6].Alignments != "GOOD" || g[2].Alignments != "GOOD, EVIL" {
+		t.Errorf("alignment text: %q %q %q", g[0].Alignments, g[6].Alignments, g[2].Alignments)
+	}
+	// Human STR 8 vs Fighter 11: short 3, reachable with the rolled points.
+	if g[0].Shortfall[0] != 3 || g[0].Status != "reachable" {
+		t.Errorf("fighter: %+v", g[0])
+	}
+
+	// The guide follows every point added or removed.
+	v = mustOK(t, s.AddPoint(0), "creation")
+	if f := v.Creation.Guide[0]; f.Shortfall[0] != 2 || !strings.Contains(f.Note, "Needs 2 points more") {
+		t.Errorf("after +STR: %+v", f)
+	}
+	v = mustOK(t, s.RemovePoint(0), "creation")
+	if f := v.Creation.Guide[0]; f.Shortfall[0] != 3 {
+		t.Errorf("after -STR: %+v", f)
+	}
+
+	// Spend everything on LUCK and I.Q.: Fighter now needs points that are
+	// only available by moving them.
+	v = spendAll(t, s, v, []int{5, 1, 2, 3, 4, 0})
+	for i, row := range v.Creation.Guide {
+		if row.Status == "reachable" {
+			t.Errorf("%s reachable with 0 points left: %+v", v.Classes[i], row)
+		}
+	}
+	if v.Creation.Guide[0].Shortfall[0] > 0 && v.Creation.Guide[0].Status != "move" {
+		t.Errorf("fighter after spending elsewhere: %+v", v.Creation.Guide[0])
+	}
+
+	// Lord needs 37 points from Human base; no roll provides that.
+	if l := v.Creation.Guide[6]; l.Status != "alignment" {
+		t.Errorf("lord (neutral): %+v", l)
+	}
+}
+
+func TestClassGuideUnreachableByPoints(t *testing.T) {
+	s, _ := newTestSession(t)
+	mustOK(t, s.StartCreation("lordling"), "confirmCreate")
+	mustOK(t, s.AnswerCreate(true), "creation")
+	mustOK(t, s.SetPassword("", ""), "creation")
+	mustOK(t, s.ChooseRace(0), "creation")
+	v := mustOK(t, s.ChooseAlignment(0), "creation") // GOOD
+	l := v.Creation.Guide[6]
+	need := 0
+	for _, n := range l.Shortfall {
+		need += n
+	}
+	if need != 37 {
+		t.Fatalf("human lord shortfall total = %d, want 37", need)
+	}
+	wantStatus := "points"
+	if v.Creation.Points >= 37 {
+		wantStatus = "reachable"
+	}
+	if l.Status != wantStatus || (wantStatus == "points" && !strings.HasPrefix(l.Note, "Cannot be reached: needs 37 points")) {
+		t.Errorf("lord with %d points: %+v", v.Creation.Points, l)
+	}
+}

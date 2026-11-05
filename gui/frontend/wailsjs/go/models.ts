@@ -36,6 +36,28 @@ export namespace main {
 	        this.stats = source["stats"];
 	    }
 	}
+	export class GuideRow {
+	    class: string;
+	    minimums: number[];
+	    shortfall: number[];
+	    alignments: string;
+	    status: string;
+	    note: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new GuideRow(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.class = source["class"];
+	        this.minimums = source["minimums"];
+	        this.shortfall = source["shortfall"];
+	        this.alignments = source["alignments"];
+	        this.status = source["status"];
+	        this.note = source["note"];
+	    }
+	}
 	export class CreationView {
 	    step: string;
 	    name: string;
@@ -49,6 +71,7 @@ export namespace main {
 	    classOk: boolean[];
 	    canAdd: boolean[];
 	    canRemove: boolean[];
+	    guide: GuideRow[];
 	
 	    static createFrom(source: any = {}) {
 	        return new CreationView(source);
@@ -68,8 +91,28 @@ export namespace main {
 	        this.classOk = source["classOk"];
 	        this.canAdd = source["canAdd"];
 	        this.canRemove = source["canRemove"];
+	        this.guide = this.convertValues(source["guide"], GuideRow);
 	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
+	
 	export class View {
 	    saveDir: string;
 	    fatal: string;

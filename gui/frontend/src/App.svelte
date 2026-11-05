@@ -27,6 +27,39 @@
   const letter = (i) => String.fromCharCode(65 + i)
 </script>
 
+{#snippet guideTable(c)}
+  <h2 style="margin-top:16px">Class Requirements Guide</h2>
+  <table class="guide">
+    <thead>
+      <tr>
+        <th>Class</th>
+        {#each view.statNames as s}<th class="num">{s.slice(0, 3)}</th>{/each}
+        <th>Alignment</th><th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="current">
+        <td>Current</td>
+        {#each c.stats as v}<td class="num">{v}</td>{/each}
+        <td>{c.alignment}</td><td>{c.points} point{c.points === 1 ? '' : 's'} left</td>
+      </tr>
+      {#each c.guide as row}
+        <tr>
+          <td>{row.class}</td>
+          {#each row.minimums as min, i}
+            <td class="num" class:short={row.shortfall[i] > 0}>
+              {min || '—'}{#if row.shortfall[i] > 0}{' '}(−{row.shortfall[i]}){/if}
+            </td>
+          {/each}
+          <td>{row.alignments}</td>
+          <td class="status {row.status}">{row.note}</td>
+        </tr>
+      {/each}
+    </tbody>
+  </table>
+  <p class="muted">Minimums per statistic; (−N) is the current shortfall.</p>
+{/snippet}
+
 <main>
   <h1>Istary — Wizardry I Character Creation</h1>
   {#if view}
@@ -161,10 +194,8 @@
                 {/each}
               </tbody>
             </table>
-            <p class="muted">
-              Eligible now: {view.classes.filter((_, i) => c.classOk[i]).join(', ') || 'none'}
-            </p>
             <button class="primary" disabled={busy} onclick={() => call(S.FinishStats)}>Done — choose class</button>
+            {#if c.guide}{@render guideTable(c)}{/if}
 
           {:else if c.step === 'class'}
             <p>Choose a class (only classes these statistics and alignment allow are enabled):</p>
@@ -176,6 +207,7 @@
             <div class="row" style="margin-top:10px">
               <button disabled={busy} onclick={() => call(S.Back)}>Back to points</button>
             </div>
+            {#if c.guide}{@render guideTable(c)}{/if}
 
           {:else if c.step === 'confirm'}
             <table style="width:auto; margin-bottom:10px">

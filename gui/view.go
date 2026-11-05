@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/Senior-Geek/istary/app"
@@ -55,6 +56,64 @@ type CreationView struct {
 	ClassOK     [8]bool `json:"classOk"`
 	CanAdd      [6]bool `json:"canAdd"`
 	CanRemove   [6]bool `json:"canRemove"`
+	// Guide reports every class against the current stats; set from the
+	// bonus-point step on.
+	Guide []GuideRow `json:"guide"`
+}
+
+// GuideRow is one class in the Class Requirements Guide. Status is one of
+// "eligible", "reachable", "move", "points" (not reachable even by moving
+// points) or "alignment"; Note explains it in words.
+type GuideRow struct {
+	Class      string `json:"class"`
+	Minimums   [6]int `json:"minimums"`
+	Shortfall  [6]int `json:"shortfall"`
+	Alignments string `json:"alignments"`
+	Status     string `json:"status"`
+	Note       string `json:"note"`
+}
+
+// guideRows formats app.ClassGuide for display. All decisions come from the
+// controller; this only chooses words.
+func guideRows(guide []app.ClassStatus, align engine.Alignment, points int) []GuideRow {
+	rows := make([]GuideRow, 0, len(guide))
+	for _, st := range guide {
+		var names []string
+		for _, a := range st.Alignments {
+			names = append(names, a.String())
+		}
+		alignText := strings.Join(names, ", ")
+		if len(st.Alignments) == 3 {
+			alignText = "ANY"
+		}
+		row := GuideRow{
+			Class:      st.Class.String(),
+			Minimums:   st.Minimums,
+			Shortfall:  st.Shortfall,
+			Alignments: alignText,
+		}
+		switch {
+		case st.Eligible:
+			row.Status, row.Note = "eligible", "Eligible"
+		case !st.AlignmentOK:
+			row.Status, row.Note = "alignment", fmt.Sprintf("Not open to %s characters", align)
+		case st.ReachableWithRemaining:
+			row.Status, row.Note = "reachable", fmt.Sprintf("Needs %s more (%d left)", plural(st.PointsNeeded), points)
+		case st.ReachableByMoving:
+			row.Status, row.Note = "move", fmt.Sprintf("Needs %s, only %d left: move points from other stats", plural(st.PointsNeeded), points)
+		default:
+			row.Status, row.Note = "points", fmt.Sprintf("Cannot be reached: needs %s, only %d left", plural(st.PointsNeeded), points)
+		}
+		rows = append(rows, row)
+	}
+	return rows
+}
+
+func plural(n int) string {
+	if n == 1 {
+		return "1 point"
+	}
+	return fmt.Sprintf("%d points", n)
 }
 
 // pointMoves reports, for each stat, whether adding or removing a point
@@ -141,6 +200,9 @@ func (s *Session) view(err error) View {
 			ClassOK:     cs.ClassAvailability(),
 		}
 		cv.CanAdd, cv.CanRemove = pointMoves(cs)
+		if guide, err := s.ctrl.ClassGuide(); err == nil {
+			cv.Guide = guideRows(guide, cs.Alignment, cs.BonusPoints)
+		}
 		if cs.Step > engine.StepRace {
 			cv.Race = cs.Race.String()
 		}

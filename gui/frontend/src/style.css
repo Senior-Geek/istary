@@ -74,3 +74,12 @@ label span { display: inline-block; width: 150px; color: var(--muted); }
 .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .summary { margin-bottom: 10px; }
 .summary b { color: var(--accent); }
+
+table.guide td, table.guide th { padding: 3px 6px; }
+table.guide tr.current td { color: var(--muted); }
+table.guide td.short { color: var(--error); }
+table.guide td.status.eligible { color: var(--accent); }
+table.guide td.status.reachable,
+table.guide td.status.move { color: var(--notice); }
+table.guide td.status.points,
+table.guide td.status.alignment { color: var(--error); }
