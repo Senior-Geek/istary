@@ -3,12 +3,13 @@ package app
 // Text-entry rules shared by the name and password prompts. Limits and
 // allowed characters match the original prompts.
 
-const maxNameLen = 15
+// MaxNameLength is the longest name or password the prompts accept.
+const MaxNameLength = 15
 
 // appendNameChar applies one typed character to a character-name buffer:
 // at most 15 characters, letters uppercased, only A-Z, 0-9, space, - and '.
 func appendNameChar(buf string, ch rune) string {
-	if len(buf) >= maxNameLen {
+	if len(buf) >= MaxNameLength {
 		return buf
 	}
 	if ch >= 'a' && ch <= 'z' {
@@ -26,7 +27,7 @@ func appendPasswordChar(buf string, ch rune) string {
 	if ch >= 'a' && ch <= 'z' {
 		ch -= 32
 	}
-	if len(buf) < maxNameLen {
+	if len(buf) < MaxNameLength {
 		return buf + string(ch)
 	}
 	return buf

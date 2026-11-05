@@ -271,8 +271,8 @@ func (c *Controller) creationKey(k Key) {
 			}
 		case KeyEnter:
 			if cs.PasswordStep == 0 {
-				if len(cs.PasswordFirst) > maxNameLen {
-					cs.PasswordFirst = cs.PasswordFirst[:maxNameLen]
+				if len(cs.PasswordFirst) > MaxNameLength {
+					cs.PasswordFirst = cs.PasswordFirst[:MaxNameLength]
 				}
 				cs.PasswordStep = 1
 				cs.Password = ""
