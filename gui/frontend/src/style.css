@@ -1,0 +1,76 @@
+:root {
+  --bg: #121212;
+  --panel: #1c1c1c;
+  --line: #333;
+  --text: #e6e6e6;
+  --muted: #9a9a9a;
+  --accent: #6fcf6f;
+  --error: #ff8a80;
+  --notice: #8ab4f8;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.45 -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+}
+
+main { max-width: 920px; margin: 0 auto; padding: 20px 16px 40px; }
+
+h1 { font-size: 20px; margin: 0 0 4px; }
+h2 { font-size: 15px; margin: 0 0 10px; color: var(--accent); }
+
+.muted { color: var(--muted); font-size: 12px; }
+
+section {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 14px 16px;
+  margin-top: 16px;
+}
+
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; padding: 4px 8px; border-bottom: 1px solid var(--line); }
+th { color: var(--muted); font-weight: 500; font-size: 12px; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+button {
+  font: inherit;
+  color: var(--text);
+  background: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 5px 12px;
+  margin: 2px 4px 2px 0;
+  cursor: pointer;
+}
+button:hover:not(:disabled) { border-color: var(--accent); }
+button:disabled { opacity: 0.4; cursor: not-allowed; }
+button.primary { border-color: var(--accent); }
+
+input {
+  font: inherit;
+  color: var(--text);
+  background: #0e0e0e;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 5px 8px;
+  margin-right: 6px;
+}
+
+label { display: block; margin: 6px 0; }
+label span { display: inline-block; width: 150px; color: var(--muted); }
+
+.banner { padding: 8px 12px; border-radius: 4px; margin-top: 12px; }
+.banner.error { background: #3a1d1b; color: var(--error); }
+.banner.notice { background: #1b2a3a; color: var(--notice); }
+.banner.message { background: #1e2a1e; color: var(--accent); }
+
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.summary { margin-bottom: 10px; }
+.summary b { color: var(--accent); }

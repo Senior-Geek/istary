@@ -1,0 +1,18 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "Istary",
+  "outputfilename": "Istary",
+  "frontend:install": "npm ci",
+  "frontend:build": "npm run build",
+  "frontend:dev:watcher": "npm run dev",
+  "frontend:dev:serverUrl": "auto",
+  "author": {
+    "name": "Paul Marriott"
+  },
+  "info": {
+    "productName": "Istary",
+    "productVersion": "0.1.0",
+    "comments": "Istary character creation prototype",
+    "copyright": "Istary is a fork of sshoecraft/wizardry by Stephen Shoecraft (MIT)"
+  }
+}

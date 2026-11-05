@@ -1,7 +1,7 @@
 BINARY  = istary
 PREFIX  ?= /usr/local
 
-.PHONY: build install uninstall clean
+.PHONY: build install uninstall clean gui
 
 build:
 	go build -o $(BINARY) ./cmd/istary/
@@ -15,3 +15,7 @@ uninstall:
 
 clean:
 	rm -f $(BINARY)
+
+# Desktop GUI prototype (needs the Wails CLI; see gui/README.md)
+gui:
+	cd gui && wails build -platform darwin/arm64
