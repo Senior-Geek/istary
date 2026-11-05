@@ -1,0 +1,52 @@
+{
+  "roster": [
+    {
+      "Name": "OLDFIGHTER",
+      "Race": 2,
+      "Class": 0,
+      "Alignment": 0,
+      "Status": 0,
+      "Level": 3,
+      "XP": 2500,
+      "HP": 24,
+      "MaxHP": 30,
+      "Gold": 412,
+      "Age": 950,
+      "Strength": 17,
+      "IQ": 8,
+      "Piety": 10,
+      "Vitality": 15,
+      "Agility": 9,
+      "Luck": 7,
+      "AC": 6,
+      "MageSpells": [0, 0, 0, 0, 0, 0, 0],
+      "PriestSpells": [0, 0, 0, 0, 0, 0, 0],
+      "Equipment": [5, 12, -1, -1, -1, -1, -1, -1],
+      "Inventory": [1]
+    },
+    {
+      "Name": "OLDMAGE",
+      "Race": 1,
+      "Class": 1,
+      "Alignment": 1,
+      "Status": 5,
+      "Level": 2,
+      "XP": 1200,
+      "HP": 0,
+      "MaxHP": 7,
+      "Gold": 90,
+      "Age": 940,
+      "Strength": 7,
+      "IQ": 15,
+      "Piety": 10,
+      "Vitality": 7,
+      "Agility": 10,
+      "Luck": 6,
+      "AC": 10,
+      "MageSpells": [3, 0, 0, 0, 0, 0, 0],
+      "PriestSpells": [0, 0, 0, 0, 0, 0, 0],
+      "Equipment": [-1, -1, -1, -1, -1, -1, -1, -1]
+    }
+  ],
+  "party": ["OLDFIGHTER", "OLDMAGE", "NOT IN ROSTER"]
+}
