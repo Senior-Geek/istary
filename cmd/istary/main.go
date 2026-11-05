@@ -2110,10 +2110,7 @@ func handlePasswordCheck(game *engine.GameState, ev *tcell.EventKey) bool {
 			town.Message = "** THATS NOT IT **"
 		}
 	case tcell.KeyEscape:
-		town.InputMode = engine.InputTrainingName
-		town.InputBuf = ""
-		town.EditChar = nil
-		town.Message = ""
+		app.New(game).CancelPasswordCheck()
 	case tcell.KeyRune:
 		ch := ev.Rune()
 		if ch >= 'a' && ch <= 'z' {

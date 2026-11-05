@@ -31,7 +31,9 @@ func TestTrainingNameLookups(t *testing.T) {
 	if r, err := c.TrainingEnterName("bilbo"); err != nil || r != NameNeedsPassword || c.Game.Town.EditChar != existing {
 		t.Fatalf("existing name: %v %v", r, err)
 	}
-	c.Game.Town.InputMode = engine.InputTrainingName // leave the password prompt (still terminal-only)
+	if err := c.CancelPasswordCheck(); err != nil || c.Game.Town.InputMode != engine.InputTrainingName || c.Game.Town.EditChar != nil {
+		t.Fatalf("CancelPasswordCheck: %v mode=%v", err, c.Game.Town.InputMode)
+	}
 
 	if r, err := c.TrainingEnterName("new one"); err != nil || r != NameOfferCreate || c.Game.Town.PendingCreateName != "NEW ONE" {
 		t.Fatalf("unknown name: %v %v pending=%q", r, err, c.Game.Town.PendingCreateName)

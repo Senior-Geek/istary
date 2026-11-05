@@ -147,6 +147,20 @@ func (c *Controller) ConfirmCreate(yes bool) error {
 	return nil
 }
 
+// CancelPasswordCheck backs out of the existing-character "PASSWORD >"
+// prompt to the name prompt, as ESC does.
+func (c *Controller) CancelPasswordCheck() error {
+	town := c.Game.Town
+	if c.Game.Phase != engine.PhaseTown || town.InputMode != engine.InputPassword {
+		return ErrWrongState
+	}
+	town.InputMode = engine.InputTrainingName
+	town.InputBuf = ""
+	town.EditChar = nil
+	town.Message = ""
+	return nil
+}
+
 // CloseRoster leaves the *ROSTER listing and returns to the name prompt.
 func (c *Controller) CloseRoster() error {
 	town := c.Game.Town

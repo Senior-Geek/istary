@@ -225,3 +225,14 @@ func TestCreationIgnoresNonRuneKeysAtRace(t *testing.T) {
 		t.Errorf("arrow keys and letters past E should not pick a race")
 	}
 }
+
+func TestEscapeLeavesPasswordCheck(t *testing.T) {
+	g := newGame(t, 1)
+	g.Town.Roster.Add(character("EOWYN", engine.Human, engine.Fighter, engine.Good))
+	d := newDriver(t, g)
+	toTrainingName(d, "EOWYN").enter()
+	d.keys("AB").esc()
+	if g.Town.InputMode != engine.InputTrainingName || g.Town.EditChar != nil || g.Town.InputBuf != "" {
+		t.Errorf("ESC at password: mode=%v edit=%v buf=%q", g.Town.InputMode, g.Town.EditChar, g.Town.InputBuf)
+	}
+}
