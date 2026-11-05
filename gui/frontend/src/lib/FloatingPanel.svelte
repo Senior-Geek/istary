@@ -18,16 +18,48 @@
   let panel
   let drag = null
 
+  // While dragging, text selection is switched off for the whole page so
+  // moving past the panel's limits cannot highlight text; the previous
+  // setting is restored when the drag ends (release, cancel, or lost
+  // pointer capture). Normal selection works whenever no drag is active.
+  let savedUserSelect = null
+
   function startDrag(e) {
     if (e.button !== 0 || e.target.closest('button')) return
-    drag = { dx: e.clientX - geom.left, dy: e.clientY - geom.top }
-    e.currentTarget.setPointerCapture(e.pointerId)
+    e.preventDefault() // stop the press from starting a text selection
+    drag = { dx: e.clientX - geom.left, dy: e.clientY - geom.top, id: e.pointerId }
+    window.getSelection()?.removeAllRanges()
+    const root = document.documentElement.style
+    savedUserSelect = { user: root.userSelect, webkit: root.webkitUserSelect }
+    root.userSelect = 'none'
+    root.webkitUserSelect = 'none'
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId)
+    } catch {
+      // Synthetic or already-released pointers cannot be captured; dragging
+      // still works through the handlers below.
+    }
   }
   function moveDrag(e) {
-    if (!drag) return
+    if (!drag || e.pointerId !== drag.id) return
+    e.preventDefault()
     geom = constrain({ ...geom, left: e.clientX - drag.dx, top: e.clientY - drag.dy }, viewport(), min)
   }
-  function endDrag() { drag = null }
+  function endDrag(e) {
+    if (!drag || (e && e.pointerId !== drag.id)) return
+    drag = null
+    if (savedUserSelect) {
+      const root = document.documentElement.style
+      root.userSelect = savedUserSelect.user
+      root.webkitUserSelect = savedUserSelect.webkit
+      savedUserSelect = null
+    }
+    try {
+      if (e && e.currentTarget?.hasPointerCapture?.(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId)
+    } catch {
+      // Capture already gone.
+    }
+  }
 
   function onkeydown(e) {
     if (e.key === 'Escape') onclose?.()
@@ -37,6 +69,9 @@
   }
 
   onMount(() => {
+    // A drag must never leave selection disabled, even if the panel closes
+    // mid-drag.
+    const restore = () => endDrag()
     // The corner handle resizes the element directly; fold its new size back
     // into geom so the panel is re-constrained (moved or limited) as needed.
     const ro = new ResizeObserver(() => {
@@ -44,10 +79,19 @@
       const h = panel.offsetHeight
       if (w !== geom.width || h !== geom.height) {
         geom = constrain({ ...geom, width: w, height: h }, viewport(), min)
+        // The browser wrote the dragged size straight into the element's
+        // style. If the constrained size equals what Svelte last applied,
+        // Svelte sees no change and would leave the oversized value, so
+        // write it back here.
+        if (panel.offsetWidth !== geom.width) panel.style.width = `${geom.width}px`
+        if (panel.offsetHeight !== geom.height) panel.style.height = `${geom.height}px`
       }
     })
     ro.observe(panel)
-    return () => ro.disconnect()
+    return () => {
+      ro.disconnect()
+      restore()
+    }
   })
 </script>
 
@@ -58,7 +102,8 @@
   style:width="{geom.width}px" style:height="{geom.height}px"
   style:min-width="{Math.min(min.width, geom.width)}px" style:min-height="{Math.min(min.height, geom.height)}px">
   <div class="titlebar" role="toolbar" tabindex="-1"
-    onpointerdown={startDrag} onpointermove={moveDrag} onpointerup={endDrag} onpointercancel={endDrag}>
+    onpointerdown={startDrag} onpointermove={moveDrag} onpointerup={endDrag} onpointercancel={endDrag}
+    onlostpointercapture={endDrag}>
     <span class="title">{title}</span>
     <button class="close" aria-label="Close" onclick={() => onclose?.()}>✕</button>
   </div>
