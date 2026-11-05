@@ -56,7 +56,7 @@
       <div class="line">{ch.race} {ch.class} · {ch.alignment} · Level {ch.level}</div>
       <div class="line muted">
         {ch.status}{#if ch.poison}{' '}(poisoned {ch.poison}){/if}
-        {#if ch.mazeLevel}{' '}· in the maze, level {ch.mazeLevel}{/if}
+        {#if ch.inParty}{' '}· in party (slot {ch.partySlot}){:else if ch.mazeLevel}{' '}· in the maze, level {ch.mazeLevel}{/if}
         {#if ch.legacy}{' '}· legacy{/if}
       </div>
     </div>

@@ -266,3 +266,34 @@ func TestPartyLeavesTerminalSavesAlone(t *testing.T) {
 		t.Errorf("GUI must not create or write %s (stat err %v)", terminal, err)
 	}
 }
+
+// The sheet's status correction is display-only: membership comes from the
+// party list, and the saved InMaze flag is unchanged.
+func TestPartyMemberNotShownInMaze(t *testing.T) {
+	s, dir := newTestSession(t)
+	out := hero("SCOUT", engine.Neutral, "")
+	out.InMaze = true
+	out.MazeLevel = 2
+	rosterWith(t, s, hero("GUARD", engine.Neutral, ""), out)
+	v := join(t, s, 0, "")
+
+	guard, scout := v.Roster[0], v.Roster[1]
+	if !guard.InParty || guard.PartySlot != 1 || guard.MazeLevel != 0 || !guard.InMaze {
+		t.Errorf("party member: inParty=%v slot=%d mazeLevel=%d inMaze=%v", guard.InParty, guard.PartySlot, guard.MazeLevel, guard.InMaze)
+	}
+	if scout.InParty || scout.MazeLevel != 3 {
+		t.Errorf("character out in the maze: inParty=%v mazeLevel=%d", scout.InParty, scout.MazeLevel)
+	}
+	// Saved as the game sets it: joining set in_maze for GUARD.
+	raw, _ := os.ReadFile(filepath.Join(dir, "roster1.json"))
+	var f struct {
+		Roster []struct {
+			Name   string
+			InMaze bool `json:"in_maze"`
+		} `json:"roster"`
+	}
+	json.Unmarshal(raw, &f)
+	if f.Roster[0].Name != "GUARD" || !f.Roster[0].InMaze {
+		t.Errorf("saved GUARD in_maze = %v, want true (unchanged game behavior)", f.Roster[0].InMaze)
+	}
+}

@@ -211,7 +211,14 @@ func itemViews(ch *engine.Character, items []data.Item) []ItemView {
 	return out
 }
 
-func mazeLevel(ch *engine.Character) int {
+// mazeLevel is the 1-based dungeon level to show for a character out in the
+// maze, or 0. Display only: joining the party sets InMaze (as in the
+// original), so party members are never shown as in the maze; their saved
+// InMaze flag is left as the game set it.
+func mazeLevel(ch *engine.Character, inParty bool) int {
+	if inParty {
+		return 0
+	}
 	if ch.InMaze || ch.MazeLevel != 0 {
 		return ch.MazeLevel + 1
 	}
@@ -278,7 +285,7 @@ func (s *Session) view(err error) View {
 			Items:        itemViews(ch, g.Scenario.Items),
 			Poison:       ch.PoisonAmt,
 			InMaze:       ch.InMaze,
-			MazeLevel:    mazeLevel(ch),
+			MazeLevel:    mazeLevel(ch, app.InParty(g.Town, ch)),
 			Legacy:       ch.IsLegacy,
 			InParty:      app.InParty(g.Town, ch),
 			PartySlot:    app.PartySlot(g.Town, ch) + 1,
