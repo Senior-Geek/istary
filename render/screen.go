@@ -48,6 +48,22 @@ func NewScreen() (*Screen, error) {
 	}, nil
 }
 
+// NewScreenFrom wraps an already-initialized tcell screen, such as a
+// tcell.SimulationScreen in tests. Unlike NewScreen it writes no terminal
+// escape sequences to stdout.
+func NewScreenFrom(s tcell.Screen) *Screen {
+	s.SetStyle(tcell.StyleDefault.Background(tcell.ColorBlack).Foreground(phosphor))
+	s.Clear()
+	w, h := s.Size()
+	return &Screen{
+		tcell:   s,
+		width:   w,
+		height:  h,
+		scale:   2,
+		VPScale: 1.0,
+	}
+}
+
 // Close shuts down the terminal screen.
 func (s *Screen) Close() {
 	// Restore the terminal's original background color (OSC 111)
