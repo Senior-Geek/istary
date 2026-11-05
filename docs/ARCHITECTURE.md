@@ -57,6 +57,8 @@ otherwise. Refusals that the original game shows as an in-game message return
 | `EditCharacter()`, `LeaveCharacterEdit()` | The character open in the edit menu; close the menu |
 | `BeginDeleteCharacter()`, `ConfirmDeleteCharacter(yes)` | "ARE YOU SURE YOU WANT TO DELETE"; yes removes from roster and party |
 | `ClearRoster()` | Empty roster and party (GUI reset; caller backs up with `engine.BackupRoster` and saves) |
+| `RenameCharacter(index, name)` | Utilities rename rules: trimmed, uppercased, not empty, not already in use |
+| `ValidateName(name)` | Whole-name check against the creation prompt's rules (15 chars, allowed characters) |
 
 Class guidance for creation: `ClassGuide()` (`app/classguide.go`) reports each
 class's minimums, allowed alignments, shortfalls, eligibility and whether it is
@@ -108,7 +110,11 @@ Persistence: call `Controller.Save()` after each action.
 
 ## Desktop GUI
 
-`gui/` is its own Go module so Wails stays out of the terminal build. Its
+`gui/` is its own Go module so Wails stays out of the terminal build. Wails v2
+has a single native window, so the character sheet is a self-contained Svelte
+component (`gui/frontend/src/lib/CharacterSheet.svelte`) shown in a movable,
+resizable in-window panel; it takes data and callbacks only, ready to move to a
+native window under Wails v3. Roster backups live in `<saveDir>/backups`. Its
 `Session` type serialises all calls with a mutex, calls controller operations,
 saves after each one, and returns a `View` for Svelte to render. See
 `gui/README.md`.
