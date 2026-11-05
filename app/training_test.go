@@ -125,3 +125,93 @@ func TestTrainingKeysMatchOperations(t *testing.T) {
 		t.Error("both paths should be in creation")
 	}
 }
+
+// openForEdit looks up name and answers its password prompt.
+func openForEdit(t *testing.T, c *Controller, name, password string) error {
+	t.Helper()
+	if r, err := c.TrainingEnterName(name); err != nil || r != NameNeedsPassword {
+		t.Fatalf("lookup %s: %v %v", name, r, err)
+	}
+	return c.SubmitCharacterPassword(password)
+}
+
+func TestCharacterPasswordAndDelete(t *testing.T) {
+	c := atTraining(t, 1)
+	keep := member("KEEP", engine.Good)
+	doomed := member("DOOMED", engine.Good)
+	doomed.Password = "BYE"
+	c.Game.Town.Roster.Add(keep)
+	c.Game.Town.Roster.Add(doomed)
+	c.Game.Town.Party.Members = []*engine.Character{doomed}
+
+	// Wrong password refuses and returns to the name prompt.
+	err := openForEdit(t, c, "doomed", "nope")
+	var r *Refusal
+	if !errors.As(err, &r) || r.Message != "** THATS NOT IT **" || c.Game.Town.InputMode != engine.InputTrainingName {
+		t.Fatalf("wrong password: %v mode=%v", err, c.Game.Town.InputMode)
+	}
+	if err := c.BeginDeleteCharacter(); !errors.Is(err, ErrWrongState) {
+		t.Errorf("delete without opening the character: %v", err)
+	}
+
+	// Right password opens the edit menu; "no" keeps the character.
+	if err := openForEdit(t, c, "doomed", "bye"); err != nil || c.EditCharacter() != doomed {
+		t.Fatalf("right password: %v", err)
+	}
+	c.BeginDeleteCharacter()
+	if err := c.ConfirmDeleteCharacter(false); err != nil || c.EditCharacter() != doomed || len(c.Game.Town.Roster.Characters) != 2 {
+		t.Fatalf("decline delete: %v", err)
+	}
+
+	// "Yes" removes it from roster and party.
+	c.BeginDeleteCharacter()
+	if err := c.ConfirmDeleteCharacter(true); err != nil {
+		t.Fatal(err)
+	}
+	if len(c.Game.Town.Roster.Characters) != 1 || c.Game.Town.Roster.Characters[0] != keep ||
+		c.Game.Town.Party.Size() != 0 || c.Game.Town.Message != "DOOMED DELETED" ||
+		c.Game.Town.InputMode != engine.InputTrainingName {
+		t.Errorf("after delete: roster=%d party=%d msg=%q mode=%v", len(c.Game.Town.Roster.Characters),
+			c.Game.Town.Party.Size(), c.Game.Town.Message, c.Game.Town.InputMode)
+	}
+
+	// Leaving the edit menu.
+	openForEdit(t, c, "keep", "")
+	if err := c.LeaveCharacterEdit(); err != nil || c.Game.Town.InputMode != engine.InputTrainingName || c.Game.Town.EditChar != nil {
+		t.Errorf("leave edit: %v", err)
+	}
+	if err := c.LeaveCharacterEdit(); !errors.Is(err, ErrWrongState) {
+		t.Errorf("leave edit twice: %v", err)
+	}
+}
+
+// Keys and operations reach the same state for password and delete.
+func TestDeleteKeysMatchOperations(t *testing.T) {
+	mk := func() *Controller {
+		c := atTraining(t, 1)
+		d := member("GONE", engine.Neutral)
+		d.Password = "PW"
+		c.Game.Town.Roster.Add(d)
+		c.Game.Town.Roster.Add(member("STAY", engine.Neutral))
+		return c
+	}
+	byKey, byOp := mk(), mk()
+	keys(t, byKey, "gone")
+	press(t, byKey, KeyEnter)
+	keys(t, byKey, "pw")
+	press(t, byKey, KeyEnter)
+	byOp.TrainingEnterName("gone")
+	byOp.SubmitCharacterPassword("pw")
+	if a, b := snapshot(t, byKey.Game.Town), snapshot(t, byOp.Game.Town); a != b {
+		t.Fatalf("after password:\nkeys %s\n ops %s", a, b)
+	}
+	// D is still handled by the terminal edit menu, so drive the op directly
+	// on both and compare the Y/N key against ConfirmDeleteCharacter.
+	byKey.BeginDeleteCharacter()
+	byOp.BeginDeleteCharacter()
+	keys(t, byKey, "y")
+	byOp.ConfirmDeleteCharacter(true)
+	if a, b := snapshot(t, byKey.Game.Town), snapshot(t, byOp.Game.Town); a != b {
+		t.Fatalf("after delete:\nkeys %s\n ops %s", a, b)
+	}
+}

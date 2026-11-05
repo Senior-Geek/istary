@@ -236,3 +236,32 @@ func TestEscapeLeavesPasswordCheck(t *testing.T) {
 		t.Errorf("ESC at password: mode=%v edit=%v buf=%q", g.Town.InputMode, g.Town.EditChar, g.Town.InputBuf)
 	}
 }
+
+func TestCharacterEditPasswordAndDeleteKeys(t *testing.T) {
+	g := newGame(t, 1)
+	c := character("SMEAGOL", engine.Hobbit, engine.Thief, engine.Evil)
+	c.Password = "PRECIOUS"
+	g.Town.Roster.Add(c)
+	d := newDriver(t, g)
+
+	toTrainingName(d, "SMEAGOL").enter().keys("WRONG").enter()
+	if g.Town.Message != "** THATS NOT IT **" || g.Town.InputMode != engine.InputTrainingName || g.Town.EditChar != nil {
+		t.Fatalf("wrong password: msg=%q mode=%v", g.Town.Message, g.Town.InputMode)
+	}
+	d.keys("SMEAGOL").enter().keys("precious").enter()
+	if g.Town.InputMode != engine.InputCharEdit {
+		t.Fatalf("right password: mode=%v", g.Town.InputMode)
+	}
+	d.keys("D").keys("N")
+	if g.Town.InputMode != engine.InputCharEdit || len(g.Town.Roster.Characters) != 1 {
+		t.Fatalf("N at delete confirm: mode=%v roster=%d", g.Town.InputMode, len(g.Town.Roster.Characters))
+	}
+	d.esc()
+	if g.Town.InputMode != engine.InputTrainingName || g.Town.EditChar != nil {
+		t.Errorf("ESC in edit menu: mode=%v", g.Town.InputMode)
+	}
+	d.keys("SMEAGOL").enter().keys("PRECIOUS").enter().keys("D").keys("Y")
+	if len(g.Town.Roster.Characters) != 0 || g.Town.Message != "SMEAGOL DELETED" {
+		t.Errorf("delete: roster=%d msg=%q", len(g.Town.Roster.Characters), g.Town.Message)
+	}
+}

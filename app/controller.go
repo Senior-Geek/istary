@@ -54,7 +54,8 @@ func (c *Controller) townKey(k Key) bool {
 			c.tavernMenuKey(k)
 			return true
 		}
-	case engine.InputTrainingName, engine.InputRoster, engine.InputConfirmCreate:
+	case engine.InputTrainingName, engine.InputRoster, engine.InputConfirmCreate,
+		engine.InputPassword, engine.InputConfirmDelete:
 		c.trainingPromptKey(k)
 		return true
 	case engine.InputAddMember, engine.InputTavernPassword, engine.InputRemoveMember:

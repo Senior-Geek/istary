@@ -785,10 +785,6 @@ func handleTownPrompt(game *engine.GameState, ev *tcell.EventKey) bool {
 		return handleTempleNameInput(game, ev)
 	}
 
-	// Password verification — from ROLLER proc 2 (IC 4826-4874)
-	if town.InputMode == engine.InputPassword {
-		return handlePasswordCheck(game, ev)
-	}
 
 	// Set new password — from ROLLER proc 3 (IC 4480-4816)
 	if town.InputMode == engine.InputSetPassword {
@@ -885,39 +881,6 @@ func handleTownPrompt(game *engine.GameState, ev *tcell.EventKey) bool {
 				game.Phase = engine.PhaseCreation
 				town.EditChar = nil
 				town.InputMode = engine.InputNone
-			} else if ch == 'N' {
-				town.InputMode = engine.InputCharEdit
-				town.Message = ""
-			}
-		}
-		return false
-	}
-
-	// Confirm delete — p-code proc 5: "ARE YOU SURE YOU WANT TO DELETE (Y/N) ?"
-	if town.InputMode == engine.InputConfirmDelete {
-		if ev.Key() == tcell.KeyRune {
-			ch := ev.Rune()
-			if ch >= 'a' && ch <= 'z' {
-				ch -= 32
-			}
-			if ch == 'Y' {
-				c := town.EditChar
-				for i, rc := range town.Roster.Characters {
-					if rc == c {
-						town.Roster.Characters = append(town.Roster.Characters[:i], town.Roster.Characters[i+1:]...)
-						break
-					}
-				}
-				for i, m := range town.Party.Members {
-					if m == c {
-						town.Party.Members = append(town.Party.Members[:i], town.Party.Members[i+1:]...)
-						break
-					}
-				}
-				town.Message = c.Name + " DELETED"
-				town.InputMode = engine.InputTrainingName
-				town.InputBuf = ""
-				town.EditChar = nil
 			} else if ch == 'N' {
 				town.InputMode = engine.InputCharEdit
 				town.Message = ""
@@ -2086,43 +2049,6 @@ func handleTradeItem(game *engine.GameState, town *engine.TownState) {
 	town.Message = "TRADED"
 }
 
-// handlePasswordCheck verifies a password typed at Training Grounds or Tavern.
-// From p-code ROLLER proc 2 (IC 4826-4874): "PASSWORD >" at GOTOXY(9,10)
-func handlePasswordCheck(game *engine.GameState, ev *tcell.EventKey) bool {
-	town := game.Town
-	switch ev.Key() {
-	case tcell.KeyBackspace, tcell.KeyBackspace2:
-		if len(town.InputBuf) > 0 {
-			town.InputBuf = town.InputBuf[:len(town.InputBuf)-1]
-		}
-	case tcell.KeyEnter:
-		if town.EditChar != nil && town.InputBuf == town.EditChar.Password {
-			// Correct password — proceed to char edit
-			town.InputMode = engine.InputCharEdit
-			town.InputBuf = ""
-			town.Message = ""
-		} else {
-			// Wrong password — back to name prompt
-			// From p-code: CSP EXIT returns to training grounds
-			town.InputMode = engine.InputTrainingName
-			town.InputBuf = ""
-			town.EditChar = nil
-			town.Message = "** THATS NOT IT **"
-		}
-	case tcell.KeyEscape:
-		app.New(game).CancelPasswordCheck()
-	case tcell.KeyRune:
-		ch := ev.Rune()
-		if ch >= 'a' && ch <= 'z' {
-			ch -= 32
-		}
-		if len(town.InputBuf) < 15 {
-			town.InputBuf += string(ch)
-		}
-	}
-	return false
-}
-
 // handleSetPassword handles the two-step password change at Training Grounds.
 // From p-code ROLLER proc 3 (IC 4480-4816):
 //   Step 0: "ENTER NEW PASSWORD ([RET] FOR NONE)" → type password
@@ -2286,10 +2212,7 @@ func handleCharEdit(game *engine.GameState, ev *tcell.EventKey) bool {
 	}
 
 	if ev.Key() == tcell.KeyEnter || ev.Key() == tcell.KeyEscape {
-		town.InputMode = engine.InputTrainingName
-		town.InputBuf = ""
-		town.EditChar = nil
-		town.Message = ""
+		app.New(game).LeaveCharacterEdit()
 		return false
 	}
 
@@ -2308,8 +2231,7 @@ func handleCharEdit(game *engine.GameState, ev *tcell.EventKey) bool {
 		town.Message = ""
 		return false
 	case 'D': // Delete — confirm first (p-code proc 5: "ARE YOU SURE YOU WANT TO DELETE (Y/N) ?")
-		town.InputMode = engine.InputConfirmDelete
-		town.Message = ""
+		app.New(game).BeginDeleteCharacter()
 	case 'R':
 		if game.Scenario.ScenarioNum == 3 {
 			// Rite of Passage — Wiz 3 only. From Pascal ROLLER.TEXT RITEPASS.

@@ -161,6 +161,101 @@ func (c *Controller) CancelPasswordCheck() error {
 	return nil
 }
 
+// SubmitCharacterPassword answers an existing character's "PASSWORD >"
+// prompt (ROLLER proc 2). The right password opens the character edit menu;
+// a wrong one returns to the name prompt with "** THATS NOT IT **".
+func (c *Controller) SubmitCharacterPassword(password string) error {
+	town := c.Game.Town
+	if c.Game.Phase != engine.PhaseTown || town.InputMode != engine.InputPassword {
+		return ErrWrongState
+	}
+	town.InputBuf = NormalizePassword(password)
+	if !c.submitCharacterPassword() {
+		return &Refusal{Message: town.Message}
+	}
+	return nil
+}
+
+func (c *Controller) submitCharacterPassword() bool {
+	town := c.Game.Town
+	if town.EditChar != nil && town.InputBuf == town.EditChar.Password {
+		town.InputMode = engine.InputCharEdit
+		town.InputBuf = ""
+		town.Message = ""
+		return true
+	}
+	// From p-code: CSP EXIT returns to training grounds
+	town.InputMode = engine.InputTrainingName
+	town.InputBuf = ""
+	town.EditChar = nil
+	town.Message = "** THATS NOT IT **"
+	return false
+}
+
+// EditCharacter is the character open in the Training Grounds edit menu.
+func (c *Controller) EditCharacter() *engine.Character {
+	if c.Game.Phase != engine.PhaseTown || c.Game.Town.InputMode != engine.InputCharEdit {
+		return nil
+	}
+	return c.Game.Town.EditChar
+}
+
+// LeaveCharacterEdit closes the edit menu and returns to the name prompt.
+func (c *Controller) LeaveCharacterEdit() error {
+	town := c.Game.Town
+	if c.Game.Phase != engine.PhaseTown || town.InputMode != engine.InputCharEdit {
+		return ErrWrongState
+	}
+	town.InputMode = engine.InputTrainingName
+	town.InputBuf = ""
+	town.EditChar = nil
+	town.Message = ""
+	return nil
+}
+
+// BeginDeleteCharacter asks "ARE YOU SURE YOU WANT TO DELETE (Y/N) ?" for
+// the character open in the edit menu (ROLLER proc 5).
+func (c *Controller) BeginDeleteCharacter() error {
+	if c.EditCharacter() == nil {
+		return ErrWrongState
+	}
+	c.Game.Town.InputMode = engine.InputConfirmDelete
+	c.Game.Town.Message = ""
+	return nil
+}
+
+// ConfirmDeleteCharacter answers the delete confirmation. Yes removes the
+// character from the roster and party; no returns to the edit menu.
+func (c *Controller) ConfirmDeleteCharacter(yes bool) error {
+	town := c.Game.Town
+	if c.Game.Phase != engine.PhaseTown || town.InputMode != engine.InputConfirmDelete {
+		return ErrWrongState
+	}
+	if !yes {
+		town.InputMode = engine.InputCharEdit
+		town.Message = ""
+		return nil
+	}
+	ch := town.EditChar
+	for i, rc := range town.Roster.Characters {
+		if rc == ch {
+			town.Roster.Characters = append(town.Roster.Characters[:i], town.Roster.Characters[i+1:]...)
+			break
+		}
+	}
+	for i, m := range town.Party.Members {
+		if m == ch {
+			town.Party.Members = append(town.Party.Members[:i], town.Party.Members[i+1:]...)
+			break
+		}
+	}
+	town.Message = ch.Name + " DELETED"
+	town.InputMode = engine.InputTrainingName
+	town.InputBuf = ""
+	town.EditChar = nil
+	return nil
+}
+
 // CloseRoster leaves the *ROSTER listing and returns to the name prompt.
 func (c *Controller) CloseRoster() error {
 	town := c.Game.Town
@@ -186,8 +281,8 @@ func (c *Controller) trainingMenuKey(k Key) {
 	}
 }
 
-// trainingPromptKey handles the name prompt, roster listing and create
-// confirmation.
+// trainingPromptKey handles the name prompt, roster listing, create
+// confirmation, existing-character password and delete confirmation.
 func (c *Controller) trainingPromptKey(k Key) {
 	town := c.Game.Town
 	switch town.InputMode {
@@ -203,6 +298,28 @@ func (c *Controller) trainingPromptKey(k Key) {
 			c.ConfirmCreate(true)
 		case k.Kind == KeyRune && (k.Rune == 'n' || k.Rune == 'N'), k.Kind == KeyEscape:
 			c.ConfirmCreate(false)
+		}
+
+	case engine.InputPassword:
+		switch k.Kind {
+		case KeyBackspace:
+			town.InputBuf = backspace(town.InputBuf)
+		case KeyEnter:
+			c.submitCharacterPassword()
+		case KeyEscape:
+			c.CancelPasswordCheck()
+		case KeyRune:
+			town.InputBuf = appendPasswordChar(town.InputBuf, k.Rune)
+		}
+
+	case engine.InputConfirmDelete:
+		if k.Kind == KeyRune {
+			switch upper(k.Rune) {
+			case 'Y':
+				c.ConfirmDeleteCharacter(true)
+			case 'N':
+				c.ConfirmDeleteCharacter(false)
+			}
 		}
 
 	case engine.InputTrainingName:
