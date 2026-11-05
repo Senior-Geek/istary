@@ -5,8 +5,8 @@ import (
 	"math/rand"
 
 	"github.com/gdamore/tcell/v2"
-	"wizardry/data"
-	"wizardry/engine"
+	"github.com/Senior-Geek/istary/data"
+	"github.com/Senior-Geek/istary/engine"
 )
 
 // Apple II hi-res viewport dimensions from RUNNER.TEXT / CLRPICT assembly.

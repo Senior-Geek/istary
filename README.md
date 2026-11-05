@@ -1,4 +1,6 @@
-# Wizardry
+# Istary
+
+Istary is a fork of [sshoecraft/wizardry](https://github.com/sshoecraft/wizardry) by Stephen Shoecraft, maintained at [Senior-Geek/istary](https://github.com/Senior-Geek/istary). The original engine, game data, and MIT license are retained; this fork changes only the project name, module path, and executable name.
 
 A terminal-based recreation of Wizardry: Proving Grounds of the Mad Overlord (and scenarios 2-3) written in Go. Single binary, no external data files, no runtime dependencies.
 
@@ -73,13 +75,13 @@ The color algorithm detects adjacent pixel patterns in the raw Hi-Res framebuffe
 
 ```bash
 # Auto-detect color (default) — color on 256+ color terminals
-./wizardry
+./istary
 
 # Force green phosphor monochrome (the iconic Wizardry look)
-./wizardry --green
+./istary --green
 
 # Force NTSC color even if auto-detect says otherwise
-./wizardry --color
+./istary --color
 ```
 
 Use `--green` to force the original green phosphor monochrome look regardless of terminal color support. Use `--color` to force NTSC color rendering even on terminals that report fewer than 256 colors.
@@ -103,14 +105,14 @@ If your terminal does not support Sixel, the game falls back to Unicode half-blo
 
 ## Building
 
-Requires Go 1.24 or later.
+Requires Go 1.24 or later. Module path: `github.com/Senior-Geek/istary`.
 
 ```bash
 # Build
 make build
 
 # Or directly
-go build -o wizardry ./cmd/wizardry/
+go build -o istary ./cmd/istary/
 
 # Install to /usr/local/bin
 sudo make install
@@ -123,22 +125,22 @@ sudo make uninstall
 
 ```bash
 # Run Wizardry 1 (default)
-./wizardry
+./istary
 
 # Run Wizardry 2: Knight of Diamonds
-./wizardry --scenario=2
+./istary --scenario=2
 
 # Run Wizardry 3: Legacy of Llylgamyn
-./wizardry --scenario=3
+./istary --scenario=3
 
 # Run with larger viewport (1.5x, 2x, etc.)
-./wizardry --vpscale=2
+./istary --vpscale=2
 
 # Force green phosphor monochrome (overrides auto-detect)
-./wizardry --green
+./istary --green
 
 # Force NTSC artifact color (overrides auto-detect)
-./wizardry --color
+./istary --color
 ```
 
 ## Controls
@@ -189,6 +191,8 @@ Navigate town locations by pressing the highlighted letter in each menu option. 
 
 Game state (roster and party) is saved automatically to `~/.config/wizardry/roster<N>.json` (e.g. `roster1.json` for scenario 1).
 
+The save directory keeps the upstream `wizardry` name so existing rosters load unchanged after the rename.
+
 ## License
 
-MIT License. See [LICENSE](LICENSE) for details.
+MIT License. Copyright (c) 2025 Stephen Shoecraft. See [LICENSE](LICENSE) for details.

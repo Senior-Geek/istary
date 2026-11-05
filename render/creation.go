@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"wizardry/engine"
+	"github.com/Senior-Geek/istary/engine"
 )
 
 // RenderCreation draws the character creation screen.

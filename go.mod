@@ -1,4 +1,4 @@
-module wizardry
+module github.com/Senior-Geek/istary
 
 go 1.24.0
 

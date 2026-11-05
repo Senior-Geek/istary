@@ -5,7 +5,7 @@ import (
 	_ "embed"
 	"encoding/json"
 
-	"wizardry/data"
+	"github.com/Senior-Geek/istary/data"
 )
 
 //go:embed wiz2_gamedata.json

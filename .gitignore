@@ -1,4 +1,7 @@
-# Binary (root only — don't match cmd/wizardry/)
+# Binary (root only — don't match cmd/istary/)
+/istary
+/istary.exe
+# Legacy binary name from upstream builds
 /wizardry
 /wizardry.exe
 
@@ -17,4 +20,3 @@ Thumbs.db
 # Save files
 saves/
 *.sav
-/istari

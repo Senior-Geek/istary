@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/gdamore/tcell/v2"
-	"wizardry/engine"
+	"github.com/Senior-Geek/istary/engine"
 )
 
 // Screen manages the tcell terminal screen and rendering.

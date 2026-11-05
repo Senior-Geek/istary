@@ -2,8 +2,8 @@ package render
 
 import (
 	"github.com/gdamore/tcell/v2"
-	"wizardry/data"
-	"wizardry/engine"
+	"github.com/Senior-Geek/istary/data"
+	"github.com/Senior-Geek/istary/engine"
 )
 
 // drawCentered draws text centered within the 40-column logical display.

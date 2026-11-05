@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/gdamore/tcell/v2"
-	"wizardry/engine"
+	"github.com/Senior-Geek/istary/engine"
 )
 
 var (

@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gdamore/tcell/v2"
-	"wizardry/engine"
+	"github.com/Senior-Geek/istary/engine"
 )
 
 // drawRaw writes a string at screen coordinates without scaling.

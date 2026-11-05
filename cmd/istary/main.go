@@ -9,12 +9,12 @@ import (
 	"time"
 
 	"github.com/gdamore/tcell/v2"
-	"wizardry/data"
-	"wizardry/engine"
-	"wizardry/render"
-	"wizardry/scenarios/wiz1"
-	"wizardry/scenarios/wiz2"
-	"wizardry/scenarios/wiz3"
+	"github.com/Senior-Geek/istary/data"
+	"github.com/Senior-Geek/istary/engine"
+	"github.com/Senior-Geek/istary/render"
+	"github.com/Senior-Geek/istary/scenarios/wiz1"
+	"github.com/Senior-Geek/istary/scenarios/wiz2"
+	"github.com/Senior-Geek/istary/scenarios/wiz3"
 )
 
 var version = "1.2.2"

@@ -4,7 +4,7 @@ package engine
 import (
 	"math/rand"
 
-	"wizardry/data"
+	"github.com/Senior-Geek/istary/data"
 )
 
 // Direction represents a cardinal direction.

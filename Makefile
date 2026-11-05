@@ -1,10 +1,10 @@
-BINARY  = wizardry
+BINARY  = istary
 PREFIX  ?= /usr/local
 
 .PHONY: build install uninstall clean
 
 build:
-	go build -o $(BINARY) ./cmd/wizardry/
+	go build -o $(BINARY) ./cmd/istary/
 
 install: build
 	install -d $(PREFIX)/bin

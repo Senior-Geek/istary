@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	"strings"
 
-	"wizardry/data"
+	"github.com/Senior-Geek/istary/data"
 )
 
 // CombatPhase tracks the current step within combat.

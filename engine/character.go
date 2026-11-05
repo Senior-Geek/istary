@@ -1,6 +1,6 @@
 package engine
 
-import "wizardry/data"
+import "github.com/Senior-Geek/istary/data"
 
 // Race represents a character's race.
 type Race int
