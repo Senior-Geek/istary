@@ -29,6 +29,7 @@ type View struct {
 }
 
 type CharacterView struct {
+	Index     int    `json:"index"` // roster position; stable until a delete or reset
 	Name      string `json:"name"`
 	Race      string `json:"race"`
 	Alignment string `json:"alignment"`
@@ -219,11 +220,12 @@ func (s *Session) view(err error) View {
 	v.Error = errorText(err)
 
 	g := s.ctrl.Game
-	for _, ch := range g.Town.Roster.Characters {
+	for i, ch := range g.Town.Roster.Characters {
 		if ch == nil {
 			continue
 		}
 		v.Roster = append(v.Roster, CharacterView{
+			Index:     i,
 			Name:      ch.Name,
 			Race:      ch.Race.String(),
 			Alignment: ch.Alignment.String(),
@@ -308,6 +310,10 @@ func errorText(err error) string {
 		return "Your statistics and alignment do not qualify for that class."
 	case errors.Is(err, app.ErrEmptyName):
 		return "Enter a character name."
+	case errors.Is(err, app.ErrInvalidName):
+		return "Names may use up to 15 letters, digits, spaces, hyphens and apostrophes."
+	case errors.Is(err, app.ErrNoSuchCharacter):
+		return "That character is no longer on the roster."
 	case errors.Is(err, app.ErrWrongState):
 		return "That action is not available right now."
 	}

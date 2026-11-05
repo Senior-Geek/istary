@@ -266,7 +266,7 @@ func (s *Session) ResetRoster() View {
 		if err := c.Save(); err != nil {
 			return fmt.Errorf("Could not save before backup: %w", err)
 		}
-		backup, err := s.backupPath()
+		backup, err := s.backupPath("")
 		if err != nil {
 			return err
 		}
@@ -281,13 +281,17 @@ func (s *Session) ResetRoster() View {
 	})
 }
 
-// backupPath returns a new, unused file name under <saveDir>/backups.
-func (s *Session) backupPath() (string, error) {
-	dir := filepath.Join(s.saveDir, "backups")
+// backupPath returns a new, unused file name under <saveDir>/backups. tag,
+// if set, is appended to say why the backup was made.
+func (s *Session) backupPath(tag string) (string, error) {
+	dir := s.backupDir()
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return "", fmt.Errorf("Could not create backup folder: %w", err)
 	}
 	stamp := time.Now().Format("20060102-150405")
+	if tag != "" {
+		stamp += "-" + tag
+	}
 	for n := 0; ; n++ {
 		name := fmt.Sprintf("roster1-%s.json", stamp)
 		if n > 0 {
@@ -298,4 +302,29 @@ func (s *Session) backupPath() (string, error) {
 			return path, nil
 		}
 	}
+}
+
+func (s *Session) backupDir() string {
+	return filepath.Join(s.saveDir, "backups")
+}
+
+// RenameCharacter renames the roster character at index. The name must pass
+// the creation prompt's rules (app.ValidateName) and the game's rename rules
+// (app.Controller.RenameCharacter).
+func (s *Session) RenameCharacter(index int, newName string) View {
+	return s.do(func() error {
+		if err := app.ValidateName(newName); err != nil {
+			return err
+		}
+		roster := s.ctrl.Game.Town.Roster.Characters
+		if index < 0 || index >= len(roster) || roster[index] == nil {
+			return app.ErrNoSuchCharacter
+		}
+		old := roster[index].Name
+		if err := s.ctrl.RenameCharacter(index, newName); err != nil {
+			return err
+		}
+		s.notice = fmt.Sprintf("%s is now %s.", old, roster[index].Name)
+		return nil
+	})
 }
