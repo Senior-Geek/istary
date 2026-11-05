@@ -35,6 +35,25 @@ func (c *Controller) HandleKey(k Key) bool {
 	case engine.PhaseCreation:
 		c.creationKey(k)
 		return true
+	case engine.PhaseTown:
+		return c.townKey(k)
+	}
+	return false
+}
+
+// townKey routes town keys for the migrated locations and prompts.
+func (c *Controller) townKey(k Key) bool {
+	town := c.Game.Town
+	switch town.InputMode {
+	case engine.InputNone:
+		switch town.Location {
+		case engine.Training:
+			c.trainingMenuKey(k)
+			return true
+		}
+	case engine.InputTrainingName, engine.InputRoster, engine.InputConfirmCreate:
+		c.trainingPromptKey(k)
+		return true
 	}
 	return false
 }

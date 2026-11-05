@@ -665,7 +665,7 @@ func handleTownInput(game *engine.GameState, ev *tcell.EventKey) bool {
 			return false
 		}
 		if town.Location != engine.Castle {
-			goToCastle(town)
+			app.GoToCastle(town)
 			return false
 		}
 	}
@@ -772,16 +772,11 @@ func handleTownInput(game *engine.GameState, ev *tcell.EventKey) bool {
 		case 'T': // Training Grounds
 			town.Location = engine.Training
 		case 'C': // Castle
-			goToCastle(town)
+			app.GoToCastle(town)
 		case 'L': // Leave game
 			return true
 		}
 
-	case engine.Training:
-		// Training Grounds is always in name-input mode
-		// Any letter starts typing into the name field
-		town.InputMode = engine.InputTrainingName
-		town.InputBuf = string(ch)
 	}
 	return false
 }
@@ -820,50 +815,6 @@ func handleTownPrompt(game *engine.GameState, ev *tcell.EventKey) bool {
 			if len(town.InputBuf) < 15 {
 				town.InputBuf += string(ch)
 			}
-		}
-		return false
-	}
-
-	// Roster mode: only L exits (from p-code: key == 76 'L')
-	if town.InputMode == engine.InputRoster {
-		if ev.Key() == tcell.KeyRune {
-			ch := ev.Rune()
-			if ch == 'l' || ch == 'L' {
-				town.InputMode = engine.InputTrainingName
-				town.InputBuf = ""
-			}
-		}
-		return false
-	}
-
-	// Confirm create Y/N — from p-code ROLLER proc 10:
-	// "THAT CHARACTER DOES NOT EXIST. DO YOU WANT TO CREATE IT? Y/N ? >"
-	if town.InputMode == engine.InputConfirmCreate {
-		if ev.Key() == tcell.KeyRune {
-			ch := ev.Rune()
-			if ch == 'y' || ch == 'Y' {
-				town.Creation = engine.NewCreationState()
-				town.Creation.Name = town.PendingCreateName
-				town.Creation.Step = engine.StepPassword
-				game.Phase = engine.PhaseCreation
-				town.Message = ""
-				town.Message2 = ""
-				town.PendingCreateName = ""
-				town.InputMode = engine.InputNone
-			} else if ch == 'n' || ch == 'N' || ev.Key() == tcell.KeyEscape {
-				town.Message = ""
-				town.Message2 = ""
-				town.PendingCreateName = ""
-				town.InputMode = engine.InputTrainingName
-				town.InputBuf = ""
-			}
-		}
-		if ev.Key() == tcell.KeyEscape {
-			town.Message = ""
-			town.Message2 = ""
-			town.PendingCreateName = ""
-			town.InputMode = engine.InputTrainingName
-			town.InputBuf = ""
 		}
 		return false
 	}
@@ -1319,54 +1270,6 @@ func handleTownPrompt(game *engine.GameState, ev *tcell.EventKey) bool {
 			town.InputBuf = ""
 			return false
 
-		case engine.InputTrainingName:
-			name := strings.TrimSpace(town.InputBuf)
-			if name == "" {
-				goToCastle(town)
-				town.InputMode = engine.InputNone
-				town.InputBuf = ""
-				return false
-			}
-			if strings.EqualFold(name, "*ROSTER") {
-				town.InputMode = engine.InputRoster
-				town.InputBuf = ""
-				return false
-			} else {
-				found := false
-				for _, c := range town.Roster.Characters {
-					if c != nil && strings.EqualFold(c.Name, name) {
-						found = true
-						town.EditChar = c
-						// From p-code ROLLER proc 2 (IC 4826-4874):
-						// Always prompt "PASSWORD >" — even for empty passwords.
-						town.InputMode = engine.InputPassword
-						town.InputBuf = ""
-						town.Message = ""
-						return false
-					}
-				}
-				if !found {
-					if game.Scenario.ScenarioNum >= 2 {
-						// Wiz 2/3: no character creation — silently re-prompt
-						town.InputMode = engine.InputTrainingName
-						town.InputBuf = ""
-						return false
-					}
-					if len(town.Roster.Characters) >= 20 {
-						town.Message = "THERE IS NO ROOM LEFT - TRY DELETING"
-					} else {
-						// From p-code ROLLER proc 10 (IC 3164):
-						// "THAT CHARACTER DOES NOT EXIST."
-						// "DO YOU WANT TO CREATE IT? Y/N ? >"
-						town.Message = "THAT CHARACTER DOES NOT EXIST. DO YOU"
-						town.Message2 = "WANT TO CREATE IT (Y/N) ?> "
-						town.PendingCreateName = strings.ToUpper(name)
-						town.InputMode = engine.InputConfirmCreate
-						town.InputBuf = ""
-						return false
-					}
-				}
-			}
 		}
 		town.InputMode = engine.InputNone
 		town.InputBuf = ""
@@ -1394,13 +1297,6 @@ func partyAlignment(town *engine.TownState) engine.Alignment {
 		}
 	}
 	return align
-}
-
-func goToCastle(town *engine.TownState) {
-	town.Location = engine.Castle
-	town.SelectedIndex = 0
-	town.Message = ""
-	town.InnMessages = nil
 }
 
 // handleInnInput handles key presses at the inn based on current InnStep.
@@ -1513,7 +1409,7 @@ func innTransitionToLevelUp(game *engine.GameState) {
 func handleInnReturn(town *engine.TownState) {
 	switch town.InnStep {
 	case engine.InnWho:
-		goToCastle(town)
+		app.GoToCastle(town)
 	case engine.InnSelectRoom:
 		town.InnStep = engine.InnWho
 		town.InnChar = nil
@@ -1540,7 +1436,7 @@ func handleTempleNameInput(game *engine.GameState, ev *tcell.EventKey) bool {
 		// ESC exits temple
 		town.InputMode = engine.InputNone
 		town.InputBuf = ""
-		goToCastle(town)
+		app.GoToCastle(town)
 		return false
 	case tcell.KeyBackspace, tcell.KeyBackspace2:
 		if len(town.InputBuf) > 0 {
@@ -1552,7 +1448,7 @@ func handleTempleNameInput(game *engine.GameState, ev *tcell.EventKey) bool {
 			// Empty name = exit temple (from p-code: empty string → EXIT)
 			town.InputMode = engine.InputNone
 			town.InputBuf = ""
-			goToCastle(town)
+			app.GoToCastle(town)
 			return false
 		}
 
@@ -1677,7 +1573,7 @@ func handleTempleReturn(game *engine.GameState, town *engine.TownState) {
 	switch town.TempleStep {
 	case engine.TempleWho:
 		// RETURN at name prompt without InputMode — exit temple
-		goToCastle(town)
+		app.GoToCastle(town)
 	case engine.TempleTithe:
 		// RETURN at tithe selection — back to name prompt
 		town.TempleStep = engine.TempleWho
@@ -2011,7 +1907,7 @@ func shopBuyItem(game *engine.GameState, town *engine.TownState, pageSlot int) {
 func handleShopReturn(town *engine.TownState) {
 	switch town.ShopStep {
 	case engine.ShopWho:
-		goToCastle(town)
+		app.GoToCastle(town)
 	case engine.ShopMain:
 		town.ShopStep = engine.ShopWho
 		town.ShopChar = nil
@@ -3016,7 +2912,7 @@ func handleCampInput(game *engine.GameState, ev *tcell.EventKey) {
 			}
 		}
 		game.Phase = engine.PhaseTown
-		goToCastle(game.Town)
+		app.GoToCastle(game.Town)
 	case '1', '2', '3', '4', '5', '6': // Inspect — enter full inspect screen
 		idx := int(ch-'0') - 1
 		if idx < len(game.Town.Party.Members) && game.Town.Party.Members[idx] != nil {
