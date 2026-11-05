@@ -13,15 +13,37 @@ type SaveState struct {
 	PartyNames []string     `json:"party"` // character names in party order
 }
 
-// RosterPath returns the full path to the roster file for a scenario key.
-// e.g. key "1" -> ~/.config/wizardry/roster1.json
-// Creates ~/.config/wizardry/ if it doesn't exist.
-func RosterPath(key string) (string, error) {
+// saveDirOverride replaces the default save directory when set. The terminal
+// game never sets it; other front ends use it to keep separate saves.
+var saveDirOverride string
+
+// SetSaveDir makes all saves and loads use dir instead of
+// ~/.config/wizardry. An empty dir restores the default.
+func SetSaveDir(dir string) {
+	saveDirOverride = dir
+}
+
+// SaveDir returns the directory holding roster files: the SetSaveDir
+// override if set, otherwise ~/.config/wizardry.
+func SaveDir() (string, error) {
+	if saveDirOverride != "" {
+		return saveDirOverride, nil
+	}
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return "", fmt.Errorf("home dir: %w", err)
 	}
-	dir := filepath.Join(home, ".config", "wizardry")
+	return filepath.Join(home, ".config", "wizardry"), nil
+}
+
+// RosterPath returns the full path to the roster file for a scenario key.
+// e.g. key "1" -> ~/.config/wizardry/roster1.json
+// Creates the save directory if it doesn't exist.
+func RosterPath(key string) (string, error) {
+	dir, err := SaveDir()
+	if err != nil {
+		return "", err
+	}
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return "", fmt.Errorf("mkdir %s: %w", dir, err)
 	}
@@ -31,8 +53,8 @@ func RosterPath(key string) (string, error) {
 // legacyRosterPath returns the old-style path for migration.
 // e.g. key "1" -> ~/.config/wizardry/wiz1/roster.json
 func legacyRosterPath(key string) string {
-	home, _ := os.UserHomeDir()
-	return filepath.Join(home, ".config", "wizardry", "wiz"+key, "roster.json")
+	dir, _ := SaveDir()
+	return filepath.Join(dir, "wiz"+key, "roster.json")
 }
 
 // scenarioKey returns "1", "2", or "3" from the game name string.

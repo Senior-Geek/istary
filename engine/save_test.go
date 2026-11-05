@@ -251,3 +251,34 @@ func TestLoadRegeneratesSpellKnowledge(t *testing.T) {
 		t.Errorf("reloaded mage knows %d spells, want %d (all level-1 mage spells)", got, want)
 	}
 }
+
+func TestSetSaveDirRedirectsSaves(t *testing.T) {
+	home := freshHome(t)
+	alt := filepath.Join(t.TempDir(), "gui-saves")
+	SetSaveDir(alt)
+	defer SetSaveDir("")
+
+	if dir, _ := SaveDir(); dir != alt {
+		t.Fatalf("SaveDir = %s, want %s", dir, alt)
+	}
+	g := newTestGame(t, 1)
+	g.Town.Roster.Add(sampleCharacter())
+	if err := g.Save(); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := os.Stat(filepath.Join(alt, "roster1.json")); err != nil {
+		t.Errorf("save should go to the override directory: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(home, ".config", "wizardry")); !os.IsNotExist(err) {
+		t.Errorf("the default save directory must not be touched: %v", err)
+	}
+	g2 := newTestGame(t, 1)
+	if err := g2.Load(); err != nil || len(g2.Town.Roster.Characters) != 1 {
+		t.Errorf("load from override: err=%v roster=%d", err, len(g2.Town.Roster.Characters))
+	}
+
+	SetSaveDir("")
+	if dir, _ := SaveDir(); dir != filepath.Join(home, ".config", "wizardry") {
+		t.Errorf("SetSaveDir(\"\") should restore the default, got %s", dir)
+	}
+}
