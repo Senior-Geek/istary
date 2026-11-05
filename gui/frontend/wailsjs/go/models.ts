@@ -68,6 +68,9 @@ export namespace main {
 	    inMaze: boolean;
 	    mazeLevel: number;
 	    legacy: boolean;
+	    inParty: boolean;
+	    partySlot: number;
+	    joinRefusal: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new CharacterView(source);
@@ -102,6 +105,9 @@ export namespace main {
 	        this.inMaze = source["inMaze"];
 	        this.mazeLevel = source["mazeLevel"];
 	        this.legacy = source["legacy"];
+	        this.inParty = source["inParty"];
+	        this.partySlot = source["partySlot"];
+	        this.joinRefusal = source["joinRefusal"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -200,6 +206,34 @@ export namespace main {
 	}
 	
 	
+	export class PartySlotView {
+	    slot: number;
+	    index: number;
+	    name: string;
+	    short: string;
+	    hp: number;
+	    maxHp: number;
+	    ac: number;
+	    status: string;
+	    front: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new PartySlotView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.slot = source["slot"];
+	        this.index = source["index"];
+	        this.name = source["name"];
+	        this.short = source["short"];
+	        this.hp = source["hp"];
+	        this.maxHp = source["maxHp"];
+	        this.ac = source["ac"];
+	        this.status = source["status"];
+	        this.front = source["front"];
+	    }
+	}
 	export class View {
 	    saveDir: string;
 	    fatal: string;
@@ -214,6 +248,11 @@ export namespace main {
 	    classes: string[];
 	    statNames: string[];
 	    nameMax: number;
+	    party: PartySlotView[];
+	    partyAlignment: string;
+	    partyMax: number;
+	    frontRow: number;
+	    pendingJoin: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new View(source);
@@ -234,6 +273,11 @@ export namespace main {
 	        this.classes = source["classes"];
 	        this.statNames = source["statNames"];
 	        this.nameMax = source["nameMax"];
+	        this.party = this.convertValues(source["party"], PartySlotView);
+	        this.partyAlignment = source["partyAlignment"];
+	        this.partyMax = source["partyMax"];
+	        this.frontRow = source["frontRow"];
+	        this.pendingJoin = source["pendingJoin"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

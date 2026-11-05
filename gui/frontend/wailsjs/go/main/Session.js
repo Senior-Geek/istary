@@ -18,6 +18,10 @@ export function CancelCreation() {
   return window['go']['main']['Session']['CancelCreation']();
 }
 
+export function CancelJoin() {
+  return window['go']['main']['Session']['CancelJoin']();
+}
+
 export function ChooseAlignment(arg1) {
   return window['go']['main']['Session']['ChooseAlignment'](arg1);
 }
@@ -40,6 +44,14 @@ export function DeleteCharacter(arg1, arg2) {
 
 export function FinishStats() {
   return window['go']['main']['Session']['FinishStats']();
+}
+
+export function JoinParty(arg1) {
+  return window['go']['main']['Session']['JoinParty'](arg1);
+}
+
+export function LeaveParty(arg1) {
+  return window['go']['main']['Session']['LeaveParty'](arg1);
 }
 
 export function ListBackups() {
@@ -80,4 +92,8 @@ export function StartCreation(arg1) {
 
 export function State() {
   return window['go']['main']['Session']['State']();
+}
+
+export function SubmitJoinPassword(arg1) {
+  return window['go']['main']['Session']['SubmitJoinPassword'](arg1);
 }

@@ -10,6 +10,8 @@ export function Back():Promise<main.View>;
 
 export function CancelCreation():Promise<main.View>;
 
+export function CancelJoin():Promise<main.View>;
+
 export function ChooseAlignment(arg1:number):Promise<main.View>;
 
 export function ChooseClass(arg1:number):Promise<main.View>;
@@ -21,6 +23,10 @@ export function Confirm(arg1:boolean):Promise<main.View>;
 export function DeleteCharacter(arg1:string,arg2:string):Promise<main.View>;
 
 export function FinishStats():Promise<main.View>;
+
+export function JoinParty(arg1:number):Promise<main.View>;
+
+export function LeaveParty(arg1:number):Promise<main.View>;
 
 export function ListBackups():Promise<Array<main.BackupInfo>>;
 
@@ -41,3 +47,5 @@ export function SetPassword(arg1:string,arg2:string):Promise<main.View>;
 export function StartCreation(arg1:string):Promise<main.View>;
 
 export function State():Promise<main.View>;
+
+export function SubmitJoinPassword(arg1:string):Promise<main.View>;

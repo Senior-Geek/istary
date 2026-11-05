@@ -5,6 +5,7 @@
   import FloatingPanel from './lib/FloatingPanel.svelte'
   import CharacterSheet from './lib/CharacterSheet.svelte'
   import RestorePanel from './lib/RestorePanel.svelte'
+  import PartyPanel from './lib/PartyPanel.svelte'
 
   let view = $state(null)
   let busy = $state(false)
@@ -44,6 +45,14 @@
     await call(S.DeleteCharacter, sel.name, password)
     if (!view.error) selected = -1
   }
+
+  // Party (Gilgamesh's Tavern). Rules and messages come from Go.
+  const joinParty = (index) => call(S.JoinParty, index)
+  const leaveParty = (slot) => call(S.LeaveParty, slot)
+  const submitJoin = (pw) => call(S.SubmitJoinPassword, pw)
+  const cancelJoin = () => call(S.CancelJoin)
+  // A short form of the Tavern's refusal for the roster's Party column.
+  const hint = (msg) => msg.replace(/^\*\* | \*\*$/g, '').replace(/ IS ALREADY IN THE PARTY!$/, ' IN PARTY')
 
   async function resetRoster() {
     await call(S.ResetRoster)
@@ -123,31 +132,47 @@
       {#if view.error}<div class="banner error">{view.error}</div>{/if}
       {#if view.notice}<div class="banner notice">{view.notice}</div>{/if}
 
-      <section>
+      <!-- Grid areas: wide = roster and rest beside the party; narrow =
+           roster, party, rest stacked. -->
+      <div class="layout">
+      <section class="area-roster">
         <h2>Roster ({view.roster?.length ?? 0} / 20)</h2>
         {#if view.roster?.length}
-          <table>
+          <div class="tablewrap">
+          <table class="roster">
             <thead>
               <tr>
-                <th>Name</th><th>Class</th><th>Race</th><th class="num">Lvl</th>
+                <th>Name</th><th>Class</th><th class="narrow-hide">Race</th><th class="num">Lvl</th>
                 <th class="num">HP</th><th class="num">AC</th><th>Status</th>
-                <th class="num">Gold</th><th class="num">Age</th>
+                <th class="num narrow-hide">Gold</th><th class="num narrow-hide">Age</th>
                 {#each view.statNames as s}<th class="num">{s.slice(0, 3)}</th>{/each}
+                <th>Party</th>
               </tr>
             </thead>
             <tbody>
               {#each view.roster as ch}
                 <tr class="pick" class:selected={ch.index === selected}
                   onclick={() => view.screen === 'roster' && select(ch.index)}>
-                  <td>{ch.name}</td><td>{ch.short}</td><td>{ch.race}</td>
+                  <td>{ch.name}</td><td>{ch.short}</td><td class="narrow-hide">{ch.race}</td>
                   <td class="num">{ch.level}</td><td class="num">{ch.hp}/{ch.maxHp}</td>
                   <td class="num">{ch.ac}</td><td>{ch.status}</td>
-                  <td class="num">{ch.gold}</td><td class="num">{ch.age}</td>
+                  <td class="num narrow-hide">{ch.gold}</td><td class="num narrow-hide">{ch.age}</td>
                   {#each ch.stats as v}<td class="num">{v}</td>{/each}
+                  <td class="partycell">
+                    {#if ch.inParty}
+                      <span class="inparty">#{ch.partySlot}</span>
+                    {:else if !ch.joinRefusal}
+                      <button class="small join" disabled={busy || view.screen !== 'roster'}
+                        onclick={(e) => { e.stopPropagation(); joinParty(ch.index) }}>Join</button>
+                    {:else}
+                      <span class="muted refusal" title={ch.joinRefusal}>{hint(ch.joinRefusal)}</span>
+                    {/if}
+                  </td>
                 </tr>
               {/each}
             </tbody>
           </table>
+          </div>
         {:else}
           <p class="muted">No characters yet.</p>
         {/if}
@@ -174,11 +199,13 @@
         {/if}
       </section>
 
+      <div class="area-rest">
       {#if view.screen === 'roster' && sel}
         {#key sel.index}
           <FloatingPanel title="Character — {sel.name}" onclose={() => { selected = -1 }}>
             <CharacterSheet character={sel} statNames={view.statNames} nameMax={view.nameMax}
-              {busy} error={view.error} onrename={renameSelected} ondelete={deleteSelected} />
+              {busy} error={view.error} onrename={renameSelected} ondelete={deleteSelected}
+              onjoin={() => joinParty(sel.index)} onleave={() => leaveParty(sel.partySlot - 1)} />
           </FloatingPanel>
         {/key}
       {/if}
@@ -286,6 +313,17 @@
           {/if}
         </section>
       {/if}
+      </div>
+      <aside class="area-party">
+        <section>
+          <h2>Party</h2>
+          <PartyPanel party={view.party ?? []} partyMax={view.partyMax} frontRow={view.frontRow}
+            alignment={view.partyAlignment} pending={view.pendingJoin} enabled={view.screen === 'roster'}
+            {busy} onopen={(i) => { if (view.screen === 'roster') selected = i }}
+            onleave={leaveParty} onpassword={submitJoin} oncancel={cancelJoin} />
+        </section>
+      </aside>
+      </div>
     {/if}
   {:else}
     <p class="muted">Loading…</p>

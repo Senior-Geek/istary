@@ -12,7 +12,9 @@
   //   error      last error from Go, shown inside the sheet
   //   onrename   (newName) => Promise
   //   ondelete   (password) => Promise
-  let { character: ch, statNames, nameMax, busy = false, error = '', onrename, ondelete } = $props()
+  //   onjoin     () => Promise   ask to join the party (optional)
+  //   onleave    () => Promise   leave the party (optional)
+  let { character: ch, statNames, nameMax, busy = false, error = '', onrename, ondelete, onjoin, onleave } = $props()
 
   let renaming = $state(false)
   let newName = $state('')
@@ -117,6 +119,21 @@
     <p><span class="muted">Known:</span> {ch.spells?.join(', ') || 'none'}</p>
   </section>
 
+  {#if onjoin || onleave}
+    <section class="partyline">
+      <h3>Party</h3>
+      {#if ch.inParty}
+        In party, slot {ch.partySlot}.
+        <button class="small" disabled={busy} onclick={() => onleave?.()}>Remove from party</button>
+      {:else if !ch.joinRefusal}
+        Not in the party.
+        <button class="small" disabled={busy} onclick={() => onjoin?.()}>Add to party</button>
+      {:else}
+        Cannot join now: <span class="refusal">{ch.joinRefusal}</span>
+      {/if}
+    </section>
+  {/if}
+
   <section class="actions">
     {#if deleting}
       <form class="confirm" onsubmit={submitDelete}>
@@ -155,6 +172,7 @@
   .tag { font-size: 11px; color: var(--muted); border: 1px solid #444; border-radius: 3px; padding: 0 4px; }
   .tag.bad { color: var(--error); border-color: var(--error); }
   button.small { font-size: 12px; padding: 2px 8px; }
+  .refusal { color: var(--error); }
   .actions { border-top: 1px solid var(--line); padding-top: 10px; }
   .confirm .row { margin-top: 8px; }
 </style>
