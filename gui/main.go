@@ -11,6 +11,7 @@ import (
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
+	"github.com/wailsapp/wails/v2/pkg/options/mac"
 )
 
 //go:embed all:frontend/dist
@@ -43,7 +44,12 @@ func main() {
 			Assets: assets,
 		},
 		BackgroundColour: &options.RGBA{R: 18, G: 18, B: 18, A: 1},
-		Bind:             []interface{}{session},
+		// Wails v2 only reads the zoom setting from options.Mac; with Mac
+		// unset it disables the green (zoom/fullscreen) button. An empty
+		// mac.Options keeps zoom enabled, so the window can maximise and
+		// enter native fullscreen.
+		Mac:  &mac.Options{},
+		Bind: []interface{}{session},
 	})
 	if err != nil {
 		log.Fatal(err)
