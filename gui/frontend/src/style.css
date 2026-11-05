@@ -76,10 +76,28 @@ label span { display: inline-block; width: 150px; color: var(--muted); }
 .summary b { color: var(--accent); }
 
 table.guide td, table.guide th { padding: 3px 6px; }
-table.guide tr.current td { color: var(--muted); }
+table.guide td.num { white-space: nowrap; }
 table.guide td.short { color: var(--error); }
 table.guide td.status.eligible { color: var(--accent); }
 table.guide td.status.reachable,
 table.guide td.status.move { color: var(--notice); }
 table.guide td.status.points,
 table.guide td.status.alignment { color: var(--error); }
+
+.points-left { font-size: 16px; margin: 4px 0 10px; }
+.points-left span { font-size: 22px; font-weight: 600; color: var(--notice); margin-left: 6px; }
+.points-left.done span { color: var(--accent); }
+
+table.guide td.stat { text-align: center; padding: 2px 6px; }
+table.guide tr.current td { color: var(--text); border-bottom: 2px solid var(--line); }
+table.guide tr.current td.muted { color: var(--muted); font-size: 12px; }
+table.guide td.stat .value { font-size: 16px; font-weight: 600; line-height: 1.3; }
+button.step {
+  display: block;
+  margin: 0 auto;
+  padding: 0 8px;
+  font-size: 10px;
+  line-height: 16px;
+  min-width: 28px;
+}
+button.step.up:not(:disabled) { color: var(--accent); border-color: var(--accent); }

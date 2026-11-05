@@ -27,8 +27,10 @@
   const letter = (i) => String.fromCharCode(65 + i)
 </script>
 
-{#snippet guideTable(c)}
-  <h2 style="margin-top:16px">Class Requirements Guide</h2>
+{#snippet classTable(c, editable)}
+  <div class="points-left" class:done={c.points === 0}>
+    Bonus points left: <span>{c.points}</span>
+  </div>
   <table class="guide">
     <thead>
       <tr>
@@ -40,8 +42,21 @@
     <tbody>
       <tr class="current">
         <td>Current</td>
-        {#each c.stats as v}<td class="num">{v}</td>{/each}
-        <td>{c.alignment}</td><td>{c.points} point{c.points === 1 ? '' : 's'} left</td>
+        {#each c.stats as v, i}
+          <td class="num stat" title="Race base {c.baseStats[i]}">
+            {#if editable}
+              <button class="step up" aria-label="Add a point to {view.statNames[i]}"
+                disabled={busy || !c.canAdd[i]} onclick={() => call(S.AddPoint, i)}>▲</button>
+              <div class="value">{v}</div>
+              <button class="step down" aria-label="Remove a point from {view.statNames[i]}"
+                disabled={busy || !c.canRemove[i]} onclick={() => call(S.RemovePoint, i)}>▼</button>
+            {:else}
+              <div class="value">{v}</div>
+            {/if}
+          </td>
+        {/each}
+        <td>{c.alignment}</td>
+        <td class="muted">{#if editable}▲ add · ▼ remove{/if}</td>
       </tr>
       {#each c.guide as row}
         <tr>
@@ -57,7 +72,7 @@
       {/each}
     </tbody>
   </table>
-  <p class="muted">Minimums per statistic; (−N) is the current shortfall.</p>
+  <p class="muted">Class rows show minimums; (−N) is the current shortfall. Hover a value for its race base.</p>
 {/snippet}
 
 <main>
@@ -178,24 +193,8 @@
             </div>
 
           {:else if c.step === 'stats'}
-            <p>Bonus points left: <b>{c.points}</b></p>
-            <table style="width:auto">
-              <tbody>
-                {#each view.statNames as s, i}
-                  <tr>
-                    <td>{s}</td>
-                    <td class="num"><b>{c.stats[i]}</b></td>
-                    <td class="muted">base {c.baseStats[i]}</td>
-                    <td>
-                      <button disabled={busy || !c.canRemove[i]} onclick={() => call(S.RemovePoint, i)}>−</button>
-                      <button disabled={busy || !c.canAdd[i]} onclick={() => call(S.AddPoint, i)}>+</button>
-                    </td>
-                  </tr>
-                {/each}
-              </tbody>
-            </table>
+            {#if c.guide}{@render classTable(c, true)}{/if}
             <button class="primary" disabled={busy} onclick={() => call(S.FinishStats)}>Done — choose class</button>
-            {#if c.guide}{@render guideTable(c)}{/if}
 
           {:else if c.step === 'class'}
             <p>Choose a class (only classes these statistics and alignment allow are enabled):</p>
@@ -207,7 +206,7 @@
             <div class="row" style="margin-top:10px">
               <button disabled={busy} onclick={() => call(S.Back)}>Back to points</button>
             </div>
-            {#if c.guide}{@render guideTable(c)}{/if}
+            {#if c.guide}{@render classTable(c, false)}{/if}
 
           {:else if c.step === 'confirm'}
             <table style="width:auto; margin-bottom:10px">
