@@ -728,6 +728,12 @@ func (cs *CombatState) ExecuteRound(game *GameState) {
 	for slot := 1; slot <= 10; slot++ {
 		cs.executePartySlot(slot, party, game)
 		if cs.Fled {
+			// A successful escape ends the round like any other, so its
+			// message is shown before combat is left. (Before this
+			// correction the round returned here without its round-end step,
+			// leaving combat at the confirmation prompt: compatibility
+			// finding #17.)
+			cs.checkRoundEnd(game, party)
 			return
 		}
 		cs.executeMonsterSlot(slot, game)

@@ -316,23 +316,35 @@ func TestCharMessageBlocks(t *testing.T) {
 	}
 }
 
-// Known defect, kept (compatibility finding #17): after a successful Run,
-// ExecuteRound returns before its round-end step, so the phase stays at
-// CombatConfirm instead of CombatExecute.
-func TestCharSuccessfulRunLeavesConfirm(t *testing.T) {
-	for s := int64(1); s < 50; s++ {
+// Correction of compatibility finding #17 (M5b). A successful Run ends the
+// round normally: the round is ready for playback (CombatExecute) and its
+// last block is the flight message. Before the correction the phase stayed
+// at CombatConfirm, so Return played a further round.
+func TestRunEndsTheRoundForPlayback(t *testing.T) {
+	fled, failed := false, false
+	for s := int64(1); s < 80 && !(fled && failed); s++ {
 		seed(s)
 		g, cs := combatFixture(t, []string{"A", "B", "C", "D", "E", "F"}, []Status{OK, OK, OK, OK, OK, OK})
 		cs.Groups[0].Members[0].Status = 0
 		cs.Actions[0] = PartyAction{Action: ActionRun}
 		cs.ExecuteRound(g)
-		if !cs.Fled {
-			continue
+		if cs.Phase != CombatExecute {
+			t.Fatalf("seed %d: phase %v after the round (fled %v)", s, cs.Phase, cs.Fled)
 		}
-		if cs.Phase != CombatConfirm {
-			t.Fatalf("seed %d: phase %v after a successful Run", s, cs.Phase)
+		text := strings.Join(cs.Messages, "|")
+		if cs.Fled {
+			fled = true
+			if !strings.HasSuffix(text, "THE PARTY FLED!|"+ActionSeparator) {
+				t.Fatalf("seed %d: the flight message is the last block: %q", s, cs.Messages)
+			}
+		} else {
+			failed = true
+			if !strings.Contains(text, "A FAILED TO RUN!") {
+				t.Fatalf("seed %d: failed run: %q", s, cs.Messages)
+			}
 		}
-		return
 	}
-	t.Fatal("no successful Run found")
+	if !fled || !failed {
+		t.Fatalf("seeds did not cover both outcomes (fled %v, failed %v)", fled, failed)
+	}
 }
