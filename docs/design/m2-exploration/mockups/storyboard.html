@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Istary M2 Storyboard</title>
+<!--
+  Istary M2 design exploration. Nonfunctional mockup, not application code.
+  Open this file directly in a browser (no server, no network needed).
+  Geometry comes from scene.js; every frame shows the same dungeon location.
+  Figures and monsters are generic placeholders, not original game art.
+  Names, numbers and messages are illustrative.
+-->
+<style>
+  :root {
+    --bg: #15171a; --panel: #1e2125; --line: #33373d; --text: #e6e3dc; --muted: #9a978f;
+    --accent: #f2c14e; --bad: #ff7a5c; --ok: #8fd18f; --note: #7fb8ff;
+    --hud: rgba(12,13,15,0.78);
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) { --bg: #f3f1ec; --panel: #ffffff; --line: #d9d5cc; --text: #22201c; --muted: #6c685f; --note: #1f6fd1; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.45 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif; }
+  main { max-width: 1240px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 22px; margin: 8px 0 4px; }
+  h2 { font-size: 17px; margin: 32px 0 8px; border-bottom: 1px solid var(--line); padding-bottom: 4px; }
+  h3 { font-size: 14px; margin: 0 0 6px; }
+  p.lede { color: var(--muted); margin: 0 0 12px; max-width: 900px; }
+  .controls { position: sticky; top: 0; z-index: 10; background: var(--bg); padding: 8px 0; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; border-bottom: 1px solid var(--line); }
+  .controls fieldset { border: 1px solid var(--line); border-radius: 6px; padding: 4px 10px; margin: 0; }
+  .controls legend { font-size: 11px; color: var(--muted); padding: 0 4px; }
+  .controls label { margin-right: 10px; white-space: nowrap; }
+  .tag { display: inline-block; font-size: 11px; padding: 1px 6px; border-radius: 9px; border: 1px solid var(--line); color: var(--muted); margin-left: 6px; vertical-align: 1px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 560px), 1fr)); gap: 18px; }
+  .frames { display: grid; grid-template-columns: 1fr; gap: 22px; }
+  figure { margin: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  figcaption { padding: 8px 12px 12px; font-size: 13px; }
+  figcaption ul { margin: 4px 0 0; padding-left: 18px; }
+  figcaption .k { color: var(--muted); }
+  .frame { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: #000; color: #e6e3dc; font-size: 12px; container-type: inline-size; }
+  .frame > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .ov { position: absolute; }
+  .hud { background: var(--hud); border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; padding: 4px 8px; backdrop-filter: blur(4px); }
+  .mono { font-family: ui-monospace, Menlo, monospace; }
+  .pips { left: 50%; transform: translateX(-50%); bottom: 2.5%; display: flex; gap: 4px; }
+  .pip { min-width: 96px; padding: 2px 6px; border-radius: 5px; background: var(--hud); border: 1px solid rgba(255,255,255,0.14); font-size: 10.5px; line-height: 1.25; }
+  .pip b { font-size: 11px; }
+  .pip .bar { height: 3px; background: #333; border-radius: 2px; margin-top: 2px; }
+  .pip .bar i { display: block; height: 100%; background: #8fd18f; border-radius: 2px; }
+  .pip.sel { border-color: var(--accent); }
+  .pip.hurt .bar i { background: #e3b04b; }
+  .pip .st { float: right; color: #bbb; }
+  .msg { left: 50%; transform: translateX(-50%); bottom: 17%; text-align: center; white-space: nowrap; }
+  .side { right: 1.5%; top: 3%; bottom: 3%; width: 31%; display: flex; flex-direction: column; gap: 6px; font-size: 11px; }
+  .side .hud { padding: 6px 8px; }
+  .side table { width: 100%; border-collapse: collapse; }
+  .side td, .side th { padding: 1px 3px; text-align: left; white-space: nowrap; }
+  .side th { color: #aaa; font-weight: 500; font-size: 10px; }
+  .side .grow { flex: 1; overflow: hidden; }
+  .row-front td { border-bottom: 1px dashed rgba(255,255,255,0.15); }
+  .keys span { display: inline-block; margin: 1px 4px 1px 0; padding: 0 4px; border: 1px solid rgba(255,255,255,0.25); border-radius: 3px; }
+  .classic-box { background: #000; border: 2px solid #e8e8e8; color: #e8e8e8; font-family: ui-monospace, Menlo, monospace; font-size: 11px; padding: 4px 8px; white-space: pre; border-radius: 0; }
+  .ann { display: none; border: 1.5px dashed var(--note); color: var(--note); background: rgba(10,20,40,0.82); padding: 3px 6px; font-size: 11px; border-radius: 4px; max-width: 34%; }
+  body.annotate .ann { display: block; }
+  .ann.hidden-info { border-color: #ff5c8a; color: #ff9cb8; }
+  .camtag { left: 1.5%; top: 3%; font-size: 10.5px; color: #ccc; }
+  .orders td:last-child { color: var(--accent); }
+  .logline { opacity: 0.55; }
+  .logline.now { opacity: 1; color: #fff; font-weight: 600; }
+  .menu-arc { display: flex; flex-direction: column; gap: 3px; }
+  .menu-arc button, .actbtn { font: inherit; font-size: 11px; color: #eee; background: #2b2e33; border: 1px solid #555; border-radius: 4px; padding: 2px 8px; text-align: left; }
+  .menu-arc button[disabled] { opacity: 0.45; }
+  .warn { color: #e3b04b; }
+  .sandbox { display: grid; grid-template-columns: minmax(0, 2fr) minmax(220px, 1fr); gap: 16px; }
+  @media (max-width: 760px) { .sandbox { grid-template-columns: 1fr; } .side { width: 44%; font-size: 9.5px; } .pip { min-width: 52px; font-size: 9px; } }
+  .sandbox label { display: block; margin: 8px 0 2px; font-size: 12px; color: var(--muted); }
+  .sandbox input[type=range] { width: 100%; }
+  .wire { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
+  .wf { position: relative; aspect-ratio: 16 / 10; border: 1px solid var(--line); border-radius: 6px; background: repeating-linear-gradient(0deg, transparent 0 23px, rgba(127,127,127,0.07) 23px 24px); font-size: 11px; overflow: hidden; }
+  .wf .box { position: absolute; border: 1.5px solid var(--muted); border-radius: 5px; padding: 4px 6px; background: var(--panel); color: var(--text); overflow: hidden; }
+  .wf .box.hi { border-color: var(--accent); }
+  .wf .box.dash { border-style: dashed; }
+  .wf .box b { display: block; font-size: 11px; margin-bottom: 2px; }
+  .wf .box small { color: var(--muted); display: block; line-height: 1.3; }
+  .strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+  .strip .step { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px; font-size: 12.5px; }
+  .strip .step b { display: block; margin-bottom: 4px; }
+  .legend-dot { display: inline-block; width: 10px; height: 10px; border-radius: 2px; vertical-align: -1px; margin-right: 4px; }
+  .navmap { font-size: 10.5px; display: flex; flex-direction: column; gap: 3px; }
+  .navmap .bar { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+  .navmap .bar span { border: 1px solid rgba(255,255,255,0.25); border-radius: 3px; padding: 0 4px; }
+  .navmap .bar span.on { border-color: var(--accent); color: var(--accent); }
+  .navmap .bar span.off { opacity: 0.4; }
+  .navmap .title { display: flex; justify-content: space-between; font-weight: 600; }
+  .navmap svg { width: 100%; height: auto; flex: 1; min-height: 0; }
+  .mapwrap { display: grid; grid-template-columns: minmax(220px, 340px) 1fr; gap: 16px; align-items: start; }
+  @media (max-width: 760px) { .mapwrap { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body class="annotate">
+<main>
+  <h1>Istary M2 storyboard <span class="tag">design exploration · not approved</span></h1>
+  <p class="lede">One dungeon location shown through six moments of play, in three interface treatments. Change the treatment, the light, and whether design annotations are shown with the controls below. Nothing here is a production component; the figures are generic placeholders and the messages are illustrative.</p>
+
+  <div class="controls">
+    <fieldset><legend>Interface treatment</legend>
+      <label><input type="radio" name="tr" value="immersive" checked> A · Minimal immersive</label>
+      <label><input type="radio" name="tr" value="rich"> B · Information-rich</label>
+      <label><input type="radio" name="tr" value="classic"> C · Classic presentation</label>
+    </fieldset>
+    <fieldset><legend>Party light</legend>
+      <label><input type="radio" name="light" value="5" checked> MILWA active (5 squares)</label>
+      <label><input type="radio" name="light" value="2"> No light (2 squares)</label>
+    </fieldset>
+    <fieldset><legend>Navigation map (frames 1, 2, 5)</legend>
+      <label><input type="radio" name="mapmode" value="hidden"> Hidden</label>
+      <label><input type="radio" name="mapmode" value="docked"> Docked</label>
+      <label><input type="radio" name="mapmode" value="floating" checked> Floating</label>
+      <label><input type="radio" name="mapmode" value="overlay"> Overlay</label>
+      <br><label><input type="radio" name="mapkind" value="manual" checked> Manual (user-drawn)</label>
+      <label><input type="radio" name="mapkind" value="auto"> Automatic <span class="tag">enhancement D9 · off in Classic</span></label>
+      <label><input type="checkbox" id="mapHeading"> Heading-up</label>
+    </fieldset>
+    <fieldset><legend>Review</legend>
+      <label><input type="checkbox" id="ann" checked> Design annotations</label>
+    </fieldset>
+  </div>
+
+  <h2>The location <span class="tag">reviewer aid</span></h2>
+  <div class="mapwrap">
+    <div id="map"></div>
+    <div>
+      <p>A short corridor running north. The team stands in square&nbsp;0 facing north. Square&nbsp;1 has a door on the left and an opening on the right into a dead-end niche. The corridor ends in a wall at square&nbsp;3.</p>
+      <p><span class="legend-dot" style="background:#f2c14e"></span>Edges the Classic view can show from here (with light). <span class="legend-dot" style="background:#777"></span>Edges that exist but are never drawn from this position.</p>
+      <p class="k">This top-down plan is for reviewers only. Showing a map in the game is the automap enhancement (D9), off under Classic rules.</p>
+    </div>
+  </div>
+
+  <h2>Storyboard</h2>
+  <div class="frames" id="frames"></div>
+
+  <h2>Camera sandbox <span class="tag">prototype aid</span></h2>
+  <p class="lede">Move the attached camera. What is drawn never changes: it is the Classic visible set for the team's square and facing. Pull the camera behind the team's square to see the unexplored space render as nothing.</p>
+  <div class="sandbox">
+    <div class="frame" id="sbFrame"></div>
+    <div>
+      <label>Attached to</label>
+      <select id="sbTarget"><option value="0">First person (team view)</option><option value="1" selected>1 TORVALD</option><option value="2">2 YSOLDE</option><option value="3">3 BRANNOC</option><option value="4">4 PELL</option><option value="5">5 ILSA</option><option value="6">6 CORVIN</option></select>
+      <label>Follow distance <span id="sbDv"></span></label><input id="sbDist" type="range" min="0.4" max="5" step="0.1" value="2.2">
+      <label>Height <span id="sbHv"></span></label><input id="sbH" type="range" min="0.6" max="2.9" step="0.05" value="1.9">
+      <label>Orbit angle <span id="sbOv"></span></label><input id="sbOrbit" type="range" min="-70" max="70" step="1" value="10">
+      <label><input type="checkbox" id="sbClamp" checked> Keep the camera inside the team's square</label>
+      <p class="k" id="sbNote"></p>
+    </div>
+  </div>
+
+  <h2>Management workspace <span class="tag">two alternatives · layouts not fixed</span></h2>
+  <p class="lede">Two ways to apply Fusion's interaction philosophy (select an object, act on it in context, keep commands discoverable) to the castle. Both are wireframes for discussion; neither placement is preferred.</p>
+  <div class="grid">
+    <div class="wire">
+      <h3>W-A · Workspaces, browser and inspector</h3>
+      <div class="wf">
+        <div class="box" style="left:1%;top:2%;right:1%;height:9%"><b>Castle ▾ &nbsp;|&nbsp; Training Grounds · Tavern · <u>Trading Post</u> · Temple · Inn · Edge of Town</b></div>
+        <div class="box" style="left:1%;top:13%;width:22%;bottom:2%"><b>Browser</b><small>▾ Team (6)<br>&nbsp;&nbsp;Front: Torvald, Ysolde, Brannoc<br>&nbsp;&nbsp;Back: Pell, Ilsa, Corvin<br>▾ Roster (14)<br>&nbsp;&nbsp;filters: in town · lost · dead<br>▾ Shop stock<br>&nbsp;&nbsp;weapons · armour · …</small></div>
+        <div class="box hi" style="left:25%;top:13%;width:47%;bottom:16%"><b>Canvas: Trading Post</b><small>Shop items as objects. Select Ysolde in the browser, then an item: the canvas marks what she may equip (rule answer from Go). Right-click an item → marking menu: Buy for…, Identify, Compare.</small></div>
+        <div class="box dash" style="left:25%;bottom:2%;width:47%;height:12%"><b>Command bar / messages</b><small>last result, undo-free confirmations, ⌘K command search</small></div>
+        <div class="box" style="right:1%;top:13%;width:25%;bottom:2%"><b>Inspector (selection)</b><small>Ysolde · N-FIG · Lv 4<br>HP 31/31 · AC 3<br>Equipped: …<br>Gold: 412<br><br>Item: Long Sword<br>Price: from Go<br>Usable by Ysolde: yes (Go)<br>[Buy for Ysolde]</small></div>
+      </div>
+      <p class="k">Fusion analogue: workspace switcher, browser tree, canvas selection, marking menu, contextual inspector.</p>
+    </div>
+    <div class="wire">
+      <h3>W-B · The castle as a canvas</h3>
+      <div class="wf">
+        <div class="box" style="left:1%;top:2%;width:66%;bottom:20%"><b>Castle canvas</b><small>Locations as objects on one surface (illustrated or schematic). The team token sits at its current location; drag it, or double-click a location, to ask Go to go there (controller decides).</small></div>
+        <div class="box hi" style="left:6%;top:24%;width:15%;height:15%"><b>Tavern</b><small>team here</small></div>
+        <div class="box" style="left:26%;top:24%;width:16%;height:15%"><b>Trading Post</b></div>
+        <div class="box" style="left:47%;top:24%;width:15%;height:15%"><b>Temple</b></div>
+        <div class="box" style="left:6%;top:46%;width:15%;height:15%"><b>Inn</b></div>
+        <div class="box" style="left:26%;top:46%;width:16%;height:15%"><b>Training</b></div>
+        <div class="box" style="left:47%;top:46%;width:15%;height:15%"><b>Edge of Town</b></div>
+        <div class="box dash" style="left:1%;bottom:2%;width:66%;height:16%"><b>Team strip (one candidate)</b><small>six cards; click → profile popover; drag a roster card here to join (Go checks alignment, password)</small></div>
+        <div class="box" style="right:1%;top:2%;width:30%;bottom:2%"><b>Location panel</b><small>What this place offers now, what is refused and why (explanations from Go).<br><br>Tavern: Add · Remove · Inspect · Divvy gold <i>(only if D3 approves)</i><br><br>Roster list with filters</small></div>
+      </div>
+      <p class="k">Fusion analogue: direct manipulation on a canvas, context panel, the team as the persistent selection.</p>
+    </div>
+  </div>
+
+  <h2>From management to adventure <span class="tag">transition sketch</span></h2>
+  <div class="strip">
+    <div class="step"><b>1 · Prepare</b>At Edge of Town the workspace shows a readiness summary computed by Go: members, lineup, status refusals (e.g. a dead member cannot enter). Nothing is auto-fixed.</div>
+    <div class="step"><b>2 · Enter the Maze</b>The user chooses Maze (menu, button or ⌘↩). The controller performs the transition; the presentation only animates it.</div>
+    <div class="step"><b>3 · Arrive</b>Camera blends from the castle view to the team at the stairs, then settles in the user's preferred camera (first person or attached). Input context switches to exploration keys.</div>
+    <div class="step"><b>4 · Explore</b>Team summary stays visible (form undecided). A profile opens read-only with 1–6 or a click; equipment changes wait for Camp, as the rules require.</div>
+    <div class="step"><b>5 · Return</b>Stairs up on B1F, or a warp, ends the expedition. The controller returns the team to the Castle; the workspace reopens where the user left it.</div>
+  </div>
+
+  <p class="k" style="margin-top:28px">Istary M2 design exploration · see MOCKUP-REVIEW.md for what each frame tests and the questions it raises.</p>
+</main>
+
+<script src="scene.js"></script>
+<script>
+'use strict'
+const TEAM = [
+  { slot: 1, name: 'TORVALD', cls: 'G-FIG', ac: 2, hp: 34, max: 34, st: 'OK', color: '#5f80a6' },
+  { slot: 2, name: 'YSOLDE', cls: 'N-FIG', ac: 3, hp: 31, max: 31, st: 'OK', color: '#7c6fa6' },
+  { slot: 3, name: 'BRANNOC', cls: 'G-PRI', ac: 4, hp: 18, max: 22, st: 'OK', color: '#a8935a' },
+  { slot: 4, name: 'PELL', cls: 'N-THI', ac: 6, hp: 14, max: 15, st: 'OK', color: '#5a9670' },
+  { slot: 5, name: 'ILSA', cls: 'G-MAG', ac: 9, hp: 9, max: 11, st: 'OK', color: '#a66262' },
+  { slot: 6, name: 'CORVIN', cls: 'G-BIS', ac: 8, hp: 10, max: 10, st: 'OK', color: '#6f9aa0' },
+]
+const FORM = IstaryScene.FORMATION
+const party = (sel, extra) => TEAM.map((m) => Object.assign({ slot: m.slot, color: m.color }, (extra || {})[m.slot]))
+
+// Camera shots, all of the same location.
+const SHOTS = {
+  fp: { pos: [0, 1.55, -1.9], target: [0, 1.45, 10], fov: 72 },
+  tp: { pos: [-0.55, 2.7, -1.95], target: [0, 0.6, 5], fov: 70, targetSlot: 1, party: party() },
+  orders: { pos: [1.85, 2.85, -1.95], target: [-0.45, 0.35, 3.1], fov: 74, targetSlot: 1, party: party(),
+    monsters: [{ x: -1.25, z: 3.1, color: '#5d6b4a' }, { x: -0.4, z: 3.3, color: '#5d6b4a' }, { x: 0.45, z: 3.1, color: '#5d6b4a' }, { x: 1.3, z: 3.3, color: '#5d6b4a' },
+      { x: -0.7, z: 4.9, color: '#6b4a5d', h: 1.7 }, { x: 0.7, z: 4.9, color: '#6b4a5d', h: 1.7 }] },
+  chest: { pos: [1.15, 1.4, 0.2], target: [-0.1, 0.35, 2.5], fov: 55, chest: { x: 0, z: 2.6 }, targetSlot: 4,
+    party: [{ slot: 4, color: TEAM[3].color, at: [-1.25, 3.3] }, { slot: 3, color: TEAM[2].color, at: [-1.6, 1.6] }] },
+}
+SHOTS.resolve = Object.assign({}, SHOTS.orders, {
+  party: party(null, { 2: { flash: '−5' } }),
+  monsters: SHOTS.orders.monsters.map((m, i) => (i === 1 ? Object.assign({}, m, { flash: '' }) : m)),
+})
+SHOTS.ret = Object.assign({}, SHOTS.tp)
+
+function pips(team, sel) {
+  return `<div class="ov pips">${team.map((m) => `<div class="pip${m.slot === sel ? ' sel' : ''}${m.hp < m.max ? ' hurt' : ''}"><b>${m.slot} ${m.name}</b><span class="st">${m.st}</span><br><span class="mono">${m.hp}/${m.max}</span><div class="bar"><i style="width:${(100 * m.hp) / m.max}%"></i></div></div>`).join('')}</div>`
+}
+function teamTable(team, extraCol) {
+  const rows = team.map((m, i) => `<tr class="${i === 2 ? 'row-front' : ''}"><td>${m.slot}</td><td><b>${m.name}</b></td><td>${m.cls}</td><td class="mono">${m.ac}</td><td class="mono">${m.hp}/${m.max}</td><td>${m.st}</td>${extraCol ? `<td>${extraCol[m.slot] || ''}</td>` : ''}</tr>`).join('')
+  return `<table><tr><th>#</th><th>Player</th><th>Class</th><th>AC</th><th>HP</th><th>Status</th>${extraCol ? '<th>Order</th>' : ''}</tr>${rows}</table>`
+}
+function classicRoster(team, sel) {
+  const lines = team.map((m) => ` ${m.slot} ${m.name.padEnd(15)} ${m.cls}  ${String(m.ac).padStart(2)}  ${String(m.hp).padStart(3)}  ${m.st}`)
+  return `<div class="ov classic-box" style="left:2%;right:2%;bottom:2%"> # CHARACTER NAME  CLASS  AC HITS STATUS\n${lines.join('\n')}</div>`
+}
+const ann = (style, text, hidden) => `<div class="ov ann${hidden ? ' hidden-info' : ''}" style="${style}">${text}</div>`
+const hurt = (slot, hp) => TEAM.map((m) => (m.slot === slot ? Object.assign({}, m, { hp }) : m))
+
+const FRAMES = [
+  {
+    id: 'fp', map: {}, title: '1 · Exploring the corridor, first person',
+    overlay: {
+      immersive: () => pips(TEAM) + `<div class="ov camtag hud">First person</div>`,
+      rich: () => `<div class="ov side"><div class="hud">${teamTable(TEAM)}</div><div class="hud grow"><b>Messages</b><br><span class="logline">STAIRS GOING UP.</span><br><span class="logline now">—</span></div><div class="hud keys"><span>↑ Forward</span><span>← → Turn</span><span>K Kick</span><span>C Camp</span><span>I Inspect</span><span>V Camera</span></div></div>`,
+      classic: () => classicRoster(TEAM),
+    },
+    ann: () => ann('left:3%;top:30%', 'Door: drawn because it is in the visible set') + ann('right:35%;top:24%;max-width:26%', 'Opening: beyond the niche\'s front wall is not drawn (Classic never shows it)') + ann('left:36%;top:6%', 'No compass or coordinates: Classic shows position only via DUMAPIC'),
+    notes: ['Camera at the team\'s eye position; matches the Classic view cone exactly.', 'With "No light" only two squares are drawn; the rest is darkness, as in the original.', 'Treatment B\'s side column is one placement only; placement is undecided.'],
+  },
+  {
+    id: 'tp', map: {}, title: '2 · Same corridor, camera attached to player 1',
+    overlay: {
+      immersive: () => pips(TEAM, 1) + `<div class="ov camtag hud">Following 1 TORVALD · V cycles · [ ] distance</div>`,
+      rich: () => `<div class="ov side"><div class="hud">${teamTable(TEAM)}</div><div class="hud grow"><b>Messages</b><br><span class="logline">STAIRS GOING UP.</span><br><span class="logline now">—</span><br><br><b>Camera</b><br>Attached: 1 TORVALD<br>Distance 2.2 · Height 1.9</div><div class="hud keys"><span>↑ Forward</span><span>← → Turn</span><span>K Kick</span><span>C Camp</span><span>V Camera</span></div></div>`,
+      classic: () => classicRoster(TEAM, 1),
+    },
+    ann: () => ann('right:34%;top:3%;max-width:30%', 'In-square formation is presentation only: the rules know front line (1–3) and back line (4–6)') + ann('right:4%;top:24%;max-width:26%', 'Same visible set as frame 1: moving the camera never reveals more'),
+    notes: ['Camera stays inside the team\'s own square, so nothing behind or beside the team is exposed.', 'Turning the team rotates the formation; the camera eases after it. Movement is still one square per command.', 'Classic treatment with figures shows that rules and look are independent.'],
+  },
+  {
+    id: 'orders', title: '3a · Encounter: the camera reframes, orders are chosen',
+    overlay: {
+      immersive: () => pips(TEAM, 1) + `<div class="ov hud" style="left:50%;top:4%;transform:translateX(-50%);text-align:center"><b>4 CREATURES</b> <span class="k">(unidentified)</span> · <b>2 FIGURES</b> <span class="k">(unidentified)</span></div><div class="ov hud menu-arc" style="left:22%;top:34%"><b>1 TORVALD — orders</b><button>F  Fight → group 1</button><button>P  Parry</button><button disabled>S  Spell (none)</button><button>U  Use</button><button>R  Run</button></div>`,
+      rich: () => `<div class="ov hud" style="left:1.5%;top:3%;width:30%"><b>Opponents</b><br>1) 4 CREATURES <span class="k">unidentified</span><br>2) 2 FIGURES <span class="k">unidentified</span></div><div class="ov side"><div class="hud orders">${teamTable(TEAM, { 1: '▶ choosing', 2: '', 3: '', 4: '', 5: '', 6: '' })}</div><div class="hud grow"><b>1 TORVALD may:</b><div class="keys" style="margin-top:4px"><span>F Fight</span><span>P Parry</span><span>U Use</span><span>R Run</span></div><p class="k" style="margin:6px 0 0">Spell is not offered: Go reports no spells. Back line (4–6) is not offered Fight.</p></div><div class="hud">Round 1 · orders 1/6 · <span class="keys"><span>B Back</span></span></div></div>`,
+      classic: () => `<div class="ov classic-box" style="left:2%;top:3%">1) 4 CREATURES   (4)\n2) 2 FIGURES     (2)</div><div class="ov classic-box" style="right:2%;top:3%">TORVALD'S OPTIONS\n\nF)IGHT  P)ARRY\nU)SE    R)UN</div>` + classicRoster(TEAM, 1),
+    },
+    ann: () => ann('left:38%;top:16%;max-width:26%', 'Staging is presentation: groups placed in group order; Wizardry combat has no distances') + ann('left:3%;bottom:24%', 'Unidentified names only, until the per-round identify roll succeeds'),
+    notes: ['No separate battle screen: same walls, light and team, a wider elevated framing inside the team\'s square.', 'Orders are collected for every member before anything happens, as in Classic.', 'Available orders come from Go (front/back line, spells, items). Svelte only lists them.'],
+  },
+  {
+    id: 'resolve', title: '3b · The round resolves, step by step',
+    overlay: {
+      immersive: () => pips(hurt(2, 26), 2) + `<div class="ov msg hud mono" style="font-size:13px">A CREATURE CLAWS AT YSOLDE · AND HITS FOR 5 DAMAGE</div><div class="ov camtag hud">Round 1 · 4 of 11 · ↩ next · ⇧↩ skip to end</div>`,
+      rich: () => `<div class="ov hud" style="left:1.5%;top:3%;width:30%"><b>Opponents</b> (as at round start)<br>1) 4 CREATURES<br>2) 2 FIGURES</div><div class="ov side"><div class="hud">${teamTable(hurt(2, 26))}</div><div class="hud grow mono" style="font-size:10.5px"><b style="font-family:-apple-system">Round 1</b><br><span class="logline">1 TORVALD SLASHES AT A CREATURE · HITS ONCE FOR 7 · KILLS IT</span><br><span class="logline">5 ILSA CASTS A SPELL</span><br><span class="logline">… 2 CREATURES FALL ASLEEP</span><br><span class="logline now">A CREATURE CLAWS AT YSOLDE · HITS FOR 5</span><br><span class="k">7 more…</span></div><div class="hud">↩ Advance · ⇧↩ Show all</div></div>`,
+      classic: () => `<div class="ov classic-box" style="left:2%;top:3%">1) 4 CREATURES   (4)\n2) 2 FIGURES     (2)</div><div class="ov classic-box" style="left:50%;transform:translateX(-50%);top:40%">A CREATURE CLAWS AT YSOLDE\nAND HITS FOR 5 DAMAGE</div>` + classicRoster(hurt(2, 26), 2),
+    },
+    ann: () => ann('left:3%;bottom:24%;max-width:30%', 'Counts and HP update when the message that caused them is shown (engine display snapshot), never earlier') + ann('right:4%;top:40%;max-width:22%', 'Order follows initiative computed by Go; the replay never reorders or re-rolls'),
+    notes: ['Go has already resolved the round. The presentation steps through the result (D6 queue + Advance).', 'Each message can focus the camera briefly on the actor and target, then return.', 'Skipping animation never skips a decision; it only shows the remaining results at once.'],
+  },
+  {
+    id: 'chest', title: '4 · A chest: the camera moves close',
+    overlay: {
+      immersive: () => `<div class="ov hud menu-arc" style="left:60%;top:30%"><b>Chest — trap unknown</b><button>O  Open…</button><button>I  Inspect…</button><button>C  Calfo…</button><button>D  Disarm…</button><button>L  Leave</button></div><div class="ov msg hud mono">4 PELL: IT'S A POISON NEEDLE <span class="warn">(a report, may be wrong)</span></div>` + pips(TEAM, 4),
+      rich: () => `<div class="ov side"><div class="hud"><b>Chest</b><br>Trap: <b>unknown</b><br><br><b>What the team has learned</b><br>• 4 PELL inspected: "POISON NEEDLE"<br>&nbsp;&nbsp;<span class="warn">Inspection can misreport.</span><br>• CALFO not cast<br><br><b>Who may act</b> (Go)<br>Inspect: 1 2 3 5 6 · 4 already looked<br>Calfo: 3 BRANNOC, 6 CORVIN<br>Disarm: anyone alive</div><div class="hud keys"><span>O Open</span><span>I Inspect</span><span>C Calfo</span><span>D Disarm</span><span>L Leave</span></div><div class="hud grow">${teamTable(TEAM)}</div></div>`,
+      classic: () => `<div class="ov classic-box" style="left:2%;top:3%">A CHEST! YOU MAY:\n\nO)PEN    C)ALFO   L)EAVE\nI)NSPECT D)ISARM\n\nIT'S A POISON NEEDLE</div>` + classicRoster(TEAM, 4),
+    },
+    ann: () => ann('left:3%;top:3%;max-width:40%', '<b>Engine knows:</b> the real trap type. Never sent to the interface (not in the View), so a close-up cannot leak it.', true) + ann('left:3%;top:24%;max-width:40%', '<b>Team discovered:</b> reports from Inspect / Calfo, kept as reports, not as facts.') + ann('left:3%;top:40%;max-width:40%', '<b>User may see:</b> the chest, the reports, who already looked. <b>May attempt:</b> what Go lists.'),
+    notes: ['The chest has the same appearance whatever its trap: the model must not vary by trap type.', 'Whether Disarm needs the trap name typed is an open Classic question (compatibility finding); both are possible.', 'A door close-up is shown only as what is visible: Classic Wizardry I doors have no locks or traps to inspect.'],
+  },
+  {
+    id: 'ret', map: {}, title: '5 · Back to exploration',
+    overlay: {
+      immersive: () => pips(hurt(2, 26), 1) + `<div class="ov msg hud mono">THE CHEST WAS NOT TRAPPED · FOUND 120 GOLD</div><div class="ov camtag hud">Camera returns to: following 1 TORVALD</div>`,
+      rich: () => `<div class="ov side"><div class="hud">${teamTable(hurt(2, 26))}</div><div class="hud grow"><b>Messages</b><br><span class="logline">YOU DISARMED IT!</span><br><span class="logline now">FOUND 120 GOLD</span><br><br><b>Camera</b><br>Restored: attached to 1 TORVALD</div><div class="hud keys"><span>↑ Forward</span><span>← → Turn</span><span>K Kick</span><span>C Camp</span><span>V Camera</span></div></div>`,
+      classic: () => classicRoster(hurt(2, 26), 1),
+    },
+    ann: () => ann('right:34%;top:3%;max-width:30%', 'Return restores the user\'s exploration camera; the team has not moved, so the visible set is unchanged'),
+    notes: ['The camera transition is pure presentation: no step, no turn, no encounter roll.', 'Exploration keys are accepted again only when Go reports the maze phase.', 'Reward wording is illustrative; XP and gold rules are open compatibility questions.'],
+  },
+]
+
+let state = { tr: 'immersive', light: 5, mapmode: 'floating', mapkind: 'manual', heading: false }
+
+function drawFrames() {
+  const host = document.getElementById('frames')
+  host.innerHTML = ''
+  for (const f of FRAMES) {
+    const shot = Object.assign({ style: state.tr, lightDis: state.light }, SHOTS[f.id])
+    const { svg } = IstaryScene.render(shot)
+    const fig = document.createElement('figure')
+    fig.innerHTML = `<div class="frame">${svg}${f.overlay[state.tr]()}${f.map ? mapPanel(f.map) : ''}${f.ann()}${f.map && state.mapmode !== 'hidden' ? mapAnn() : ''}</div><figcaption><b>${f.title}</b><ul>${f.notes.map((n) => `<li>${n}</li>`).join('')}</ul></figcaption>`
+    host.appendChild(fig)
+  }
+}
+
+// ── Navigation map (design alternative) ──────────────────────────────────
+// Manual: only what the user drew; position is the user's own marker.
+// Automatic (enhancement): only squares visited and edges that were in the
+// Classic visible set when the team stood somewhere. Never the level data.
+const HISTORY = [ // squares visited on the way here (illustrative), and stairs up at (0,-2)
+  { cx: 0, cz: -2, W: 'wall', E: 'wall', S: 'wall', stairs: true }, { cx: 0, cz: -1, W: 'wall', E: 'door' },
+]
+function autoKnowledge() {
+  const edges = []
+  for (const h of HISTORY) for (const side of ['N', 'S', 'E', 'W']) if (h[side]) edges.push({ cx: h.cx, cz: h.cz, side, type: h[side] })
+  for (const f of IstaryScene.visibleFaces(state.light)) if (f.kind === 'wall') edges.push(f)
+  const seen = IstaryScene.visibleFaces(state.light).filter((f) => f.kind === 'floor').map((f) => [f.cx, f.cz])
+  return { edges, visited: [[0, -2], [0, -1], [0, 0]], seen }
+}
+function mapSVG(kind, w, h) {
+  const s = Math.min(w / 7, h / 8.5), ox = w / 2 - s / 2, oy = h * 0.72
+  const P = (cx, cz) => [ox + cx * s, oy - cz * s]
+  const rot = state.heading ? 0 : 0 // team faces north here, so both orientations match; the label shows the mode
+  let g = `<g transform="rotate(${rot} ${w / 2} ${h / 2})">`
+  for (let i = -3; i <= 4; i++) for (let j = -3; j <= 5; j++) { const [x, y] = P(i, j); g += `<rect x="${x}" y="${y - s}" width="${s}" height="${s}" fill="none" stroke="rgba(255,255,255,0.06)"/>` }
+  const line = (cx, cz, side, col, wd, dash, wob) => {
+    const [x, y] = P(cx, cz)
+    const L = { N: [x, y - s, x + s, y - s], S: [x, y, x + s, y], W: [x, y - s, x, y], E: [x + s, y - s, x + s, y] }[side]
+    const j = wob ? 1.6 : 0
+    return `<path d="M${L[0] + j},${L[1] - j} Q${(L[0] + L[2]) / 2 - j},${(L[1] + L[3]) / 2 + j} ${L[2]},${L[3]}" stroke="${col}" stroke-width="${wd}" fill="none" ${dash ? 'stroke-dasharray="4 3"' : ''} stroke-linecap="round"/>`
+  }
+  if (kind === 'auto') {
+    const k = autoKnowledge()
+    for (const [cx, cz] of k.visited) { const [x, y] = P(cx, cz); g += `<rect x="${x}" y="${y - s}" width="${s}" height="${s}" fill="rgba(242,193,78,0.16)"/>` }
+    for (const [cx, cz] of k.seen) { const [x, y] = P(cx, cz); g += `<rect x="${x}" y="${y - s}" width="${s}" height="${s}" fill="rgba(242,193,78,0.07)"/>` }
+    for (const e of k.edges) g += line(e.cx, e.cz, e.side, e.type === 'door' ? '#e09a5a' : '#e8e2d0', e.type === 'door' ? 4 : 2.2, e.type === 'door')
+    const [sx, sy] = P(0, -2); g += `<text x="${sx + s / 2}" y="${sy - s / 2 + 4}" font-size="${s * 0.42}" text-anchor="middle" fill="#e8e2d0">⇡</text>`
+    const [px, py] = P(0, 0); g += `<path d="M${px + s / 2},${py - s * 0.85} l${s * 0.25},${s * 0.55} l${-s * 0.5},0 z" fill="#f2c14e"/>`
+  } else {
+    // What the user drew: walls along the way, a door noted, a guess about the right-hand opening, and notes.
+    for (const [cx, cz] of [[0, -2], [0, -1], [0, 0], [0, 1], [0, 2]]) { g += line(cx, cz, 'W', '#cfd6e6', 2, false, true) }
+    for (const [cx, cz] of [[0, -2], [0, 0], [0, 2]]) g += line(cx, cz, 'E', '#cfd6e6', 2, false, true)
+    g += line(0, -2, 'S', '#cfd6e6', 2, false, true) + line(0, -1, 'E', '#e09a5a', 3.5, true, true) + line(0, 1, 'W', '#e09a5a', 3.5, true, true)
+    g += line(1, 1, 'N', '#cfd6e6', 2, true, true)
+    const note = (cx, cz, t) => { const [x, y] = P(cx, cz); return `<text x="${x + s * 0.1}" y="${y - s * 0.4}" font-size="${s * 0.26}" fill="#9fc2ff" font-style="italic">${t}</text>` }
+    g += note(0, -2, 'stairs up') + note(1.05, 1, 'opening?') + note(-1.9, 1, 'door: try K')
+    const [px, py] = P(0, 0); g += `<circle cx="${px + s / 2}" cy="${py - s / 2}" r="${s * 0.22}" fill="none" stroke="#9fc2ff" stroke-width="2"/><text x="${px + s * 0.85}" y="${py - s * 0.15}" font-size="${s * 0.24}" fill="#9fc2ff" font-style="italic">me?</text>`
+  }
+  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid meet">${g}</g></svg>`
+}
+function mapPanel() {
+  const mode = state.mapmode, kind = state.mapkind
+  if (mode === 'hidden') return `<div class="ov hud camtag" style="top:auto;bottom:22%;left:1.5%">M · map (hidden)</div>`
+  const title = kind === 'auto' ? 'Exploration map · enhancement' : 'My map · B1F (my label)'
+  const floors = kind === 'auto' ? '<span class="on">B1F</span><span class="off">B2F not visited</span>' : '<span class="on">Sheet 1</span><span>+ sheet</span>'
+  const tools = kind === 'auto' ? '<span>📌 note</span>' : '<span class="on">✎ wall</span><span>door</span><span>note</span><span>erase</span>'
+  const body = (w, h) => `<div class="navmap" style="height:100%"><div class="title"><span>${title}</span><span>${state.heading ? 'heading-up' : 'north-up'} · − +</span></div>${mapSVG(kind, w, h)}<div class="bar">${floors}${tools}</div>${kind === 'auto' ? '<div class="k">Shows visited squares and edges seen. No coordinates unless DUMAPIC was cast.</div>' : '<div class="k">Only what you drew. The game never corrects it.</div>'}</div>`
+  if (mode === 'docked') return `<div class="ov hud" style="left:0;top:0;bottom:0;width:27%;border-radius:0">${body(220, 230)}</div>`
+  if (mode === 'floating') return `<div class="ov hud" style="left:2%;top:13%;width:24%;height:60%;box-shadow:0 6px 18px rgba(0,0,0,0.6)"><div style="font-size:9px;color:#aaa;border-bottom:1px solid #444;margin-bottom:3px">● ● ●  drag · resize</div>${body(200, 210)}</div>`
+  return `<div class="ov" style="inset:0;background:rgba(0,0,0,0.55)"></div><div class="ov hud" style="left:22%;right:22%;top:6%;bottom:6%">${body(300, 260)}</div>`
+}
+const mapAnn = () => state.mapkind === 'auto'
+  ? ann('left:30%;bottom:28%;max-width:30%', 'Auto map is fed only by the visible set at each step (Go records it), not by level data. The niche’s far wall stays blank.')
+  : ann('left:30%;bottom:28%;max-width:30%', 'Manual map holds user marks only; the game may offer a grid and tools, never fill or correct it.')
+
+function drawMap() {
+  const s = 46, ox = 70, oy = 200
+  const cell = (cx, cz) => [ox + cx * s, oy - cz * s]
+  let g = ''
+  const sq = [[0, 0], [0, 1], [1, 1], [0, 2], [0, 3]]
+  for (const [cx, cz] of sq) { const [x, y] = cell(cx, cz); g += `<rect x="${x}" y="${y - s}" width="${s}" height="${s}" fill="rgba(127,127,127,0.12)"/>`; g += `<text x="${x + 4}" y="${y - 4}" font-size="10" fill="currentColor" opacity="0.6">${cx === 1 ? 'niche' : cz}</text>` }
+  const vis = IstaryScene.visibleFaces(5).filter((f) => f.kind === 'wall')
+  const isVis = (cx, cz, side) => vis.some((f) => f.cx === cx && f.cz === cz && f.side === side)
+  for (const [cx, cz] of sq) {
+    const c = IstaryScene.MAP[cx + ',' + cz]
+    for (const side of ['N', 'S', 'E', 'W']) {
+      if (c[side] === 'open') continue
+      const [x, y] = cell(cx, cz)
+      const L = { N: [x, y - s, x + s, y - s], S: [x, y, x + s, y], W: [x, y - s, x, y], E: [x + s, y - s, x + s, y] }[side]
+      const col = isVis(cx, cz, side) ? '#f2c14e' : '#777'
+      g += `<line x1="${L[0]}" y1="${L[1]}" x2="${L[2]}" y2="${L[3]}" stroke="${col}" stroke-width="${c[side] === 'door' ? 7 : 3}" ${c[side] === 'door' ? 'stroke-dasharray="6 3"' : ''}/>`
+    }
+  }
+  const [px, py] = cell(0, 0)
+  g += `<path d="M${px + s / 2},${py - s * 0.8} l10,22 l-20,0 z" fill="#f2c14e"/><text x="${px + s + 6}" y="${py - s / 2 + 4}" font-size="11" fill="currentColor">team, facing north</text>`
+  g += `<text x="${ox - 4}" y="${cell(0, 1)[1] - s / 2 + 4}" font-size="11" fill="currentColor" text-anchor="end">door</text>`
+  document.getElementById('map').innerHTML = `<svg viewBox="0 0 260 220" width="100%" style="color:var(--text)">${g}</svg>`
+}
+
+function drawSandbox() {
+  const t = +document.getElementById('sbTarget').value
+  const dist = +document.getElementById('sbDist').value
+  const h = +document.getElementById('sbH').value
+  const orbit = (+document.getElementById('sbOrbit').value * Math.PI) / 180
+  const clamp = document.getElementById('sbClamp').checked
+  document.getElementById('sbDv').textContent = dist.toFixed(1)
+  document.getElementById('sbHv').textContent = h.toFixed(2)
+  document.getElementById('sbOv').textContent = Math.round((orbit * 180) / Math.PI) + '°'
+  let shot
+  let note = ''
+  if (t === 0) {
+    shot = Object.assign({}, SHOTS.fp)
+    note = 'First person ignores distance, height and orbit.'
+  } else {
+    const [x, z] = FORM[t - 1]
+    let pos = [x + Math.sin(orbit) * dist, h, z - Math.cos(orbit) * dist]
+    if (clamp) {
+      const c = [Math.max(-1.9, Math.min(1.9, pos[0])), Math.min(2.9, pos[1]), Math.max(-1.95, Math.min(1.9, pos[2]))]
+      if (c[0] !== pos[0] || c[2] !== pos[2]) note = 'Camera pushed back inside the team\'s square (like a camera colliding with walls).'
+      pos = c
+    } else if (pos[2] < -2 || Math.abs(pos[0]) > 2) {
+      note = 'Camera is outside the team\'s square. The space behind it is not part of the visible set, so it renders as nothing. Decision C2 asks whether to allow this.'
+    }
+    shot = { pos, target: [x * 0.4, 1.1, z + 7], fov: 68, targetSlot: t, party: party() }
+  }
+  shot.style = state.tr
+  shot.lightDis = state.light
+  document.getElementById('sbFrame').innerHTML = IstaryScene.render(shot).svg + `<div class="ov camtag hud">${t ? 'Attached to ' + t + ' ' + TEAM[t - 1].name : 'First person'}</div>`
+  document.getElementById('sbNote').textContent = note
+}
+
+document.querySelectorAll('input[name=tr]').forEach((el) => el.addEventListener('change', (e) => { state.tr = e.target.value; drawFrames(); drawSandbox() }))
+document.querySelectorAll('input[name=light]').forEach((el) => el.addEventListener('change', (e) => { state.light = +e.target.value; drawFrames(); drawSandbox() }))
+document.querySelectorAll('input[name=mapmode]').forEach((el) => el.addEventListener('change', (e) => { state.mapmode = e.target.value; drawFrames() }))
+document.querySelectorAll('input[name=mapkind]').forEach((el) => el.addEventListener('change', (e) => { state.mapkind = e.target.value; drawFrames() }))
+document.getElementById('mapHeading').addEventListener('change', (e) => { state.heading = e.target.checked; drawFrames() })
+document.getElementById('ann').addEventListener('change', (e) => document.body.classList.toggle('annotate', e.target.checked))
+for (const id of ['sbTarget', 'sbDist', 'sbH', 'sbOrbit', 'sbClamp']) document.getElementById(id).addEventListener('input', drawSandbox)
+
+// Optional URL hash for exporting stills, e.g. #tr=rich&light=2&map=docked&kind=auto&ann=0
+for (const kv of location.hash.slice(1).split('&')) {
+  const [k, v] = kv.split('=')
+  const pick = (name, val) => { const el = document.querySelector(`input[name=${name}][value="${val}"]`); if (el) { el.checked = true; el.dispatchEvent(new Event('change')) } }
+  if (k === 'tr') pick('tr', v)
+  if (k === 'light') pick('light', v)
+  if (k === 'map') pick('mapmode', v)
+  if (k === 'kind') pick('mapkind', v)
+  if (k === 'ann' && v === '0') { document.getElementById('ann').checked = false; document.body.classList.remove('annotate') }
+}
+drawMap(); drawFrames(); drawSandbox()
+</script>
+</body>
+</html>
