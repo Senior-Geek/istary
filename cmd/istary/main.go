@@ -285,23 +285,13 @@ func combatTimerTick(game *engine.GameState, sinceLast time.Duration) bool {
 		}
 	case combat.Phase == engine.CombatChestResult:
 		advanceChestMessages(game)
-	case combat.Phase == engine.CombatVictory:
+	case combat.Phase == engine.CombatVictory || combat.Phase == engine.CombatDefeat:
+		// PAUSE2 twice, then the controller leaves combat (victory: the
+		// maze; defeat: the castle).
 		if !combat.ChestPauseUsed {
 			combat.ChestPauseUsed = true
 		} else {
-			game.Combat = nil
-			game.Phase = engine.PhaseMaze
-			game.MazeMessage = ""
-			game.MazeMessage2 = ""
-		}
-	case combat.Phase == engine.CombatDefeat:
-		if !combat.ChestPauseUsed {
-			combat.ChestPauseUsed = true
-		} else {
-			game.Combat = nil
-			game.Phase = engine.PhaseTown
-			game.Town.Location = engine.Castle
-			game.Town.Message = "YOUR PARTY HAS PERISHED IN THE MAZE..."
+			ctrl.LeaveCombat()
 		}
 	default:
 		return false
@@ -3518,13 +3508,10 @@ func handleCombatInput(game *engine.GameState, ev *tcell.EventKey) {
 			ch := strings.ToUpper(string(ev.Rune()))
 			if ch == "F" {
 				// Fight — transition to normal combat
-				combat.Friendly = false
-				combat.Phase = engine.CombatChoose
-				combat.CurrentActor = findNextActor(game, -1)
+				app.New(game).FightFriendly()
 			} else if ch == "L" {
 				// Leave in peace — exit combat
-				game.Phase = engine.PhaseMaze
-				game.Combat = nil
+				app.New(game).LeaveInPeace()
 			}
 		}
 
@@ -3571,19 +3558,12 @@ func handleCombatInput(game *engine.GameState, ev *tcell.EventKey) {
 		// Auto-advances via ticker (PAUSE2 from Pascal source, not keypress).
 		// Keypress also advances immediately.
 		if ev.Key() == tcell.KeyEnter || ev.Key() == tcell.KeyRune {
-			game.Combat = nil
-			game.Phase = engine.PhaseMaze
-			game.MazeMessage = ""
-			game.MazeMessage2 = ""
+			app.New(game).LeaveCombat() // back to the maze
 		}
 
 	case engine.CombatDefeat:
 		if ev.Key() == tcell.KeyEnter || ev.Key() == tcell.KeyRune {
-			// Return to town (party is dead)
-			game.Combat = nil
-			game.Phase = engine.PhaseTown
-			game.Town.Location = engine.Castle
-			game.Town.Message = "YOUR PARTY HAS PERISHED IN THE MAZE..."
+			app.New(game).LeaveCombat() // back to the castle (party is dead)
 		}
 	}
 }
@@ -3692,17 +3672,17 @@ func handleCombatChoose(game *engine.GameState, ev *tcell.EventKey) {
 	combat := game.Combat
 	party := game.Town.Party.Members
 
+	ctrl := app.New(game)
 	if combat.CurrentActor >= len(party) {
-		combat.Phase = engine.CombatConfirm
+		ctrl.FinishOrders()
 		return
 	}
 
 	member := party[combat.CurrentActor]
-	ctrl := app.New(game)
 	if !app.CanGiveOrder(member) {
 		combat.CurrentActor = findNextActor(game, combat.CurrentActor)
 		if combat.CurrentActor >= len(party) {
-			combat.Phase = engine.CombatConfirm
+			ctrl.FinishOrders()
 		}
 		return
 	}
@@ -3958,7 +3938,8 @@ func advanceActor(game *engine.GameState) {
 	combat := game.Combat
 	combat.CurrentActor = findNextActor(game, combat.CurrentActor)
 	if combat.CurrentActor >= len(game.Town.Party.Members) {
-		combat.Phase = engine.CombatConfirm
+		// Every member who can act has an order: confirmation.
+		app.New(game).FinishOrders()
 	}
 }
 
