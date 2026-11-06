@@ -1,0 +1,939 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Istary Combat Refinement</title>
+<!--
+  Istary M2 combat prototype, refinement of approach C. Nonfunctional design
+  mockup, not application code, not connected to the engine. Open directly in
+  a browser. It plays the same illustrative fixture as combat.html
+  (combat-fixture.js): the object named GO stands in for the Go controller,
+  and everything it returns (order menus, legality, targets, the resolved
+  round) would come from Go in the product.
+
+  Model: six adventurers, one battlefield, one action at a time.
+-->
+<style>
+  :root {
+    --bg: #131518; --panel: #1c1f23; --line: #30343a; --text: #e6e3dc; --muted: #9a978f;
+    --accent: #f2c14e; --bad: #ff7a5c; --ok: #8fd18f; --note: #7fb8ff; --hidden: #ff6fa5;
+    --hud: rgba(14,15,18,0.86); --hud-line: rgba(255,255,255,0.14); --mark: #ffffff;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) { --bg: #f3f1ec; --panel: #ffffff; --line: #d9d5cc; --text: #22201c; --muted: #6c685f; --note: #1f6fd1; --hidden: #c2185b; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.45 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif; }
+  main { max-width: 1480px; margin: 0 auto; padding: 12px 16px 40px; }
+  h1 { font-size: 21px; margin: 4px 0 2px; }
+  a { color: var(--note); }
+  .lede { color: var(--muted); margin: 0 0 10px; max-width: 1000px; }
+  .tag { display: inline-block; font-size: 11px; padding: 1px 6px; border-radius: 9px; border: 1px solid var(--line); color: var(--muted); margin-left: 6px; vertical-align: 1px; font-weight: 400; }
+  .controls { position: sticky; top: 0; z-index: 30; background: var(--bg); padding: 6px 0; display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; border-bottom: 1px solid var(--line); }
+  .controls fieldset { border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px 4px; margin: 0; font-size: 12.5px; }
+  .controls legend { font-size: 10.5px; color: var(--muted); padding: 0 4px; }
+  .controls label { margin-right: 8px; white-space: nowrap; }
+  .controls button { font: inherit; font-size: 12.5px; }
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 16px; margin-top: 12px; align-items: start; }
+  @media (max-width: 1180px) { .layout { grid-template-columns: 1fr; } }
+
+  /* ── stage ── */
+  .stage { position: relative; aspect-ratio: 16 / 9; background: #000; border-radius: 8px; overflow: hidden; color: #e9e6df; container-type: inline-size; font-size: clamp(9px, 1.28cqw, 14px); user-select: none; }
+  .scene { position: absolute; inset: 0; }
+  .scene > svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .ovl { position: absolute; inset: 0; pointer-events: none; }
+  .ovl.moving .anch { opacity: 0; }
+  .ovl > * { pointer-events: auto; position: absolute; }
+  .anch { transition: opacity .2s; }
+  .hud { background: var(--hud); border: 1px solid var(--hud-line); border-radius: 7px; padding: .35em .6em; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); box-shadow: 0 4px 18px rgba(0,0,0,.35); }
+  .mono { font-family: ui-monospace, Menlo, monospace; }
+  .k { color: #aaa69d; }
+  kbd { font: 600 .82em ui-monospace, Menlo, monospace; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 3px; padding: 0 .3em; color: var(--text); }
+  .stage kbd { border-color: rgba(255,255,255,.35); color: #fff; background: rgba(255,255,255,.06); }
+  .camtag { right: 1.2%; top: 2.2%; font-size: .82em; color: #cfcac0; }
+  .banner { left: 50%; top: 36%; transform: translate(-50%,-50%); font-size: 2.1em; letter-spacing: .14em; font-weight: 800; color: #ffe2a0; text-shadow: 0 2px 14px #000; pointer-events: none !important; }
+
+  /* The team strip: the six-member status in exploration, and the one
+     structured order summary in combat. Front line left, back line right. */
+  .strip { left: 1.2%; right: 1.2%; bottom: 1.6%; display: flex; gap: 1.2%; align-items: flex-end; pointer-events: none !important; }
+  .strip .line { flex: 1; display: flex; flex-direction: column; gap: .15em; min-width: 0; }
+  .strip .line > .lt { font-size: .72em; letter-spacing: .08em; text-transform: uppercase; color: #bdb6a6; padding-left: .3em; text-shadow: 0 1px 3px #000; }
+  .strip .line > .cards { display: flex; gap: .3em; }
+  .card { flex: 1; min-width: 0; padding: .22em .45em .25em; border-radius: 6px; background: var(--hud); border: 1px solid var(--hud-line); font-size: .84em; line-height: 1.25; cursor: pointer; pointer-events: auto; position: relative; }
+  .card .nm { display: flex; justify-content: space-between; gap: .4em; white-space: nowrap; }
+  .card .nm b { overflow: hidden; text-overflow: ellipsis; }
+  .card .st { color: #bbb; }
+  .card .st.poison { color: #7bd36a; }
+  .card .bar { height: 3px; background: #333; border-radius: 2px; margin-top: 2px; }
+  .card .bar i { display: block; height: 100%; background: var(--ok); border-radius: 2px; transition: width .4s; }
+  .card.hurt .bar i { background: #e3b04b; }
+  .card .ord { display: block; margin-top: .15em; padding-top: .12em; border-top: 1px solid rgba(255,255,255,.1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--accent); }
+  .card .ord.none { color: #8a877f; }
+  .card .ord .gchip { display: inline-block; width: .7em; height: .7em; border-radius: 50%; vertical-align: -.02em; margin-left: .15em; }
+  .card.sel { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .card.acting { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 0 12px rgba(242,193,78,.5); }
+  .card.mark { border-color: var(--mark); box-shadow: 0 0 0 1px var(--mark); }
+  .card.cand { border-color: var(--ok); }
+  .card.changed { animation: flash 1.1s; }
+  .card.quiet { opacity: .8; }
+  @keyframes flash { 0% { background: rgba(255,110,80,.6); } 100% { background: var(--hud); } }
+  .info { display: inline-block; width: 1.2em; height: 1.2em; line-height: 1.2em; text-align: center; border-radius: 50%; border: 1px solid rgba(255,255,255,.4); font-size: .78em; cursor: pointer; color: #ddd; margin-left: .2em; }
+
+  /* The one message location: top left, over the west wall and ceiling,
+     which hold neither team nor monsters in any combat shot. Messages,
+     prompts, the confirm button, playback controls and the chest all
+     appear here. */
+  .msgbox { left: 1.2%; top: 2.2%; width: 44%; min-height: 3.2em; text-align: center; }
+  .msgbox .lines { font-family: ui-monospace, Menlo, monospace; font-size: 1.02em; }
+  .msgbox .lines span { display: block; }
+  .msgbox .lines span.pending { opacity: 0; }
+  .msgbox .meta { font-size: .86em; margin-top: .3em; display: flex; gap: .5em; justify-content: center; align-items: center; flex-wrap: wrap; }
+  .msgbox .prompt { font-size: .98em; }
+  .toast { color: #ffd3c4; background: #3a1f17; border: 1px solid #b4553a; border-radius: 5px; padding: .15em .5em; margin-bottom: .3em; font-size: .92em; }
+  .btn { font: inherit; color: #111; background: var(--accent); border: 0; border-radius: 5px; padding: .2em .7em; font-weight: 700; cursor: pointer; }
+  .btn.ghost { color: #eee; background: transparent; border: 1px solid rgba(255,255,255,.3); font-weight: 500; }
+
+  /* Contextual commands: beside the member being ordered, nothing else. */
+  .menu { min-width: 12em; padding: .35em; font-size: .92em; }
+  .menu .title { font-weight: 700; margin: 0 .2em .3em; display: flex; justify-content: space-between; gap: 1em; align-items: center; }
+  .menu .title small { color: #aaa69d; font-weight: 400; }
+  .act { display: flex; gap: .5em; align-items: baseline; width: 100%; font: inherit; color: #eee; background: transparent; border: 1px solid transparent; border-radius: 5px; padding: .16em .4em; text-align: left; cursor: pointer; }
+  .act:hover, .act:focus-visible { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.18); outline: none; }
+  .act.cur { border-color: var(--accent); }
+  .act .lbl { flex: 1; }
+  .act .why { display: block; font-size: .82em; color: #b6a98e; }
+  .act.off { color: #8a877f; cursor: not-allowed; }
+  .act.off kbd { opacity: .5; }
+  .act .note { font-size: .82em; color: #b6a98e; }
+  .spells input { width: 100%; font: inherit; background: #0d0e10; color: #fff; border: 1px solid #555; border-radius: 4px; padding: .15em .4em; margin-bottom: .3em; text-transform: uppercase; }
+
+  .glabel { transform: translate(-50%, -125%); white-space: nowrap; font-size: .9em; cursor: pointer; text-align: center; }
+  .glabel .n { font-weight: 800; margin-right: .3em; }
+  .glabel.target { border-color: var(--mark); box-shadow: 0 0 0 1px var(--mark); animation: pulse 1.2s infinite; }
+  .glabel.mark { border-color: var(--mark); box-shadow: 0 0 0 1px var(--mark); }
+  .glabel.acting { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 0 12px rgba(242,193,78,.5); }
+  @keyframes pulse { 50% { box-shadow: 0 0 0 1px var(--mark), 0 0 10px rgba(255,255,255,.6); } }
+  .nameplate { transform: translate(-50%, -135%); white-space: nowrap; font-size: .86em; font-weight: 700; border-color: var(--accent); color: #ffe7a8; pointer-events: none !important; }
+
+  .chest { width: 56%; text-align: left; }
+  .chest h4 { margin: 0 0 .2em; display: flex; justify-content: space-between; font-size: 1em; }
+  .chest .cols { display: grid; grid-template-columns: 1.1fr 1fr; gap: .8em; }
+  .chest .acts { display: flex; flex-wrap: wrap; gap: .25em; margin-top: .3em; }
+  .chest .acts .act { width: auto; border-color: rgba(255,255,255,.18); }
+
+  .modal { left: 50%; top: 42%; transform: translate(-50%,-50%); width: 40%; min-width: 20em; padding: .7em .9em; font-size: .95em; z-index: 5; }
+  .modal h4 { margin: 0 0 .3em; display: flex; justify-content: space-between; }
+  .modal table td { padding: .05em .5em .05em 0; }
+  .ro { color: #b6a98e; font-size: .88em; margin-top: .4em; }
+
+  /* ── reviewer side ── */
+  .side { display: flex; flex-direction: column; gap: 12px; }
+  .box { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font-size: 13px; }
+  .box h3 { margin: 0 0 6px; font-size: 13px; }
+  .steps { list-style: none; margin: 0; padding: 0; counter-reset: s; }
+  .steps li { counter-increment: s; padding: 2px 6px; border-radius: 5px; display: flex; gap: 6px; align-items: baseline; color: var(--muted); }
+  .steps li::before { content: counter(s); font: 600 11px ui-monospace, Menlo, monospace; min-width: 16px; }
+  .steps li.done { color: var(--text); }
+  .steps li.on { background: rgba(242,193,78,.18); color: var(--text); font-weight: 600; }
+  .steps li button { margin-left: auto; font-size: 11px; padding: 0 6px; }
+  .plan svg { width: 100%; max-width: 190px; height: auto; display: block; margin: 0 auto; color: var(--text); }
+  .truth table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .truth td, .truth th { padding: 1px 4px; text-align: left; }
+  .truth th { color: var(--muted); font-weight: 500; }
+  .truth .diff { color: var(--bad); font-weight: 700; }
+  .hiddeninfo { border: 1.5px dashed var(--hidden); color: var(--hidden); border-radius: 5px; padding: 3px 6px; font-size: 12px; margin-top: 6px; }
+  .notes ul { margin: 0; padding-left: 18px; }
+  .notes li { margin: 2px 0; }
+  .notes .lab { font-size: 10.5px; border: 1px solid var(--line); border-radius: 8px; padding: 0 5px; color: var(--muted); margin-right: 4px; }
+  body:not(.annotate) .notes, body:not(.annotate) .truth, body:not(.annotate) .plan { display: none; }
+  html.still *, html.still *::before { animation: none !important; transition: none !important; }
+</style>
+</head>
+<body class="annotate">
+<main>
+  <h1>Istary combat refinement <span class="tag">M2 design exploration · not approved</span></h1>
+  <p class="lede">Six adventurers, one battlefield, one action at a time. This page refines approach C: a stable battlefield camera, one structured team and order summary, one place for messages, and the resolved round shown one action at a time. Same fixture as the A/B/C comparison, which stays in <a href="combat.html">combat.html</a>. Everything is illustrative and not connected to the engine; placeholder figures are not an art style. <a href="storyboard.html">← M2 storyboard</a></p>
+
+  <div class="controls" role="toolbar">
+    <fieldset><legend>Camera during the round</legend>
+      <label><input type="radio" name="cam" value="fixed" checked> Stable, no camera movement</label>
+      <label><input type="radio" name="cam" value="push"> Stable + restrained push-in</label>
+    </fieldset>
+    <fieldset><legend>Round playback</legend>
+      <label><input type="radio" name="pb" value="manual" checked> Manual</label>
+      <label><input type="radio" name="pb" value="auto"> Automatic</label>
+      <select id="speed" aria-label="Automatic speed"><option value="0.6">slow</option><option value="1" selected>normal</option><option value="1.8">fast</option></select>
+    </fieldset>
+    <fieldset><legend>Scenery outside the Classic view</legend>
+      <label><input type="radio" name="vis" value="strict"> Strict</label>
+      <label><input type="radio" name="vis" value="shell" checked> Neutral shell</label>
+    </fieldset>
+    <fieldset><legend>Review</legend>
+      <label><input type="checkbox" id="ann" checked> Design notes</label>
+      <button id="restart">Restart</button>
+    </fieldset>
+  </div>
+
+  <div class="layout">
+    <div>
+      <div class="stage" id="stage" tabindex="0" aria-label="Combat prototype stage. Click to give it keyboard focus.">
+        <div class="scene" id="scene"><div class="ovl" id="ovl"></div></div>
+      </div>
+      <p class="k" style="font-size:12.5px;margin:6px 2px">Click the stage, then use the keyboard or the mouse. <kbd>Return</kbd> continue or confirm · <kbd>1</kbd>–<kbd>6</kbd> member (or target) · <kbd>F</kbd> <kbd>P</kbd> <kbd>S</kbd> <kbd>U</kbd> <kbd>D</kbd> <kbd>R</kbd> orders · <kbd>Tab</kbd> next member · <kbd>B</kbd> back · <kbd>C</kbd> clear all · <kbd>Esc</kbd> cancel · <kbd>I</kbd> character (read-only) · <kbd>Space</kbd> next action · <kbd>⇧ Return</kbd> show the rest · <kbd>A</kbd> automatic · <kbd>K</kbd> camera mode.</p>
+    </div>
+    <aside class="side">
+      <div class="box"><h3>Moments</h3><ol class="steps" id="steps"></ol></div>
+      <div class="box plan" id="plan"></div>
+      <div class="box notes" id="notes"></div>
+      <div class="box truth" id="truth"></div>
+    </aside>
+  </div>
+</main>
+
+<script src="combat-scene.js"></script>
+<script src="combat-fixture.js"></script>
+<script>
+'use strict'
+const CS = window.CombatScene
+const FORM = CS.FORMATION
+const GC = CS.GROUP_COLOR
+
+// ════════════════════════════════════════════════════════════════════════
+// PRESENTATION STATE. Everything below is presentation only. GO (from
+// combat-fixture.js) is the stand-in controller; nothing here decides a rule.
+// ════════════════════════════════════════════════════════════════════════
+const $ = (s) => document.querySelector(s)
+const stage = $('#stage'), sceneEl = $('#scene'), ovl = $('#ovl')
+const P = {}
+const opts = { cam: 'fixed', pb: 'manual', speed: 1, vis: 'shell', ann: true, still: false, at: 0.5 }
+
+function resetPresentation() {
+  GO.reset()
+  Object.assign(P, {
+    phase: 'explore', actor: 1, orders: Array(6).fill(null), pending: null, spellFilter: '', editing: false,
+    lastOrders: null, view: { team: clone(GO.st.team), groups: clone(GO.st.groups) },
+    // What the messages have shown so far this round (figures only). The
+    // numbers stay on the Classic round snapshot until the round ends.
+    seen: null, blocks: [], bi: -1, ev: null, roundDone: 0,
+    chestPending: null, reports: [], lastMsg: null, toast: null, profile: null, banner: null,
+    timer: null, changed: {}, hover: 0, teamZ: 0, reveal: 0,
+  })
+  cam.cur = null; cam.anim = null
+}
+
+// ── cameras ─────────────────────────────────────────────────────────────
+// Axis of action: the corridor centre line (x = 0) from the team towards
+// the monsters. Every combat camera stays on the east side (x > 0), behind
+// the team and inside the team's square, so screen direction never flips:
+// team at the bottom, monsters ahead, group 1 nearer than group 2.
+const SHOT = {
+  fp: () => ({ pos: [0, 1.55, -1.9], target: [0, 1.45, 10], fov: 72 }),
+  battle: () => ({ pos: [1.35, 2.88, -1.95], target: [-0.3, -0.35, 4.6], fov: 92 }),
+  chest: () => ({ pos: [1.5, 2.1, 1.7], target: [-0.15, 0.25, 4.4], fov: 58 }),
+  // Restrained push-in: a short dolly forward and a slight turn towards the
+  // action, with the same lens, so the near team grows a little and the
+  // monsters barely move. It stays east of the axis, behind the team and
+  // inside the team's square. No cuts, no zoom, no reverse angle.
+  push(b) {
+    const W = SHOT.battle()
+    const a = pointOf(b.actor), t = pointOf(b.tgt) || a
+    const ix = a[0] * 0.55 + t[0] * 0.45
+    return { pos: [Math.max(0.8, W.pos[0] + (ix - W.pos[0]) * 0.2), W.pos[1], -1.6], target: [W.target[0] + (ix - W.target[0]) * 0.3, W.target[1], W.target[2]], fov: W.fov }
+  },
+}
+// Presentation-only formation inside the team's square, a little further
+// forward than combat.html's so both lines fit the battlefield framing.
+const REFORM = FORM.map(([x, z], i) => [i === 3 ? -0.8 : x, i < 3 ? z + 0.65 : z + 0.5])
+function pointOf(k) {
+  if (!k) return null
+  if (k[0] === 'p') { const f = REFORM[+k[1] - 1]; return [f[0], 0.8, f[1]] }
+  const g = P.view.groups[+k[1]]; const at = g.at.slice(0, Math.max(1, g.n))
+  return [at.reduce((s, p) => s + p[0], 0) / at.length, 0.8, at.reduce((s, p) => s + p[1], 0) / at.length]
+}
+const ease = (k) => (k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2)
+const camLerp = (a, b, e) => ({ pos: CS.lerp3(a.pos, b.pos, e), target: CS.lerp3(a.target, b.target, e), fov: a.fov + (b.fov - a.fov) * e })
+const cam = { cur: null, anim: null, k: 1 }
+function setCam(shot, ms, onFrame) {
+  if (opts.still || !cam.cur || !ms || matchMedia('(prefers-reduced-motion: reduce)').matches) { cam.cur = shot; cam.anim = null; cam.k = 1; if (onFrame) onFrame(1); return }
+  const from = cam.cur, t0 = performance.now()
+  cam.anim = { to: shot }
+  ovl.classList.add('moving')
+  const step = (now) => {
+    if (!cam.anim || cam.anim.to !== shot) return
+    const k = Math.max(0, Math.min(1, (now - t0) / ms)), e = ease(k)
+    cam.cur = camLerp(from, shot, e); cam.k = k
+    if (onFrame) onFrame(e)
+    drawScene()
+    if (k < 1) requestAnimationFrame(step)
+    else { cam.anim = null; ovl.classList.remove('moving'); draw() }
+  }
+  requestAnimationFrame(step)
+}
+const sameShot = (a, b) => a && b && a.fov === b.fov && a.pos.every((v, i) => v === b.pos[i]) && a.target.every((v, i) => v === b.target[i])
+
+// ── helpers ────────────────────────────────────────────────────────────
+const tm = (s) => P.view.team[s - 1]
+const gname = (gi, pl) => { const g = P.view.groups[gi]; return (g.known ? g.id : g.unk)[pl ? 1 : 0] }
+const inCombat = () => ['encounter', 'orders', 'review', 'playback'].includes(P.phase)
+function orderText(o) {
+  if (!o) return '—'
+  const g = (gi) => ` → ${gi + 1}<i class="gchip" style="background:${GC[gi]}"></i>`
+  switch (o.act) {
+    case 'fight': return 'Fight' + g(o.tg)
+    case 'parry': return 'Parry'
+    case 'run': return 'Run'
+    case 'dispel': return 'Dispel' + g(o.tg)
+    case 'use': return o.item ? `Use ${o.item}` + g(o.tg) : 'Use (= Parry)'
+    case 'spell': return `${o.spell}` + (o.tg != null ? g(o.tg) : o.ally ? ` → ${tm(o.ally).name}` : '')
+  }
+}
+const plainOrder = (o) => orderText(o).replace(/<[^>]+>/g, '')
+const allOrdered = () => P.orders.every(Boolean)
+const nextUnordered = (from) => { for (let i = 0; i < 6; i++) { const s = ((from - 1 + i) % 6) + 1; if (!P.orders[s - 1]) return s } return 0 }
+function toast(msg) { P.toast = msg; clearTimeout(P.toastT); P.toastT = setTimeout(() => { P.toast = null; draw() }, 2800); draw() }
+
+// ── input: orders (same flow as combat.html; legality comes from GO) ────
+function chooseActor(s) {
+  if (P.phase === 'review') { P.phase = 'orders'; P.editing = true }
+  if (P.phase !== 'orders') return
+  P.actor = s; P.pending = null; draw()
+}
+function chooseAction(key) {
+  const item = GO.menu(P.actor).find((a) => a.key === key)
+  if (!item) return
+  if (!item.ok) { toast(`${item.label} is not available for ${tm(P.actor).name}: ${item.why}.`); return }
+  const o = { slot: P.actor, act: item.act, item: item.item }
+  if (item.act === 'spell') { P.pending = { o, need: 'spell' }; P.spellFilter = ''; draw(); return }
+  needTarget(o)
+}
+function needTarget(o) {
+  const kind = GO.targetKind(o)
+  if (kind === 'group') {
+    const alive = GO.aliveGroups()
+    if (alive.length === 1) { o.tg = alive[0]; return setOrder(o) }
+    P.pending = { o, need: 'group' }; draw(); return
+  }
+  if (kind === 'ally') { P.pending = { o, need: 'ally' }; draw(); return }
+  setOrder(o)
+}
+function chooseSpell(name) {
+  const sp = GO.spells(P.actor).find((s) => s.name === name)
+  if (!sp) return
+  if (!sp.ok) { toast(`${sp.name}: ${sp.why}.`); return }
+  const o = P.pending.o; o.spell = sp.name; needTarget(o)
+}
+function chooseGroup(gi) {
+  if (!P.pending || P.pending.need !== 'group') return
+  if (!GO.alive(gi)) { toast(`Group ${gi + 1} has no one left to target.`); return }
+  P.pending.o.tg = gi; setOrder(P.pending.o)
+}
+function chooseAlly(s) { if (P.pending && P.pending.need === 'ally') { P.pending.o.ally = s; setOrder(P.pending.o) } }
+function setOrder(o) {
+  P.orders[o.slot - 1] = o; P.pending = null
+  if (P.editing && allOrdered()) { P.editing = false; P.phase = 'review'; draw(); return }
+  const n = nextUnordered(o.slot + 1)
+  if (n) { P.actor = n; draw() } else { P.phase = 'review'; draw() }
+}
+function back() {
+  if (P.pending) { P.pending = null; draw(); return }
+  if (P.phase === 'review') { P.phase = 'orders'; P.editing = true; P.actor = 6; draw(); return }
+  if (P.phase === 'orders' && P.actor > 1) { P.actor--; draw() }
+}
+function clearAll() { P.orders = Array(6).fill(null); P.actor = 1; P.phase = 'orders'; P.editing = false; P.pending = null; draw() }
+function repeatLast() {
+  if (!P.lastOrders) return
+  const alive = GO.aliveGroups()
+  P.orders = P.lastOrders.map((o) => {
+    const c = Object.assign({}, o)
+    if (c.act === 'spell') { const sp = GO.spells(c.slot).find((s) => s.name === c.spell); if (!sp || !sp.ok) return null }
+    if (c.tg != null && !alive.includes(c.tg)) { if (alive.length === 1) c.tg = alive[0]; else return null }
+    return c
+  })
+  if (allOrdered()) P.phase = 'review'
+  else { P.actor = nextUnordered(1); toast('Some earlier orders are no longer possible and must be given again.') }
+  draw()
+}
+
+// ── phases ─────────────────────────────────────────────────────────────
+function startExplore(glide) {
+  P.phase = 'explore'; P.reveal = 0
+  const to = SHOT.fp()
+  if (glide && !opts.still) { cam.cur = Object.assign({}, to, { pos: [to.pos[0], to.pos[1], to.pos[2] - 4] }); P.teamZ = -1; setCam(to, 900); setTimeout(() => { P.teamZ = 0; draw() }, 450) }
+  else setCam(to, 0)
+  draw()
+}
+// The encounter: the camera rises out of first person to the battlefield
+// framing and the team fades in where it has been all along.
+function startEncounter() {
+  P.phase = 'encounter'; P.banner = 'ENCOUNTER'
+  clearTimeout(P.timer)
+  setCam(SHOT.battle(), 1500, (e) => { P.reveal = e })
+  if (!opts.still) P.timer = setTimeout(() => { P.banner = null; startOrders() }, 1900)
+  draw()
+}
+function startOrders() {
+  P.phase = 'orders'; P.actor = 1; P.orders = Array(6).fill(null); P.pending = null; P.editing = false; P.reveal = 1
+  if (!sameShot(cam.cur, SHOT.battle())) setCam(SHOT.battle(), 600)
+  draw()
+}
+function commit() {
+  if (!allOrdered()) return
+  P.lastOrders = clone(P.orders)
+  P.blocks = GO.commit(P.orders)
+  P.seen = P.view.groups.map((g) => ({ n: g.n, asleep: g.asleep }))
+  P.bi = -1; P.phase = 'playback'; P.changed = {}; P.roundDone = 0; P.toast = null; P.ev = null
+  advance()
+}
+
+// One action at a time. Each event: identify the actor, direct attention,
+// play a short effect, show the message, then wait for the next.
+const IMPACT = 0.42
+function significant(b) {
+  // Restrained mode pushes in for what the actor DOES (spell, dispel, item),
+  // never for what happens (a kill, a sleep): choosing the camera from the
+  // outcome would announce the result before the message does.
+  const o = b.actor && b.actor[0] === 'p' ? P.lastOrders[+b.actor[1] - 1] : null
+  return !!o && ['spell', 'dispel', 'use'].includes(o.act)
+}
+function advance() {
+  clearTimeout(P.timer); clearTimeout(P.impactT)
+  if (P.phase !== 'playback') return
+  // Skipping ahead never skips what an action showed: finish the current
+  // one (its figures fall or sleep) before the next begins.
+  if (P.ev && !P.ev.impact && P.bi >= 0) setT(1)
+  P.bi++
+  if (P.bi >= P.blocks.length) return endRound()
+  const b = P.blocks[P.bi]
+  // Identification is not part of the frozen snapshot: names update at once.
+  if (b.silent) { for (const d of b.deltas || []) if (d.k === 'name') P.view.groups[d.gi].known = true; return advance() }
+  if (opts.cam === 'push') {
+    const to = b.actor && significant(b) ? SHOT.push(b) : SHOT.battle()
+    if (!sameShot(cam.cur, to)) setCam(to, 550)
+  }
+  P.ev = { t: 0, impact: false }
+  if (opts.still) { setT(opts.at); draw(); return }
+  const t0 = performance.now(), ms = 950 / opts.speed
+  const ev = P.ev
+  const step = (now) => {
+    if (P.ev !== ev) return
+    const t = Math.max(0, Math.min(1, (now - t0) / ms))
+    const crossed = setT(t)
+    if (crossed) draw(); else drawScene()
+    if (t < 1) requestAnimationFrame(step)
+  }
+  // Timers, not frames, own the result and the pacing, so a hidden or
+  // throttled page still shows every outcome in order.
+  P.impactT = setTimeout(() => { if (P.ev === ev && !ev.impact) { setT(Math.max(ev.t, IMPACT)); draw() } }, ms * IMPACT + 40)
+  if (opts.pb === 'auto') P.timer = setTimeout(advance, ms + (900 + 420 * b.lines.length) / opts.speed)
+  draw()
+  requestAnimationFrame(step)
+}
+// Moves the event clock; returns true when it crosses the impact moment.
+function setT(t) {
+  const ev = P.ev, b = P.blocks[P.bi]
+  ev.t = t
+  if (!ev.impact && t >= IMPACT) {
+    ev.impact = true
+    // What the message now says, the figures now show (fallen, asleep).
+    for (const d of b.deltas || []) if (d.k === 'count') P.seen[d.gi] = { n: d.n, asleep: d.asleep }
+    return true
+  }
+  return false
+}
+function showRest() {
+  if (P.phase !== 'playback') return
+  clearTimeout(P.timer); clearTimeout(P.impactT)
+  for (let i = P.bi + 1; i < P.blocks.length; i++) {
+    const b = P.blocks[i]
+    for (const d of b.deltas || []) { if (d.k === 'count') P.seen[d.gi] = { n: d.n, asleep: d.asleep }; if (d.k === 'name') P.view.groups[d.gi].known = true }
+  }
+  P.bi = P.blocks.length - 1; P.ev = { t: 1, impact: true }; P.rest = true
+  if (opts.cam === 'push') setCam(SHOT.battle(), 400)
+  draw()
+}
+function endRound() {
+  // The round has been shown: the display catches up with Go in one step,
+  // as Classic does after the last message.
+  const before = P.view.team
+  P.view.team = clone(GO.st.team); P.view.groups = clone(GO.st.groups)
+  P.changed = {}
+  P.view.team.forEach((m, i) => { if (m.hp !== before[i].hp || m.st !== before[i].st) P.changed[m.slot] = 1 })
+  P.blocks = []; P.bi = -1; P.ev = null; P.seen = null; P.rest = false
+  if (GO.st.result === 'victory') return startChest()
+  if (GO.st.result === 'fled') { P.lastMsg = ['THE PARTY FLED!']; return startReturn() }
+  P.roundDone = GO.st.round - 1
+  startOrders()
+}
+function startChest() {
+  P.phase = 'chest'; P.chestPending = null; P.reports = []; P.lastMsg = ['A CHEST!']
+  setCam(SHOT.chest(), 1200); draw()
+}
+function chestAct(act) {
+  if (P.phase !== 'chest') return
+  const who = GO.chestWho(act)
+  if (act === 'leave') return chestDo('leave', 4)
+  if (!who.length) { toast(act === 'inspect' ? 'Every member has already inspected this chest.' : act === 'calfo' ? 'No one can cast CALFO now.' : 'No one can do that.'); return }
+  P.chestPending = { act, who, stage: 'who' }; draw()
+}
+function chestWho(s) {
+  const p = P.chestPending; if (!p) return
+  if (!p.who.includes(s)) { toast(`${tm(s).name} cannot ${p.act === 'inspect' ? 'inspect again (one inspection each)' : p.act === 'calfo' ? 'cast CALFO' : 'do that'}.`); return }
+  if (p.act === 'disarm') { p.slot = s; p.stage = 'trap'; draw(); return }
+  chestDo(p.act, s)
+}
+function chestDo(act, s, trap) {
+  const r = GO.chest(act, s, trap)
+  if (r.report) P.reports.push(r.report)
+  for (const d of r.deltas || []) if (d.k === 'st') { tm(d.slot).st = d.st; P.changed = { [d.slot]: 1 } }
+  if (r.then) r.then()
+  P.chestPending = null
+  P.lastMsg = r.lines
+  draw()
+  if (r.end) { clearTimeout(P.timer); P.timer = setTimeout(() => startReturn(), opts.still ? 0 : 2200) }
+}
+function startReturn() {
+  P.phase = 'return'
+  setCam(SHOT.fp(), 1400, (e) => { P.reveal = 1 - e })
+  draw()
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// DRAWING
+// ════════════════════════════════════════════════════════════════════════
+// Lunge profile for the active combatant: out, hold, back.
+function lunge(t) { return t < IMPACT ? ease(t / IMPACT) : t < 0.62 ? 1 : 1 - ease((t - 0.62) / 0.38) }
+
+function sceneShot() {
+  const v = P.view, ph = P.phase
+  const b = ph === 'playback' && P.bi >= 0 ? P.blocks[P.bi] : null
+  const ev = P.ev || { t: 1, impact: true }
+  const pend = P.pending
+  const live = b && b.actor && !P.rest
+  const o = live && b.actor[0] === 'p' ? P.lastOrders[+b.actor[1] - 1] : null
+  // How far and which way the actor moves: a token gesture, never a path.
+  const reach = !live ? 0 : b.actor[0] === 'g' ? 1.0 : o && (o.act === 'fight') ? 0.9 : o && o.act === 'dispel' ? 0.35 : o && o.act === 'run' ? -0.45 : 0
+  const L = live ? lunge(ev.t) : 0
+  const hit = (k) => live && ev.impact && ev.t < 0.8 && b.tgt === k && (b.fx || []).some((f) => f.type === 'hit' || f.type === 'halito')
+  const reviewHover = ph === 'review' && P.hover ? P.orders[P.hover - 1] : null
+  // Who is marked as the target right now (one white ring, either side).
+  const markG = (gi) => (live && b.tgt === 'g' + gi) || (reviewHover && reviewHover.tg === gi) || (ph === 'orders' && !pend && P.orders[P.actor - 1] && P.orders[P.actor - 1].tg === gi)
+  const markP = (s) => (live && b.tgt === 'p' + s) || (reviewHover && reviewHover.ally === s)
+
+  const team = ['explore', 'return'].includes(ph) || ph === 'encounter' ? P.reveal : 1
+  const party = v.team.map((m) => {
+    const f = REFORM[m.slot - 1]
+    let x = f[0], z = f[1]
+    const acting = live && b.actor === 'p' + m.slot
+    if (acting && reach) { const tp = pointOf(b.tgt) || [x, 0, z + 3]; const dx = tp[0] - x, dz = tp[2] - z, d = Math.hypot(dx, dz) || 1; x += (dx / d) * reach * L; z += (dz / d) * reach * L }
+    if (hit('p' + m.slot)) z -= 0.12
+    return {
+      slot: m.slot, color: m.color, state: m.st === 'POISON' ? 'poison' : 'ok', at: [x, z],
+      selected: (ph === 'orders' && m.slot === P.actor) || acting || (ph === 'review' && P.hover === m.slot),
+      target: markP(m.slot),
+      candidate: (pend && pend.need === 'ally') || (P.chestPending && P.chestPending.stage === 'who' && P.chestPending.who.includes(m.slot)),
+      dim: team < 1 ? Math.max(0.01, team) : live && !acting && !markP(m.slot) ? 0.72 : undefined,
+    }
+  })
+  const showFoes = inCombat()
+  const seen = P.seen
+  const groups = showFoes ? v.groups.map((g, gi) => {
+    const sn = seen ? seen[gi] : g
+    const actingG = live && b.actor === 'g' + gi
+    return {
+      members: g.at.slice(0, g.n).map((p, i) => {
+        let x = p[0], z = p[1]
+        if (actingG && i === b.sub) { const tp = pointOf(b.tgt); const dx = tp[0] - x, dz = tp[2] - z, d = Math.hypot(dx, dz) || 1; x += (dx / d) * reach * L; z += (dz / d) * reach * L }
+        if (hit('g' + gi) && i === Math.max(0, sn.n - 1)) z += 0.15
+        return { x, z, h: p[2], color: g.color, asleep: i < sn.asleep, fading: i >= sn.n, dim: ph === 'encounter' ? Math.max(0.01, P.reveal) : live && !actingG && !markG(gi) ? 0.72 : undefined }
+      }),
+      ring: actingG ? 'actor' : markG(gi) ? 'mark' : pend && pend.need === 'group' && g.n ? 'target' : ['orders', 'review'].includes(ph) ? '' : null,
+    }
+  }) : []
+  let effects = []
+  if (live) {
+    if (o && ['spell', 'use', 'dispel'].includes(o.act) && ev.t < IMPACT + 0.1) effects.push({ type: 'cast', to: b.actor })
+    if (ev.impact) effects = effects.concat(b.fx || [])
+  }
+  return Object.assign({}, cam.cur, {
+    policy: opts.vis, teamZ: P.teamZ || 0,
+    party: team > 0 ? party : [], groups,
+    rowLine: inCombat() && ph !== 'encounter' ? 0.22 : 0,
+    chest: ph === 'chest' || (ph === 'return' && cam.anim) ? { x: 0, z: 4.4, selected: !!P.chestPending } : null,
+    effects,
+  })
+}
+let lastAnchors = {}
+function drawScene() {
+  const r = sceneEl.getBoundingClientRect()
+  const W = 960, Hh = Math.round(960 * (r.height / Math.max(1, r.width))) || 540
+  const out = CS.render(sceneShot(), W, Hh)
+  const old = sceneEl.querySelector('svg')
+  const tmp = document.createElement('div'); tmp.innerHTML = out.svg
+  if (old) old.replaceWith(tmp.firstChild); else sceneEl.prepend(tmp.firstChild)
+  lastAnchors = out.anchors
+  drawPlan()
+}
+const at = (k, dx, dy) => { const a = lastAnchors[k]; return a ? `left:${a[2] + (dx || 0)}%;top:${a[3] + (dy || 0)}%` : 'display:none' }
+
+// The team strip. One place for the six members, their line, their status
+// and (in combat) their orders. The front line is always the left group.
+function stripHtml() {
+  const ph = P.phase, b = ph === 'playback' ? P.blocks[P.bi] : null
+  const showOrders = ['orders', 'review', 'playback'].includes(ph)
+  const card = (m) => {
+    const s = m.slot, o = P.orders[s - 1]
+    const cls = ['card']
+    if (ph === 'orders' && s === P.actor) cls.push('sel')
+    if (b && b.actor === 'p' + s && !P.rest) cls.push('acting')
+    if ((b && b.tgt === 'p' + s && !P.rest) || (ph === 'review' && P.hover && P.orders[P.hover - 1] && P.orders[P.hover - 1].ally === s)) cls.push('mark')
+    if (ph === 'review' && P.hover === s) cls.push('sel')
+    if ((P.pending && P.pending.need === 'ally') || (P.chestPending && P.chestPending.stage === 'who' && P.chestPending.who.includes(s))) cls.push('cand')
+    if (m.hp < m.max) cls.push('hurt')
+    if (P.changed[s]) cls.push('changed')
+    return `<div class="${cls.join(' ')}" data-slot="${s}"><div class="nm"><b>${s} ${m.name}</b><span><span class="st ${m.st === 'POISON' ? 'poison' : ''}">${m.st}</span><span class="info" data-info="${s}" title="Character (read-only)">i</span></span></div><div class="nm"><span class="k">${m.cls}</span><span class="mono">${m.hp}/${m.max}</span></div><div class="bar"><i style="width:${(100 * m.hp) / m.max}%"></i></div>${showOrders ? `<span class="ord${o ? '' : ' none'}">${o ? orderText(o) : ph === 'orders' && s === P.actor ? 'choosing…' : '—'}</span>` : ''}</div>`
+  }
+  const T = P.view.team
+  const combat = showOrders || ph === 'chest'
+  return `<div class="strip"><div class="line">${combat ? '<span class="lt">Front line · 1–3</span>' : ''}<div class="cards">${T.slice(0, 3).map(card).join('')}</div></div><div class="line">${combat ? '<span class="lt">Back line · 4–6</span>' : ''}<div class="cards">${T.slice(3).map(card).join('')}</div></div></div>`
+}
+function menuHtml(slot) {
+  const m = tm(slot)
+  const rows = GO.menu(slot).map((a) => `<button class="act${a.ok ? '' : ' off'}${P.orders[slot - 1] && P.orders[slot - 1].act === a.act ? ' cur' : ''}" data-act="${a.key}" aria-disabled="${!a.ok}"><kbd>${a.key}</kbd><span class="lbl">${a.label}${a.note ? ` <span class="note">· ${a.note}</span>` : ''}${a.ok ? '' : `<span class="why">${a.why}</span>`}</span></button>`).join('')
+  return `<div class="menu hud"><div class="title"><span>${slot} ${m.name} <small>${slot <= 3 ? 'front' : 'back'} line</small></span><small>Esc · B</small></div>${rows}</div>`
+}
+function spellHtml(slot) {
+  const q = P.spellFilter
+  const list = GO.spells(slot).filter((s) => !q || s.name.startsWith(q))
+  return `<div class="menu hud spells"><div class="title"><span>${tm(slot).name}: which spell?</span><small>Esc</small></div><input id="spellq" placeholder="type a name…" value="${q}" autocomplete="off" spellcheck="false">${list.map((s) => `<button class="act${s.ok ? '' : ' off'}" data-spell="${s.name}"><span class="lbl"><b>${s.name}</b> <span class="k">L${s.lvl} · ${s.left} left${s.tgt === 'group' ? ' · a group' : s.tgt === 'ally' ? ' · a member' : ''}</span>${s.ok ? '' : `<span class="why">${s.why}</span>`}</span></button>`).join('') || '<div class="k">No known spell starts with that.</div>'}</div>`
+}
+function groupLabels() {
+  const ph = P.phase, b = ph === 'playback' ? P.blocks[P.bi] : null
+  const hov = ph === 'review' && P.hover ? P.orders[P.hover - 1] : null
+  return P.view.groups.map((g, gi) => {
+    if (!g.n) return ''
+    const cls = ['anch', 'hud', 'glabel']
+    if (P.pending && P.pending.need === 'group') cls.push('target')
+    else if (b && !P.rest && b.actor === 'g' + gi) cls.push('acting')
+    else if ((b && !P.rest && b.tgt === 'g' + gi) || (hov && hov.tg === gi)) cls.push('mark')
+    return `<div class="${cls.join(' ')}" data-group="${gi}" style="${at('g' + gi, 0, -1)};color:${GC[gi]}"><span class="n">${gi + 1}</span><span style="color:#eee">${g.n} ${gname(gi, g.n !== 1)}${g.asleep ? ` <span class="k">· ${g.asleep} asleep</span>` : ''}${g.known ? '' : ' <span class="k">?</span>'}</span></div>`
+  }).join('')
+}
+function reportsHtml() {
+  if (!P.reports.length) return '<div class="k">No reports yet. The chest looks the same whatever it holds.</div>'
+  return P.reports.map((r) => `<div>${r.by} <span class="k">(${r.how})</span>: <b>${r.said}</b></div>`).join('') + '<div class="k" style="font-size:.85em">Reports, not facts: an inspection can be wrong.</div>'
+}
+function chestHtml() {
+  const acts = [['O', 'open', 'Open'], ['I', 'inspect', 'Inspect'], ['C', 'calfo', 'Calfo'], ['D', 'disarm', 'Disarm'], ['L', 'leave', 'Leave']]
+  const p = P.chestPending
+  let body
+  if (p && p.stage === 'who') body = `<div>Who will ${p.act === 'calfo' ? 'cast CALFO' : p.act}? ${p.who.map((s) => `<kbd>${s}</kbd>`).join(' ')} or click a member · <kbd>Esc</kbd></div>`
+  else if (p && p.stage === 'trap') body = `<div>${tm(p.slot).name} disarms which trap? ${[...new Set(P.reports.map((r) => r.said).filter((s) => s !== 'NO TRAP'))].map((s) => `<button class="btn ghost" data-trap="${s}">${s}</button>`).join(' ')}<input id="trapq" placeholder="or type a trap name" style="margin-top:.3em;width:100%;font:inherit;background:#0d0e10;color:#fff;border:1px solid #555;border-radius:4px;text-transform:uppercase"></div>`
+  else body = `<div class="acts">${acts.map(([k, a, l]) => `<button class="act" data-chest="${a}"><kbd>${k}</kbd><span class="lbl">${l}</span></button>`).join('')}</div>`
+  return `<div class="hud msgbox chest">${P.toast ? `<div class="toast">${P.toast}</div>` : ''}<h4><span>A chest</span><span class="k">after combat</span></h4><div class="cols"><div><div class="lines mono">${(P.lastMsg || []).map((l) => `<span>${l}</span>`).join('')}</div>${body}</div><div><div class="k" style="font-size:.85em">What the team has been told</div>${reportsHtml()}</div></div></div>`
+}
+function profileHtml() {
+  const s = P.profile; if (!s) return ''
+  const m = tm(s), base = TEAM0[s - 1]
+  // Display state, not Go's final state (see combat.html for the reason).
+  return `<div class="hud modal"><h4><span>${m.slot} ${m.name} · ${m.cls} · level ${base.lvl}</span><button class="btn ghost" data-do="closeprofile">Close <kbd>Esc</kbd></button></h4><table><tr><td class="k">HP</td><td class="mono">${m.hp}/${m.max}</td><td class="k">AC</td><td class="mono">${m.ac}</td><td class="k">Status</td><td>${m.st}</td></tr><tr><td class="k">Line</td><td colspan="5">${s <= 3 ? 'front (1–3)' : 'back (4–6)'}</td></tr>${m.sp ? `<tr><td class="k">Spells</td><td colspan="5" class="mono">${Object.entries(m.sp).map(([l, n]) => `L${l}: ${n}`).join('  ')}</td></tr>` : ''}<tr><td class="k">Items</td><td colspan="5">${base.items.join(', ')}</td></tr></table><div class="ro">Read-only during combat (D8).</div></div>`
+}
+
+function msgboxHtml() {
+  const ph = P.phase
+  const T = P.toast ? `<div class="toast">${P.toast}</div>` : ''
+  const box = (inner) => `<div class="hud msgbox">${T}${inner}</div>`
+  if (ph === 'explore') return box(`<div class="prompt k"><kbd>↑</kbd> replay the step · <kbd>Return</kbd> <span class="k">fixture:</span> Go reports an encounter</div>`)
+  if (ph === 'encounter') return ''
+  if (ph === 'orders') {
+    const p = P.pending, m = tm(P.actor), n = P.orders.filter(Boolean).length
+    let line
+    if (p && p.need === 'group') line = `<b>${m.name}</b> · ${plainOrder(Object.assign({}, p.o, { tg: null })).replace(/ →.*/, '')}: which group? ${GO.aliveGroups().map((gi) => `<kbd>${gi + 1}</kbd>`).join(' ')} or click one`
+    else if (p && p.need === 'ally') line = `<b>${m.name}</b> · ${p.o.spell}: on whom? <kbd>1</kbd>–<kbd>6</kbd> or click a member`
+    else if (p) line = `<b>${m.name}</b>: type or choose a spell`
+    else line = `<b>${m.name}</b> (${P.actor <= 3 ? 'front' : 'back'} line): choose an order`
+    const again = P.roundDone && !n && P.lastOrders ? `<button class="btn ghost" data-do="repeat">Repeat round ${P.roundDone}’s orders</button>` : ''
+    return box(`<div class="prompt">${line}</div><div class="meta k">${P.roundDone && !n ? `<span>Round ${P.roundDone} shown; values updated.</span>` : ''}<span>Round ${GO.st.round} · ${n} of 6 orders</span>${again || '<span><kbd>Tab</kbd> next · <kbd>B</kbd> back</span>'}</div>`)
+  }
+  if (ph === 'review') return box(`<div class="prompt">All six orders are set. Check them in the strip below.</div><div class="meta"><button class="btn" data-do="commit">Fight <kbd>Return</kbd></button><button class="btn ghost" data-do="clear">Clear all <kbd>C</kbd></button><span class="k">Change one: click a member or press <kbd>1</kbd>–<kbd>6</kbd></span></div>`)
+  if (ph === 'playback') {
+    const b = P.blocks[P.bi], ev = P.ev || { impact: true }
+    const n = P.blocks.slice(0, P.bi + 1).filter((x) => !x.silent).length
+    const lines = b ? b.lines.map((l, i) => `<span class="${i > 0 && !ev.impact ? 'pending' : ''}">${l}</span>`).join('') : ''
+    return box(`<div class="lines">${lines}</div><div class="meta k"><span>Round ${GO.st.result ? GO.st.round : GO.st.round - 1} · action ${n}</span>${opts.pb === 'manual' ? `<button class="btn" data-do="next">Next <kbd>Space</kbd></button>` : '<span>automatic</span>'}<button class="btn ghost" data-do="rest">Show the rest <kbd>⇧↩</kbd></button></div>`)
+  }
+  if (ph === 'chest') return chestHtml()
+  if (ph === 'return') return P.lastMsg ? box(`<div class="lines">${P.lastMsg.map((l) => `<span>${l}</span>`).join('')}</div><div class="meta k">Exploring again · <kbd>R</kbd> restart</div>`) : ''
+  return ''
+}
+
+function overlayHtml() {
+  const ph = P.phase
+  let h = ''
+  const camName = { explore: 'First person', encounter: 'Rising to the battlefield view', orders: 'Battlefield view', review: 'Battlefield view', playback: opts.cam === 'push' ? 'Battlefield view · restrained push-in' : 'Battlefield view · stable', chest: 'Chest close-up', return: cam.anim ? 'Returning to first person' : 'First person' }[ph]
+  h += `<div class="hud camtag">${camName}</div>`
+  if (P.banner) h += `<div class="banner">${P.banner}</div>`
+  if (inCombat() && ph !== 'encounter') h += groupLabels()
+  if (ph === 'encounter' && cam.k >= 1) h += groupLabels()
+  if (ph === 'orders') {
+    const pend = P.pending
+    if (!pend || pend.need === 'spell') {
+      // Over the east wall, level with the member being ordered: the one
+      // part of the battlefield view that holds no figures. The gold ring,
+      // the gold card and the menu title tie it to the member.
+      const a = lastAnchors['p' + P.actor]
+      const y = a ? a[3] : 40
+      h += `<div class="anch" style="left:71%;top:${Math.max(16, Math.min(y - 6, 48))}%">${pend ? spellHtml(P.actor) : menuHtml(P.actor)}</div>`
+    }
+  }
+  if (ph === 'playback') {
+    const b = P.blocks[P.bi]
+    if (b && b.actor && b.actor[0] === 'p' && !P.rest) h += `<div class="anch hud nameplate" style="${at(b.actor, 0, -0.5)}">${tm(+b.actor[1]).name}</div>`
+  }
+  h += msgboxHtml()
+  h += stripHtml()
+  h += profileHtml()
+  return h
+}
+
+// ── reviewer side ──────────────────────────────────────────────────────
+const STEPS = [
+  ['Exploration (first person)', 'explore'], ['Encounter transition', 'encounter:0.55'], ['Order entry', 'actor:3'], ['Choosing a target', 'target'],
+  ['An unavailable command', 'unavail'], ['Review and confirm', 'review'], ['An adventurer acts', 'play:3'], ['A monster acts', 'play:2'],
+  ['Round complete; next orders', 'round2'], ['Victory and the chest', 'chest:1'], ['Back to exploration', 'return'],
+]
+function currentSteps() {
+  const ph = P.phase
+  if (ph === 'explore') return [0]
+  if (ph === 'encounter') return [1]
+  if (ph === 'orders') { if (P.roundDone && !P.orders.some(Boolean)) return [8]; return P.pending && P.pending.need !== 'spell' ? [3] : [2] }
+  if (ph === 'review') return [5]
+  if (ph === 'playback') { const b = P.blocks[P.bi]; return [b && b.actor && b.actor[0] === 'g' ? 7 : 6] }
+  if (ph === 'chest') return [9]
+  return [10]
+}
+function sideHtml() {
+  const cur = currentSteps(), maxDone = Math.max(...cur)
+  $('#steps').innerHTML = STEPS.map(([t, j], i) => `<li class="${cur.includes(i) ? 'on' : i < maxDone ? 'done' : ''}">${t}<button data-jump="${j}">go</button></li>`).join('')
+  $('#notes').innerHTML = notesHtml()
+  $('#truth').innerHTML = truthHtml()
+}
+// Plan view of the battlefield: the axis of action and where the camera is.
+// A reviewer aid only; it is not an in-game map and shows the fixture's
+// squares regardless of what the team knows.
+function drawPlan() {
+  if (!opts.ann) return
+  const c = cam.cur; if (!c) return
+  const sx = (x) => 70 + x * 11, sz = (z) => 192 - (z + 2.5) * 11
+  let s = ''
+  for (const k of Object.keys(CS.MAP)) { const [cx, cz] = k.split(',').map(Number); if (cz < -1) continue; s += `<rect x="${sx(cx * 4 - 2)}" y="${sz(cz * 4 + 2)}" width="44" height="44" fill="none" stroke="currentColor" stroke-opacity=".25"/>` }
+  s += `<rect x="${sx(0)}" y="${sz(16)}" width="${sx(6) - sx(0)}" height="${sz(-2.5) - sz(16)}" fill="#f2c14e" fill-opacity=".07"/>`
+  s += `<line x1="${sx(0)}" y1="${sz(-2.5)}" x2="${sx(0)}" y2="${sz(16)}" stroke="currentColor" stroke-dasharray="4 3"/>`
+  s += `<text x="${sx(-0.6)}" y="${sz(9.5)}" font-size="9" fill="currentColor" transform="rotate(-90 ${sx(-0.6)} ${sz(9.5)})">axis of action</text>`
+  s += `<text x="${sx(1.2)}" y="${sz(-1.2)}" font-size="8" fill="currentColor" fill-opacity=".8">camera side</text>`
+  REFORM.forEach((f, i) => { s += `<circle cx="${sx(f[0])}" cy="${sz(f[1])}" r="3" fill="${P.view.team[i].color}"/>` })
+  if (inCombat() || P.phase === 'chest') P.view.groups.forEach((g, gi) => g.at.slice(0, g.n).forEach((p) => { s += `<circle cx="${sx(p[0])}" cy="${sz(p[1])}" r="3" fill="${GC[gi]}"/>` }))
+  const d = [c.target[0] - c.pos[0], c.target[2] - c.pos[2]], dl = Math.hypot(...d) || 1, half = (c.fov * Math.PI) / 360
+  const ray = (a) => { const ca = Math.cos(a), sa = Math.sin(a); return [c.pos[0] + ((d[0] * ca - d[1] * sa) / dl) * 7, c.pos[2] + ((d[0] * sa + d[1] * ca) / dl) * 7] }
+  const r1 = ray(half), r2 = ray(-half)
+  s += `<path d="M${sx(c.pos[0])},${sz(c.pos[2])}L${sx(r1[0])},${sz(r1[1])}M${sx(c.pos[0])},${sz(c.pos[2])}L${sx(r2[0])},${sz(r2[1])}" stroke="#7fb8ff" stroke-opacity=".7"/>`
+  s += `<circle cx="${sx(c.pos[0])}" cy="${sz(c.pos[2])}" r="4.5" fill="#7fb8ff"/>`
+  $('#plan').innerHTML = `<h3>Camera and axis (plan, reviewer aid)</h3><svg viewBox="0 0 140 200" role="img" aria-label="Plan of the corridor with the axis of action and the camera">${s}</svg><div class="k" style="font-size:12px">Blue: camera and its field of view. The camera never crosses the dashed axis, so the team and the monsters keep their screen positions.</div>`
+}
+function truthHtml() {
+  const g = GO.st, v = P.view
+  const diff = (a, b) => (a !== b ? ' class="diff"' : '')
+  const rows = g.team.map((m, i) => `<tr><td>${m.slot} ${m.name}</td><td${diff(m.hp, v.team[i].hp)}>${m.hp}</td><td${diff(m.hp, v.team[i].hp)}>${v.team[i].hp}</td><td${diff(m.st, v.team[i].st)}>${m.st}/${v.team[i].st}</td></tr>`).join('')
+  const grows = g.groups.map((x, i) => `<tr><td>group ${i + 1}</td><td${diff(x.n, v.groups[i].n)}>${x.n}${x.asleep ? ` (${x.asleep}z)` : ''}</td><td${diff(x.n, v.groups[i].n)}>${v.groups[i].n}${v.groups[i].asleep ? ` (${v.groups[i].asleep}z)` : ''}</td><td>${P.seen ? `figures: ${P.seen[i].n}${P.seen[i].asleep ? ` (${P.seen[i].asleep}z)` : ''}` : ''}</td></tr>`).join('')
+  return `<h3>Engine state vs what the user sees</h3><table><tr><th></th><th>Go (final)</th><th>Shown</th><th>Status / figures</th></tr>${rows}${grows}</table>
+    <div class="k" style="font-size:12px;margin-top:4px">${P.phase === 'playback' ? 'The round is resolved and committed in Go. Numbers stay on the Classic round snapshot; figures follow the messages shown so far.' : 'Outside playback the two always agree.'}</div>
+    <div class="hiddeninfo">Engine only, never sent to the GUI: chest trap = ${g.chest.trap}${g.groups.some((x) => !x.known) ? `; unidentified groups are really ${g.groups.filter((x) => !x.known).map((x) => x.id[1]).join(', ')}` : ''}; the order of the remaining actions.</div>`
+}
+function notesHtml() {
+  const ph = P.phase
+  const L = (lab, t) => `<li><span class="lab">${lab}</span>${t}</li>`
+  const b = ph === 'playback' ? P.blocks[P.bi] : null
+  const N = {
+    explore: [L('Design', 'First person, as Classic. The team strip is the only HUD: six members, status and HP. No third-person figures while exploring.'), L('Fact', 'The encounter roll follows a successful move (cmd/istary/main.go, handleMazeInput); the prototype starts just after that step.')],
+    encounter: [L('Design', 'The camera rises out of first person to the battlefield view. The team fades in where it has always been; the corridor, light and walls do not change.'), L('Camera', 'The battlefield camera sits east of the corridor centre line, behind the team, inside the team’s square. That side is kept for the whole encounter (the 180-degree rule).'), L('Fact', 'Group names start unidentified; Go decides identification each round (engine/combat.go:622).')],
+    orders: [L('Design', 'Two separate things: the commands beside the member being ordered, and the strip, which is the order summary. The strip replaces the six order tags of combat.html.'), L('Design', 'Front line left, back line right, in the strip and on the floor (the faint line). Fight is shown but unavailable for 4–6, with the reason.'), L('Fact', 'Order rules in the terminal today: Fight only for members 1–3; Dispel for Priests, Bishops above level 3, Lords above level 8; Use with nothing usable counts as Parry; one living group means no target question (cmd/istary/main.go:3917–4005). In the product these come from Go.')],
+    review: [L('Design', 'Review uses the strip itself (the structured list borrowed from approach B), so nothing new opens. Hover a member to see its target ringed in white.'), L('Fact', 'Classic B)ack at the confirm prompt clears every order (cmd/istary/main.go:3531–3546). Changing one order directly is still decision X19.')],
+    playback: [L('Fact', 'Go resolves the whole round before anything is shown (engine/combat.go:603). Playback is a view of a finished result.'), L('Design', b && b.actor && b.actor[0] === 'g' ? 'A monster acts: its group ring and label turn gold, one figure makes a token lunge, the target gets the white ring. The camera does not turn round.' : 'An adventurer acts: gold ring, nameplate and card; others dim slightly. The gesture is chosen from the order, and the effect appears only at the moment the message gives the result.'), L('Fact', 'Classic freezes displayed HP, status and counts for the round (engine/combat.go:634). Numbers here do the same; only the figures follow the messages (X26).'), L(opts.cam === 'push' ? 'Restrained' : 'Stable', opts.cam === 'push' ? 'Push-in only for spells, dispels and items, chosen from the order, never from the outcome. Attacks stay on the stable view.' : 'No camera movement at all. Attention comes from the gold ring, the nameplate, slight dimming and the lunge.')],
+    chest: [L('Design', 'The chest uses the message location: message, actions and reports in one panel. The strip stays, for choosing who acts.'), L('Fact', 'One inspection per member; an inspection can report the wrong trap (engine/combat.go:2938). The real trap is never sent.')],
+    return: [L('Design', 'The camera returns to first person; the team fades out as the camera enters its square. The strip stays.')],
+  }
+  return `<h3>What this moment tests</h3><ul>${(N[ph] || []).join('')}</ul>`
+}
+
+function draw() {
+  drawScene()
+  ovl.innerHTML = overlayHtml()
+  sideHtml()
+  const q = document.querySelector('#spellq') || document.querySelector('#trapq')
+  if (q && document.activeElement !== q && !opts.still) { q.focus(); q.setSelectionRange(q.value.length, q.value.length) }
+}
+
+// ── events ─────────────────────────────────────────────────────────────
+stage.addEventListener('click', (e) => {
+  const t = e.target.closest('[data-act],[data-spell],[data-group],[data-slot],[data-info],[data-do],[data-chest],[data-trap]')
+  if (!t) { stage.focus(); return }
+  if (t.dataset.info) { P.profile = +t.dataset.info; draw(); return }
+  if (t.dataset.act) return chooseAction(t.dataset.act)
+  if (t.dataset.spell) return chooseSpell(t.dataset.spell)
+  if (t.dataset.group) return chooseGroup(+t.dataset.group)
+  if (t.dataset.chest) return chestAct(t.dataset.chest)
+  if (t.dataset.trap) return chestDo('disarm', P.chestPending.slot, t.dataset.trap)
+  if (t.dataset.do) return ({ commit, clear: clearAll, repeat: repeatLast, next: advance, rest: showRest, closeprofile: () => { P.profile = null; draw() } })[t.dataset.do]()
+  if (t.dataset.slot) return slotKey(+t.dataset.slot)
+})
+stage.addEventListener('mouseover', (e) => {
+  if (P.phase !== 'review') return
+  const c = e.target.closest('.card'); const s = c ? +c.dataset.slot : 0
+  if (s !== P.hover) { P.hover = s; draw() }
+})
+sceneEl.addEventListener('click', (e) => {
+  if (e.target.closest('.ovl > *')) return
+  const r = sceneEl.getBoundingClientRect(), x = (100 * (e.clientX - r.left)) / r.width, y = (100 * (e.clientY - r.top)) / r.height
+  let best = null, bd = 7
+  for (const [k, a] of Object.entries(lastAnchors)) {
+    if (!/^(p\d|g\d)$/.test(k)) continue
+    const foot = k[0] === 'p' ? lastAnchors['pf' + k[1]] : null
+    const cy = foot ? (a[3] + foot[3]) / 2 : a[3] + 8
+    const d = Math.hypot(x - a[2], (y - cy) * 0.6)
+    if (d < bd) { bd = d; best = k }
+  }
+  if (!best) return
+  if (best[0] === 'g') chooseGroup(+best[1]); else slotKey(+best[1])
+})
+function slotKey(s) {
+  if (P.phase === 'chest' && P.chestPending && P.chestPending.stage === 'who') return chestWho(s)
+  if (P.pending && P.pending.need === 'ally') return chooseAlly(s)
+  if (P.pending && P.pending.need === 'group') return chooseGroup(s - 1)
+  if (P.phase === 'orders' || P.phase === 'review') return chooseActor(s)
+  P.profile = s; draw()
+}
+function setCamMode(m) { opts.cam = m; document.querySelector(`[name=cam][value=${m}]`).checked = true; if (P.phase === 'playback' && m === 'fixed') setCam(SHOT.battle(), 400); draw() }
+document.addEventListener('keydown', (e) => {
+  if (e.target.closest && e.target.closest('.controls')) return
+  const typing = e.target.id === 'spellq' || e.target.id === 'trapq'
+  const k = e.key
+  if (typing) {
+    if (k === 'Escape') { P.pending = null; P.chestPending = null; draw(); stage.focus(); e.preventDefault() }
+    if (k === 'Enter') {
+      e.preventDefault()
+      if (e.target.id === 'spellq') { const first = GO.spells(P.actor).find((s) => s.name.startsWith(P.spellFilter) && s.ok); if (first) { stage.focus(); chooseSpell(first.name) } else toast('No usable spell matches that name.') }
+      else { const v = e.target.value.trim().toUpperCase(); if (v) { stage.focus(); chestDo('disarm', P.chestPending.slot, v) } }
+    }
+    return
+  }
+  if (P.profile && (k === 'Escape' || k === 'i' || k === 'I')) { P.profile = null; draw(); e.preventDefault(); return }
+  const up = k.length === 1 ? k.toUpperCase() : k
+  const ph = P.phase
+  if (up === 'K') { setCamMode(opts.cam === 'fixed' ? 'push' : 'fixed'); return }
+  if (up === 'R' && ['explore', 'return'].includes(ph)) { restart(); return }
+  if (ph === 'explore') {
+    if (k === 'ArrowUp' || up === 'W') { e.preventDefault(); startExplore(true) }
+    else if (k === 'Enter') startEncounter()
+    return
+  }
+  if (ph === 'encounter' && k === 'Enter') { clearTimeout(P.timer); P.banner = null; startOrders(); return }
+  if (/^[1-6]$/.test(k)) { e.preventDefault(); slotKey(+k); return }
+  if (up === 'I' && ph !== 'chest') { P.profile = ph === 'orders' ? P.actor : 1; draw(); return }
+  if (ph === 'orders') {
+    if ('FPSUDR'.includes(up) && up.length === 1 && !P.pending) chooseAction(up)
+    else if (k === 'Escape') { P.pending = null; draw() }
+    else if (up === 'B' || k === 'Backspace') { e.preventDefault(); back() }
+    else if (up === 'C') clearAll()
+    else if (k === 'Tab') { e.preventDefault(); P.actor = ((P.actor - 1 + (e.shiftKey ? 5 : 1)) % 6) + 1; P.pending = null; draw() }
+    else if (k === 'Enter' && allOrdered()) { P.phase = 'review'; P.editing = false; draw() }
+    else if (k === 'Enter') toast(`${6 - P.orders.filter(Boolean).length} member(s) still need an order.`)
+  } else if (ph === 'review') {
+    if (k === 'Enter') commit()
+    else if (up === 'B' || k === 'Backspace') { e.preventDefault(); back() }
+    else if (up === 'C') clearAll()
+  } else if (ph === 'playback') {
+    if (k === 'Enter' && e.shiftKey) showRest()
+    else if (k === ' ' || k === 'Enter') { e.preventDefault(); advance() }
+    else if (up === 'A') { opts.pb = opts.pb === 'auto' ? 'manual' : 'auto'; document.querySelector(`[name=pb][value=${opts.pb}]`).checked = true; if (opts.pb === 'auto') advance(); else draw() }
+  } else if (ph === 'chest') {
+    const map = { O: 'open', I: 'inspect', C: 'calfo', D: 'disarm', L: 'leave' }
+    if (k === 'Escape') { P.chestPending = null; draw() }
+    else if (map[up] && (!P.chestPending || P.chestPending.stage === 'who')) chestAct(map[up])
+  }
+})
+
+// ── toolbar ────────────────────────────────────────────────────────────
+function readOpts() {
+  opts.cam = document.querySelector('[name=cam]:checked').value
+  opts.vis = document.querySelector('[name=vis]:checked').value
+  opts.pb = document.querySelector('[name=pb]:checked').value
+  opts.speed = +$('#speed').value
+  opts.ann = $('#ann').checked
+  document.body.classList.toggle('annotate', opts.ann)
+}
+document.querySelector('.controls').addEventListener('change', (e) => {
+  readOpts()
+  if (e.target.name === 'cam') return setCamMode(opts.cam)
+  if (e.target.name === 'pb' && opts.pb === 'auto' && P.phase === 'playback') advance()
+  draw()
+})
+function restart() { clearTimeout(P.timer); resetPresentation(); startExplore(true) }
+$('#restart').addEventListener('click', restart)
+addEventListener('resize', () => draw())
+document.addEventListener('input', (e) => { if (e.target.id === 'spellq') { P.spellFilter = e.target.value.toUpperCase().replace(/[^A-Z]/g, ''); draw() } })
+
+// ── reviewer jumps (also used to make the stills) ────────────────────────
+const DEFAULT_R1 = [{ slot: 1, act: 'fight', tg: 0 }, { slot: 2, act: 'fight', tg: 0 }, { slot: 3, act: 'dispel', tg: 1 }, { slot: 4, act: 'parry' }, { slot: 5, act: 'spell', spell: 'HALITO', tg: 0 }, { slot: 6, act: 'spell', spell: 'KATINO', tg: 0 }]
+const R2 = [{ slot: 1, act: 'fight', tg: 0 }, { slot: 2, act: 'fight', tg: 0 }, { slot: 3, act: 'fight', tg: 1 }, { slot: 4, act: 'parry' }, { slot: 5, act: 'spell', spell: 'HALITO', tg: 1 }, { slot: 6, act: 'parry' }]
+function jump(j) {
+  const still = opts.still
+  opts.still = true
+  clearTimeout(P.timer); resetPresentation()
+  const [name, arg] = String(j).split(':')
+  const giveR1 = (n) => { for (const o of DEFAULT_R1.slice(0, n)) P.orders[o.slot - 1] = clone(o); P.actor = nextUnordered(1) || 6; if (allOrdered()) P.phase = 'review' }
+  const playTo = (n) => { giveR1(6); P.phase = 'review'; commit(); while (P.bi < n - 1 && P.phase === 'playback') advance() }
+  const finishR1 = () => { giveR1(6); commit(); while (P.phase === 'playback') advance() }
+  switch (name) {
+    case 'explore': startExplore(false); break
+    case 'encounter': {
+      startExplore(false)
+      const e = ease(+(arg || 1))
+      P.phase = 'encounter'; P.banner = 'ENCOUNTER'; cam.cur = camLerp(SHOT.fp(), SHOT.battle(), e); cam.k = +(arg || 1); P.reveal = e
+      break
+    }
+    case 'orders': startOrders(); break
+    case 'actor': startOrders(); giveR1(+(arg || 1) - 1); P.actor = +(arg || 1); P.phase = 'orders'; break
+    case 'target': startOrders(); chooseAction('F'); break
+    case 'spell': startOrders(); giveR1(4); P.actor = 5; P.phase = 'orders'; chooseAction('S'); break
+    case 'unavail': startOrders(); giveR1(3); P.actor = 4; P.phase = 'orders'; chooseAction('F'); break
+    case 'review': startOrders(); giveR1(6); P.hover = +(arg || 0); break
+    case 'play': startOrders(); playTo(+(arg || 1)); if (opts.cam === 'push') { const b = P.blocks[P.bi]; cam.cur = b && b.actor && significant(b) ? SHOT.push(b) : SHOT.battle() } break
+    case 'round2': startOrders(); finishR1(); break
+    case 'chest': startOrders(); finishR1(); P.orders = clone(R2); P.phase = 'review'; commit(); while (P.phase === 'playback') advance(); if (arg) { chestDo('inspect', 4); chestDo('inspect', 2) } break
+    case 'return': jump('chest'); opts.still = true; chestDo('inspect', 4); chestDo('disarm', 4, 'POISON NEEDLE'); chestDo('open', 4); startReturn(); P.reveal = 0; break
+    case 'profile': startOrders(); P.profile = 5; break
+    default: startExplore(true)
+  }
+  opts.still = still
+  draw()
+}
+stage.closest('main').addEventListener('click', (e) => { const b = e.target.closest('[data-jump]'); if (b) jump(b.dataset.jump) })
+
+// ── start ──────────────────────────────────────────────────────────────
+function fromHash() {
+  const h = new URLSearchParams(location.hash.slice(1))
+  const set = (name, v) => { const el = document.querySelector(`[name=${name}][value="${v}"]`); if (el) el.checked = true }
+  for (const n of ['cam', 'vis', 'pb']) if (h.get(n)) set(n, h.get(n))
+  if (h.get('ann') === '0') $('#ann').checked = false
+  readOpts()
+  opts.still = h.get('still') === '1'
+  if (h.get('at')) opts.at = +h.get('at')
+  return h.get('jump')
+}
+const j0 = fromHash()
+resetPresentation()
+if (j0) { jump(j0); if (opts.still) document.documentElement.classList.add('still') }
+else startExplore(true)
+</script>
+</body>
+</html>
