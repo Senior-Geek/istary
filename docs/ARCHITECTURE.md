@@ -125,11 +125,14 @@ after the last block. No timers or random numbers in the controller.
 | Operation | Effect |
 |---|---|
 | `StartCombat() (playback, error)` | From the opening pause (`CombatInit`): order entry from the first member who can act, or the monsters' surprise round executed at once (`playback` true) |
+| `FinishOrders()` | Order entry → confirmation, once every member who can act has an order (`ErrOrdersIncomplete`) (M5d) |
+| `FightFriendly()` / `LeaveInPeace()` | A friendly encounter: order entry, or back to the maze (M5d) |
 | `ReturnToOrders()` | B)ack at confirmation: every order cleared, order entry from slot 1 |
 | `Commit() (PlaybackStep, error)` | From confirmation only: `ExecuteRound` once, playback begins at the first block, which is returned. A second `Commit` fails (`ErrNotConfirming`) |
 | `Advance() (PlaybackStep, error)` | Releases the next block (silent blocks too) and moves the display cursor (`MessageIndex`) to it. After the last block it returns `Done` and changes nothing. `ErrAwaitingChoice` while HAMAN's boon prompt is open |
 | `RevealedEvents()` | The round's events released so far, and none beyond |
-| `ChooseBoon(n)` | Answers HAMAN or MAHAMAN's boon prompt (Wiz 2/3) |
+| `ChooseBoon(n)` | Answers HAMAN or MAHAMAN's boon prompt (Wiz 2/3). `Advance` plays up to the block that shows the prompt and waits there (`ErrAwaitingChoice`); `CombatView` lists the boons (`Boons`) only once that block is on screen |
+| `LeaveCombat()` | After the victory or defeat screen: victory to the maze, defeat to the castle ("YOUR PARTY HAS PERISHED IN THE MAZE..."). The PAUSE2 wait before it is the front end's (M5d) |
 | `EndRound() (RoundOutcome, error)` | Only after `Advance` has returned `Done` (`ErrPlaybackUnfinished` before, even with the last block on screen): drops the frozen round display and decides `RoundEscaped` (back to the maze, "THE PARTY FLED!"), `RoundVictory` (the chest, or the rewards), `RoundDefeated`, or `RoundContinues` (engine `BeginNextRound`: groups compacted, formation re-sorted, orders cleared, then order entry) |
 
 States: `CombatInit` → (`StartCombat`) `CombatChoose` or `CombatExecute`;
@@ -193,9 +196,12 @@ Persistence: call `Controller.Save()` after each action.
 - Timers live in the main loop: combat pacing (`combatTimerTick` decides
   when; the controller does the rest, above), the Wiz 3 story pages, inn
   healing ticks and the title animation goroutine.
-- Combat still in the terminal: the friendly-encounter choice, the chest
-  (and its message pacing), and leaving combat after the victory or defeat
-  pause.
+- Combat still in the terminal: the chest (and its message pacing), and
+  order-entry navigation (which member is being ordered, `findNextActor`).
+  Everything else goes through the controller, and `CombatView` is the
+  presentation contract for GUI combat. The terminal still takes HAMAN's
+  1-3 as soon as the choice opens, before its block is shown
+  (`WIZARDRY-COMPATIBILITY.md` #19); `ChooseBoon` accepts that.
 - `handleMazeInput` takes a `*render.Screen` only to beep.
 - `engine.TitleState.Anim` holds a `*render.WTAnimation` as `interface{}`.
 - `render` keeps package-level state (`SixelSupported`, `ColorMode`,
