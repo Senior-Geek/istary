@@ -228,6 +228,7 @@ type CombatState struct {
 	// During MELEE, neither monster list nor party roster refresh —
 	// only the message area (rows 11-14) updates.
 	DisplayAliveCounts []int        // [groupIdx] = monster alive count at round start
+	DisplayIdentified  []bool       // [groupIdx] = identified at round start (LATUMAPIC can change it mid-round); used by app.CombatView
 	DisplayPartySnap   []PartySnap  // [memberIdx] = party member display state at round start
 
 	// Party combat AC modifiers — from BATTLERC[0].A.TEMP04[member].ARMORCL
@@ -640,8 +641,10 @@ func (cs *CombatState) ExecuteRound(game *GameState) {
 	// Snapshot display state — Pascal DSPPARTY/DSPENEMY run once at round start
 	// in CUTIL, NOT during MELEE. Freeze both monster counts and party stats.
 	cs.DisplayAliveCounts = make([]int, len(cs.Groups))
+	cs.DisplayIdentified = make([]bool, len(cs.Groups))
 	for i, g := range cs.Groups {
 		cs.DisplayAliveCounts[i] = g.AliveCount()
+		cs.DisplayIdentified[i] = g.Identified
 	}
 	cs.DisplayPartySnap = make([]PartySnap, len(party))
 	for i, m := range party {
