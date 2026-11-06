@@ -130,7 +130,7 @@ after the last block. No timers or random numbers in the controller.
 | `Advance() (PlaybackStep, error)` | Releases the next block (silent blocks too) and moves the display cursor (`MessageIndex`) to it. After the last block it returns `Done` and changes nothing. `ErrAwaitingChoice` while HAMAN's boon prompt is open |
 | `RevealedEvents()` | The round's events released so far, and none beyond |
 | `ChooseBoon(n)` | Answers HAMAN or MAHAMAN's boon prompt (Wiz 2/3) |
-| `EndRound() (RoundOutcome, error)` | Only when every block has been released (`ErrPlaybackUnfinished`): drops the frozen round display and decides `RoundEscaped` (back to the maze, "THE PARTY FLED!"), `RoundVictory` (the chest, or the rewards), `RoundDefeated`, or `RoundContinues` (engine `BeginNextRound`: groups compacted, formation re-sorted, orders cleared, then order entry) |
+| `EndRound() (RoundOutcome, error)` | Only after `Advance` has returned `Done` (`ErrPlaybackUnfinished` before, even with the last block on screen): drops the frozen round display and decides `RoundEscaped` (back to the maze, "THE PARTY FLED!"), `RoundVictory` (the chest, or the rewards), `RoundDefeated`, or `RoundContinues` (engine `BeginNextRound`: groups compacted, formation re-sorted, orders cleared, then order entry) |
 
 States: `CombatInit` → (`StartCombat`) `CombatChoose` or `CombatExecute`;
 `CombatChoose` → (orders, front end) `CombatConfirm` → (`Commit`)
@@ -138,15 +138,46 @@ States: `CombatInit` → (`StartCombat`) `CombatChoose` or `CombatExecute`;
 `CombatChest`, `CombatVictory` or `CombatDefeat`. `ReturnToOrders` goes back
 from `CombatConfirm` to `CombatChoose`.
 
-**Information boundary.** The playback operations expose only released
-events: no message, actor, target or effect of a block not yet shown. This
+**Combat view** (`app/combat_view.go`, M5c). `CombatView()` describes combat
+as the player may see it now, as plain values (no pointers, maps or
+interfaces; JSON tags for later serialization):
+
+| Field | Content |
+|---|---|
+| `Phase`, `Next` | opening, friendly, orders, confirm, playback, chest, victory, defeat; and what to do next: `start`, `friendly`, `orders`, `confirm`, `advance`, `choice` (HAMAN), `end-round`, `chest`, `leave` |
+| `Round`, `Frozen` | Round number; `Frozen` during playback, when the values below are the round-start display |
+| `Party` | Formation order: slot, name, class, AC, HP, max HP, status, poisoned, can act (from the displayed status) |
+| `Groups` | Visible groups (count above zero): number, count, the identified or unidentified name, singular or plural by the count shown |
+| `Actor`, `Menu` | Order entry: the member being given an order and their menu (availability, reason, note, what to choose next) |
+| `Orders` | Order entry and confirmation: the orders given, with target group, ally name, or item by the name the player knows |
+| `Events`, `Current`, `Lines` | Playback: the released events (kind, actor, target, lines, part, silent, effects), the one on screen, and its lines. Order entry: a refusal on screen. Victory: the rewards |
+
+Classic timing and knowledge:
+- **Frozen during playback:** the party, monster counts and group names
+  (including identification, frozen with the counts in `ExecuteRound`;
+  engine `DisplayIdentified`) stay at the round-start display until
+  `EndRound`.
+- **Formation:** the formation shown is the one the round is played in.
+- **Party effects:** they carry the HP change, not absolute HP, so silent
+  round-start healing or poison stays hidden until the display update.
+- **Never in a View:** monster IDs and HP, initiative, the victims of unshown
+  actions, the chest trap, and the round's outcome.
+- **Last block:** the View on the last block still says `advance`. Only after
+  `Advance` returns `Done` does it say `end-round`, so it does not reveal
+  that an action is the last.
+- **Stricter than the terminal:** the terminal's renderer, unchanged, names
+  groups from live identification and live counts, which can show a
+  LATUMAPIC identification or a kill's singular name early.
+
+**Information boundary.** The playback operations and `CombatView` expose
+only released events: no message, actor, target or effect of a block not yet shown. This
 does not isolate the engine state itself: `Controller.Game` is public, and
 `engine.CombatState` (messages, `Events()`, groups, victims) is public too.
 The terminal renderer reads the round's messages from the display cursor
 (`MessageIndex`), as before. The guarantee therefore holds for callers that
 use only the controller's playback operations. The desktop GUI already shows
 its frontend only `View` values built in Go (`gui/view.go`), never the engine
-state; GUI combat must build its combat view from `RevealedEvents` alone.
+state; GUI combat must use `CombatView` alone.
 Enforcing the boundary for all Go callers would mean hiding the engine state
 behind the controller, a larger redesign than M5b.
 

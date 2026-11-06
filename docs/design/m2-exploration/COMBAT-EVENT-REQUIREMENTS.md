@@ -50,6 +50,9 @@ format or the rules.
   `app/combat_round.go`. `AdvanceAll` is not built; the terminal has no
   "show the rest".
 - **E10:** the HAMAN boon prompt pauses `Advance` (`ChooseBoon`).
+- **E2 and E3, M5c:** `CombatView()` in `app/combat_view.go`. The round-start
+  display is frozen during playback, including identification, and the order
+  entry view is included.
 - **E11:** this holds for the controller's playback operations
   (`RevealedEvents`), not for the engine state, which stays public. See
   `docs/ARCHITECTURE.md`, "Information boundary".
