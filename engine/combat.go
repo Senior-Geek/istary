@@ -154,6 +154,22 @@ const (
 	TrapAlarm      = 11 // Pascal type 7
 )
 
+// ChestReport records what one chest action told the party about the trap:
+// the trap an inspection or CALFO named (which may be wrong), or the trap
+// that went off. Presentation data, written with the message that says it.
+type ChestReport struct {
+	Member int    // party slot of the member who acted
+	Name   string // that member's name
+	How    string // "inspect", "calfo", "disarm" or "open"
+	Said   string // the trap named in the message; "" when nothing was learned
+	SetOff bool   // the trap went off
+}
+
+// report records a chest report for the member in slot idx.
+func (cs *CombatState) report(game *GameState, idx int, how, said string, setOff bool) {
+	cs.ChestReports = append(cs.ChestReports, ChestReport{Member: idx, Name: game.Town.Party.Members[idx].Name, How: how, Said: said, SetOff: setOff})
+}
+
 // TrapNames from p-code string literals in REWARDS proc 31.
 var TrapNames = [...]string{
 	"TRAPLESS CHEST",
@@ -260,6 +276,7 @@ type CombatState struct {
 	ChestSubPhase  ChestSubPhase // current sub-phase within chest interaction
 	ChestInspected [6]bool       // tracks which party members have already inspected
 	CalfoUsed      bool          // CALFO has been cast on this chest
+	ChestReports   []ChestReport // what the party has been told about the trap, in order (for app.CombatView)
 	ChestActor     int           // which party member is acting on the chest
 
 	// Per-party-member drain guard — Pascal WC027: DRAINED[MYVICTIM]
@@ -2991,6 +3008,7 @@ func (cs *CombatState) OpenChest(game *GameState, memberIdx int) {
 			cs.addMessage("THE CHEST WAS NOT TRAPPED")
 		} else {
 			cs.addMessage(fmt.Sprintf("OOPPS! A %s!", TrapNames[cs.TrapType]))
+			cs.report(game, memberIdx, "open", TrapNames[cs.TrapType], true)
 			cs.applyTrapEffect(game)
 		}
 	}
@@ -3206,6 +3224,7 @@ func (cs *CombatState) DisarmChest(game *GameState, memberIdx int) {
 	// From p-code IC 2403: "YOU SET IT OFF!"
 	cs.addMessage("YOU SET IT OFF!")
 	cs.addMessage(fmt.Sprintf("IT WAS A %s!", TrapNames[cs.TrapType]))
+	cs.report(game, memberIdx, "disarm", TrapNames[cs.TrapType], true)
 	cs.applyTrapEffect(game)
 	cs.ChestOpened = true
 	cs.Phase = CombatChestResult
@@ -3255,15 +3274,18 @@ func (cs *CombatState) InspectChest(game *GameState, memberIdx int) {
 	if rand.Intn(100) < inspectChance {
 		// Correct identification
 		cs.addMessage(fmt.Sprintf("IT'S A %s", TrapNames[cs.TrapType]))
+		cs.report(game, memberIdx, "inspect", TrapNames[cs.TrapType], false)
 	} else if rand.Intn(20) > member.Agility {
 		// Fumble — trap fires (DOTRAPDM in Pascal)
 		cs.addMessage(fmt.Sprintf("OOPPS! A %s!", TrapNames[cs.TrapType]))
+		cs.report(game, memberIdx, "inspect", TrapNames[cs.TrapType], true)
 		cs.applyTrapEffect(game)
 		cs.ChestOpened = true
 	} else {
 		// Wrong trap name shown (PRRNDTRP in Pascal)
 		fakeTrap := rand.Intn(len(TrapNames))
 		cs.addMessage(fmt.Sprintf("IT'S A %s", TrapNames[fakeTrap]))
+		cs.report(game, memberIdx, "inspect", TrapNames[fakeTrap], false)
 	}
 	cs.Phase = CombatChestResult
 }
@@ -3300,8 +3322,10 @@ func (cs *CombatState) CalfoChest(game *GameState, memberIdx int) {
 	if rand.Intn(100) < 95 {
 		if cs.TrapType >= 0 && cs.TrapType < len(TrapNames) {
 			cs.addMessage(fmt.Sprintf("IT'S A %s", TrapNames[cs.TrapType]))
+			cs.report(game, memberIdx, "calfo", TrapNames[cs.TrapType], false)
 		} else {
 			cs.addMessage("TRAPLESS CHEST")
+			cs.report(game, memberIdx, "calfo", "TRAPLESS CHEST", false)
 		}
 		cs.CalfoUsed = true
 		cs.Phase = CombatChestResult
@@ -3309,6 +3333,7 @@ func (cs *CombatState) CalfoChest(game *GameState, memberIdx int) {
 		// 5% fail — Pascal re-enters CALFO prompt (CIP 20 = CalfoChest itself)
 		// Return to chest menu without showing any trap name
 		cs.addMessage("CALFO REVEALS NOTHING...")
+		cs.report(game, memberIdx, "calfo", "", false)
 		cs.Phase = CombatChestResult
 	}
 }
