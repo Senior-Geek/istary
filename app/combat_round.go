@@ -110,14 +110,26 @@ func (c *Controller) Commit() (PlaybackStep, error) {
 	return c.currentStep(cs), nil
 }
 
-// cursor is the index of the released event the display is on.
+// cursor is the index of the released event the display is on. Once
+// Advance has reported Done, the display cursor (MessageIndex) is past the
+// last message and every event counts as released.
 func cursor(cs *engine.CombatState, evs []engine.CombatEvent) int {
+	if playbackDone(cs) {
+		return len(evs) - 1
+	}
 	for i, e := range evs {
 		if e.Start == cs.MessageIndex {
 			return i
 		}
 	}
 	return -1
+}
+
+// playbackDone reports that Advance has released every block and said so.
+// The terminal ends the round in the same tick, so the display never shows
+// the empty position past the end.
+func playbackDone(cs *engine.CombatState) bool {
+	return len(cs.Messages) > 0 && cs.MessageIndex >= len(cs.Messages)
 }
 
 // currentStep describes the block the playback cursor is on.
@@ -144,6 +156,7 @@ func (c *Controller) Advance() (PlaybackStep, error) {
 	evs := cs.Events()
 	k := cursor(cs, evs)
 	if k+1 >= len(evs) {
+		cs.MessageIndex = len(cs.Messages) // playback complete
 		return PlaybackStep{Index: k, Done: true}, nil
 	}
 	cs.MessageIndex = evs[k+1].Start
@@ -182,7 +195,8 @@ func (c *Controller) ChooseBoon(choice int) error {
 	return nil
 }
 
-// EndRound ends a round whose blocks have all been released. The frozen
+// EndRound ends a round whose blocks have all been released, after Advance
+// has reported Done. The frozen
 // round display is dropped and the outcome decided, as Classic does after
 // the last message: escape, victory, defeat, or the next round, whose
 // formation change and cleared orders happen in engine BeginNextRound
@@ -195,11 +209,12 @@ func (c *Controller) EndRound() (RoundOutcome, error) {
 	if cs.HamanSelecting {
 		return 0, ErrAwaitingChoice
 	}
-	if evs := cs.Events(); cursor(cs, evs)+1 < len(evs) {
+	if !playbackDone(cs) {
 		return 0, ErrPlaybackUnfinished
 	}
 	game := c.Game
 	cs.DisplayAliveCounts = nil
+	cs.DisplayIdentified = nil
 	cs.DisplayPartySnap = nil
 
 	if cs.Fled {
