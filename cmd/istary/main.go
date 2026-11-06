@@ -3568,47 +3568,24 @@ func handleCombatInput(game *engine.GameState, ev *tcell.EventKey) {
 	}
 }
 
-// advanceChestMessages auto-advances chest result messages.
+// advanceChestMessages paces a chest result: the controller shows the next
+// block; after the last one, one more PAUSE2 (Pascal), then the controller
+// ends the result (rewards, or back to the chest menu).
 func advanceChestMessages(game *engine.GameState) {
 	combat := game.Combat
-	if combat == nil || len(combat.Messages) == 0 {
+	if combat == nil {
 		return
 	}
-
-	// Find next action separator from current position
-	nextStart := combat.MessageIndex
-	for nextStart < len(combat.Messages) {
-		if combat.Messages[nextStart] == engine.ActionSeparator {
-			nextStart++
-			break
-		}
-		nextStart++
-	}
-
-	// More message blocks to show
-	if nextStart < len(combat.Messages) {
-		combat.MessageIndex = nextStart
+	ctrl := app.New(game)
+	if done, err := ctrl.AdvanceChest(); err != nil || !done {
 		return
 	}
-
-	// Wait an extra tick before transitioning — PAUSE2 from Pascal source
-	// First time we reach the end, just mark it. Second tick actually transitions.
 	if !combat.ChestPauseUsed {
 		combat.ChestPauseUsed = true
 		return
 	}
 	combat.ChestPauseUsed = false
-
-	// All messages shown — transition
-	if combat.ChestOpened || combat.ChestLeft {
-		combat.FinalizeChest(game)
-	} else {
-		// Inspect/Calfo/failed disarm — return to chest menu
-		combat.Phase = engine.CombatChest
-		combat.ChestSubPhase = engine.ChestMenu
-		combat.Messages = nil
-		combat.MessageIndex = 0
-	}
+	ctrl.EndChestResult()
 }
 
 // handleChestInput handles input during the chest interaction phase.
@@ -3626,16 +3603,18 @@ func handleChestInput(game *engine.GameState, combat *engine.CombatState, ev *tc
 			ch := ev.Rune()
 			if ch >= '1' && ch <= '6' {
 				idx := int(ch-'0') - 1
-				if idx < len(party) && party[idx] != nil && party[idx].IsAlive() {
+				if idx < len(party) && party[idx] != nil {
+					// The controller checks the member can act (app/chest.go).
+					ctrl := app.New(game)
 					switch combat.ChestSubPhase {
 					case engine.ChestWhoOpen:
-						combat.OpenChest(game, idx)
+						ctrl.OpenChest(party[idx])
 					case engine.ChestWhoCalfo:
-						combat.CalfoChest(game, idx)
+						ctrl.CastCalfo(party[idx])
 					case engine.ChestWhoInspect:
-						combat.InspectChest(game, idx)
+						ctrl.InspectChest(party[idx])
 					case engine.ChestWhoDisarm:
-						combat.DisarmChest(game, idx)
+						ctrl.DisarmChest(party[idx])
 					}
 				}
 			}
@@ -3658,7 +3637,7 @@ func handleChestInput(game *engine.GameState, combat *engine.CombatState, ev *tc
 	case 'C':
 		combat.ChestSubPhase = engine.ChestWhoCalfo
 	case 'L':
-		combat.LeaveChest()
+		app.New(game).LeaveChest()
 	case 'I':
 		combat.ChestSubPhase = engine.ChestWhoInspect
 	case 'D':
