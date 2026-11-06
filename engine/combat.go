@@ -275,6 +275,7 @@ type CombatState struct {
 	HamanSelecting bool         // true = waiting for player to choose 1/2/3
 	HamanOptions   [3]int       // the 3 effect indices offered
 	HamanCaster    *Character   // the character who cast HAMAN/MAHAMAN
+	HamanPromptAt  int          // index in Messages of "WHICH BOON WILL YOU INVOKE ?" (playback pauses at its block)
 }
 
 // NewCombat creates a combat encounter from the current maze cell.
@@ -3394,6 +3395,21 @@ func (cs *CombatState) endAction() {
 }
 
 
+// HamanChoiceNames returns the three boons offered while a HAMAN or
+// MAHAMAN choice is open (Wiz 2/3), as the prompt lists them; nil otherwise.
+func (cs *CombatState) HamanChoiceNames() []string {
+	if !cs.HamanSelecting {
+		return nil
+	}
+	out := make([]string, 0, 3)
+	for _, idx := range cs.HamanOptions {
+		if idx >= 0 && idx < len(hamanEffectNames) {
+			out = append(out, hamanEffectNames[idx])
+		}
+	}
+	return out
+}
+
 // HAMAN/MAHAMAN effect names for interactive selection (Wiz 2/3)
 var hamanEffectNames = [7]string{
 	"CURE THE PARTY",
@@ -3593,6 +3609,7 @@ func (cs *CombatState) hammaham(game *GameState, member *Character, mahamFlg int
 		}
 		cs.HamanSelecting = true
 		cs.HamanCaster = member
+		cs.HamanPromptAt = len(cs.Messages)
 		cs.addMessage("WHICH BOON WILL YOU INVOKE ?")
 		for i := 0; i < 3; i++ {
 			cs.addMessage(fmt.Sprintf("%d) %s", i+1, hamanEffectNames[cs.HamanOptions[i]]))
