@@ -1,0 +1,944 @@
+== seed 21 round 1
+  [monster-melee] actor: group 1 #1 SLIME; target: party 2 FIGHTER B
+      | THE MONSTERS SURPRISED YOU!
+      | SLIME TEARS AT
+      | FIGHTER B
+      | AND HITS FOR    1 DAMAGE!
+      > party 2 FIGHTER B: HP 24→23, OK→OK
+  [monster-melee] actor: group 1 #4 SLIME; target: party 3 THIEF
+      | SLIME BITES AT
+      | THIEF
+      | AND HITS FOR    1 DAMAGE!
+      > party 3 THIEF: HP 12→11, OK→OK
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee] actor: group 1 #3 SLIME; target: party 3 THIEF
+      | SLIME CLAWS AT
+      | THIEF
+      | AND HITS FOR    1 DAMAGE!
+      > party 3 THIEF: HP 11→10, OK→OK
+== seed 21 round 2
+  [party-parry] actor: party 5 MAGE; target: -
+      | MAGE PARRIED.
+  [party-parry] actor: party 4 PRIEST; target: -
+      | PRIEST PARRIED.
+  [monster-melee] actor: group 1 #4 BUBBLY SLIME; target: party 1 FIGHTER A
+      | BUBBLY SLIME TEARS AT
+      | FIGHTER A
+      | AND HITS FOR    1 DAMAGE!
+      > party 1 FIGHTER A: HP 22→21, OK→OK
+  [party-parry] actor: party 6 FIGHTER C; target: -
+      | FIGHTER C PARRIED.
+  [monster-melee] actor: group 1 #2 BUBBLY SLIME; target: party 2 FIGHTER B
+      | BUBBLY SLIME TEARS AT
+      | FIGHTER B
+      | AND HITS FOR    1 DAMAGE!
+      > party 2 FIGHTER B: HP 23→22, OK→OK
+  [party-fight] actor: party 1 FIGHTER A; target: group 1
+      | FIGHTER A SLASHES AT A
+      | BUBBLY SLIME
+      | AND HITS    1 TIMES FOR    2 DAMAGE!
+  [party-fight] actor: party 2 FIGHTER B; target: group 1
+      | FIGHTER B SWINGS AT A
+      | BUBBLY SLIME
+      | AND HITS    1 TIMES FOR    1 DAMAGE!
+  [party-fight] actor: party 3 THIEF; target: group 1
+      | THIEF SWINGS AT A
+      | BUBBLY SLIME
+      | AND HITS    1 TIMES FOR    2 DAMAGE!
+      | THIEF KILLS ONE!
+      > group 1 #1 : OK→DEAD
+  [monster-melee] silent block (no message; actor and target withheld)
+== seed 21 round 3
+  [party-fight] actor: party 1 FIGHTER A; target: group 1
+      | FIGHTER A SWINGS AT A
+      | BUBBLY SLIME
+      | AND HITS    1 TIMES FOR    1 DAMAGE!
+  [party-parry] actor: party 5 MAGE; target: -
+      | MAGE PARRIED.
+  [party-parry] actor: party 4 PRIEST; target: -
+      | PRIEST PARRIED.
+  [party-parry] actor: party 6 FIGHTER C; target: -
+      | FIGHTER C PARRIED.
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee] silent block (no message; actor and target withheld)
+  [party-fight] actor: party 3 THIEF; target: group 1
+      | THIEF SLASHES AT A
+      | BUBBLY SLIME
+      | AND HITS    1 TIMES FOR    2 DAMAGE!
+  [party-fight] actor: party 2 FIGHTER B; target: group 1
+      | FIGHTER B THRUSTS AT A
+      | BUBBLY SLIME
+      | AND HITS    1 TIMES FOR    2 DAMAGE!
+      | FIGHTER B KILLS ONE!
+      > group 1 #1 : OK→DEAD
+== seed 21 round 4
+  [party-fight] actor: party 3 THIEF; target: group 1
+      | THIEF CHOPS AT A
+      | BUBBLY SLIME
+      | AND HITS    1 TIMES FOR    2 DAMAGE!
+  [party-fight] actor: party 1 FIGHTER A; target: group 1
+      | FIGHTER A CHOPS AT A
+      | BUBBLY SLIME
+      | AND HITS    1 TIMES FOR    2 DAMAGE!
+      | FIGHTER A KILLS ONE!
+      > group 1 #1 : OK→DEAD
+  [party-parry] actor: party 6 FIGHTER C; target: -
+      | FIGHTER C PARRIED.
+  [party-parry] actor: party 5 MAGE; target: -
+      | MAGE PARRIED.
+  [party-parry] actor: party 4 PRIEST; target: -
+      | PRIEST PARRIED.
+  [party-fight] actor: party 2 FIGHTER B; target: group 1
+      | FIGHTER B SLASHES AT A
+      | BUBBLY SLIME
+      | AND HITS    1 TIMES FOR    1 DAMAGE!
+  [monster-melee] actor: group 1 #2 BUBBLY SLIME; target: party 2 FIGHTER B
+      | BUBBLY SLIME BITES AT
+      | FIGHTER B
+      | AND HITS FOR    1 DAMAGE!
+      > party 2 FIGHTER B: HP 22→21, OK→OK
+  [monster-melee] actor: group 1 #3 BUBBLY SLIME; target: party 2 FIGHTER B
+      | BUBBLY SLIME TEARS AT
+      | FIGHTER B
+      | AND HITS FOR    1 DAMAGE!
+      > party 2 FIGHTER B: HP 21→20, OK→OK
+  [monster-melee] silent block (no message; actor and target withheld)
+== seed 21 round 5
+  [party-parry] actor: party 4 PRIEST; target: -
+      | PRIEST PARRIED.
+  [party-parry] actor: party 6 FIGHTER C; target: -
+      | FIGHTER C PARRIED.
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee] silent block (no message; actor and target withheld)
+  [party-fight] actor: party 1 FIGHTER A; target: group 1
+      | FIGHTER A STABS AT A
+      | BUBBLY SLIME
+      | AND HITS    1 TIMES FOR    1 DAMAGE!
+  [party-fight] actor: party 3 THIEF; target: group 1
+      | THIEF STABS AT A
+      | BUBBLY SLIME
+      | AND HITS    1 TIMES FOR    2 DAMAGE!
+      | THIEF KILLS ONE!
+      > group 1 #1 : OK→DEAD
+      > group 1 #2 : OK→DEAD
+      > group 1 #3 : OK→DEAD
+      > group 1 #4 : OK→DEAD
+== seed 22 round 1
+  [party-parry] actor: party 4 PRIEST; target: -
+      | PRIEST PARRIED.
+  [monster-melee] actor: group 2 #1 KOBOLD; target: party 2 FIGHTER B
+      | KOBOLD CLAWS AT
+      | FIGHTER B
+      | AND HITS FOR    1 DAMAGE!
+      > party 2 FIGHTER B: HP 24→23, OK→OK
+  [monster-melee (part 2)] actor: group 2 #1 KOBOLD; target: party 2 FIGHTER B
+      | KOBOLD CLAWS AT
+      | FIGHTER B
+      | AND HITS FOR    2 DAMAGE!
+  [monster-melee] actor: group 1 #2 SMALL HUMANOID; target: party 2 FIGHTER B
+      | SMALL HUMANOID RIPS AT
+      | FIGHTER B
+      | AND HITS FOR    3 DAMAGE!
+      > party 2 FIGHTER B: HP 21→18, OK→OK
+  [monster-melee] actor: group 1 #3 SMALL HUMANOID; target: party 3 THIEF
+      | SMALL HUMANOID TEARS AT
+      | THIEF
+      | AND HITS FOR    4 DAMAGE!
+      > party 3 THIEF: HP 12→8, OK→OK
+  [monster-melee] actor: group 1 #4 SMALL HUMANOID; target: party 3 THIEF
+      | SMALL HUMANOID TEARS AT
+      | THIEF
+      | AND HITS FOR    2 DAMAGE!
+      > party 3 THIEF: HP 8→6, OK→OK
+  [party-fight] actor: party 2 FIGHTER B; target: group 1
+      | FIGHTER B SLASHES AT A
+      | SMALL HUMANOID
+      | AND HITS    1 TIMES FOR    1 DAMAGE!
+  [party-fight] actor: party 3 THIEF; target: group 1
+      | THIEF CHOPS AT A
+      | SMALL HUMANOID
+      | AND HITS    1 TIMES FOR    1 DAMAGE!
+  [monster-melee] actor: group 2 #2 KOBOLD; target: party 1 FIGHTER A
+      | KOBOLD RIPS AT
+      | FIGHTER A
+      | AND HITS FOR    2 DAMAGE!
+      > party 1 FIGHTER A: HP 22→20, OK→OK
+  [monster-melee (part 2)] actor: group 2 #2 KOBOLD; target: party 1 FIGHTER A
+      | KOBOLD RIPS AT
+      | FIGHTER A
+      | AND HITS FOR    2 DAMAGE!
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee (part 2)] silent block (no message; actor and target withheld)
+  [monster-melee] actor: group 2 #4 KOBOLD; target: party 2 FIGHTER B
+      | KOBOLD RIPS AT
+      | FIGHTER B
+      | AND HITS FOR    2 DAMAGE!
+      > party 2 FIGHTER B: HP 18→16, OK→OK
+  [monster-melee (part 2)] silent block (no message; actor and target withheld)
+  [party-parry] actor: party 6 FIGHTER C; target: -
+      | FIGHTER C PARRIED.
+  [party-parry] actor: party 5 MAGE; target: -
+      | MAGE PARRIED.
+  [party-fight] actor: party 1 FIGHTER A; target: group 1
+      | FIGHTER A SLASHES AT A
+      | SMALL HUMANOID
+      | AND HITS    1 TIMES FOR    2 DAMAGE!
+      | FIGHTER A KILLS ONE!
+      > group 1 #1 : OK→DEAD
+== seed 22 round 2
+  [party-parry] actor: party 4 PRIEST; target: -
+      | PRIEST PARRIED.
+  [monster-melee] actor: group 2 #1 KOBOLD; target: party 2 FIGHTER B
+      | KOBOLD CLAWS AT
+      | FIGHTER B
+      | AND HITS FOR    2 DAMAGE!
+      > party 2 FIGHTER B: HP 16→14, OK→OK
+  [monster-melee (part 2)] actor: group 2 #1 KOBOLD; target: party 2 FIGHTER B
+      | KOBOLD CLAWS AT
+      | FIGHTER B
+      | AND HITS FOR    2 DAMAGE!
+  [party-fight] actor: party 1 FIGHTER A; target: group 1
+      | FIGHTER A THRUSTS AT A
+      | SMALL HUMANOID
+      | AND HITS    1 TIMES FOR    1 DAMAGE!
+  [monster-melee] silent block (no message; actor and target withheld)
+  [party-parry] actor: party 5 MAGE; target: -
+      | MAGE PARRIED.
+  [party-fight] actor: party 2 FIGHTER B; target: group 1
+      | FIGHTER B SWINGS AT A
+      | SMALL HUMANOID
+      | AND HITS    1 TIMES FOR    1 DAMAGE!
+  [party-fight] actor: party 3 THIEF; target: group 1
+      | THIEF SLASHES AT A
+      | SMALL HUMANOID
+      | AND HITS    1 TIMES FOR    1 DAMAGE!
+  [party-parry] actor: party 6 FIGHTER C; target: -
+      | FIGHTER C PARRIED.
+  [monster-melee] actor: group 1 #3 SMALL HUMANOID; target: party 2 FIGHTER B
+      | SMALL HUMANOID RIPS AT
+      | FIGHTER B
+      | AND HITS FOR    3 DAMAGE!
+      > party 2 FIGHTER B: HP 12→9, OK→OK
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee] actor: group 2 #3 KOBOLD; target: party 2 FIGHTER B
+      | KOBOLD TEARS AT
+      | FIGHTER B
+      | AND HITS FOR    2 DAMAGE!
+      > party 2 FIGHTER B: HP 9→7, OK→OK
+  [monster-melee (part 2)] silent block (no message; actor and target withheld)
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee (part 2)] actor: group 2 #4 KOBOLD; target: party 3 THIEF
+      | KOBOLD GNAWS AT
+      | THIEF
+      | AND HITS FOR    1 DAMAGE!
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee (part 2)] silent block (no message; actor and target withheld)
+  [monster-melee] actor: group 1 #1 SMALL HUMANOID; target: party 1 FIGHTER A
+      | SMALL HUMANOID CLAWS AT
+      | FIGHTER A
+      | AND HITS FOR    3 DAMAGE!
+      > party 1 FIGHTER A: HP 18→15, OK→OK
+== seed 22 round 3
+  [party-fight] actor: party 1 FIGHTER A; target: group 1
+      | FIGHTER A THRUSTS AT A
+      | SMALL HUMANOID
+      | AND HITS    1 TIMES FOR    2 DAMAGE!
+      | FIGHTER A KILLS ONE!
+      > group 1 #1 : OK→DEAD
+  [monster-melee] actor: group 1 #2 SMALL HUMANOID; target: party 2 FIGHTER B
+      | SMALL HUMANOID TEARS AT
+      | FIGHTER B
+      | AND HITS FOR    2 DAMAGE!
+      > party 2 FIGHTER B: HP 7→5, OK→OK
+  [monster-melee] actor: group 2 #1 KOBOLD; target: party 1 FIGHTER A
+      | KOBOLD TEARS AT
+      | FIGHTER A
+      | AND HITS FOR    1 DAMAGE!
+      > party 1 FIGHTER A: HP 15→14, OK→OK
+  [monster-melee (part 2)] silent block (no message; actor and target withheld)
+  [monster-melee] actor: group 2 #3 KOBOLD; target: party 2 FIGHTER B
+      | KOBOLD RIPS AT
+      | FIGHTER B
+      | AND HITS FOR    2 DAMAGE!
+      > party 2 FIGHTER B: HP 5→3, OK→OK
+  [monster-melee (part 2)] silent block (no message; actor and target withheld)
+  [monster-melee] actor: group 2 #4 KOBOLD; target: party 3 THIEF
+      | KOBOLD CLAWS AT
+      | THIEF
+      | AND HITS FOR    1 DAMAGE!
+      > party 3 THIEF: HP 5→4, OK→OK
+  [monster-melee (part 2)] actor: group 2 #4 KOBOLD; target: party 3 THIEF
+      | KOBOLD CLAWS AT
+      | THIEF
+      | AND HITS FOR    1 DAMAGE!
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee (part 2)] actor: group 2 #2 KOBOLD; target: party 2 FIGHTER B
+      | KOBOLD GNAWS AT
+      | FIGHTER B
+      | AND HITS FOR    2 DAMAGE!
+  [party-fight] actor: party 2 FIGHTER B; target: group 1
+      | FIGHTER B STABS AT A
+      | SMALL HUMANOID
+      | AND HITS    1 TIMES FOR    2 DAMAGE!
+  [party-fight] actor: party 3 THIEF; target: group 1
+      | THIEF CHOPS AT A
+      | SMALL HUMANOID
+      | AND MISSES!
+  [monster-melee] actor: group 1 #3 SMALL HUMANOID; target: party 1 FIGHTER A
+      | SMALL HUMANOID RIPS AT
+      | FIGHTER A
+      | AND HITS FOR    2 DAMAGE!
+      > party 1 FIGHTER A: HP 14→12, OK→OK
+  [monster-melee] silent block (no message; actor and target withheld)
+  [party-parry] actor: party 4 PRIEST; target: -
+      | PRIEST PARRIED.
+  [party-parry] actor: party 5 MAGE; target: -
+      | MAGE PARRIED.
+  [party-parry] actor: party 6 FIGHTER C; target: -
+      | FIGHTER C PARRIED.
+== seed 22 round 4
+  [monster-melee] actor: group 1 #1 SMALL HUMANOID; target: party 1 FIGHTER A
+      | SMALL HUMANOID GNAWS AT
+      | FIGHTER A
+      | AND HITS FOR    2 DAMAGE!
+      > party 1 FIGHTER A: HP 12→10, OK→OK
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee (part 2)] silent block (no message; actor and target withheld)
+  [party-fight] actor: party 2 FIGHTER B; target: group 1
+      | FIGHTER B STABS AT A
+      | SMALL HUMANOID
+      | AND HITS    1 TIMES FOR    1 DAMAGE!
+  [party-fight] actor: party 3 THIEF; target: group 1
+      | THIEF SWINGS AT A
+      | SMALL HUMANOID
+      | AND HITS    1 TIMES FOR    1 DAMAGE!
+      | THIEF KILLS ONE!
+      > group 1 #1 : OK→DEAD
+  [party-parry] actor: party 6 FIGHTER C; target: -
+      | FIGHTER C PARRIED.
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee] actor: group 1 #4 SMALL HUMANOID; target: party 2 FIGHTER B
+      | SMALL HUMANOID TEARS AT
+      | FIGHTER B
+      | AND HITS FOR    2 DAMAGE!
+      | FIGHTER B IS SLAIN!
+      > party 2 FIGHTER B: HP 1→0, OK→DEAD
+  [monster-melee] actor: group 2 #1 KOBOLD; target: party 3 THIEF
+      | KOBOLD TEARS AT
+      | THIEF
+      | AND HITS FOR    1 DAMAGE!
+      > party 3 THIEF: HP 3→2, OK→OK
+  [monster-melee (part 2)] actor: group 2 #1 KOBOLD; target: party 3 THIEF
+      | KOBOLD TEARS AT
+      | THIEF
+      | AND HITS FOR    1 DAMAGE!
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee (part 2)] actor: group 2 #3 KOBOLD; target: party 1 FIGHTER A
+      | KOBOLD TEARS AT
+      | FIGHTER A
+      | AND HITS FOR    1 DAMAGE!
+  [party-fight] actor: party 1 FIGHTER A; target: group 1
+      | FIGHTER A SLASHES AT A
+      | SMALL HUMANOID
+      | AND HITS    1 TIMES FOR    2 DAMAGE!
+      | FIGHTER A KILLS ONE!
+      > group 1 #2 : OK→DEAD
+      > group 1 #3 : OK→DEAD
+      > group 1 #4 : OK→DEAD
+  [party-parry] actor: party 4 PRIEST; target: -
+      | PRIEST PARRIED.
+  [monster-melee] actor: group 2 #4 KOBOLD; target: party 1 FIGHTER A
+      | KOBOLD BITES AT
+      | FIGHTER A
+      | AND HITS FOR    1 DAMAGE!
+      > party 1 FIGHTER A: HP 9→8, OK→OK
+  [monster-melee (part 2)] silent block (no message; actor and target withheld)
+  [party-parry] actor: party 5 MAGE; target: -
+      | MAGE PARRIED.
+== seed 22 round 5
+  [party-fight] actor: party 3 PRIEST; target: group 1
+      | PRIEST CHOPS AT A
+      | KOBOLD
+      | AND MISSES!
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee (part 2)] actor: group 1 #4 KOBOLD; target: party 1 FIGHTER A
+      | KOBOLD GNAWS AT
+      | FIGHTER A
+      | AND HITS FOR    1 DAMAGE!
+  [party-fight] actor: party 1 FIGHTER A; target: group 1
+      | FIGHTER A STABS AT A
+      | KOBOLD
+      | AND MISSES!
+  [party-fight] actor: party 2 THIEF; target: group 1
+      | THIEF CHOPS AT A
+      | KOBOLD
+      | AND HITS    1 TIMES FOR    1 DAMAGE!
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee (part 2)] actor: group 1 #2 KOBOLD; target: party 1 FIGHTER A
+      | KOBOLD BITES AT
+      | FIGHTER A
+      | AND HITS FOR    2 DAMAGE!
+  [party-parry] actor: party 5 FIGHTER C; target: -
+      | FIGHTER C PARRIED.
+  [party-parry] actor: party 4 MAGE; target: -
+      | MAGE PARRIED.
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee (part 2)] actor: group 1 #1 KOBOLD; target: party 3 PRIEST
+      | KOBOLD GNAWS AT
+      | PRIEST
+      | AND HITS FOR    1 DAMAGE!
+  [monster-melee] actor: group 1 #3 KOBOLD; target: party 2 THIEF
+      | KOBOLD CLAWS AT
+      | THIEF
+      | AND HITS FOR    1 DAMAGE!
+      | THIEF IS SLAIN!
+      > party 2 THIEF: HP 1→0, OK→DEAD
+  [monster-melee (part 2)] actor: group 1 #3 KOBOLD; target: party 1 FIGHTER A
+      | KOBOLD CLAWS AT
+      | FIGHTER A
+      | AND HITS FOR    1 DAMAGE!
+== seed 22 round 6
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee (part 2)] actor: group 1 #4 KOBOLD; target: party 2 PRIEST
+      | KOBOLD GNAWS AT
+      | PRIEST
+      | AND HITS FOR    2 DAMAGE!
+  [party-fight] actor: party 2 PRIEST; target: group 1
+      | PRIEST SWINGS AT A
+      | KOBOLD
+      | AND MISSES!
+  [party-fight] actor: party 3 MAGE; target: group 1
+      | MAGE CHOPS AT A
+      | KOBOLD
+      | AND HITS    1 TIMES FOR    1 DAMAGE!
+  [monster-melee] actor: group 1 #2 KOBOLD; target: party 3 MAGE
+      | KOBOLD BITES AT
+      | MAGE
+      | AND HITS FOR    2 DAMAGE!
+      > party 3 MAGE: HP 7→5, OK→OK
+  [monster-melee (part 2)] actor: group 1 #2 KOBOLD; target: party 3 MAGE
+      | KOBOLD BITES AT
+      | MAGE
+      | AND HITS FOR    2 DAMAGE!
+  [party-fight] actor: party 1 FIGHTER A; target: group 1
+      | FIGHTER A STABS AT A
+      | KOBOLD
+      | AND MISSES!
+  [party-parry] actor: party 4 FIGHTER C; target: -
+      | FIGHTER C PARRIED.
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee (part 2)] actor: group 1 #3 KOBOLD; target: party 2 PRIEST
+      | KOBOLD CLAWS AT
+      | PRIEST
+      | AND HITS FOR    1 DAMAGE!
+  [monster-melee] actor: group 1 #1 KOBOLD; target: party 2 PRIEST
+      | KOBOLD CLAWS AT
+      | PRIEST
+      | AND HITS FOR    2 DAMAGE!
+      > party 2 PRIEST: HP 10→8, OK→OK
+  [monster-melee (part 2)] actor: group 1 #1 KOBOLD; target: party 2 PRIEST
+      | KOBOLD CLAWS AT
+      | PRIEST
+      | AND HITS FOR    1 DAMAGE!
+== seed 22 round 7
+  [party-fight] actor: party 1 FIGHTER A; target: group 1
+      | FIGHTER A THRUSTS AT A
+      | KOBOLD
+      | AND MISSES!
+  [party-parry] actor: party 4 FIGHTER C; target: -
+      | FIGHTER C PARRIED.
+  [party-fight] actor: party 2 PRIEST; target: group 1
+      | PRIEST CHOPS AT A
+      | KOBOLD
+      | AND HITS    1 TIMES FOR    1 DAMAGE!
+  [monster-melee] actor: group 1 #3 KOBOLD; target: party 3 MAGE
+      | KOBOLD CLAWS AT
+      | MAGE
+      | AND HITS FOR    2 DAMAGE!
+      > party 3 MAGE: HP 3→1, OK→OK
+  [monster-melee (part 2)] actor: group 1 #3 KOBOLD; target: party 3 MAGE
+      | KOBOLD CLAWS AT
+      | MAGE
+      | AND HITS FOR    1 DAMAGE!
+      | MAGE IS SLAIN!
+      > party 3 MAGE: HP 0→0, OK→DEAD
+  [monster-melee] actor: group 1 #1 KOBOLD; target: party 2 PRIEST
+      | KOBOLD RIPS AT
+      | PRIEST
+      | AND HITS FOR    1 DAMAGE!
+      > party 2 PRIEST: HP 7→6, OK→OK
+  [monster-melee (part 2)] silent block (no message; actor and target withheld)
+  [monster-melee] actor: group 1 #2 KOBOLD; target: party 1 FIGHTER A
+      | KOBOLD TEARS AT
+      | FIGHTER A
+      | AND HITS FOR    1 DAMAGE!
+      > party 1 FIGHTER A: HP 4→3, OK→OK
+  [monster-melee (part 2)] silent block (no message; actor and target withheld)
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee (part 2)] actor: group 1 #4 KOBOLD; target: party 2 PRIEST
+      | KOBOLD GNAWS AT
+      | PRIEST
+      | AND HITS FOR    1 DAMAGE!
+== seed 22 round 8
+  [party-fight] actor: party 3 FIGHTER C; target: group 1
+      | FIGHTER C CHOPS AT A
+      | KOBOLD
+      | AND HITS    1 TIMES FOR    1 DAMAGE!
+  [monster-melee] actor: group 1 #2 KOBOLD; target: party 3 FIGHTER C
+      | KOBOLD GNAWS AT
+      | FIGHTER C
+      | AND HITS FOR    2 DAMAGE!
+      > party 3 FIGHTER C: HP 20→18, OK→OK
+  [monster-melee (part 2)] silent block (no message; actor and target withheld)
+  [party-fight] actor: party 2 PRIEST; target: group 1
+      | PRIEST THRUSTS AT A
+      | KOBOLD
+      | AND MISSES!
+  [party-fight] actor: party 1 FIGHTER A; target: group 1
+      | FIGHTER A SLASHES AT A
+      | KOBOLD
+      | AND HITS    1 TIMES FOR    1 DAMAGE!
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee (part 2)] silent block (no message; actor and target withheld)
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee (part 2)] actor: group 1 #3 KOBOLD; target: party 3 FIGHTER C
+      | KOBOLD CLAWS AT
+      | FIGHTER C
+      | AND HITS FOR    1 DAMAGE!
+  [monster-melee] actor: group 1 #1 KOBOLD; target: party 2 PRIEST
+      | KOBOLD CLAWS AT
+      | PRIEST
+      | AND HITS FOR    2 DAMAGE!
+      > party 2 PRIEST: HP 5→3, OK→OK
+  [monster-melee (part 2)] actor: group 1 #1 KOBOLD; target: party 2 PRIEST
+      | KOBOLD CLAWS AT
+      | PRIEST
+      | AND HITS FOR    1 DAMAGE!
+== seed 22 round 9
+  [party-fight] actor: party 3 FIGHTER C; target: group 1
+      | FIGHTER C THRUSTS AT A
+      | KOBOLD
+      | AND HITS    1 TIMES FOR    2 DAMAGE!
+      | FIGHTER C KILLS ONE!
+      > group 1 #1 : OK→DEAD
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee (part 2)] actor: group 1 #2 KOBOLD; target: party 2 PRIEST
+      | KOBOLD RIPS AT
+      | PRIEST
+      | AND HITS FOR    1 DAMAGE!
+  [monster-melee] actor: group 1 #4 KOBOLD; target: party 3 FIGHTER C
+      | KOBOLD CLAWS AT
+      | FIGHTER C
+      | AND HITS FOR    2 DAMAGE!
+      > party 3 FIGHTER C: HP 17→15, OK→OK
+  [monster-melee (part 2)] silent block (no message; actor and target withheld)
+  [party-fight] actor: party 1 FIGHTER A; target: group 1
+      | FIGHTER A SLASHES AT A
+      | KOBOLD
+      | AND HITS    1 TIMES FOR    2 DAMAGE!
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee (part 2)] actor: group 1 #3 KOBOLD; target: party 2 PRIEST
+      | KOBOLD CLAWS AT
+      | PRIEST
+      | AND HITS FOR    2 DAMAGE!
+      | PRIEST IS SLAIN!
+      > party 2 PRIEST: HP -1→0, OK→DEAD
+== seed 22 round 10
+  [monster-melee] actor: group 1 #3 KOBOLD; target: party 2 FIGHTER C
+      | KOBOLD BITES AT
+      | FIGHTER C
+      | AND HITS FOR    1 DAMAGE!
+      > party 2 FIGHTER C: HP 15→14, OK→OK
+  [monster-melee (part 2)] silent block (no message; actor and target withheld)
+  [monster-melee] actor: group 1 #4 KOBOLD; target: party 2 FIGHTER C
+      | KOBOLD CLAWS AT
+      | FIGHTER C
+      | AND HITS FOR    1 DAMAGE!
+      > party 2 FIGHTER C: HP 14→13, OK→OK
+  [monster-melee (part 2)] actor: group 1 #4 KOBOLD; target: party 2 FIGHTER C
+      | KOBOLD CLAWS AT
+      | FIGHTER C
+      | AND HITS FOR    1 DAMAGE!
+  [party-fight] actor: party 1 FIGHTER A; target: group 1
+      | FIGHTER A SWINGS AT A
+      | KOBOLD
+      | AND MISSES!
+  [monster-melee] actor: group 1 #1 KOBOLD; target: party 1 FIGHTER A
+      | KOBOLD CLAWS AT
+      | FIGHTER A
+      | AND HITS FOR    2 DAMAGE!
+      > party 1 FIGHTER A: HP 3→1, OK→OK
+  [monster-melee (part 2)] actor: group 1 #1 KOBOLD; target: party 1 FIGHTER A
+      | KOBOLD CLAWS AT
+      | FIGHTER A
+      | AND HITS FOR    1 DAMAGE!
+      | FIGHTER A IS SLAIN!
+      > party 1 FIGHTER A: HP 0→0, OK→DEAD
+  [monster-melee] actor: group 1 #2 KOBOLD; target: party 2 FIGHTER C
+      | KOBOLD BITES AT
+      | FIGHTER C
+      | AND HITS FOR    2 DAMAGE!
+      > party 2 FIGHTER C: HP 12→10, OK→OK
+  [monster-melee (part 2)] silent block (no message; actor and target withheld)
+  [party-fight] actor: party 2 FIGHTER C; target: group 1
+      | FIGHTER C CHOPS AT A
+      | KOBOLD
+      | AND MISSES!
+== seed 22 round 11
+  [monster-melee] actor: group 1 #2 KOBOLD; target: party 1 FIGHTER C
+      | KOBOLD GNAWS AT
+      | FIGHTER C
+      | AND HITS FOR    1 DAMAGE!
+      > party 1 FIGHTER C: HP 10→9, OK→OK
+  [monster-melee (part 2)] actor: group 1 #2 KOBOLD; target: party 1 FIGHTER C
+      | KOBOLD GNAWS AT
+      | FIGHTER C
+      | AND HITS FOR    2 DAMAGE!
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee (part 2)] actor: group 1 #3 KOBOLD; target: party 1 FIGHTER C
+      | KOBOLD GNAWS AT
+      | FIGHTER C
+      | AND HITS FOR    1 DAMAGE!
+  [monster-melee] actor: group 1 #4 KOBOLD; target: party 1 FIGHTER C
+      | KOBOLD TEARS AT
+      | FIGHTER C
+      | AND HITS FOR    2 DAMAGE!
+      > party 1 FIGHTER C: HP 6→4, OK→OK
+  [monster-melee (part 2)] actor: group 1 #4 KOBOLD; target: party 1 FIGHTER C
+      | KOBOLD TEARS AT
+      | FIGHTER C
+      | AND HITS FOR    2 DAMAGE!
+  [party-fight] actor: party 1 FIGHTER C; target: group 1
+      | FIGHTER C THRUSTS AT A
+      | KOBOLD
+      | AND HITS    1 TIMES FOR    1 DAMAGE!
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee (part 2)] silent block (no message; actor and target withheld)
+== seed 22 round 12
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee (part 2)] silent block (no message; actor and target withheld)
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee (part 2)] actor: group 1 #2 KOBOLD; target: party 1 FIGHTER C
+      | KOBOLD CLAWS AT
+      | FIGHTER C
+      | AND HITS FOR    2 DAMAGE!
+      | FIGHTER C IS SLAIN!
+      > party 1 FIGHTER C: HP 0→0, OK→DEAD
+  [narration] actor: -; target: -
+      | ** THE PARTY HAS PERISHED **
+== seed 23 round 1
+  [monster-melee] actor: group 1 #2 UNDEAD KOBOLD; target: party 2 FIGHTER B
+      | THE MONSTERS SURPRISED YOU!
+      | UNDEAD KOBOLD CLAWS AT
+      | FIGHTER B
+      | AND HITS FOR    4 DAMAGE!
+      > party 2 FIGHTER B: HP 24→20, OK→OK
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee] actor: group 1 #1 UNDEAD KOBOLD; target: party 3 THIEF
+      | UNDEAD KOBOLD GNAWS AT
+      | THIEF
+      | AND HITS FOR    4 DAMAGE!
+      > party 3 THIEF: HP 12→8, OK→OK
+  [monster-melee] silent block (no message; actor and target withheld)
+== seed 23 round 2
+  [party-fight] actor: party 1 FIGHTER A; target: group 1
+      | FIGHTER A STABS AT A
+      | UNDEAD KOBOLD
+      | AND HITS    1 TIMES FOR    2 DAMAGE!
+  [party-fight] actor: party 2 FIGHTER B; target: group 1
+      | FIGHTER B CHOPS AT A
+      | UNDEAD KOBOLD
+      | AND MISSES!
+  [monster-melee] actor: group 1 #4 UNDEAD KOBOLD; target: party 2 FIGHTER B
+      | UNDEAD KOBOLD TEARS AT
+      | FIGHTER B
+      | AND HITS FOR    1 DAMAGE!
+      > party 2 FIGHTER B: HP 20→19, OK→OK
+  [party-fight] actor: party 3 THIEF; target: group 1
+      | THIEF SLASHES AT A
+      | UNDEAD KOBOLD
+      | AND HITS    1 TIMES FOR    2 DAMAGE!
+  [party-parry] actor: party 6 FIGHTER C; target: -
+      | FIGHTER C PARRIED.
+  [monster-melee] actor: group 1 #2 UNDEAD KOBOLD; target: party 1 FIGHTER A
+      | UNDEAD KOBOLD CLAWS AT
+      | FIGHTER A
+      | AND HITS FOR    3 DAMAGE!
+      > party 1 FIGHTER A: HP 22→19, OK→OK
+  [monster-melee] actor: group 1 #3 UNDEAD KOBOLD; target: party 2 FIGHTER B
+      | UNDEAD KOBOLD GNAWS AT
+      | FIGHTER B
+      | AND HITS FOR    2 DAMAGE!
+      > party 2 FIGHTER B: HP 19→17, OK→OK
+  [monster-melee] actor: group 1 #1 UNDEAD KOBOLD; target: party 2 FIGHTER B
+      | UNDEAD KOBOLD BITES AT
+      | FIGHTER B
+      | AND HITS FOR    4 DAMAGE!
+      > party 2 FIGHTER B: HP 17→13, OK→OK
+  [party-parry] actor: party 4 PRIEST; target: -
+      | PRIEST PARRIED.
+  [party-parry] actor: party 5 MAGE; target: -
+      | MAGE PARRIED.
+== seed 23 round 3
+  [party-fight] actor: party 1 FIGHTER A; target: group 1
+      | FIGHTER A STABS AT A
+      | UNDEAD KOBOLD
+      | AND HITS    1 TIMES FOR    2 DAMAGE!
+  [party-parry] actor: party 5 MAGE; target: -
+      | MAGE PARRIED.
+  [party-parry] actor: party 6 FIGHTER C; target: -
+      | FIGHTER C PARRIED.
+  [monster-melee] actor: group 1 #4 UNDEAD KOBOLD; target: party 1 FIGHTER A
+      | UNDEAD KOBOLD CLAWS AT
+      | FIGHTER A
+      | AND HITS FOR    1 DAMAGE!
+      > party 1 FIGHTER A: HP 19→18, OK→OK
+  [party-parry] actor: party 4 PRIEST; target: -
+      | PRIEST PARRIED.
+  [party-fight] actor: party 3 THIEF; target: group 1
+      | THIEF SLASHES AT A
+      | UNDEAD KOBOLD
+      | AND MISSES!
+  [monster-melee] actor: group 1 #3 UNDEAD KOBOLD; target: party 3 THIEF
+      | UNDEAD KOBOLD CLAWS AT
+      | THIEF
+      | AND HITS FOR    4 DAMAGE!
+      > party 3 THIEF: HP 8→4, OK→OK
+  [monster-melee] actor: group 1 #2 UNDEAD KOBOLD; target: party 1 FIGHTER A
+      | UNDEAD KOBOLD GNAWS AT
+      | FIGHTER A
+      | AND HITS FOR    2 DAMAGE!
+      > party 1 FIGHTER A: HP 18→16, OK→OK
+  [party-fight] actor: party 2 FIGHTER B; target: group 1
+      | FIGHTER B THRUSTS AT A
+      | UNDEAD KOBOLD
+      | AND MISSES!
+  [monster-melee] actor: group 1 #1 UNDEAD KOBOLD; target: party 3 THIEF
+      | UNDEAD KOBOLD TEARS AT
+      | THIEF
+      | AND HITS FOR    4 DAMAGE!
+      | THIEF IS SLAIN!
+      > party 3 THIEF: HP 4→0, OK→DEAD
+== seed 23 round 4
+  [party-fight] actor: party 1 FIGHTER A; target: group 1
+      | FIGHTER A THRUSTS AT A
+      | UNDEAD KOBOLD
+      | AND HITS    1 TIMES FOR    1 DAMAGE!
+      | FIGHTER A KILLS ONE!
+      > group 1 #1 : OK→DEAD
+  [monster-melee] silent block (no message; actor and target withheld)
+  [party-fight] actor: party 2 FIGHTER B; target: group 1
+      | FIGHTER B THRUSTS AT A
+      | UNDEAD KOBOLD
+      | AND HITS    1 TIMES FOR    2 DAMAGE!
+  [party-parry] actor: party 5 FIGHTER C; target: -
+      | FIGHTER C PARRIED.
+  [monster-melee] actor: group 1 #3 UNDEAD KOBOLD; target: party 3 PRIEST
+      | UNDEAD KOBOLD CLAWS AT
+      | PRIEST
+      | AND HITS FOR    3 DAMAGE!
+      > party 3 PRIEST: HP 14→11, OK→OK
+  [party-fight] actor: party 3 PRIEST; target: group 1
+      | PRIEST STABS AT A
+      | UNDEAD KOBOLD
+      | AND MISSES!
+  [party-parry] actor: party 4 MAGE; target: -
+      | MAGE PARRIED.
+  [monster-melee] actor: group 1 #4 UNDEAD KOBOLD; target: party 3 PRIEST
+      | UNDEAD KOBOLD TEARS AT
+      | PRIEST
+      | AND HITS FOR    3 DAMAGE!
+      > party 3 PRIEST: HP 11→8, OK→OK
+== seed 23 round 5
+  [party-fight] actor: party 2 FIGHTER B; target: group 1
+      | FIGHTER B CHOPS AT A
+      | UNDEAD KOBOLD
+      | AND HITS    1 TIMES FOR    1 DAMAGE!
+  [party-parry] actor: party 5 FIGHTER C; target: -
+      | FIGHTER C PARRIED.
+  [party-fight] actor: party 3 PRIEST; target: group 1
+      | PRIEST SWINGS AT A
+      | UNDEAD KOBOLD
+      | AND HITS    1 TIMES FOR    1 DAMAGE!
+  [monster-melee] actor: group 1 #2 UNDEAD KOBOLD; target: party 1 FIGHTER A
+      | UNDEAD KOBOLD TEARS AT
+      | FIGHTER A
+      | AND HITS FOR    1 DAMAGE!
+      > party 1 FIGHTER A: HP 16→15, OK→OK
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee] actor: group 1 #4 UNDEAD KOBOLD; target: party 1 FIGHTER A
+      | UNDEAD KOBOLD GNAWS AT
+      | FIGHTER A
+      | AND HITS FOR    4 DAMAGE!
+      > party 1 FIGHTER A: HP 15→11, OK→OK
+  [party-fight] actor: party 1 FIGHTER A; target: group 1
+      | FIGHTER A CHOPS AT A
+      | UNDEAD KOBOLD
+      | AND HITS    1 TIMES FOR    1 DAMAGE!
+      | FIGHTER A KILLS ONE!
+      > group 1 #1 : OK→DEAD
+  [party-parry] actor: party 4 MAGE; target: -
+      | MAGE PARRIED.
+== seed 23 round 6
+  [party-fight] actor: party 2 FIGHTER B; target: group 1
+      | FIGHTER B SLASHES AT A
+      | UNDEAD KOBOLD
+      | AND HITS    1 TIMES FOR    1 DAMAGE!
+  [party-parry] actor: party 4 MAGE; target: -
+      | MAGE PARRIED.
+  [monster-melee] actor: group 1 #1 UNDEAD KOBOLD; target: party 1 FIGHTER A
+      | UNDEAD KOBOLD BITES AT
+      | FIGHTER A
+      | AND HITS FOR    4 DAMAGE!
+      > party 1 FIGHTER A: HP 11→7, OK→OK
+  [monster-melee] actor: group 1 #2 UNDEAD KOBOLD; target: party 1 FIGHTER A
+      | UNDEAD KOBOLD BITES AT
+      | FIGHTER A
+      | AND HITS FOR    1 DAMAGE!
+      > party 1 FIGHTER A: HP 7→6, OK→OK
+  [monster-melee] actor: group 1 #3 UNDEAD KOBOLD; target: party 1 FIGHTER A
+      | UNDEAD KOBOLD GNAWS AT
+      | FIGHTER A
+      | AND HITS FOR    1 DAMAGE!
+      > party 1 FIGHTER A: HP 6→5, OK→OK
+  [monster-melee] silent block (no message; actor and target withheld)
+  [party-fight] actor: party 3 PRIEST; target: group 1
+      | PRIEST CHOPS AT A
+      | UNDEAD KOBOLD
+      | AND MISSES!
+  [party-parry] actor: party 5 FIGHTER C; target: -
+      | FIGHTER C PARRIED.
+  [party-fight] actor: party 1 FIGHTER A; target: group 1
+      | FIGHTER A SWINGS AT A
+      | UNDEAD KOBOLD
+      | AND HITS    1 TIMES FOR    1 DAMAGE!
+== seed 23 round 7
+  [party-parry] actor: party 5 FIGHTER C; target: -
+      | FIGHTER C PARRIED.
+  [party-fight] actor: party 2 FIGHTER B; target: group 1
+      | FIGHTER B STABS AT A
+      | UNDEAD KOBOLD
+      | AND MISSES!
+  [party-fight] actor: party 3 PRIEST; target: group 1
+      | PRIEST THRUSTS AT A
+      | UNDEAD KOBOLD
+      | AND HITS    1 TIMES FOR    2 DAMAGE!
+  [party-parry] actor: party 4 MAGE; target: -
+      | MAGE PARRIED.
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee] actor: group 1 #3 UNDEAD KOBOLD; target: party 3 PRIEST
+      | UNDEAD KOBOLD TEARS AT
+      | PRIEST
+      | AND HITS FOR    4 DAMAGE!
+      > party 3 PRIEST: HP 8→4, OK→OK
+  [monster-melee] silent block (no message; actor and target withheld)
+  [party-fight] actor: party 1 FIGHTER A; target: group 1
+      | FIGHTER A CHOPS AT A
+      | UNDEAD KOBOLD
+      | AND HITS    1 TIMES FOR    2 DAMAGE!
+      | FIGHTER A KILLS ONE!
+      > group 1 #1 : OK→DEAD
+== seed 23 round 8
+  [monster-melee] actor: group 1 #1 UNDEAD KOBOLD; target: party 3 PRIEST
+      | UNDEAD KOBOLD TEARS AT
+      | PRIEST
+      | AND HITS FOR    2 DAMAGE!
+      > party 3 PRIEST: HP 4→2, OK→OK
+  [monster-melee] actor: group 1 #2 UNDEAD KOBOLD; target: party 3 PRIEST
+      | UNDEAD KOBOLD BITES AT
+      | PRIEST
+      | AND HITS FOR    4 DAMAGE!
+      | PRIEST IS SLAIN!
+      > party 3 PRIEST: HP 2→0, OK→DEAD
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee] actor: group 1 #4 UNDEAD KOBOLD; target: party 2 FIGHTER B
+      | UNDEAD KOBOLD RIPS AT
+      | FIGHTER B
+      | AND HITS FOR    2 DAMAGE!
+      > party 2 FIGHTER B: HP 13→11, OK→OK
+  [party-parry] actor: party 5 FIGHTER C; target: -
+      | FIGHTER C PARRIED.
+  [party-parry] actor: party 4 MAGE; target: -
+      | MAGE PARRIED.
+  [party-fight] actor: party 1 FIGHTER A; target: group 1
+      | FIGHTER A SWINGS AT A
+      | UNDEAD KOBOLD
+      | AND HITS    1 TIMES FOR    2 DAMAGE!
+  [party-fight] actor: party 2 FIGHTER B; target: group 1
+      | FIGHTER B SLASHES AT A
+      | UNDEAD KOBOLD
+      | AND HITS    1 TIMES FOR    1 DAMAGE!
+== seed 23 round 9
+  [party-fight] actor: party 1 FIGHTER A; target: group 1
+      | FIGHTER A SLASHES AT A
+      | UNDEAD KOBOLD
+      | AND MISSES!
+  [party-parry] actor: party 4 FIGHTER C; target: -
+      | FIGHTER C PARRIED.
+  [party-fight] actor: party 3 MAGE; target: group 1
+      | MAGE THRUSTS AT A
+      | UNDEAD KOBOLD
+      | AND MISSES!
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee] actor: group 1 #2 UNDEAD KOBOLD; target: party 2 FIGHTER B
+      | UNDEAD KOBOLD GNAWS AT
+      | FIGHTER B
+      | AND HITS FOR    2 DAMAGE!
+      > party 2 FIGHTER B: HP 11→9, OK→OK
+  [monster-melee] actor: group 1 #3 UNDEAD KOBOLD; target: party 2 FIGHTER B
+      | UNDEAD KOBOLD TEARS AT
+      | FIGHTER B
+      | AND HITS FOR    1 DAMAGE!
+      > party 2 FIGHTER B: HP 9→8, OK→OK
+  [monster-melee] silent block (no message; actor and target withheld)
+  [party-fight] actor: party 2 FIGHTER B; target: group 1
+      | FIGHTER B SLASHES AT A
+      | UNDEAD KOBOLD
+      | AND MISSES!
+== seed 23 round 10
+  [party-fight] actor: party 1 FIGHTER A; target: group 1
+      | FIGHTER A CHOPS AT A
+      | UNDEAD KOBOLD
+      | AND MISSES!
+  [monster-melee] actor: group 1 #1 UNDEAD KOBOLD; target: party 1 FIGHTER A
+      | UNDEAD KOBOLD BITES AT
+      | FIGHTER A
+      | AND HITS FOR    3 DAMAGE!
+      > party 1 FIGHTER A: HP 5→2, OK→OK
+  [monster-melee] actor: group 1 #2 UNDEAD KOBOLD; target: party 1 FIGHTER A
+      | UNDEAD KOBOLD TEARS AT
+      | FIGHTER A
+      | AND HITS FOR    2 DAMAGE!
+      | FIGHTER A IS SLAIN!
+      > party 1 FIGHTER A: HP 2→0, OK→DEAD
+  [monster-melee] silent block (no message; actor and target withheld)
+  [monster-melee] actor: group 1 #4 UNDEAD KOBOLD; target: party 2 FIGHTER B
+      | UNDEAD KOBOLD RIPS AT
+      | FIGHTER B
+      | AND HITS FOR    1 DAMAGE!
+      > party 2 FIGHTER B: HP 8→7, OK→OK
+  [party-parry] actor: party 4 FIGHTER C; target: -
+      | FIGHTER C PARRIED.
+  [party-fight] actor: party 2 FIGHTER B; target: group 1
+      | FIGHTER B SLASHES AT A
+      | UNDEAD KOBOLD
+      | AND HITS    1 TIMES FOR    2 DAMAGE!
+  [party-fight] actor: party 3 MAGE; target: group 1
+      | MAGE SWINGS AT A
+      | UNDEAD KOBOLD
+      | AND HITS    1 TIMES FOR    1 DAMAGE!
+== seed 23 round 11
+  [party-fight] actor: party 1 FIGHTER B; target: group 1
+      | FIGHTER B STABS AT A
+      | UNDEAD KOBOLD
+      | AND HITS    1 TIMES FOR    2 DAMAGE!
+      | FIGHTER B KILLS ONE!
+      > group 1 #1 : OK→DEAD
+      > group 1 #2 : OK→DEAD
+      > group 1 #3 : OK→DEAD
+      > group 1 #4 : OK→DEAD

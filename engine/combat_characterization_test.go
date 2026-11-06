@@ -163,6 +163,11 @@ func TestCharAllyTargetStaysWithSlot(t *testing.T) {
 	if g.Town.Party.Members[4].Status != Paralyzed {
 		t.Fatalf("CORA stays paralyzed")
 	}
+	// The event reports where the spell actually went, by slot and name.
+	evs := cs.Events()
+	if len(evs) != 1 || evs[0].Kind != EventPartySpell || evs[0].Actor.Name != "ALDA" || evs[0].Target.Member != 2 || evs[0].Target.Name != "EDDA" {
+		t.Fatalf("event: %+v", evs)
+	}
 }
 
 // Orders for members who cannot act. Paralyzed and dead members are skipped

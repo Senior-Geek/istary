@@ -199,6 +199,7 @@ type CombatState struct {
 	Actions      []PartyAction    // one per party member
 	CurrentActor int              // index of party member choosing action (during CombatChoose)
 	Messages     []string         // combat log messages for current round
+	ev           eventLog         // structured events for Messages (combat_events.go); not saved
 	MessageIndex int              // current message being displayed
 	MessageTime  int64            // unix millis when current messages were shown (for auto-advance)
 	Round        int              // current round number
@@ -610,6 +611,7 @@ func (cs *CombatState) ExecuteRound(game *GameState) {
 	sortPartyByStatus(game.Town.Party.Members)
 
 	party := game.Town.Party.Members
+	cs.ev = eventLog{party: party}
 
 	// Pascal DSPPARTY (COMBAT3.TEXT lines 286-291): per-round identification roll.
 	// For each party member, (RANDOM MOD 99) < (IQ + PIETY + LEVEL) → a random
@@ -1037,6 +1039,9 @@ func (cs *CombatState) executePartySlot(slot int, party []*Character, game *Game
 			continue
 		}
 		member := party[i]
+		if kind, target := partyActionEvent(action, party); kind != EventNarration {
+			cs.beginEvent(kind, CombatRef{Side: SideParty, Group: -1, Member: i, Name: member.Name}, target)
+		}
 
 		switch action.Action {
 		case ActionFight:
@@ -1104,12 +1109,12 @@ func (cs *CombatState) executeMonsterSlot(slot int, game *GameState) {
 	party := game.Town.Party.Members
 	monsters := game.Scenario.Monsters
 
-	for _, group := range cs.Groups {
+	for gi, group := range cs.Groups {
 		if group.AliveCount() == 0 {
 			continue
 		}
 
-		for _, cm := range group.Members {
+		for mi, cm := range group.Members {
 			if cm.Initiative != slot {
 				continue
 			}
@@ -1136,6 +1141,13 @@ func (cs *CombatState) executeMonsterSlot(slot int, game *GameState) {
 			if target == nil {
 				return
 			}
+			victim := NoRef
+			for pi, pm := range party {
+				if pm == target {
+					victim = CombatRef{Side: SideParty, Group: -1, Member: pi, Name: pm.Name}
+				}
+			}
+			cs.beginEvent(EventMonsterMelee, CombatRef{Side: SideMonster, Group: gi, Member: mi, Name: displayMonsterName(mon, cm)}, victim)
 
 			// Pascal ENEMYSPL (COMBAT2.TEXT lines 524-635):
 			// 75% chance to try mage spell, then 75% chance to try priest spell
@@ -1144,6 +1156,7 @@ func (cs *CombatState) executeMonsterSlot(slot int, game *GameState) {
 			if spellHash > 0 {
 				// Silenced check — Pascal COMBAT4.TEXT line 774-775
 				if cm.InaudCnt > 0 {
+					cs.noteEvent(EventMonsterSpell, &NoRef)
 					cs.addMessage(fmt.Sprintf("%s CASTS A SPELL!", displayMonsterName(mon, cm)))
 					cs.addMessage("WHICH FAILS TO BECOME AUDIBLE!")
 					cs.endAction()
@@ -1151,6 +1164,7 @@ func (cs *CombatState) executeMonsterSlot(slot int, game *GameState) {
 				}
 				// Fizzle zone
 				if game.Fizzles > 0 {
+					cs.noteEvent(EventMonsterSpell, &NoRef)
 					cs.addMessage(fmt.Sprintf("%s CASTS A SPELL!", displayMonsterName(mon, cm)))
 					cs.addMessage("WHICH FIZZLES OUT")
 					cs.endAction()
@@ -1159,6 +1173,7 @@ func (cs *CombatState) executeMonsterSlot(slot int, game *GameState) {
 				// Look up spell and execute via proper spell system
 				sp, ok := SpellDB[spellHash]
 				if ok && sp != nil {
+					cs.noteEvent(EventMonsterSpell, &NoRef)
 					cs.addMessage(fmt.Sprintf("%s CASTS %s!", displayMonsterName(mon, cm), sp.Name))
 					// Monster casting: CASTGR=0 (target party), CASTI=VICTIM
 					cs.executeMonsterSpell(sp, cm, party, game)
@@ -1170,6 +1185,7 @@ func (cs *CombatState) executeMonsterSlot(slot int, game *GameState) {
 			// Breath weapon — Pascal DOBREATH (COMBAT5.TEXT lines 92-116)
 			// 60% chance of choosing breath (COMBAT2.TEXT line 663)
 			if mon.Breathe > 0 && rand.Intn(100) < 60 {
+				cs.noteEvent(EventMonsterBreath, &NoRef)
 				cs.addMessage(fmt.Sprintf("%s BREATHES!", displayMonsterName(mon, cm)))
 				for _, m := range party {
 					if m == nil || !m.IsAlive() {
@@ -1201,6 +1217,7 @@ func (cs *CombatState) executeMonsterSlot(slot int, game *GameState) {
 			// YELLHELP — Pascal COMBAT2.TEXT lines 638-645, COMBAT5.TEXT lines 447-481
 			// Monster calls for help if: SPPC[6] set, alive < 5, 75% chance
 			if (mon.SPPC&(1<<6)) != 0 && group.AliveCount() < 5 && rand.Intn(100) < 75 {
+				cs.noteEvent(EventMonsterCall, &NoRef)
 				cs.addMessage(fmt.Sprintf("%s CALLS FOR HELP!", displayMonsterName(mon, cm)))
 				if group.AliveCount() >= 9 {
 					cs.addMessage("BUT NONE COMES!")
@@ -1268,6 +1285,7 @@ func (cs *CombatState) executeMonsterSlot(slot int, game *GameState) {
 						break
 					}
 				}
+				cs.noteAttack(CombatRef{Side: SideParty, Group: -1, Member: partyIdx, Name: target.Name})
 				combatACMod := 0
 				if partyIdx >= 0 && partyIdx < 6 {
 					combatACMod = cs.PartyACMod[partyIdx]
@@ -1520,6 +1538,7 @@ func (cs *CombatState) executeMonsterSpell(sp *Spell, cm *CombatMonster, party [
 // The actual transition to CombatChest/CombatDefeat/CombatChoose
 // happens in advanceCombatMessages (main.go) after all messages are displayed.
 func (cs *CombatState) checkRoundEnd(game *GameState, party []*Character) {
+	cs.endEventAction()
 	if cs.AllMonstersDead() {
 		cs.generateTrap(game)
 	}
@@ -3348,6 +3367,7 @@ func (cs *CombatState) distributeXPOnly(game *GameState) {
 }
 
 func (cs *CombatState) addMessage(msg string) {
+	cs.openEvent()
 	cs.Messages = append(cs.Messages, msg)
 }
 
@@ -3356,6 +3376,7 @@ func (cs *CombatState) addMessage(msg string) {
 const ActionSeparator = "\x00"
 
 func (cs *CombatState) endAction() {
+	cs.closeEvent()
 	cs.Messages = append(cs.Messages, ActionSeparator)
 }
 
