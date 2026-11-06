@@ -34,9 +34,10 @@ func TestCharWhoIsOfferedAnOrder(t *testing.T) {
 }
 
 // Round completion in the terminal: each timer tick shows the next message
-// block; after the last block the display snapshot is cleared, groups are
-// compacted, the round number advances and order entry starts again. The
-// previous round's orders are still in cs.Actions when it does.
+// block; after the last block the display snapshot is cleared and the
+// terminal calls engine BeginNextRound, which compacts groups, advances the
+// round, re-sorts the party and clears last round's orders (P1c, C2 and C3;
+// before P1c the old orders stayed in place).
 func TestCharRoundCompletion(t *testing.T) {
 	seed(21)
 	g, d := partyInMaze(t)
@@ -85,11 +86,9 @@ func TestCharRoundCompletion(t *testing.T) {
 	if c.Round != round+1 || c.DisplayPartySnap != nil || c.DisplayAliveCounts != nil || len(c.Messages) != 0 {
 		t.Errorf("round end: round %d→%d, snapshot cleared %v, messages %d", round, c.Round, c.DisplayPartySnap == nil, len(c.Messages))
 	}
-	for i := range c.Actions {
-		a, b := c.Actions[i], given[i]
-		a.Initiative, b.Initiative = 0, 0
-		if a != b {
-			t.Errorf("slot %d's order changed between rounds: %+v → %+v", i+1, b, a)
+	for i, a := range c.Actions {
+		if a != (engine.PartyAction{}) {
+			t.Errorf("slot %d keeps last round's order %+v (given %+v)", i+1, a, given[i])
 		}
 	}
 }

@@ -3659,13 +3659,10 @@ func advanceCombatMessages(game *engine.GameState) {
 		return
 	}
 
-	// Combat continues — compact groups (Pascal CUTIL), then action selection
-	combat.CompactGroups()
-	combat.Round++
-	combat.Phase = engine.CombatChoose
+	// Combat continues: the engine compacts groups, re-sorts the party and
+	// clears last round's orders (Pascal CUTIL), then action selection.
+	combat.BeginNextRound(game)
 	combat.CurrentActor = findNextActor(game, -1)
-	combat.Messages = nil
-	combat.MessageIndex = 0
 }
 
 // advanceChestMessages auto-advances chest result messages.

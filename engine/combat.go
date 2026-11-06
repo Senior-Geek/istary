@@ -197,6 +197,7 @@ type CombatState struct {
 	Phase        CombatPhase
 	Groups       []*MonsterGroup  // up to 4 monster groups
 	Actions      []PartyAction    // one per party member
+	orderFor     []*Character     // who each Actions slot was ordered for (formation at order entry); C1
 	CurrentActor int              // index of party member choosing action (during CombatChoose)
 	Messages     []string         // combat log messages for current round
 	ev           eventLog         // structured events for Messages (combat_events.go); not saved
@@ -287,6 +288,7 @@ func NewCombat(game *GameState) *CombatState {
 		Actions: make([]PartyAction, len(game.Town.Party.Members)),
 		Round:   1,
 	}
+	combat.orderFor = append([]*Character(nil), game.Town.Party.Members...)
 
 	cell := game.CurrentCell()
 	if cell == nil {
@@ -605,13 +607,15 @@ func (cs *CombatState) ExecuteRound(game *GameState) {
 	cs.Messages = nil
 	cs.MessageIndex = 0
 
-	// Pascal DSPPARTY (COMBAT3.TEXT lines 267-270): sort party by status.
-	// Dead/ashed/lost characters bubble to the back, alive characters move forward.
-	// This is how back-row characters naturally enter the front row when front dies.
-	sortPartyByStatus(game.Town.Party.Members)
-
+	// The party is no longer re-sorted here. Classic re-sorts at the end of
+	// the round (Player's Guide p.48), before the next orders are entered, so
+	// the sort now happens in BeginNextRound (correction C2,
+	// docs/design/m2-exploration/COMBAT-DESIGN-BASELINE.md §3).
 	party := game.Town.Party.Members
 	cs.ev = eventLog{party: party}
+
+	// Orders belong to the characters they were given for (correction C1).
+	cs.bindOrders(party)
 
 	// Pascal DSPPARTY (COMBAT3.TEXT lines 286-291): per-round identification roll.
 	// For each party member, (RANDOM MOD 99) < (IQ + PIETY + LEVEL) → a random

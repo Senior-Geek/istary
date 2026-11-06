@@ -1,15 +1,18 @@
 package engine
 
-// Characterization tests (spike P1a). They pin what the engine does today,
-// including known quirks, so that later changes are deliberate. They do not
-// state what Istary intends: see docs/design/m2-exploration/
+// Characterization tests (spike P1a), updated by P1c. They pin what the
+// engine does, so that changes are deliberate. See docs/design/m2-exploration/
 // COMBAT-DESIGN-BASELINE.md §3 (observations H1–H8, corrections C1–C3) and
 // WIZARDRY-COMPATIBILITY.md finding #15.
 //
 // Historical (Player's Guide, 1987 printing): the dead move to the back "at
 // the end of the round" (p.48), incapacitated members likewise (p.55).
-// Observed here: the engine re-sorts at the start of ExecuteRound, after the
-// orders were entered, and the orders stay with their slots.
+// Before P1c the engine re-sorted at the start of ExecuteRound, after the
+// orders were entered, and orders and ally targets stayed with their slots
+// (P1a pinned that at commit a27adb4). P1c corrections: the re-sort happens
+// in BeginNextRound (C2), orders and ally targets follow their characters
+// (C1), and the transition clears last round's orders (C3). The tests below
+// marked P1c replace the P1a tests that pinned the old behaviour.
 
 import (
 	"strings"
@@ -86,87 +89,164 @@ func TestCharResortStatusOrder(t *testing.T) {
 	}
 }
 
-// Timing: a status change between rounds does not move anyone until the
-// next ExecuteRound, which re-sorts before it resolves anything (after the
-// orders for that round were entered). The display snapshot is taken after
-// the sort.
+// P1c (C2). Timing: ExecuteRound no longer re-sorts. A status change in a
+// round moves no one while that round's results are shown; BeginNextRound
+// re-sorts before the next orders are entered. Death and paralysis both move
+// a member back.
 func TestCharResortTiming(t *testing.T) {
 	seed(1)
 	g, cs := combatFixture(t, []string{"ALDA", "BRAM", "CORA", "DREW", "EDDA", "FINN"}, []Status{OK, OK, OK, OK, OK, OK})
-	g.Town.Party.Members[1].Status = Dead // killed in the previous round
+	cs.ExecuteRound(g)
+	g.Town.Party.Members[0].Status = Paralyzed // as if paralyzed in this round
+	g.Town.Party.Members[1].Status = Dead      // and slain
 	if got := names(g.Town.Party.Members); got != "ALDA BRAM CORA DREW EDDA FINN" {
-		t.Fatalf("before ExecuteRound the party is not re-sorted: %s", got)
+		t.Fatalf("the round's formation is kept until the transition: %s", got)
+	}
+	cs.BeginNextRound(g)
+	if got := names(g.Town.Party.Members); got != "CORA DREW EDDA FINN ALDA BRAM" {
+		t.Fatalf("BeginNextRound re-sorts: got %s", got)
+	}
+	if cs.Round != 3 || cs.Phase != CombatChoose || len(cs.Messages) != 0 {
+		t.Fatalf("transition: round %d, phase %v, messages %d", cs.Round, cs.Phase, len(cs.Messages))
 	}
 	cs.ExecuteRound(g)
+	if got := names(g.Town.Party.Members); got != "CORA DREW EDDA FINN ALDA BRAM" {
+		t.Fatalf("ExecuteRound does not re-sort: got %s", got)
+	}
+	if cs.DisplayPartySnap[4].Status != Paralyzed || cs.DisplayPartySnap[5].Status != Dead {
+		t.Fatalf("display snapshot follows the formation the orders were given for: %+v", cs.DisplayPartySnap)
+	}
+}
+
+// P1c (C2). A round's results stay valid until the explicit transition:
+// messages, events, the display snapshot and the formation they refer to.
+func TestCharRoundResultsKeptUntilTransition(t *testing.T) {
+	seed(1)
+	g, cs := combatFixture(t, []string{"ALDA", "BRAM", "CORA", "DREW", "EDDA", "FINN"}, []Status{OK, OK, OK, OK, OK, OK})
+	cs.Actions[2] = PartyAction{Action: ActionParry}
+	cs.ExecuteRound(g)
+	g.Town.Party.Members[1].Status = Dead
+	msgs, evs := strings.Join(cs.Messages, "|"), cs.Events()
+	if len(evs) != 1 || evs[0].Actor.Member != 2 || evs[0].Actor.Name != "CORA" || g.Town.Party.Members[2].Name != "CORA" {
+		t.Fatalf("event refers to slot 3, CORA, in the shown formation: %+v", evs)
+	}
+	if strings.Join(cs.Messages, "|") != msgs || cs.DisplayPartySnap == nil {
+		t.Fatalf("results changed before the transition")
+	}
+	cs.BeginNextRound(g)
+	if len(cs.Messages) != 0 || len(cs.Events()) != 0 {
+		t.Fatalf("the transition clears the shown round")
+	}
+}
+
+// P1c (C1). Orders are carried out by the character they were given for.
+// After a death the transition re-sorts first, so orders are given against
+// the new lines: CORA, now in slot 2, parries.
+func TestCharOrdersStayWithCharacters(t *testing.T) {
+	seed(1)
+	g, cs := combatFixture(t, []string{"ALDA", "BRAM", "CORA", "DREW", "EDDA", "FINN"}, []Status{OK, Dead, OK, OK, OK, OK})
+	cs.BeginNextRound(g)
 	if got := names(g.Town.Party.Members); got != "ALDA CORA DREW EDDA FINN BRAM" {
-		t.Fatalf("ExecuteRound re-sorts at its start: got %s", got)
+		t.Fatalf("re-sort: %s", got)
 	}
-	if cs.DisplayPartySnap[5].Status != Dead || cs.DisplayPartySnap[1].Status != OK {
-		t.Fatalf("display snapshot follows the sorted order: %+v", cs.DisplayPartySnap)
-	}
-	if cs.Phase != CombatExecute {
-		t.Fatalf("round ends in CombatExecute, got %v", cs.Phase)
-	}
-}
-
-// Orders are stored by slot and are not moved with the members: an order
-// given for the member in slot 3 is carried out by whoever is in slot 3
-// after the re-sort. (Go probe 2026-11-06 showed the same with Run.)
-func TestCharOrdersStayWithSlots(t *testing.T) {
-	seed(1)
-	g, cs := combatFixture(t, []string{"ALDA", "BRAM", "CORA", "DREW", "EDDA", "FINN"}, []Status{OK, Dead, OK, OK, OK, OK})
-	cs.Actions[2] = PartyAction{Action: ActionParry} // entered for CORA in slot 3
-	cs.ExecuteRound(g)
-	if got := lines(cs); got != "DREW PARRIED." {
-		t.Fatalf("slot 3's order is carried out by DREW: got %q", got)
-	}
-}
-
-// Nothing clears cs.Actions between rounds. A slot whose member was not
-// offered an order keeps the previous round's order, and a member who moves
-// into that slot carries it out.
-func TestCharStaleOrderCarriedOut(t *testing.T) {
-	seed(1)
-	g, cs := combatFixture(t, []string{"ALDA", "BRAM", "CORA", "DREW", "EDDA", "FINN"}, []Status{OK, Dead, OK, OK, OK, OK})
-	cs.Actions[1] = PartyAction{Action: ActionParry} // BRAM's order from the round he died in
-	before := append([]PartyAction(nil), cs.Actions...)
+	cs.Actions[1] = PartyAction{Action: ActionParry} // given for CORA in slot 2
 	cs.ExecuteRound(g)
 	if got := lines(cs); got != "CORA PARRIED." {
-		t.Fatalf("CORA moved into slot 2 and carries out BRAM's old order: got %q", got)
-	}
-	for i := range cs.Actions {
-		a, b := cs.Actions[i], before[i]
-		a.Initiative, b.Initiative = 0, 0
-		if a != b {
-			t.Fatalf("ExecuteRound leaves orders in place; slot %d changed from %+v to %+v", i+1, b, a)
-		}
+		t.Fatalf("CORA's order is carried out by CORA: got %q", got)
 	}
 }
 
-// Ally targets are slot indices too. DIALKO aimed at slot 3 (CORA,
-// paralyzed) lands on whoever is in slot 3 after the re-sort.
-func TestCharAllyTargetStaysWithSlot(t *testing.T) {
+// P1c (C1). Even if positions change between order entry and execution, an
+// order stays with its character: the binding is to the character, not to
+// the slot.
+func TestCharOrdersFollowCharacterIfPositionsChange(t *testing.T) {
+	seed(1)
+	g, cs := combatFixture(t, []string{"ALDA", "BRAM", "CORA", "DREW", "EDDA", "FINN"}, []Status{OK, OK, OK, OK, OK, OK})
+	cs.BeginNextRound(g)                             // order entry begins with this formation
+	cs.Actions[2] = PartyAction{Action: ActionParry} // CORA, slot 3
+	m := g.Town.Party.Members
+	m[2], m[3] = m[3], m[2] // positions change before execution
+	cs.ExecuteRound(g)
+	if got := lines(cs); got != "CORA PARRIED." {
+		t.Fatalf("got %q", got)
+	}
+}
+
+// P1c (C3). Last round's orders are cleared at the transition and never
+// carried out later, by their member or by anyone who moves into the slot.
+func TestCharStaleOrdersNeverExecute(t *testing.T) {
+	seed(1)
+	g, cs := combatFixture(t, []string{"ALDA", "BRAM", "CORA", "DREW", "EDDA", "FINN"}, []Status{OK, OK, OK, OK, OK, OK})
+	for i := range cs.Actions {
+		cs.Actions[i] = PartyAction{Action: ActionParry}
+	}
+	cs.ExecuteRound(g)
+	g.Town.Party.Members[1].Status = Dead // BRAM dies in round 2
+	cs.BeginNextRound(g)
+	for i, a := range cs.Actions {
+		if a != (PartyAction{}) {
+			t.Fatalf("slot %d keeps an order after the transition: %+v", i+1, a)
+		}
+	}
+	cs.Actions[0] = PartyAction{Action: ActionParry} // only ALDA is given an order
+	cs.ExecuteRound(g)
+	if got := lines(cs); got != "ALDA PARRIED." {
+		t.Fatalf("only the new order is carried out: got %q", got)
+	}
+}
+
+// P1c (C1). Ally targets follow the character. After the transition moves
+// CORA (paralyzed) to slot 5, DIALKO aimed at her cures her; DIOS aimed at
+// DREW heals DREW, even when positions change before execution.
+func TestCharAllyTargetsFollowCharacters(t *testing.T) {
 	seed(1)
 	g, cs := combatFixture(t, []string{"ALDA", "BRAM", "CORA", "DREW", "EDDA", "FINN"}, []Status{OK, Dead, Paralyzed, OK, OK, OK})
 	priest := g.Town.Party.Members[0]
 	priest.Class = Priest
+	priest.PriestSpells[0], priest.MaxPriestSpells[0] = 1, 1
 	priest.PriestSpells[2], priest.MaxPriestSpells[2] = 1, 1
 	priest.SpellKnown[SpellIndex["DIALKO"]] = true
-	cs.Actions[0] = PartyAction{Action: ActionSpell, SpellName: "DIALKO", TargetAlly: 2}
-	cs.ExecuteRound(g)
+	priest.SpellKnown[SpellIndex["DIOS"]] = true
+	cs.BeginNextRound(g)
 	if got := names(g.Town.Party.Members); got != "ALDA DREW EDDA FINN CORA BRAM" {
 		t.Fatalf("re-sort: %s", got)
 	}
-	if got := lines(cs); got != "ALDA CASTS DIALKO! | EDDA IS NOT HELPED!" {
-		t.Fatalf("DIALKO lands on slot 3's new member: got %q", got)
+	cs.Actions[0] = PartyAction{Action: ActionSpell, SpellName: "DIALKO", TargetAlly: 4} // CORA, slot 5
+	cs.ExecuteRound(g)
+	if got := lines(cs); got != "ALDA CASTS DIALKO! | CORA IS CURED!" {
+		t.Fatalf("DIALKO: got %q", got)
 	}
-	if g.Town.Party.Members[4].Status != Paralyzed {
-		t.Fatalf("CORA stays paralyzed")
-	}
-	// The event reports where the spell actually went, by slot and name.
 	evs := cs.Events()
-	if len(evs) != 1 || evs[0].Kind != EventPartySpell || evs[0].Actor.Name != "ALDA" || evs[0].Target.Member != 2 || evs[0].Target.Name != "EDDA" {
+	if len(evs) != 1 || evs[0].Kind != EventPartySpell || evs[0].Target.Member != 4 || evs[0].Target.Name != "CORA" {
 		t.Fatalf("event: %+v", evs)
+	}
+
+	// DIOS at DREW (slot 2); then DREW and EDDA swap before execution.
+	dreW := g.Town.Party.Members[1]
+	dreW.HP = 3
+	cs.BeginNextRound(g)
+	cs.Actions[0] = PartyAction{Action: ActionSpell, SpellName: "DIOS", TargetAlly: 1}
+	m := g.Town.Party.Members
+	m[1], m[2] = m[2], m[1]
+	cs.ExecuteRound(g)
+	if !strings.Contains(lines(cs), "ALDA CASTS DIOS! | DREW IS") || dreW.HP <= 3 {
+		t.Fatalf("DIOS heals DREW: %q, DREW HP %d", lines(cs), dreW.HP)
+	}
+}
+
+// P1c. A cured character keeps their current position: the transition never
+// moves an OK member forward, so CORA, cured in slot 5, stays there.
+func TestCharCuredCharacterKeepsPosition(t *testing.T) {
+	seed(1)
+	g, cs := combatFixture(t, []string{"ALDA", "BRAM", "CORA", "DREW", "EDDA", "FINN"}, []Status{OK, OK, Paralyzed, OK, OK, OK})
+	cs.BeginNextRound(g)
+	if got := names(g.Town.Party.Members); got != "ALDA BRAM DREW EDDA FINN CORA" {
+		t.Fatalf("paralyzed CORA moves back: %s", got)
+	}
+	g.Town.Party.Members[5].Status = OK // cured during the round
+	cs.BeginNextRound(g)
+	if got := names(g.Town.Party.Members); got != "ALDA BRAM DREW EDDA FINN CORA" {
+		t.Fatalf("cured CORA stays where she is: %s", got)
 	}
 }
 
