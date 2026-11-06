@@ -23,6 +23,12 @@ Choosing a direction, a renderer or a layout is left to the user.
 | [mockups/combat.html](mockups/combat.html) | Follow-on: interactive combat prototype (a full round in the dungeon, approaches A/B/C, four scenery policies, manual or automatic playback) |
 | [mockups/combat-scene.js](mockups/combat-scene.js) | The prototype's throwaway renderer (extends the ideas of `scene.js`, which is unchanged) |
 | [stills/combat/](stills/combat/) | Stills of the combat prototype: every moment in approach C, the key moments in A and B, and one shot per scenery policy |
+| [COMBAT-PRESENTATION-MODEL.md](COMBAT-PRESENTATION-MODEL.md) | Second follow-on: "six adventurers, one battlefield, one action at a time". Refines approach C: stable camera on one side of the axis, the team strip as order summary, one message area, one action at a time; stable vs restrained push-in; decisions X25–X28 |
+| [COMBAT-EVENT-REQUIREMENTS.md](COMBAT-EVENT-REQUIREMENTS.md) | Future controller and event-stream requirements for that model, kept apart from the design |
+| [mockups/combat-refined.html](mockups/combat-refined.html) | The refined combat prototype (same fixture as `combat.html`) |
+| [mockups/combat-fixture.js](mockups/combat-fixture.js) | The illustrative fixture both combat prototypes play, moved out of `combat.html` |
+| [mockups/leak-check.js](mockups/leak-check.js) | Node script: which never-seen surfaces each camera shot would expose |
+| [stills/combat-refined/](stills/combat-refined/) | Stills of the refined prototype, and the stable vs push-in comparison |
 
 ## Status labels used in these documents
 
@@ -73,6 +79,7 @@ Each item needs the user's approval before implementation depends on it.
 | X15 | Renderer for the prototype | WebGL2 via three.js; WebGPU; Canvas 2D/SVG; native Metal/RealityKit; an external engine | Prototype WebGL2 in the existing webview; no final choice now |
 | X16 | Art direction | Placeholder geometric; stylised low-poly; painted; Classic line art | Out of scope here; needs its own checkpoint (D12 bears on reusing original monster pictures) |
 | X17–X24 | Combat interaction approach, scenery policy, order changes, playback pacing, value-update timing, playback camera, repeat orders, unavailable actions | See `COMBAT-EXPERIENCE-REVIEW.md` §11 | See that section |
+| X25–X28 | Combat camera, what changes on screen during a Classic round, combat layout roles, playback disclosure and gesture rules | See `COMBAT-PRESENTATION-MODEL.md` §10 | See that section (X25 supersedes the X22 proposal) |
 
 ## Correction (combat review)
 
@@ -115,3 +122,4 @@ These are detailed in the documents above.
 3. **Try the sandbox.** Use the camera sandbox to judge attached-camera framing and decision X4.
 4. **Read the documents.** Read `MOCKUP-REVIEW.md` alongside the frames, then the decision register above.
 5. **Try the combat prototype.** Open `mockups/combat.html` and play a round in approach C, then A and B. Read `COMBAT-EXPERIENCE-REVIEW.md` alongside it.
+6. **Try the refinement.** Open `mockups/combat-refined.html`, play a round with the stable camera, then press `K` and play it again with the push-in. Read `COMBAT-PRESENTATION-MODEL.md` alongside it, and `COMBAT-EVENT-REQUIREMENTS.md` for what Go would have to supply.

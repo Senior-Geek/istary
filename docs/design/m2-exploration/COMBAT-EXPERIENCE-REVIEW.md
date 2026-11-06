@@ -6,6 +6,12 @@ combat round inside the dungeon, using an interactive prototype. Labels
 follow the README: Approved, Fact, Hypothesis, Alternative, Decision
 (X-numbers), Risk.
 
+**Follow-on.** `COMBAT-PRESENTATION-MODEL.md` refines approach C (stable
+camera, the team strip as order summary, one action at a time) and proposes
+X25–X28; its X25 supersedes the X22 proposal below. The fixture now lives in
+`mockups/combat-fixture.js`, shared by both prototypes; `combat.html`
+behaves as before.
+
 The working preferences from the review brief are treated as preferences,
 not approvals:
 
