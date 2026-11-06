@@ -112,8 +112,43 @@ moving to the next member stay in the front end. No timers, no random numbers.
 | `SetOrder(ch, Order) error` | Validates and records the order: Fight only from the front row (1-3); Dispel for priests, bishops above level 3, lords above level 8; Fight, Dispel and group spells at a living group; member spells at any party member; Use of a usable item, aimed by the item's spell; Use with nothing usable recorded as Parry. Errors: `ErrNotInCombat`, `ErrNoSuchPartyMember`, `ErrCannotAct`, `ErrOrderUnavailable` (with the reason), `ErrInvalidTarget`, `ErrNoSuchItem`, `ErrInvalidChoice` |
 
 Two cases are kept as found (`WIZARDRY-COMPATIBILITY.md` #17, #18): a group
-spell is recorded with no group when no group is alive, and an item whose
-spell targets a single monster (SCROLL/HALITO) is aimed at its user.
+spell is recorded with no group when no group is alive (its known route, #17,
+is corrected in M5b), and an item whose spell targets a single monster
+(SCROLL/HALITO) is aimed at its user.
+
+**Combat round lifecycle** (`app/combat_round.go`, M5b). The controller starts
+combat, executes a confirmed round once, releases its events one block at a
+time and ends the round. The terminal keeps the keys, the display and the
+pacing: its timer (`combatTimerTick`, PAUSE1) calls `Advance`, and `EndRound`
+after the last block. No timers or random numbers in the controller.
+
+| Operation | Effect |
+|---|---|
+| `StartCombat() (playback, error)` | From the opening pause (`CombatInit`): order entry from the first member who can act, or the monsters' surprise round executed at once (`playback` true) |
+| `ReturnToOrders()` | B)ack at confirmation: every order cleared, order entry from slot 1 |
+| `Commit() (PlaybackStep, error)` | From confirmation only: `ExecuteRound` once, playback begins at the first block, which is returned. A second `Commit` fails (`ErrNotConfirming`) |
+| `Advance() (PlaybackStep, error)` | Releases the next block (silent blocks too) and moves the display cursor (`MessageIndex`) to it. After the last block it returns `Done` and changes nothing. `ErrAwaitingChoice` while HAMAN's boon prompt is open |
+| `RevealedEvents()` | The round's events released so far, and none beyond |
+| `ChooseBoon(n)` | Answers HAMAN or MAHAMAN's boon prompt (Wiz 2/3) |
+| `EndRound() (RoundOutcome, error)` | Only when every block has been released (`ErrPlaybackUnfinished`): drops the frozen round display and decides `RoundEscaped` (back to the maze, "THE PARTY FLED!"), `RoundVictory` (the chest, or the rewards), `RoundDefeated`, or `RoundContinues` (engine `BeginNextRound`: groups compacted, formation re-sorted, orders cleared, then order entry) |
+
+States: `CombatInit` → (`StartCombat`) `CombatChoose` or `CombatExecute`;
+`CombatChoose` → (orders, front end) `CombatConfirm` → (`Commit`)
+`CombatExecute` → (`Advance` … `Done`, `EndRound`) `CombatChoose`, the maze,
+`CombatChest`, `CombatVictory` or `CombatDefeat`. `ReturnToOrders` goes back
+from `CombatConfirm` to `CombatChoose`.
+
+**Information boundary.** The playback operations expose only released
+events: no message, actor, target or effect of a block not yet shown. This
+does not isolate the engine state itself: `Controller.Game` is public, and
+`engine.CombatState` (messages, `Events()`, groups, victims) is public too.
+The terminal renderer reads the round's messages from the display cursor
+(`MessageIndex`), as before. The guarantee therefore holds for callers that
+use only the controller's playback operations. The desktop GUI already shows
+its frontend only `View` values built in Go (`gui/view.go`), never the engine
+state; GUI combat must build its combat view from `RevealedEvents` alone.
+Enforcing the boundary for all Go callers would mean hiding the engine state
+behind the controller, a larger redesign than M5b.
 
 Persistence: call `Controller.Save()` after each action.
 
@@ -124,8 +159,12 @@ Persistence: call `Controller.Save()` after each action.
   legality now comes from the controller, above), utilities,
   and the rest of the Training Grounds edit menu (inspect, class change,
   reroll, set password, Rite of Passage).
-- Timers live in the main loop: combat auto-advance (`combatTimerTick`), the
-  Wiz 3 story pages, inn healing ticks and the title animation goroutine.
+- Timers live in the main loop: combat pacing (`combatTimerTick` decides
+  when; the controller does the rest, above), the Wiz 3 story pages, inn
+  healing ticks and the title animation goroutine.
+- Combat still in the terminal: the friendly-encounter choice, the chest
+  (and its message pacing), and leaving combat after the victory or defeat
+  pause.
 - `handleMazeInput` takes a `*render.Screen` only to beep.
 - `engine.TitleState.Anim` holds a `*render.WTAnimation` as `interface{}`.
 - `render` keeps package-level state (`SixelSupported`, `ColorMode`,

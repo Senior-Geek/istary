@@ -44,6 +44,16 @@ format or the rules.
 
 ## Requirements
 
+**Status in the controller (M5a/M5b, 2026-11-06):**
+- **E3 and E4, M5a:** order entry is in `app/combat.go`.
+- **E4, M5b:** `Commit`, `Advance`, `EndRound` and `ReturnToOrders` are in
+  `app/combat_round.go`. `AdvanceAll` is not built; the terminal has no
+  "show the rest".
+- **E10:** the HAMAN boon prompt pauses `Advance` (`ChooseBoon`).
+- **E11:** this holds for the controller's playback operations
+  (`RevealedEvents`), not for the engine state, which stays public. See
+  `docs/ARCHITECTURE.md`, "Information boundary".
+
 **E1 spiked (2026-11-06):** `engine/combat_events.go` on the local branch
 `spike/p1-combat-events`, not merged. It covers E1's actor, kind, target,
 lines and effects, with silent blocks redacted. Results are in
