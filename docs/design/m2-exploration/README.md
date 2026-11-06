@@ -1,8 +1,9 @@
 # M2 presentation design exploration
 
-Status: **design exploration for review** (2026-11-06). Nothing in this
-directory is approved, and nothing here changes the application, the engine,
-the save format or the approved baseline documents.
+Status: **design exploration for review** (2026-11-06). Apart from the
+combat presentation decisions X25–X28 (approved 2026-11-06), nothing in this
+directory is approved. Nothing here changes the application, the engine, the
+save format or the approved baseline documents.
 
 This is Part A of roadmap M2 (the presentation design checkpoint, charter
 §6.3). It proposes an overall experience and lays out alternatives for review.
@@ -29,6 +30,11 @@ Choosing a direction, a renderer or a layout is left to the user.
 | [mockups/combat-fixture.js](mockups/combat-fixture.js) | The illustrative fixture both combat prototypes play, moved out of `combat.html` |
 | [mockups/leak-check.js](mockups/leak-check.js) | Node script: which never-seen surfaces each camera shot would expose |
 | [stills/combat-refined/](stills/combat-refined/) | Stills of the refined prototype, and the stable vs push-in comparison |
+| [COMBAT-DIFFICULT-CASES.md](COMBAT-DIFFICULT-CASES.md) | Third follow-on: the approved model validated against a member killed, a member paralyzed and cured, the formation re-sort (and when Go does it), four groups, sleeping and large creatures, rooms, junctions and dead ends, death animations and pacing; open questions Q-D1–Q-D9 |
+| [mockups/combat-fixture-hard.js](mockups/combat-fixture-hard.js) | The difficult-case fixture (choose **Difficult cases** in `combat-refined.html`) |
+| [mockups/fixture-check.js](mockups/fixture-check.js) | Node checks: the re-sort port against Go, outcomes stated by their messages, pacing |
+| [probes/resort-probe_test.go.txt](probes/resort-probe_test.go.txt) | The scratch Go probe of the party re-sort, with its output (not part of the build) |
+| [stills/combat-difficult/](stills/combat-difficult/) | Stills of the difficult cases, the locations, the death-style gallery and two sequence sheets |
 
 ## Status labels used in these documents
 
@@ -79,7 +85,7 @@ Each item needs the user's approval before implementation depends on it.
 | X15 | Renderer for the prototype | WebGL2 via three.js; WebGPU; Canvas 2D/SVG; native Metal/RealityKit; an external engine | Prototype WebGL2 in the existing webview; no final choice now |
 | X16 | Art direction | Placeholder geometric; stylised low-poly; painted; Classic line art | Out of scope here; needs its own checkpoint (D12 bears on reusing original monster pictures) |
 | X17–X24 | Combat interaction approach, scenery policy, order changes, playback pacing, value-update timing, playback camera, repeat orders, unavailable actions | See `COMBAT-EXPERIENCE-REVIEW.md` §11 | See that section |
-| X25–X28 | Combat camera, what changes on screen during a Classic round, combat layout roles, playback disclosure and gesture rules | See `COMBAT-PRESENTATION-MODEL.md` §10 | See that section (X25 supersedes the X22 proposal) |
+| X25–X28 | Combat camera, combat results (with the party-condition addendum), combat layout, playback | See `COMBAT-PRESENTATION-MODEL.md` §10 | **Approved 2026-11-06** (X25 supersedes the X22 proposal). Treatments for deaths and conditions are provisional until reviewed in the browser |
 
 ## Correction (combat review)
 
@@ -123,3 +129,4 @@ These are detailed in the documents above.
 4. **Read the documents.** Read `MOCKUP-REVIEW.md` alongside the frames, then the decision register above.
 5. **Try the combat prototype.** Open `mockups/combat.html` and play a round in approach C, then A and B. Read `COMBAT-EXPERIENCE-REVIEW.md` alongside it.
 6. **Try the refinement.** Open `mockups/combat-refined.html`, play a round with the stable camera, then press `K` and play it again with the push-in. Read `COMBAT-PRESENTATION-MODEL.md` alongside it, and `COMBAT-EVENT-REQUIREMENTS.md` for what Go would have to supply.
+7. **Try the difficult cases.** In `mockups/combat-refined.html` choose **Encounter → Difficult cases** and step through the 15 moments, then try the other locations and **Re-sort: Go today**. Read `COMBAT-DIFFICULT-CASES.md` alongside it.

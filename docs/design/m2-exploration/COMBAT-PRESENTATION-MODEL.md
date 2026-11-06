@@ -1,8 +1,11 @@
 # Combat presentation model
 
-Status: **design exploration, not approved** (2026-11-06). This refines
-approach C from `COMBAT-EXPERIENCE-REVIEW.md` around one principle. It
-changes no rule, no engine code and no application code. Labels follow the
+Status: **design exploration; decisions X25–X28 approved** (2026-11-06,
+with the X26 addendum; see §10). This refines approach C from
+`COMBAT-EXPERIENCE-REVIEW.md` around one principle. It changes no rule, no
+engine code and no application code. The difficult cases (deaths, formation
+changes, four groups, locations) are validated in
+`COMBAT-DIFFICULT-CASES.md`. Labels follow the
 README: Approved, Fact, Hypothesis, Alternative, Decision (X-numbers), Risk.
 
 > **Six adventurers, one battlefield, one action at a time.**
@@ -269,6 +272,12 @@ The positions below are illustrative (X12-style flexibility applies), but the
     rounds, with figures changing places and cards changing groups.
   - **What needs checking:** when the sort happens relative to order entry.
     The fixture has no deaths and does not demonstrate it.
+  - **Since checked** (`COMBAT-DIFFICULT-CASES.md` §4): Classic re-sorts at
+    the end of the round, before the next orders (Player's Guide p. 48).
+    Go re-sorts at the start of `ExecuteRound`, after the orders were given
+    by slot, so an order can pass to another member (verified with a Go
+    probe). The sort also moves asleep and paralyzed members back. The
+    prototype shows the change at the round's update (Classic timing).
 
 ## 8. Mechanics and information boundaries
 
@@ -284,6 +293,18 @@ The positions below are illustrative (X12-style flexibility applies), but the
 | No new rules | The gesture is decoration; the push-in is chosen from the action kind; nothing is computed by the presentation |
 
 ## 9. Open questions
+
+Questions 1–4 were taken further in `COMBAT-DIFFICULT-CASES.md`:
+- **1, camera side:** east held in a corridor, a room, a junction and a dead
+  end.
+- **2, rooms, junctions and narrow spaces:** see §6 of that document; rooms
+  raise a visibility question (Q-D3).
+- **3, larger encounters:** four groups were staged; a dead end crowds them
+  (Q-D5).
+- **4, formation changes:** shown at the round's update, with Classic timing;
+  Go's timing differs (Q-D7).
+
+Its own open questions are Q-D1 to Q-D9.
 
 1. **Camera side.** Which side of the axis, and who chooses: always east,
    away from the nearer wall, or a user preference? It must stay fixed for
@@ -309,9 +330,70 @@ The positions below are illustrative (X12-style flexibility applies), but the
    when the round counts as committed, whether unseen actions survive a
    quit, and pause points for HAMAN.
 
-## 10. Proposed decisions
+## 10. Decisions
 
-These continue the register after X24.
+These continue the register after X24. **X25–X28 were approved on
+2026-11-06.** What was approved is below; the options and proposals as they
+were put for review follow it, for the record.
+
+- **X25 Combat camera: approved.**
+  - The stable, elevated camera behind the team, adventurers in the
+    foreground and monsters ahead.
+  - One viewpoint for the whole encounter.
+  - No reverse shots or cinematic cuts.
+  - Restrained push-in stays an optional, experimental preference, not a
+    requirement.
+  - The priority is the clarity of the outcome, not spectacle.
+- **X26 Combat results: approved.**
+  - **When:** figures respond when the message reveals the outcome, never
+    before.
+  - **Monster deaths:** a defeated monster visibly dies rather than
+    disappearing.
+  - **Conditions:** sleeping, incapacitated and defeated figures show their
+    revealed condition.
+  - **Numbers:** Classic's round-end updates are kept for now.
+  - **Death animations:** they may have some theatrical personality.
+    - **Styles:** humanoids stagger and collapse, skeletons fall apart,
+      slimes dissolve, fliers tumble, and large monsters collapse more
+      substantially.
+    - **Status:** these are illustrative categories, not mechanics or final
+      art.
+    - **Timing:** brief (about 0.7–1.2 s) and skippable without losing the
+      outcome.
+    - **Selection:** from the revealed result and the creature's
+      presentation type only.
+  - **Addendum (party):**
+    - **Paralyzed:** solid, rigid, subtly distinct.
+    - **Asleep or unconscious:** slumped, distinguishable from death.
+    - **Dead:** a brief death, then a subdued, translucent figure. This is a
+      convention that the dead member stays with the expedition, not a
+      spirit or a mechanic.
+    - **Ashes:** a distinct subdued representation.
+    - **The roster:** dead and incapacitated members stay in the six. Death
+      does not end the expedition; the player decides whether to go back.
+    - **No new mechanics:** no corpse-carrying or retrieval mechanics.
+    - **The strip:** its condition label stays authoritative.
+    - **In combat:** incapacitated members must not appear to take part.
+    - **Status:** the treatments are provisional until reviewed in the
+      browser.
+- **X27 Layout: approved.**
+  - The six-member strip, with the front and back lines clearly separated,
+    serves as status, order summary and review.
+  - One message area.
+  - Contextual commands in an unobstructed part of the battlefield.
+  - Gold for the selected or acting figure, white for the target, green
+    dashed for an eligible choice.
+  - Exact positions remain adjustable.
+- **X28 Playback: approved.**
+  - **What is shown:** Go resolves the round; the presentation shows one
+    action at a time. It never shows initiative order, future targets, the
+    remaining action count or unrevealed outcomes.
+  - **What drives the animation:** gestures come from the action, not its
+    result. Effects and deaths appear only with their result.
+  - **Playback control:** manual and automatic playback stay; skipping never
+    discards an outcome.
+
+As proposed for review:
 
 | ID | Question | Options | Proposed |
 |---|---|---|---|
