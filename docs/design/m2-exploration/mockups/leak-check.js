@@ -7,8 +7,12 @@
 // renderer cannot answer this itself: it has no occlusion, only a painter's
 // sort, so drawing the true level ("unbounded") overstates what is exposed.
 //
-// Usage: node leak-check.js                (the shots the prototypes use)
-//        node leak-check.js '{"name":{"pos":[x,y,z],"target":[x,y,z],"fov":n}}'
+// It also checks, for every fixture location, that each monster placement
+// from CS.layout stands on floor the team has seen (placement must not
+// depend on, or reveal, anything outside the visible set).
+//
+// Usage: node leak-check.js                (all locations, the prototypes' shots)
+//        node leak-check.js '{"name":{"pos":[x,y,z],"target":[x,y,z],"fov":n}}' [location]
 
 'use strict'
 const CS = require('./combat-scene.js')
@@ -39,8 +43,11 @@ function facesCamera(face, pos) {
   return dot(sub(pos, quad(face)[0]), INWARD[face.side]) > 0
 }
 
-const all = CS.faceSet('unbounded', 0, 5).faces
-const walls = all.filter((x) => x.f.kind === 'wall').map((x) => { const q = quad(x.f); return { f: x.f, a: [q[0][0], q[0][2]], b: [q[1][0], q[1][2]] } })
+let all = [], walls = []
+function useLocation(loc) {
+  all = CS.faceSet('unbounded', 0, 5, loc).faces
+  walls = all.filter((x) => x.f.kind === 'wall').map((x) => { const q = quad(x.f); return { f: x.f, a: [q[0][0], q[0][2]], b: [q[1][0], q[1][2]] } })
+}
 
 // Does the plan segment p→q cross the wall a→b strictly before reaching q?
 function blocks(p, q, a, b) {
@@ -80,8 +87,42 @@ const DEFAULT = {
   'first person': { pos: [0, 1.55, -1.9], target: [0, 1.45, 10], fov: 72 },
   'combat.html: reverse shot': { pos: [1.3, 2.85, 9.6], target: [-0.15, 0.6, 0.6], fov: 66 },
 }
-const shots = process.argv[2] ? JSON.parse(process.argv[2]) : DEFAULT
-for (const [name, shot] of Object.entries(shots)) {
-  const e = all.filter((x) => x.leak && exposed(shot, x.f)).map((x) => `${x.f.kind}(${x.f.cx},${x.f.cz})${x.f.side || ''}`)
-  console.log(`${name.padEnd(30)} never-seen surfaces exposed: ${e.length}${e.length ? '  ' + e.join(' ') : ''}`)
+// Placements: every figure inside a square whose floor the team can see now.
+function placementCheck(loc) {
+  const seen = new Set(CS.visibleFrom(0, 5).filter((f) => f.kind === 'floor').map((f) => f.cx + ',' + f.cz))
+  const G = [{ n: 7, look: 'humanoid' }, { n: 2, look: 'skeleton' }, { n: 3, look: 'flying' }, { n: 1, look: 'large' }]
+  const bad = []
+  CS.layout(G, loc).forEach((g, gi) => g.forEach(([x, z]) => {
+    const r = G[gi].look === 'large' ? 0.6 : 0.35
+    for (const [px, pz] of [[x - r, z - r], [x + r, z - r], [x - r, z + r], [x + r, z + r]]) {
+      const k = Math.round(px / S) + ',' + Math.round(pz / S)
+      if (!seen.has(k)) { bad.push(`group ${gi + 1} at (${x},${z})`); break }
+    }
+  }))
+  return bad
 }
+
+const custom = process.argv[2] ? JSON.parse(process.argv[2]) : null
+const locs = process.argv[3] ? [process.argv[3]] : Object.keys(CS.LOCATIONS)
+const id = (x) => `${x.f.kind}(${x.f.cx},${x.f.cz})${x.f.side || ''}`
+let beyond = 0, placements = 0
+for (const loc of locs) {
+  useLocation(loc)
+  console.log(`\n${CS.LOCATIONS[loc].name}`)
+  // A true-geometry first-person view from the team's square is the baseline:
+  // what it exposes is a property of the Classic visible set in this place,
+  // not of the combat camera. "Beyond first person" is what the camera adds.
+  const fp = new Set(all.filter((x) => x.leak && exposed(DEFAULT['first person'], x.f)).map(id))
+  const shots = custom || Object.fromEntries(Object.entries(DEFAULT).filter(([n]) => loc === 'corridor' || !n.startsWith('combat.html')))
+  for (const [name, shot] of Object.entries(shots)) {
+    const e = all.filter((x) => x.leak && exposed(shot, x.f)).map(id)
+    const extra = e.filter((k) => !fp.has(k))
+    if (!name.startsWith('combat.html')) beyond += extra.length
+    console.log(`  ${name.padEnd(30)} never-seen surfaces exposed: ${String(e.length).padStart(2)} · beyond first person: ${extra.length}${extra.length ? '  ' + extra.join(' ') : ''}`)
+  }
+  const bad = placementCheck(loc)
+  placements += bad.length
+  console.log(`  ${'monster placements'.padEnd(30)} off the seen floor: ${bad.length}${bad.length ? '  ' + bad.join('; ') : ''}`)
+}
+console.log(`\nRefined prototype: surfaces exposed beyond first person ${beyond}; placements off the seen floor ${placements}.`)
+console.log('The prototype renderer draws only the visible set (strict / shell), so none of these is drawn; the counts say what a renderer holding the true level would expose.')
