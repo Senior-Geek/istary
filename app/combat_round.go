@@ -25,6 +25,9 @@ var (
 	ErrNotPlayingBack     = errors.New("no combat round is being played back")
 	ErrPlaybackUnfinished = errors.New("the round has events not yet shown")
 	ErrAwaitingChoice     = errors.New("playback is waiting for a choice")
+	ErrOrdersIncomplete   = errors.New("a member who can act has no order")
+	ErrNotFriendly        = errors.New("the encounter is not friendly")
+	ErrNotEnding          = errors.New("combat is not over")
 )
 
 // PlaybackStep is one released block of the round. Done is set, with no
@@ -81,6 +84,82 @@ func (c *Controller) StartCombat() (playback bool, err error) {
 	cs.Phase = engine.CombatChoose
 	cs.CurrentActor = c.firstActor()
 	return false, nil
+}
+
+// FinishOrders moves from order entry to the confirmation prompt. Every
+// member who can act must have an order, as Classic's order entry, which
+// visits each of them in turn, guarantees.
+func (c *Controller) FinishOrders() error {
+	cs, err := c.combatChoosing()
+	if err != nil {
+		return err
+	}
+	for i, m := range c.Game.Town.Party.Members {
+		if CanGiveOrder(m) && (i >= len(cs.Actions) || cs.Actions[i].Action == engine.ActionNone) {
+			return ErrOrdersIncomplete
+		}
+	}
+	cs.Phase = engine.CombatConfirm
+	return nil
+}
+
+// FightFriendly answers F)IGHT to a friendly encounter: order entry begins.
+func (c *Controller) FightFriendly() error {
+	cs, err := c.combatIn(engine.CombatFriendly, ErrNotFriendly)
+	if err != nil {
+		return err
+	}
+	cs.Friendly = false
+	cs.Phase = engine.CombatChoose
+	cs.CurrentActor = c.firstActor()
+	return nil
+}
+
+// LeaveInPeace answers L)EAVE to a friendly encounter: back to the maze.
+func (c *Controller) LeaveInPeace() error {
+	if _, err := c.combatIn(engine.CombatFriendly, ErrNotFriendly); err != nil {
+		return err
+	}
+	c.Game.Phase = engine.PhaseMaze
+	c.Game.Combat = nil
+	return nil
+}
+
+// LeaveCombat leaves combat after the victory or defeat screen: victory
+// returns to the maze, defeat to the castle with "YOUR PARTY HAS PERISHED IN
+// THE MAZE...". The pause before it (PAUSE2) is the front end's.
+func (c *Controller) LeaveCombat() error {
+	g := c.Game
+	cs := g.Combat
+	if g.Phase != engine.PhaseCombat || cs == nil {
+		return ErrNotEnding
+	}
+	switch cs.Phase {
+	case engine.CombatVictory:
+		g.Combat = nil
+		g.Phase = engine.PhaseMaze
+		g.MazeMessage = ""
+		g.MazeMessage2 = ""
+	case engine.CombatDefeat:
+		g.Combat = nil
+		g.Phase = engine.PhaseTown
+		g.Town.Location = engine.Castle
+		g.Town.Message = "YOUR PARTY HAS PERISHED IN THE MAZE..."
+	default:
+		return ErrNotEnding
+	}
+	return nil
+}
+
+// atBoonPrompt reports that HAMAN's boon prompt is open and its block is the
+// one on screen: playback waits there for ChooseBoon.
+func atBoonPrompt(cs *engine.CombatState) bool {
+	if !cs.HamanSelecting {
+		return false
+	}
+	evs := cs.Events()
+	k := cursor(cs, evs)
+	return k >= 0 && evs[k].Start <= cs.HamanPromptAt && cs.HamanPromptAt < evs[k].End
 }
 
 // ReturnToOrders is B)ack at the confirmation prompt: every order is
@@ -150,7 +229,9 @@ func (c *Controller) Advance() (PlaybackStep, error) {
 	if err != nil {
 		return PlaybackStep{}, err
 	}
-	if cs.HamanSelecting {
+	// HAMAN's boon prompt (Wiz 2/3) is raised while the round is resolved;
+	// playback runs up to the block that shows it and waits there.
+	if atBoonPrompt(cs) {
 		return PlaybackStep{}, ErrAwaitingChoice
 	}
 	evs := cs.Events()
@@ -179,7 +260,10 @@ func (c *Controller) RevealedEvents() []engine.CombatEvent {
 }
 
 // ChooseBoon answers HAMAN or MAHAMAN's "WHICH BOON WILL YOU INVOKE ?"
-// (Wiz 2/3), letting playback continue.
+// (Wiz 2/3), letting playback continue. It is accepted while the choice is
+// open even before its block is shown, because the terminal takes 1-3 then
+// (it stops playback as soon as the choice opens; finding #19). A front end
+// using CombatView sees the boons only once the prompt's block is shown.
 func (c *Controller) ChooseBoon(choice int) error {
 	cs, err := c.combatIn(engine.CombatExecute, ErrNotPlayingBack)
 	if err != nil {

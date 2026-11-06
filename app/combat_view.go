@@ -27,18 +27,19 @@ import (
 
 // CombatView is the state of combat as the player may see it now.
 type CombatView struct {
-	Phase   string             `json:"phase"`   // opening, friendly, orders, confirm, playback, chest, victory, defeat
-	Next    string             `json:"next"`    // what the front end does next; see the Next* constants
-	Round   int                `json:"round"`   // round number, from 1
-	Frozen  bool               `json:"frozen"`  // party and monster values are the round-start display (playback)
-	Party   []CombatMemberView `json:"party"`   // in formation order
-	Groups  []CombatGroupView  `json:"groups"`  // groups the player can see (count above zero)
-	Actor   int                `json:"actor"`   // slot (from 1) being given an order; 0 when none
-	Menu    []CombatOptionView `json:"menu"`    // the actor's orders, during order entry
-	Orders  []CombatOrderView  `json:"orders"`  // orders given this round, during order entry and confirmation
-	Events  []CombatEventView  `json:"events"`  // released events of the round being played back, in order
-	Current int                `json:"current"` // index into Events of the block being shown; -1 when none
-	Lines   []string           `json:"lines"`   // the message lines on screen now
+	Phase   string             `json:"phase"`           // opening, friendly, orders, confirm, playback, chest, victory, defeat
+	Next    string             `json:"next"`            // what the front end does next; see the Next* constants
+	Round   int                `json:"round"`           // round number, from 1
+	Frozen  bool               `json:"frozen"`          // party and monster values are the round-start display (playback)
+	Party   []CombatMemberView `json:"party"`           // in formation order
+	Groups  []CombatGroupView  `json:"groups"`          // groups the player can see (count above zero)
+	Actor   int                `json:"actor"`           // slot (from 1) being given an order; 0 when none
+	Menu    []CombatOptionView `json:"menu"`            // the actor's orders, during order entry
+	Orders  []CombatOrderView  `json:"orders"`          // orders given this round, during order entry and confirmation
+	Events  []CombatEventView  `json:"events"`          // released events of the round being played back, in order
+	Current int                `json:"current"`         // index into Events of the block being shown; -1 when none
+	Lines   []string           `json:"lines"`           // the message lines on screen now
+	Boons   []string           `json:"boons,omitempty"` // HAMAN's boons, once the block that offers them is on screen
 }
 
 // What the front end does next.
@@ -151,8 +152,9 @@ func (c *Controller) CombatView() (CombatView, error) {
 		v.Phase, v.Next = "confirm", NextConfirm
 	case engine.CombatExecute:
 		v.Phase, v.Next = "playback", NextAdvance
-		if cs.HamanSelecting {
+		if atBoonPrompt(cs) {
 			v.Next = NextChoice
+			v.Boons = cs.HamanChoiceNames()
 		} else if playbackDone(cs) {
 			v.Next = NextEndRound
 		}
