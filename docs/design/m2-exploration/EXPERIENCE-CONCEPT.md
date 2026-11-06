@@ -144,6 +144,11 @@ drone.
    - **Team values:** HP, status and monster counts change on screen only
      when the message that caused them is shown (Fact: the engine's display
      snapshot, `DisplayPartySnap`).
+   - **Correction (combat review):** the sentence above is wrong about
+     Classic. The engine freezes displayed HP, status and monster counts for
+     the whole round and updates them after the last message
+     (`engine/combat.go:634`). Per-message updates are a presentation option
+     (decision X21); see `COMBAT-EXPERIENCE-REVIEW.md` §2.
    - **Not real time:** sequential presentation is not real time, and it is
      not alternating individual turns.
 4. **Next round or end.** Another round returns to orders. Victory leads to

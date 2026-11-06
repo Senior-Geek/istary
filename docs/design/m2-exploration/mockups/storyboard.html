@@ -101,7 +101,7 @@
 <body class="annotate">
 <main>
   <h1>Istary M2 storyboard <span class="tag">design exploration · not approved</span></h1>
-  <p class="lede">One dungeon location shown through six moments of play, in three interface treatments. Change the treatment, the light, and whether design annotations are shown with the controls below. Nothing here is a production component; the figures are generic placeholders and the messages are illustrative.</p>
+  <p class="lede">One dungeon location shown through six moments of play, in three interface treatments. Change the treatment, the light, and whether design annotations are shown with the controls below. Nothing here is a production component; the figures are generic placeholders and the messages are illustrative. The follow-on <a href="combat.html">combat prototype</a> makes the combat moments interactive.</p>
 
   <div class="controls">
     <fieldset><legend>Interface treatment</legend>
@@ -280,7 +280,7 @@ const FRAMES = [
       rich: () => `<div class="ov hud" style="left:1.5%;top:3%;width:30%"><b>Opponents</b> (as at round start)<br>1) 4 CREATURES<br>2) 2 FIGURES</div><div class="ov side"><div class="hud">${teamTable(hurt(2, 26))}</div><div class="hud grow mono" style="font-size:10.5px"><b style="font-family:-apple-system">Round 1</b><br><span class="logline">1 TORVALD SLASHES AT A CREATURE · HITS ONCE FOR 7 · KILLS IT</span><br><span class="logline">5 ILSA CASTS A SPELL</span><br><span class="logline">… 2 CREATURES FALL ASLEEP</span><br><span class="logline now">A CREATURE CLAWS AT YSOLDE · HITS FOR 5</span><br><span class="k">7 more…</span></div><div class="hud">↩ Advance · ⇧↩ Show all</div></div>`,
       classic: () => `<div class="ov classic-box" style="left:2%;top:3%">1) 4 CREATURES   (4)\n2) 2 FIGURES     (2)</div><div class="ov classic-box" style="left:50%;transform:translateX(-50%);top:40%">A CREATURE CLAWS AT YSOLDE\nAND HITS FOR 5 DAMAGE</div>` + classicRoster(hurt(2, 26), 2),
     },
-    ann: () => ann('left:3%;bottom:24%;max-width:30%', 'Counts and HP update when the message that caused them is shown (engine display snapshot), never earlier') + ann('right:4%;top:40%;max-width:22%', 'Order follows initiative computed by Go; the replay never reorders or re-rolls'),
+    ann: () => ann('left:3%;bottom:24%;max-width:30%', 'Corrected (see combat.html): Classic freezes displayed HP, status and counts for the whole round and updates them after the last message. Per-message updates are a presentation option (X21)') + ann('right:4%;top:40%;max-width:22%', 'Order follows initiative computed by Go; the replay never reorders or re-rolls'),
     notes: ['Go has already resolved the round. The presentation steps through the result (D6 queue + Advance).', 'Each message can focus the camera briefly on the actor and target, then return.', 'Skipping animation never skips a decision; it only shows the remaining results at once.'],
   },
   {

@@ -19,6 +19,10 @@ Choosing a direction, a renderer or a layout is left to the user.
 | [mockups/storyboard.html](mockups/storyboard.html) | Interactive storyboard: open it in a browser. It has six frames of one location, three treatments, light on/off, four map modes, two map kinds, a camera sandbox, workspace wireframes and the transition strip |
 | [mockups/scene.js](mockups/scene.js) | The throwaway projection renderer the storyboard uses (no dependencies; not application code) |
 | [stills/](stills/) | PNG exports of the storyboard, one per treatment, for reviewing without a browser |
+| [COMBAT-EXPERIENCE-REVIEW.md](COMBAT-EXPERIENCE-REVIEW.md) | Follow-on: three combat interaction approaches compared, scenery vs gameplay knowledge, ordering, playback, the chest, D6 questions, decisions X17–X24 and what to test next |
+| [mockups/combat.html](mockups/combat.html) | Follow-on: interactive combat prototype (a full round in the dungeon, approaches A/B/C, four scenery policies, manual or automatic playback) |
+| [mockups/combat-scene.js](mockups/combat-scene.js) | The prototype's throwaway renderer (extends the ideas of `scene.js`, which is unchanged) |
+| [stills/combat/](stills/combat/) | Stills of the combat prototype: every moment in approach C, the key moments in A and B, and one shot per scenery policy |
 
 ## Status labels used in these documents
 
@@ -68,6 +72,18 @@ Each item needs the user's approval before implementation depends on it.
 | X14 | Map and camera persistence | Where manual maps, exploration records and camera preferences are stored | Manual maps and exploration records in a per-campaign sidecar; camera in user preferences |
 | X15 | Renderer for the prototype | WebGL2 via three.js; WebGPU; Canvas 2D/SVG; native Metal/RealityKit; an external engine | Prototype WebGL2 in the existing webview; no final choice now |
 | X16 | Art direction | Placeholder geometric; stylised low-poly; painted; Classic line art | Out of scope here; needs its own checkpoint (D12 bears on reusing original monster pictures) |
+| X17–X24 | Combat interaction approach, scenery policy, order changes, playback pacing, value-update timing, playback camera, repeat orders, unavailable actions | See `COMBAT-EXPERIENCE-REVIEW.md` §11 | See that section |
+
+## Correction (combat review)
+
+The first version of this exploration said that, in Classic, HP and monster
+counts change on screen as each combat message appears. That is wrong:
+- **What the engine does:** it freezes the displayed values for the whole
+  round and updates them after the last message (`engine/combat.go:634`).
+- **Where corrected:** correction notes were added beside the affected text
+  in `EXPERIENCE-CONCEPT.md`, `MOCKUP-REVIEW.md` and
+  `CAMERA-AND-INTERACTION.md`, and to the storyboard annotation.
+- **Details:** see `COMBAT-EXPERIENCE-REVIEW.md` §2.
 
 ## Principal risks and questions for prototyping
 
@@ -98,3 +114,4 @@ These are detailed in the documents above.
 2. **Switch the treatments.** Use the toolbar to switch treatment A, B or C, light, map mode and map kind. Turn the design annotations off to see a frame as a user would.
 3. **Try the sandbox.** Use the camera sandbox to judge attached-camera framing and decision X4.
 4. **Read the documents.** Read `MOCKUP-REVIEW.md` alongside the frames, then the decision register above.
+5. **Try the combat prototype.** Open `mockups/combat.html` and play a round in approach C, then A and B. Read `COMBAT-EXPERIENCE-REVIEW.md` alongside it.

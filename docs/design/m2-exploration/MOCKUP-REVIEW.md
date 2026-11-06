@@ -66,6 +66,11 @@ All frames show the same location, with the same team and the same light.
 | 4 | Chest close-up | Contextual inspection and the four knowledge layers | The chest looks the same whatever it holds. Reports are shown as reports. The annotations separate engine knowledge (never sent), team knowledge, what is visible, and what may be attempted. |
 | 5 | Back to exploration | Natural return | The camera restores the user's exploration camera; nothing moved, so the visible set is unchanged. |
 
+**Correction (combat review).** Frame 3b says Ysolde's HP changes as the
+message shows it. Under Classic, displayed values stay frozen for the whole
+round and update after the last message (`engine/combat.go:634`). See
+`COMBAT-EXPERIENCE-REVIEW.md` §2 and decision X21.
+
 ## 4. Interface treatments compared
 
 | | A · Minimal immersive | B · Information-rich | C · Classic presentation |

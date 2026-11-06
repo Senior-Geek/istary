@@ -1,0 +1,1080 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Istary Combat Prototype</title>
+<!--
+  Istary M2 combat experience prototype. Nonfunctional design mockup, not
+  application code, not connected to the engine. Open directly in a browser.
+  Every number, name and message is an illustrative fixture. The object
+  named GO below stands in for the Go controller: in the product, everything
+  it returns (order menus, legality, targets, the resolved round) comes from
+  Go, and the presentation only displays it.
+-->
+<style>
+  :root {
+    --bg: #131518; --panel: #1c1f23; --line: #30343a; --text: #e6e3dc; --muted: #9a978f;
+    --accent: #f2c14e; --bad: #ff7a5c; --ok: #8fd18f; --note: #7fb8ff; --hidden: #ff6fa5;
+    --hud: rgba(14,15,18,0.84); --hud-line: rgba(255,255,255,0.14);
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) { --bg: #f3f1ec; --panel: #ffffff; --line: #d9d5cc; --text: #22201c; --muted: #6c685f; --note: #1f6fd1; --hidden: #c2185b; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.45 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif; }
+  main { max-width: 1480px; margin: 0 auto; padding: 12px 16px 40px; }
+  h1 { font-size: 21px; margin: 4px 0 2px; }
+  h2 { font-size: 15px; margin: 18px 0 6px; }
+  a { color: var(--note); }
+  .lede { color: var(--muted); margin: 0 0 10px; max-width: 980px; }
+  .tag { display: inline-block; font-size: 11px; padding: 1px 6px; border-radius: 9px; border: 1px solid var(--line); color: var(--muted); margin-left: 6px; vertical-align: 1px; font-weight: 400; }
+  .controls { position: sticky; top: 0; z-index: 30; background: var(--bg); padding: 6px 0; display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; border-bottom: 1px solid var(--line); }
+  .controls fieldset { border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px 4px; margin: 0; font-size: 12.5px; }
+  .controls legend { font-size: 10.5px; color: var(--muted); padding: 0 4px; }
+  .controls label { margin-right: 8px; white-space: nowrap; }
+  .controls button { font: inherit; font-size: 12.5px; }
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 16px; margin-top: 12px; align-items: start; }
+  @media (max-width: 1180px) { .layout { grid-template-columns: 1fr; } }
+
+  /* ── stage ── */
+  .stage { position: relative; aspect-ratio: 16 / 9; background: #000; border-radius: 8px; overflow: hidden; color: #e9e6df; container-type: inline-size; font-size: clamp(9px, 1.32cqw, 14px); user-select: none; }
+  .scene { position: absolute; left: 0; right: 0; top: 0; bottom: 0; transition: bottom .35s ease; }
+  .stage.with-panel .scene { bottom: 35%; }
+  .scene > svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .ovl { position: absolute; inset: 0; pointer-events: none; transition: opacity .15s; }
+  .ovl.moving .anch { opacity: 0; }
+  .ovl > * { pointer-events: auto; }
+  .anch { position: absolute; transition: opacity .2s; }
+  .hud { background: var(--hud); border: 1px solid var(--hud-line); border-radius: 7px; padding: .35em .6em; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); box-shadow: 0 4px 18px rgba(0,0,0,.35); }
+  .mono { font-family: ui-monospace, Menlo, monospace; }
+  .k { color: #aaa69d; }
+  kbd { font: 600 .82em ui-monospace, Menlo, monospace; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 3px; padding: 0 .3em; color: var(--text); }
+  .stage kbd { border-color: rgba(255,255,255,.35); color: #fff; background: rgba(255,255,255,.06); }
+  .camtag { left: 1.2%; top: 2.2%; font-size: .82em; color: #cfcac0; }
+  .hint { left: 50%; top: 2.2%; transform: translateX(-50%); font-size: .86em; white-space: nowrap; text-align: center; }
+  .banner { left: 50%; top: 40%; transform: translate(-50%,-50%); font-size: 2.1em; letter-spacing: .14em; font-weight: 800; color: #ffe2a0; text-shadow: 0 2px 14px #000; pointer-events: none; }
+
+  .pips { left: 50%; transform: translateX(-50%); bottom: 2%; display: flex; gap: .3em; }
+  .pip { min-width: 7.6em; padding: .2em .45em; border-radius: 6px; background: var(--hud); border: 1px solid var(--hud-line); font-size: .82em; line-height: 1.25; cursor: pointer; position: relative; }
+  .pip b { font-size: 1.04em; }
+  .pip .bar { height: 3px; background: #333; border-radius: 2px; margin-top: 2px; }
+  .pip .bar i { display: block; height: 100%; background: var(--ok); border-radius: 2px; transition: width .4s; }
+  .pip.hurt .bar i { background: #e3b04b; }
+  .pip.sel { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .pip.cand { border-color: var(--ok); }
+  .pip .st { float: right; color: #bbb; }
+  .pip .st.poison { color: #7bd36a; }
+  .pip .ord { display: block; color: var(--accent); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 9em; }
+  .pip.changed { animation: flash 0.9s; }
+  @keyframes flash { 0% { background: rgba(255,110,80,.6); } 100% { background: var(--hud); } }
+  .info { display: inline-block; width: 1.2em; height: 1.2em; line-height: 1.2em; text-align: center; border-radius: 50%; border: 1px solid rgba(255,255,255,.4); font-size: .78em; cursor: pointer; color: #ddd; margin-left: .2em; }
+
+  .menu { min-width: 12.5em; padding: .35em; font-size: .92em; }
+  .menu .title { font-weight: 700; margin: 0 .2em .3em; display: flex; justify-content: space-between; gap: 1em; align-items: center; }
+  .menu .title small { color: #aaa69d; font-weight: 400; }
+  .act { display: flex; gap: .5em; align-items: baseline; width: 100%; font: inherit; color: #eee; background: transparent; border: 1px solid transparent; border-radius: 5px; padding: .18em .4em; text-align: left; cursor: pointer; }
+  .act:hover, .act:focus-visible { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.18); outline: none; }
+  .act.cur { border-color: var(--accent); }
+  .act .lbl { flex: 1; }
+  .act .why { display: block; font-size: .82em; color: #b6a98e; }
+  .act.off { color: #8a877f; cursor: not-allowed; }
+  .act.off kbd { opacity: .5; }
+  .act .note { font-size: .82em; color: #b6a98e; }
+  .toast { background: #3a1f17; border: 1px solid #b4553a; color: #ffd3c4; border-radius: 6px; padding: .3em .6em; font-size: .9em; max-width: 22em; box-shadow: 0 6px 18px rgba(0,0,0,.5); }
+  .glabel { transform: translate(-50%, -125%); white-space: nowrap; font-size: .9em; cursor: pointer; text-align: center; }
+  .glabel.target { border-color: currentColor; box-shadow: 0 0 0 1px currentColor, 0 0 14px currentColor; animation: pulse 1.2s infinite; }
+  @keyframes pulse { 50% { box-shadow: 0 0 0 1px currentColor, 0 0 3px currentColor; } }
+  .glabel .n { font-weight: 800; margin-right: .3em; }
+  .otag { transform: translate(-50%, -130%); font-size: .8em; white-space: nowrap; padding: .05em .4em; color: var(--accent); cursor: pointer; }
+  .otag.big { font-size: .92em; }
+  .otag.none { color: #aaa69d; }
+  .bubble { transform: translate(-50%, -112%); max-width: 26em; text-align: center; font-family: ui-monospace, Menlo, monospace; font-size: .95em; }
+  .bubble .line { display: block; }
+  .msgline { left: 50%; bottom: 15%; transform: translateX(-50%); text-align: center; font-family: ui-monospace, Menlo, monospace; min-width: 30em; }
+  .msgline .line { display: block; }
+  .prompt { left: 50%; transform: translateX(-50%); top: 9%; text-align: center; white-space: nowrap; }
+  .spells { min-width: 16em; }
+  .spells input { width: 100%; font: inherit; background: #0d0e10; color: #fff; border: 1px solid #555; border-radius: 4px; padding: .15em .4em; margin-bottom: .3em; text-transform: uppercase; }
+  .btn { font: inherit; color: #111; background: var(--accent); border: 0; border-radius: 5px; padding: .25em .7em; font-weight: 700; cursor: pointer; }
+  .btn.ghost { color: #eee; background: transparent; border: 1px solid rgba(255,255,255,.3); font-weight: 500; }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+  .row { display: flex; gap: .4em; align-items: center; flex-wrap: wrap; }
+
+  /* approach C tactical summary card, approach B panel */
+  .card { right: 1.2%; top: 9%; width: 30%; max-height: 82%; overflow: hidden; display: flex; flex-direction: column; gap: .3em; font-size: .92em; animation: slidein .3s ease; }
+  @keyframes slidein { from { transform: translateX(30%); opacity: 0; } }
+  .card h4 { margin: 0; font-size: 1em; display: flex; justify-content: space-between; }
+  .card table, .panel table { width: 100%; border-collapse: collapse; }
+  .card td, .panel td, .panel th { padding: .12em .3em; white-space: nowrap; }
+  .card tr.ed, .panel tr.ed { cursor: pointer; }
+  .card tr.ed:hover, .panel tr.ed:hover { background: rgba(255,255,255,.07); }
+  .card tr.front td, .panel tr.front td { border-bottom: 1px dashed rgba(255,255,255,.16); }
+  .card .ordc, .panel .ordc { color: var(--accent); }
+  .log { font-family: ui-monospace, Menlo, monospace; font-size: .9em; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; }
+  .log div { opacity: .5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .log div.now { opacity: 1; color: #fff; font-weight: 600; }
+  .panel { position: absolute; left: 0; right: 0; bottom: 0; height: 35%; background: #111316; border-top: 1px solid #3a3e45; display: grid; grid-template-columns: 1.45fr 1fr 1fr; gap: .6em; padding: .5em .7em; font-size: .9em; animation: panelin .35s ease; }
+  @keyframes panelin { from { transform: translateY(100%); } }
+  .panel > div { min-width: 0; overflow: hidden; display: flex; flex-direction: column; gap: .25em; }
+  .panel h4 { margin: 0; font-size: .92em; color: #aaa69d; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+  .panel th { color: #8d8a83; font-weight: 500; text-align: left; font-size: .9em; }
+  .panel tr.sel td { background: rgba(242,193,78,.13); }
+  .panel .acts { display: grid; grid-template-columns: 1fr 1fr; gap: .15em .3em; }
+  .panel .grpbtn { display: block; width: 100%; text-align: left; margin-bottom: .2em; }
+  .hpbar { display: inline-block; width: 3.5em; height: 4px; background: #333; border-radius: 2px; vertical-align: middle; margin-left: .3em; }
+  .hpbar i { display: block; height: 100%; background: var(--ok); border-radius: 2px; transition: width .4s; }
+
+  .modal { left: 50%; top: 50%; transform: translate(-50%,-50%); width: 40%; min-width: 20em; padding: .7em .9em; font-size: .95em; z-index: 5; }
+  .modal h4 { margin: 0 0 .3em; display: flex; justify-content: space-between; }
+  .modal table td { padding: .05em .5em .05em 0; }
+  .ro { color: #b6a98e; font-size: .88em; margin-top: .4em; }
+
+  /* ── reviewer side ── */
+  .side { display: flex; flex-direction: column; gap: 12px; }
+  .box { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font-size: 13px; }
+  .box h3 { margin: 0 0 6px; font-size: 13px; }
+  .steps { list-style: none; margin: 0; padding: 0; counter-reset: s; }
+  .steps li { counter-increment: s; padding: 2px 6px; border-radius: 5px; display: flex; gap: 6px; align-items: baseline; color: var(--muted); }
+  .steps li::before { content: counter(s); font: 600 11px ui-monospace, Menlo, monospace; min-width: 16px; }
+  .steps li.done { color: var(--text); }
+  .steps li.on { background: rgba(242,193,78,.18); color: var(--text); font-weight: 600; }
+  .steps li button { margin-left: auto; font-size: 11px; padding: 0 6px; }
+  .truth table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .truth td, .truth th { padding: 1px 4px; text-align: left; }
+  .truth th { color: var(--muted); font-weight: 500; }
+  .truth .diff { color: var(--bad); font-weight: 700; }
+  .hiddeninfo { border: 1.5px dashed var(--hidden); color: var(--hidden); border-radius: 5px; padding: 3px 6px; font-size: 12px; margin-top: 6px; }
+  .notes ul { margin: 0; padding-left: 18px; }
+  .notes li { margin: 2px 0; }
+  .notes .lab { font-size: 10.5px; border: 1px solid var(--line); border-radius: 8px; padding: 0 5px; color: var(--muted); margin-right: 4px; }
+  .keys td { padding: 1px 6px 1px 0; vertical-align: top; }
+  body:not(.annotate) .notes, body:not(.annotate) .truth { display: none; }
+  html.still *, html.still *::before { animation: none !important; transition: none !important; }
+  .leakcount { color: var(--hidden); font-weight: 700; }
+</style>
+</head>
+<body class="annotate">
+<main>
+  <h1>Istary combat prototype <span class="tag">M2 design exploration · not approved</span></h1>
+  <p class="lede">A complete combat round inside the dungeon, from exploring, through order entry and round playback, to the chest and back to exploring. Compare three interaction approaches with the same fixture. Everything here is illustrative and not connected to the engine. Placeholder figures are not an art style. <a href="storyboard.html">← Back to the M2 storyboard</a></p>
+
+  <div class="controls" role="toolbar">
+    <fieldset><legend>Combat interaction approach</legend>
+      <label><input type="radio" name="ap" value="A"> A · Contextual overlay</label>
+      <label><input type="radio" name="ap" value="B"> B · Tactical workspace</label>
+      <label><input type="radio" name="ap" value="C" checked> C · Hybrid <span class="tag">initial candidate</span></label>
+    </fieldset>
+    <fieldset><legend>Scenery outside the Classic view</legend>
+      <label><input type="radio" name="vis" value="strict"> Strict</label>
+      <label><input type="radio" name="vis" value="shell" checked> Neutral shell</label>
+      <label><input type="radio" name="vis" value="remembered"> Remembered</label>
+      <label><input type="radio" name="vis" value="unbounded"> Unbounded <span class="tag">hazard demo</span></label>
+      <label><input type="checkbox" id="leaks" checked> Mark leaks</label>
+    </fieldset>
+    <fieldset><legend>Round playback</legend>
+      <label><input type="radio" name="pb" value="manual" checked> Manual</label>
+      <label><input type="radio" name="pb" value="auto"> Automatic</label>
+      <select id="speed" aria-label="Automatic speed"><option value="0.6">slow</option><option value="1" selected>normal</option><option value="1.8">fast</option></select>
+      <br><label><input type="radio" name="timing" value="classic" checked> Values update at round end (Classic)</label>
+      <label><input type="radio" name="timing" value="event"> Per event</label>
+      <label><input type="checkbox" id="rev" checked> Reverse shots</label>
+    </fieldset>
+    <fieldset><legend>Review</legend>
+      <label><input type="checkbox" id="ann" checked> Design notes</label>
+      <button id="restart">Restart</button>
+    </fieldset>
+  </div>
+
+  <div class="layout">
+    <div>
+      <div class="stage" id="stage" tabindex="0" aria-label="Combat prototype stage. Click to give it keyboard focus.">
+        <div class="scene" id="scene"><div class="ovl" id="ovl"></div></div>
+        <div id="panel"></div>
+      </div>
+      <p class="k" style="font-size:12.5px;margin:6px 2px">Click the stage, then use the keyboard or the mouse. Keys: <kbd>Return</kbd> continue or confirm · <kbd>1</kbd>–<kbd>6</kbd> member (or target) · <kbd>F</kbd> <kbd>P</kbd> <kbd>S</kbd> <kbd>U</kbd> <kbd>D</kbd> <kbd>R</kbd> orders · <kbd>Tab</kbd> next member · <kbd>B</kbd> back · <kbd>Esc</kbd> cancel · <kbd>I</kbd> character (read-only) · <kbd>Space</kbd> next message · <kbd>⇧ Return</kbd> show rest · <kbd>V</kbd> camera while exploring.</p>
+    </div>
+    <aside class="side">
+      <div class="box"><h3>The twelve moments</h3><ol class="steps" id="steps"></ol></div>
+      <div class="box notes" id="notes"></div>
+      <div class="box truth" id="truth"></div>
+    </aside>
+  </div>
+</main>
+
+<script src="combat-scene.js"></script>
+<script>
+'use strict'
+const CS = window.CombatScene
+const FORM = CS.FORMATION
+const GC = CS.GROUP_COLOR
+
+// ════════════════════════════════════════════════════════════════════════
+// FIXTURE CONTROLLER. Stands in for the Go controller. In the product, all
+// of this (order menus and their reasons, targets, the resolved round, the
+// chest results) comes from Go; nothing here is a rule the GUI would hold.
+// Values are hard-coded for one illustrative encounter.
+// ════════════════════════════════════════════════════════════════════════
+const TEAM0 = [
+  { slot: 1, name: 'TORVALD', cls: 'G-FIG', lvl: 5, ac: 2, hp: 34, max: 34, st: 'OK', color: '#5f80a6', items: ['LONG SWORD', 'CHAIN MAIL', 'LARGE SHIELD'] },
+  { slot: 2, name: 'YSOLDE', cls: 'N-FIG', lvl: 4, ac: 3, hp: 31, max: 31, st: 'OK', color: '#7c6fa6', items: ['BATTLE AXE', 'CHAIN MAIL'] },
+  { slot: 3, name: 'BRANNOC', cls: 'G-PRI', lvl: 4, ac: 4, hp: 18, max: 22, st: 'OK', color: '#a8935a', items: ['MACE', 'LEATHER ARMOR', 'SMALL SHIELD'], sp: { 1: 3, 2: 1 } },
+  { slot: 4, name: 'PELL', cls: 'N-THI', lvl: 4, ac: 6, hp: 14, max: 15, st: 'OK', color: '#5a9670', items: ['SHORT SWORD', 'LEATHER ARMOR'] },
+  { slot: 5, name: 'ILSA', cls: 'G-MAG', lvl: 3, ac: 9, hp: 9, max: 11, st: 'OK', color: '#a66262', items: ['DAGGER', 'ROBES'], sp: { 1: 2 } },
+  { slot: 6, name: 'CORVIN', cls: 'G-BIS', lvl: 3, ac: 8, hp: 10, max: 10, st: 'OK', color: '#6f9aa0', items: ['STAFF', 'ROBES', 'SILVER ROD (equipped)'], sp: { 1: 1 } },
+]
+const SPELLBOOK = {
+  3: [{ name: 'DIOS', lvl: 1, tgt: 'ally' }, { name: 'BADIOS', lvl: 1, tgt: 'group' }, { name: 'MILWA', lvl: 1, tgt: 'none' }, { name: 'PORFIC', lvl: 1, tgt: 'none' }, { name: 'CALFO', lvl: 2, tgt: 'none', why: 'CALFO is cast on a chest, not in combat' }],
+  5: [{ name: 'HALITO', lvl: 1, tgt: 'group' }, { name: 'KATINO', lvl: 1, tgt: 'group' }, { name: 'DUMAPIC', lvl: 1, tgt: 'none', why: 'DUMAPIC has no use in combat' }],
+  6: [{ name: 'KATINO', lvl: 1, tgt: 'group' }],
+}
+const GROUPS0 = [
+  { unk: ['CREATURE', 'CREATURES'], id: ['BOGLIN', 'BOGLINS'], n: 4, asleep: 0, undead: false, known: false,
+    at: [[-1.3, 4.6, 1.2], [-0.45, 4.9, 1.2], [0.45, 4.6, 1.2], [1.3, 4.9, 1.2]], color: '#6b7a4e' },
+  { unk: ['FIGURE', 'FIGURES'], id: ['BONE WALKER', 'BONE WALKERS'], n: 2, asleep: 0, undead: true, known: false,
+    at: [[-0.75, 6.9, 1.6], [0.75, 6.9, 1.6]], color: '#7a5468' },
+]
+const clone = (o) => JSON.parse(JSON.stringify(o))
+
+const GO = {
+  st: null, // authoritative fixture state ("engine")
+  reset() {
+    this.st = { round: 1, team: clone(TEAM0), groups: clone(GROUPS0), atk: 0, runTried: false, result: null, poisoned: false,
+      chest: { trap: 'POISON NEEDLE', inspected: {}, disarmed: false, open: false, calfo: false } }
+  },
+  name(gi, plural) { const g = this.st.groups[gi]; return (g.known ? g.id : g.unk)[plural ? 1 : 0] },
+  alive(gi) { return this.st.groups[gi] && this.st.groups[gi].n > 0 },
+  aliveGroups() { return this.st.groups.map((g, i) => i).filter((i) => this.alive(i)) },
+  // Order menu for one member: what Go would send. Reasons are part of it.
+  menu(slot) {
+    const m = this.st.team[slot - 1], back = slot > 3
+    const caster = !!SPELLBOOK[slot]
+    const canDispel = m.cls.endsWith('PRI') || (m.cls.endsWith('BIS') && m.lvl > 3)
+    const useItem = slot === 6 ? 'SILVER ROD' : null
+    return [
+      { key: 'F', act: 'fight', label: 'Fight', ok: !back, why: back ? 'Back line (4–6) cannot fight' : '' },
+      { key: 'P', act: 'parry', label: 'Parry', ok: true },
+      { key: 'S', act: 'spell', label: 'Spell', ok: caster, why: caster ? '' : `${m.name} knows no spells` },
+      useItem ? { key: 'U', act: 'use', label: `Use ${useItem}`, ok: true, item: useItem }
+              : { key: 'U', act: 'use', label: 'Use', ok: true, note: 'nothing usable; counts as Parry' },
+      { key: 'D', act: 'dispel', label: 'Dispel', ok: canDispel, why: canDispel ? '' : m.cls.endsWith('BIS') ? 'Bishops dispel from level 4 (Corvin is level 3)' : `A ${m.cls.slice(2) === 'FIG' ? 'fighter' : m.cls.slice(2) === 'THI' ? 'thief' : 'mage'} cannot dispel` },
+      { key: 'R', act: 'run', label: 'Run', ok: true },
+    ]
+  },
+  spells(slot) {
+    const m = this.st.team[slot - 1]
+    return (SPELLBOOK[slot] || []).map((s) => {
+      const left = (m.sp || {})[s.lvl] || 0
+      const why = s.why || (left ? '' : `No level ${s.lvl} spell points left`)
+      return Object.assign({}, s, { left, ok: !why, why })
+    })
+  },
+  targetKind(o) {
+    if (o.act === 'fight' || o.act === 'dispel' || o.act === 'use') return 'group'
+    if (o.act === 'spell') return (SPELLBOOK[o.slot].find((s) => s.name === o.spell) || {}).tgt
+    return 'none'
+  },
+
+  // Resolve a whole round at once, as engine.ExecuteRound does. Returns the
+  // round as display blocks; the authoritative state is final on return.
+  commit(orders) {
+    const st = this.st, r = st.round, blocks = []
+    const team = st.team, G = st.groups
+    const parry = new Set(orders.filter((o) => o.act === 'parry' || (o.act === 'use' && !o.item)).map((o) => o.slot))
+    const cnt = (gi) => ({ k: 'count', gi, n: G[gi].n, asleep: G[gi].asleep })
+    if (r >= 2 && G.some((g) => !g.known)) {
+      G.forEach((g) => { g.known = true })
+      blocks.push({ silent: true, lines: [], deltas: G.map((g, gi) => ({ k: 'name', gi })), note: 'Go’s per-round identification succeeded: group names update (no message).' })
+    }
+    const kill = (gi) => { const g = G[gi]; if (g.asleep > 0) g.asleep--; g.n--; if (g.asleep > g.n) g.asleep = g.n }
+    const firstAlive = () => G.findIndex((g) => g.n > 0)
+    const order = r === 1 ? ['p5', 'g0.0', 'p1', 'g1.0', 'g0.1', 'p3', 'p6', 'g0.2', 'p2', 'g1.1', 'g0.3', 'p4']
+                          : ['p1', 'g0.0', 'p3', 'p5', 'g1.0', 'g0.1', 'p2', 'p6', 'g1.1', 'p4', 'g0.2', 'g0.3']
+    const DMG = [5, 0, 4, 3, 0, 6, 2, 0]
+    for (const tok of order) {
+      if (G.every((g) => g.n === 0) || st.result) break
+      if (tok[0] === 'p') {
+        const slot = +tok[1], m = team[slot - 1], o = orders[slot - 1]
+        if (!o || m.hp <= 0) continue
+        const tgFor = (gi) => (this.alive(gi) ? gi : firstAlive())
+        if (o.act === 'fight') {
+          const gi = tgFor(o.tg); if (gi < 0) continue
+          const asleep = G[gi].asleep > 0
+          const kills = slot === 1 || asleep || (slot === 2 && r % 2 === 0) || (slot === 3 && r >= 2)
+          const dmg = slot === 1 ? 11 : slot === 2 ? (kills ? 9 : 4) : 3 + r
+          const nm = this.name(gi)
+          const lines = [`${m.name} ATTACKS A${/^[AEIOU]/.test(nm) ? 'N' : ''} ${nm}`, `AND HITS ${slot === 1 ? 2 : 1} TIME${slot === 1 ? 'S' : ''} FOR ${dmg} DAMAGE`]
+          if (kills) { kill(gi); lines.push(`${nm} IS KILLED!`) }
+          blocks.push({ actor: 'p' + slot, tgt: 'g' + gi, lines, fx: [{ type: 'hit', from: 'p' + slot, to: 'g' + gi, text: '−' + dmg }], deltas: [cnt(gi)] })
+        } else if (o.act === 'spell' || o.act === 'use') {
+          const spell = o.act === 'use' ? 'HALITO' : o.spell
+          if (o.act === 'spell') m.sp[SPELLBOOK[slot].find((s) => s.name === spell).lvl]--
+          const verb = o.act === 'use' ? `${m.name} USES A ${o.item || 'NOTHING'}` : `${m.name} CASTS ${spell}`
+          if (o.act === 'use' && !o.item) continue
+          if (spell === 'HALITO' || spell === 'BADIOS') {
+            const gi = tgFor(o.tg); if (gi < 0) { blocks.push({ actor: 'p' + slot, lines: [verb, 'BUT NOTHING IS LEFT TO HIT'], fx: [] }); continue }
+            const nm = this.name(gi), dmg = spell === 'HALITO' ? 8 : 7
+            kill(gi)
+            blocks.push({ actor: 'p' + slot, tgt: 'g' + gi, lines: [verb, `A${/^[AEIOU]/.test(nm) ? 'N' : ''} ${nm} TAKES ${dmg} DAMAGE`, `${nm} IS KILLED!`], fx: [{ type: 'halito', from: 'p' + slot, to: 'g' + gi, text: '−' + dmg }], deltas: [cnt(gi)] })
+          } else if (spell === 'KATINO') {
+            const gi = tgFor(o.tg); if (gi < 0) continue
+            const g = G[gi]
+            if (g.undead) { blocks.push({ actor: 'p' + slot, tgt: 'g' + gi, lines: [verb, `THE ${this.name(gi, true)} ARE NOT AFFECTED`], fx: [{ type: 'sleep', from: 'p' + slot, to: 'g' + gi }] }); continue }
+            const before = g.asleep; g.asleep = g.n
+            blocks.push({ actor: 'p' + slot, tgt: 'g' + gi, lines: [verb, `${g.asleep - before} ${this.name(gi, g.asleep - before !== 1)} FALL${g.asleep - before === 1 ? 'S' : ''} ASLEEP`], fx: [{ type: 'sleep', from: 'p' + slot, to: 'g' + gi }], deltas: [cnt(gi)] })
+          } else if (spell === 'DIOS') {
+            const t = team[o.ally - 1], heal = Math.min(6, t.max - t.hp); t.hp += heal
+            blocks.push({ actor: 'p' + slot, tgt: 'p' + o.ally, lines: [verb, `${t.name} IS HEALED FOR ${heal}`], fx: [{ type: 'heal', from: 'p' + slot, to: 'p' + o.ally, text: '+' + heal }], deltas: [{ k: 'hp', slot: o.ally, hp: t.hp }] })
+          } else {
+            blocks.push({ actor: 'p' + slot, lines: [verb, spell === 'MILWA' ? 'THE LIGHT GROWS BRIGHTER' : `A SHIELD SURROUNDS ${m.name}`], fx: [{ type: spell === 'MILWA' ? 'dispel' : 'parry', to: 'p' + slot }] })
+          }
+        } else if (o.act === 'dispel') {
+          const gi = tgFor(o.tg); if (gi < 0) continue
+          const nm = this.name(gi)
+          if (G[gi].undead) { kill(gi); blocks.push({ actor: 'p' + slot, tgt: 'g' + gi, lines: [`${m.name} TRIES TO DISPEL`, `A${/^[AEIOU]/.test(nm) ? 'N' : ''} ${nm} IS DISPELLED!`], fx: [{ type: 'dispel', from: 'p' + slot, to: 'g' + gi }], deltas: [cnt(gi)] }) }
+          else blocks.push({ actor: 'p' + slot, tgt: 'g' + gi, lines: [`${m.name} TRIES TO DISPEL`, 'BUT NOTHING HAPPENS'], fx: [{ type: 'dispel', from: 'p' + slot, to: 'g' + gi }] })
+        } else if (o.act === 'run') {
+          if (!st.runTried) { st.runTried = true; blocks.push({ actor: 'p' + slot, lines: [`${m.name} TRIES TO RUN`, 'BUT THE PARTY CANNOT ESCAPE!'], fx: [] }) }
+          else { st.result = 'fled'; blocks.push({ actor: 'p' + slot, lines: [`${m.name} TRIES TO RUN`, 'THE PARTY FLEES!'], fx: [] }) }
+        }
+      } else {
+        const [gi, k] = tok.slice(1).split('.').map(Number), g = G[gi]
+        if (!g || k >= g.n - g.asleep) continue
+        const front = [1, 2, 3].filter((s) => team[s - 1].hp > 0)
+        const slot = front[st.atk % front.length], t = team[slot - 1]
+        let d = DMG[st.atk % DMG.length]; st.atk++
+        if (parry.has(slot) && st.atk % 2 === 0) d = 0
+        if (t.hp - d < 4) d = 0
+        const nm = this.name(gi)
+        const lines = [`A${/^[AEIOU]/.test(nm) ? 'N' : ''} ${nm} ${g.undead ? 'CLAWS AT' : 'SWINGS AT'} ${t.name}`, d ? `AND HITS FOR ${d} DAMAGE` : 'AND MISSES']
+        const deltas = []
+        if (d) { t.hp -= d; deltas.push({ k: 'hp', slot, hp: t.hp }) }
+        if (d && g.undead && !st.poisoned) { st.poisoned = true; t.st = 'POISON'; lines.push(`${t.name} IS POISONED`); deltas.push({ k: 'st', slot, st: 'POISON' }) }
+        blocks.push({ actor: 'g' + gi, tgt: 'p' + slot, lines, fx: [{ type: d ? 'hit' : 'miss', from: 'g' + gi, to: 'p' + slot, text: d ? '−' + d : '' }], deltas })
+      }
+    }
+    if (!st.result && G.every((g) => g.n === 0)) {
+      st.result = 'victory'
+      blocks.push({ actor: null, lines: ['FOR KILLING THE MONSTERS', 'EACH SURVIVOR GETS 135 EXPERIENCE POINTS'], fx: [], end: true })
+    }
+    if (!st.result) st.round++
+    return blocks
+  },
+
+  // Chest. The real trap stays here; only reports are returned.
+  chestWho(act) {
+    const t = this.st.team, c = this.st.chest
+    if (act === 'inspect') return t.filter((m) => !c.inspected[m.slot]).map((m) => m.slot)
+    if (act === 'calfo') return t.filter((m) => m.slot === 3 && m.sp[2] > 0).map((m) => m.slot)
+    return t.filter((m) => m.hp > 0).map((m) => m.slot)
+  },
+  chest(act, slot, trapName) {
+    const c = this.st.chest, m = this.st.team[slot - 1]
+    if (act === 'inspect') {
+      c.inspected[slot] = true
+      const said = { 4: 'POISON NEEDLE', 2: 'GAS BOMB', 1: 'NO TRAP', 3: 'NO TRAP', 5: 'STUNNER', 6: 'POISON NEEDLE' }[slot]
+      return { lines: [`${m.name} INSPECTS THE CHEST`, said === 'NO TRAP' ? 'AND FINDS NO TRAP' : `IT LOOKS LIKE A ${said}`], report: { by: m.name, how: 'Inspect', said } }
+    }
+    if (act === 'calfo') { m.sp[2]--; return { lines: ['BRANNOC CASTS CALFO', 'THE TRAP IS A POISON NEEDLE'], report: { by: m.name, how: 'CALFO', said: 'POISON NEEDLE' } } }
+    if (act === 'disarm') {
+      if (trapName === c.trap) { c.disarmed = true; return { lines: [`${m.name} DISARMS THE ${trapName}!`] } }
+      return { lines: [`${m.name} TRIES TO DISARM A ${trapName}`, `OOPS! A ${c.trap}!`, `${m.name} IS POISONED`], deltas: [{ k: 'st', slot, st: 'POISON' }], sprung: true, then: () => { m.st = 'POISON'; c.disarmed = true } }
+    }
+    if (act === 'open') {
+      c.open = true
+      const lines = c.disarmed ? [`${m.name} OPENS THE CHEST`] : [`${m.name} OPENS THE CHEST`, `OOPS! A ${c.trap}!`, `${m.name} IS POISONED`]
+      if (!c.disarmed) m.st = 'POISON'
+      return { lines: lines.concat(['THE PARTY FINDS 160 GOLD']), deltas: c.disarmed ? [] : [{ k: 'st', slot, st: 'POISON' }], end: true }
+    }
+    return { lines: ['THE PARTY LEAVES THE CHEST'], end: true }
+  },
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// PRESENTATION STATE. Everything below is presentation only: camera,
+// which member is being ordered, what the user has seen of the round.
+// ════════════════════════════════════════════════════════════════════════
+const $ = (s) => document.querySelector(s)
+const stage = $('#stage'), sceneEl = $('#scene'), ovl = $('#ovl'), panelEl = $('#panel')
+const P = {} // presentation state
+const opts = { ap: 'C', vis: 'shell', leaks: true, pb: 'manual', speed: 1, timing: 'classic', rev: true, ann: true, still: false }
+
+function resetPresentation() {
+  GO.reset()
+  Object.assign(P, {
+    phase: 'explore', camMode: 'fp', camSlot: 1, actor: 1, orders: Array(6).fill(null), pending: null, spellFilter: '',
+    lastOrders: null, view: { team: clone(GO.st.team), groups: clone(GO.st.groups) }, blocks: [], bi: -1, roundStart: false,
+    chestPending: null, reports: [], chestLog: [], toast: null, profile: null, banner: null, lastMsg: null, editing: false, timer: null, changed: {},
+  })
+  cam.cur = null
+}
+
+// ── cameras ─────────────────────────────────────────────────────────────
+const SHOT = {
+  fp: () => ({ pos: [0, 1.55, -1.9], target: [0, 1.45, 10], fov: 72 }),
+  att: (s) => { const x = FORM[s - 1][0]; return { pos: [x * 0.55 - 0.35, 2.65, -1.95], target: [x * 0.3, 0.7, 5], fov: 70 } },
+  // With approach B's panel the scene is shorter, so the shot widens to keep the team in frame.
+  wide: () => (opts.ap === 'B' && combatUI() ? { pos: [1.05, 2.9, -1.95], target: [-0.2, 0.05, 4.8], fov: 96 } : { pos: [1.05, 2.9, -1.95], target: [-0.2, 0.25, 4.8], fov: 76 }),
+  chest: () => ({ pos: [1.5, 2.1, 1.7], target: [-0.15, 0.25, 4.4], fov: 58 }),
+  reverse: () => ({ pos: [1.3, 2.85, 9.6], target: [-0.15, 0.6, 0.6], fov: 66 }),
+  focus(actor, tgt) {
+    const pt = (a) => {
+      if (!a) return null
+      if (a[0] === 'p') { const f = FORM[+a[1] - 1]; return [f[0], 0.8, f[1]] }
+      const g = P.view.groups[+a[1]]; const at = g.at.slice(0, Math.max(1, g.n)); return [at.reduce((s, p) => s + p[0], 0) / at.length, 0.8, at.reduce((s, p) => s + p[1], 0) / at.length]
+    }
+    const a = pt(actor) || [0, 0.8, 1], t = pt(tgt) || [0, 0.8, 3.5]
+    const mx = (a[0] + t[0]) / 2
+    return { pos: [Math.max(-1.8, Math.min(1.8, a[0] * 0.5 + 0.8)), 2.75, -1.95], target: [mx * 0.7, 0.45, (a[2] + t[2]) / 2 + 0.8], fov: 66 }
+  },
+}
+const cam = { cur: null, anim: null }
+function setCam(shot, ms) {
+  if (opts.still || !cam.cur || !ms || matchMedia('(prefers-reduced-motion: reduce)').matches) { cam.cur = shot; cam.anim = null; draw(); return }
+  const from = cam.cur, t0 = performance.now()
+  cam.anim = { from, to: shot, t0, ms }
+  ovl.classList.add('moving')
+  const step = (now) => {
+    if (!cam.anim || cam.anim.to !== shot) return
+    const k = Math.min(1, (now - t0) / ms), e = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2
+    cam.cur = { pos: CS.lerp3(from.pos, shot.pos, e), target: CS.lerp3(from.target, shot.target, e), fov: from.fov + (shot.fov - from.fov) * e }
+    drawScene()
+    if (k < 1) requestAnimationFrame(step)
+    else { cam.anim = null; ovl.classList.remove('moving'); draw() }
+  }
+  requestAnimationFrame(step)
+}
+
+// ── helpers ────────────────────────────────────────────────────────────
+const tm = (s) => P.view.team[s - 1]
+const gname = (gi, pl) => { const g = P.view.groups[gi]; return (g.known ? g.id : g.unk)[pl ? 1 : 0] }
+const inCombat = () => ['encounter', 'orders', 'review', 'playback'].includes(P.phase)
+const combatUI = () => ['orders', 'review', 'playback', 'chest'].includes(P.phase)
+function orderText(o, short) {
+  if (!o) return short ? '—' : 'no order yet'
+  const g = (gi) => (short ? `→${gi + 1}` : ` → group ${gi + 1}`)
+  switch (o.act) {
+    case 'fight': return (short ? 'F' : 'Fight') + g(o.tg)
+    case 'parry': return short ? 'P' : 'Parry'
+    case 'run': return short ? 'R' : 'Run'
+    case 'dispel': return (short ? 'D' : 'Dispel') + g(o.tg)
+    case 'use': return o.item ? (short ? 'U' : `Use ${o.item}`) + g(o.tg) : (short ? 'U=P' : 'Use (counts as Parry)')
+    case 'spell': return (short ? o.spell : `Spell ${o.spell}`) + (o.tg != null ? g(o.tg) : o.ally ? (short ? `→${o.ally}` : ` → ${tm(o.ally).name}`) : '')
+  }
+}
+const allOrdered = () => P.orders.every(Boolean)
+const nextUnordered = (from) => { for (let i = 0; i < 6; i++) { const s = ((from - 1 + i) % 6) + 1; if (!P.orders[s - 1]) return s } return 0 }
+function toast(msg) { P.toast = msg; clearTimeout(P.toastT); P.toastT = setTimeout(() => { P.toast = null; draw() }, 2600); draw() }
+
+// ── input: orders ────────────────────────────────────────────────────────
+function chooseActor(s) {
+  if (P.phase === 'review') { P.phase = 'orders'; P.editing = true }
+  if (P.phase !== 'orders') return
+  P.actor = s; P.pending = null; draw()
+}
+function chooseAction(key) {
+  const item = GO.menu(P.actor).find((a) => a.key === key)
+  if (!item) return
+  if (!item.ok) { toast(`${item.label} is not available for ${tm(P.actor).name}: ${item.why}.`); return }
+  const o = { slot: P.actor, act: item.act, item: item.item }
+  if (item.act === 'spell') { P.pending = { o, need: 'spell' }; P.spellFilter = ''; draw(); setTimeout(() => { const i = document.querySelector('#spellq'); if (i) i.focus() }, 0); return }
+  needTarget(o)
+}
+function needTarget(o) {
+  const kind = GO.targetKind(o)
+  if (kind === 'group') {
+    const alive = GO.aliveGroups()
+    if (alive.length === 1) { o.tg = alive[0]; return setOrder(o) } // Classic: one group, no question
+    P.pending = { o, need: 'group' }; draw(); return
+  }
+  if (kind === 'ally') { P.pending = { o, need: 'ally' }; draw(); return }
+  setOrder(o)
+}
+function chooseSpell(name) {
+  const sp = GO.spells(P.actor).find((s) => s.name === name)
+  if (!sp) return
+  if (!sp.ok) { toast(`${sp.name}: ${sp.why}.`); return }
+  const o = P.pending.o; o.spell = sp.name; needTarget(o)
+}
+function chooseGroup(gi) {
+  if (!P.pending || P.pending.need !== 'group') return
+  if (!GO.alive(gi)) { toast(`Group ${gi + 1} has no one left to target.`); return }
+  P.pending.o.tg = gi; setOrder(P.pending.o)
+}
+function chooseAlly(s) { if (P.pending && P.pending.need === 'ally') { P.pending.o.ally = s; setOrder(P.pending.o) } }
+function setOrder(o) {
+  P.orders[o.slot - 1] = o; P.pending = null
+  if (P.editing && allOrdered()) { P.editing = false; P.phase = 'review'; draw(); return }
+  const n = nextUnordered(o.slot + 1)
+  if (n) { P.actor = n; draw() } else { P.phase = 'review'; draw() }
+}
+function back() {
+  if (P.pending) { P.pending = null; draw(); return }
+  if (P.phase === 'review') { P.phase = 'orders'; P.editing = true; P.actor = 6; draw(); return }
+  if (P.phase === 'orders' && P.actor > 1) { P.actor--; draw() }
+}
+function clearAll() { P.orders = Array(6).fill(null); P.actor = 1; P.phase = 'orders'; P.editing = false; draw() }
+function repeatLast() {
+  if (!P.lastOrders) return
+  const alive = GO.aliveGroups()
+  P.orders = P.lastOrders.map((o) => {
+    const c = Object.assign({}, o)
+    if (c.act === 'spell') { const sp = GO.spells(c.slot).find((s) => s.name === c.spell); if (!sp || !sp.ok) return null }
+    if (c.tg != null && !alive.includes(c.tg)) { if (alive.length === 1) c.tg = alive[0]; else return null }
+    return c
+  })
+  if (allOrdered()) P.phase = 'review'
+  else { P.actor = nextUnordered(1); toast('Some earlier orders are no longer possible and must be given again.') }
+  draw()
+}
+
+// ── phases ─────────────────────────────────────────────────────────────
+function startExplore(glide) {
+  P.phase = 'explore'
+  const to = P.camMode === 'fp' ? SHOT.fp() : SHOT.att(P.camSlot)
+  if (glide && !opts.still) { cam.cur = Object.assign({}, to, { pos: [to.pos[0], to.pos[1], to.pos[2] - 4] }); P.teamZ = -1; setCam(to, 900); setTimeout(() => { P.teamZ = 0; draw() }, 450) }
+  else setCam(to, 0)
+  draw()
+}
+function startEncounter() {
+  P.phase = 'encounter'; P.banner = 'ENCOUNTER'
+  setCam(SHOT.wide(), 1300)
+  clearTimeout(P.timer)
+  if (!opts.still) P.timer = setTimeout(() => { P.banner = null; startOrders() }, 1700)
+  draw()
+}
+function startOrders() {
+  P.phase = 'orders'; P.actor = 1; P.orders = Array(6).fill(null); P.pending = null; P.editing = false
+  setCam(SHOT.wide(), 700); draw()
+}
+function commit() {
+  if (!allOrdered()) return
+  P.lastOrders = clone(P.orders)
+  P.blocks = GO.commit(P.orders)
+  P.bi = -1; P.phase = 'playback'; P.changed = {}
+  advance()
+}
+function applyDeltas(b) {
+  for (const d of b.deltas || []) {
+    if (d.k === 'count') { const g = P.view.groups[d.gi]; g.n = d.n; g.asleep = d.asleep }
+    if (d.k === 'name') P.view.groups[d.gi].known = true
+    if (d.k === 'hp') { tm(d.slot).hp = d.hp; P.changed[d.slot] = 1 }
+    if (d.k === 'st') { tm(d.slot).st = d.st; P.changed[d.slot] = 1 }
+  }
+}
+function advance() {
+  clearTimeout(P.timer)
+  if (P.phase !== 'playback') return
+  P.changed = {}
+  P.bi++
+  if (P.bi >= P.blocks.length) return endRound()
+  const b = P.blocks[P.bi]
+  // Names are not part of the frozen snapshot; counts and party values are.
+  if (b.silent || opts.timing === 'event') applyDeltas(b)
+  if (b.silent) return advance()
+  if (b.actor && b.actor[0] === 'g' && opts.rev) setCam(SHOT.reverse(), 650)
+  else if (b.actor) setCam(SHOT.focus(b.actor, b.tgt), 650)
+  else setCam(SHOT.wide(), 650)
+  draw()
+  if (opts.pb === 'auto' && !opts.still) P.timer = setTimeout(advance, (1500 + 380 * b.lines.length) / opts.speed)
+}
+function showRest() {
+  if (P.phase !== 'playback') return
+  clearTimeout(P.timer)
+  for (let i = P.bi + 1; i < P.blocks.length; i++) if (opts.timing === 'event' || P.blocks[i].silent) applyDeltas(P.blocks[i])
+  P.bi = P.blocks.length - 1; P.restShown = true
+  draw()
+}
+function endRound() {
+  // Round fully shown: the display catches up with the authoritative state.
+  P.view.team = clone(GO.st.team); P.view.groups = clone(GO.st.groups); P.blocks = []; P.bi = -1
+  if (GO.st.result === 'victory') return startChest()
+  if (GO.st.result === 'fled') { P.lastMsg = ['THE PARTY FLED!']; return startReturn() }
+  P.roundStart = true
+  startOrders()
+}
+function startChest() {
+  P.phase = 'chest'; P.chestPending = null; P.reports = []; P.chestLog = ['A CHEST!']
+  setCam(SHOT.chest(), 1200); draw()
+}
+function chestAct(act) {
+  if (P.phase !== 'chest') return
+  const who = GO.chestWho(act)
+  if (act === 'leave') return chestDo('leave', 4)
+  if (!who.length) { toast(act === 'inspect' ? 'Every member has already inspected this chest.' : act === 'calfo' ? 'No one can cast CALFO now (Brannoc has no level 2 spell points left).' : 'No one can do that.'); return }
+  P.chestPending = { act, who, stage: 'who' }; draw()
+}
+function chestWho(s) {
+  const p = P.chestPending; if (!p) return
+  if (!p.who.includes(s)) { toast(`${tm(s).name} cannot ${p.act === 'inspect' ? 'inspect again (one inspection each)' : p.act === 'calfo' ? 'cast CALFO' : 'do that'}.`); return }
+  if (p.act === 'disarm') { p.slot = s; p.stage = 'trap'; draw(); setTimeout(() => { const i = document.querySelector('#trapq'); if (i) i.focus() }, 0); return }
+  chestDo(p.act, s)
+}
+function chestDo(act, s, trap) {
+  const r = GO.chest(act, s, trap)
+  P.chestLog = P.chestLog.concat(r.lines)
+  if (r.report) P.reports.push(r.report)
+  for (const d of r.deltas || []) if (d.k === 'st') { tm(d.slot).st = d.st; P.changed = { [d.slot]: 1 } }
+  if (r.then) r.then()
+  P.chestPending = null
+  P.lastMsg = r.lines
+  draw()
+  if (r.end) { clearTimeout(P.timer); P.timer = setTimeout(() => startReturn(), opts.still ? 0 : 2200) }
+}
+function startReturn() {
+  P.phase = 'return'
+  setCam(P.camMode === 'fp' ? SHOT.fp() : SHOT.att(P.camSlot), 1400)
+  draw()
+}
+
+// ════════════════════════════════════════════════════════════════════════
+// DRAWING
+// ════════════════════════════════════════════════════════════════════════
+function sceneShot() {
+  const v = P.view, ph = P.phase
+  const showFoes = inCombat() && ph !== 'explore'
+  const pend = P.pending
+  const curB = ph === 'playback' ? P.blocks[P.bi] : null
+  const party = v.team.map((m) => ({
+    slot: m.slot, color: m.color, state: m.st === 'POISON' ? 'poison' : 'ok',
+    selected: (ph === 'orders' && !pend && m.slot === P.actor) || (ph === 'orders' && pend && m.slot === P.actor) || (curB && curB.actor === 'p' + m.slot),
+    candidate: (pend && pend.need === 'ally') || (P.chestPending && P.chestPending.stage === 'who' && P.chestPending.who.includes(m.slot)),
+  }))
+  // Exploration cameras inside the team's square hide the team, as in the
+  // Classic first-person view; attached cameras show it.
+  const showTeam = !(['explore', 'return'].includes(ph) && P.camMode === 'fp' && !(cam.anim && ph === 'return'))
+  const groups = showFoes ? v.groups.map((g, gi) => ({
+    members: g.at.slice(0, g.n).map((p, i) => ({ x: p[0], z: p[1], h: p[2], color: g.color, asleep: i < g.asleep })),
+    ring: pend && pend.need === 'group' ? (g.n ? 'target' : null) : curB && (curB.tgt === 'g' + gi || curB.actor === 'g' + gi) ? 'chosen' : (ph === 'orders' || ph === 'review') ? '' : null,
+  })) : []
+  return Object.assign({}, cam.cur, {
+    policy: opts.vis, showLeaks: opts.leaks, teamZ: P.teamZ || 0,
+    party: showTeam ? party : [], groups,
+    chest: ph === 'chest' || (ph === 'return' && cam.anim) ? { x: 0, z: 4.4, selected: !!P.chestPending } : null,
+    effects: curB ? (curB.fx || []).concat(curB.actor && curB.actor[0] === 'p' ? [{ type: 'focus', to: curB.actor }] : []) : [],
+  })
+}
+let lastAnchors = {}, lastLeaks = 0
+function drawScene() {
+  const r = sceneEl.getBoundingClientRect()
+  const W = 960, Hh = Math.round(960 * (r.height / Math.max(1, r.width))) || 540
+  const out = CS.render(sceneShot(), W, Hh)
+  const old = sceneEl.querySelector('svg')
+  const tmp = document.createElement('div'); tmp.innerHTML = out.svg
+  if (old) old.replaceWith(tmp.firstChild); else sceneEl.prepend(tmp.firstChild)
+  lastAnchors = out.anchors; lastLeaks = out.leaks
+}
+const at = (k, dx, dy) => { const a = lastAnchors[k]; return a ? `left:${a[2] + (dx || 0)}%;top:${a[3] + (dy || 0)}%` : 'display:none' }
+
+function pipsHtml(opt) {
+  return `<div class="pips" style="position:absolute">${P.view.team.map((m) => {
+    const o = P.orders[m.slot - 1]
+    const sel = (P.phase === 'orders' && m.slot === P.actor) ? ' sel' : ''
+    const cand = (P.pending && P.pending.need === 'ally') || (P.chestPending && P.chestPending.stage === 'who' && P.chestPending.who.includes(m.slot)) ? ' cand' : ''
+    return `<div class="pip${sel}${cand}${m.hp < m.max ? ' hurt' : ''}${P.changed[m.slot] ? ' changed' : ''}" data-slot="${m.slot}"><b>${m.slot} ${m.name}</b><span class="info" data-info="${m.slot}" title="Character (read-only)">i</span><span class="st ${m.st === 'POISON' ? 'poison' : ''}">${m.st}</span><br><span class="mono">${m.hp}/${m.max}</span><div class="bar"><i style="width:${(100 * m.hp) / m.max}%"></i></div>${opt && opt.orders && (P.phase === 'orders' || P.phase === 'review') ? `<span class="ord">${o ? orderText(o, true) : '·'}</span>` : ''}</div>`
+  }).join('')}</div>`
+}
+function menuHtml(slot, cls) {
+  const m = tm(slot)
+  const rows = GO.menu(slot).map((a) => `<button class="act${a.ok ? '' : ' off'}" data-act="${a.key}" aria-disabled="${!a.ok}"><kbd>${a.key}</kbd><span class="lbl">${a.label}${a.note ? ` <span class="note">· ${a.note}</span>` : ''}${a.ok ? '' : `<span class="why">${a.why}</span>`}</span></button>`).join('')
+  return `<div class="menu hud ${cls || ''}"><div class="title"><span>${slot} ${m.name} <small>${m.cls} · ${slot <= 3 ? 'front' : 'back'} line</small></span><span class="info" data-info="${slot}">i</span></div>${rows}<div class="k" style="font-size:.82em;margin:.3em .3em 0">Round ${GO.st.round} · ${P.orders.filter(Boolean).length}/6 orders · <kbd>Tab</kbd> next · <kbd>B</kbd> back</div></div>`
+}
+function spellHtml(slot) {
+  const q = P.spellFilter
+  const list = GO.spells(slot).filter((s) => !q || s.name.startsWith(q))
+  return `<div class="menu hud spells"><div class="title"><span>${tm(slot).name}: which spell?</span><small>Esc cancel</small></div><input id="spellq" placeholder="type a name…" value="${q}" autocomplete="off" spellcheck="false">${list.map((s) => `<button class="act${s.ok ? '' : ' off'}" data-spell="${s.name}"><span class="lbl"><b>${s.name}</b> <span class="k">L${s.lvl} · ${s.left} left${s.tgt === 'group' ? ' · a group' : s.tgt === 'ally' ? ' · a member' : ''}</span>${s.ok ? '' : `<span class="why">${s.why}</span>`}</span></button>`).join('') || '<div class="k">No known spell starts with that.</div>'}</div>`
+}
+function targetPromptHtml() {
+  const p = P.pending
+  if (!p || p.need === 'spell') return ''
+  const what = orderText(Object.assign({}, p.o, { tg: null, ally: null })).replace(/ →.*/, '')
+  if (p.need === 'group') return `<div class="anch hud prompt" style="position:absolute">${tm(P.actor).name}: <b>${what}</b> against which group? ${GO.aliveGroups().map((gi) => `<kbd>${gi + 1}</kbd>`).join(' ')} or click a group · <kbd>Esc</kbd></div>`
+  return `<div class="anch hud prompt" style="position:absolute">${tm(P.actor).name}: <b>${what}</b> on whom? <kbd>1</kbd>–<kbd>6</kbd> or click a member · <kbd>Esc</kbd></div>`
+}
+function groupLabels() {
+  return P.view.groups.map((g, gi) => {
+    if (!g.n && !(P.phase === 'playback' && opts.timing === 'classic')) return ''
+    const target = P.pending && P.pending.need === 'group' && g.n
+    return `<div class="anch hud glabel${target ? ' target' : ''}" data-group="${gi}" style="position:absolute;${at('g' + gi, 0, -1)};color:${GC[gi]}"><span class="n">${gi + 1}</span><span style="color:#eee">${g.n} ${gname(gi, g.n !== 1)}${g.asleep ? ` <span class="k">· ${g.asleep} asleep</span>` : ''}${g.known ? '' : ' <span class="k">?</span>'}</span></div>`
+  }).join('')
+}
+function orderTags(big) {
+  if (P.phase !== 'orders' && P.phase !== 'review') return ''
+  return P.view.team.map((m) => {
+    const o = P.orders[m.slot - 1]
+    if (!o && !big) return ''
+    return `<div class="anch hud otag${big ? ' big' : ''}${o ? '' : ' none'}" data-slot="${m.slot}" style="position:absolute;${at('p' + m.slot, 0, -0.5)}">${big ? `${m.slot} ` : ''}${orderText(o, !big)}</div>`
+  }).join('')
+}
+function curLines() {
+  const b = P.phase === 'playback' ? P.blocks[P.bi] : null
+  return b ? b.lines : []
+}
+function logHtml(n) {
+  const lines = []
+  P.blocks.slice(0, P.bi + 1).forEach((b, i) => b.lines.forEach((l) => lines.push({ l, now: i === P.bi })))
+  return `<div class="log">${lines.slice(-n).map((x) => `<div class="${x.now ? 'now' : ''}">${x.l}</div>`).join('')}</div>`
+}
+function playbackCtl() {
+  const total = P.blocks.filter((b) => !b.silent).length, idx = P.blocks.slice(0, P.bi + 1).filter((b) => !b.silent).length
+  return `<div class="row" style="font-size:.88em"><span class="k">Round ${GO.st.result ? GO.st.round : GO.st.round - 1} · ${idx}/${total}</span>${opts.pb === 'manual' ? `<button class="btn" data-do="next">Next <kbd>Space</kbd></button>` : `<span class="k">auto</span>`}<button class="btn ghost" data-do="rest">Show rest <kbd>⇧↩</kbd></button></div>`
+}
+function reviewRows(edit) {
+  return P.view.team.map((m) => `<tr class="${edit ? 'ed' : ''}${m.slot === 3 ? ' front' : ''}" data-slot="${m.slot}"><td>${m.slot}</td><td><b>${m.name}</b></td><td class="ordc">${orderText(P.orders[m.slot - 1])}</td>${edit ? '<td class="k">edit</td>' : ''}</tr>`).join('')
+}
+function oppRows() {
+  return P.view.groups.map((g, gi) => `<div><b style="color:${GC[gi]}">${gi + 1})</b> ${g.n} ${gname(gi, g.n !== 1)}${g.asleep ? ` <span class="k">(${g.asleep} asleep)</span>` : ''}${g.known ? '' : ' <span class="k">unidentified</span>'}</div>`).join('')
+}
+function chestMenuHtml(cls, style) {
+  const acts = [['O', 'open', 'Open'], ['I', 'inspect', 'Inspect'], ['C', 'calfo', 'Calfo'], ['D', 'disarm', 'Disarm'], ['L', 'leave', 'Leave']]
+  const p = P.chestPending
+  let body
+  if (p && p.stage === 'who') body = `<div class="k" style="margin:.2em .3em">Who will ${p.act === 'calfo' ? 'cast CALFO' : p.act}? ${p.who.map((s) => `<kbd>${s}</kbd>`).join(' ')} or click a member · <kbd>Esc</kbd></div>`
+  else if (p && p.stage === 'trap') body = `<div style="margin:.2em .3em">${tm(p.slot).name} disarms which trap?<br>${[...new Set(P.reports.map((r) => r.said).filter((s) => s !== 'NO TRAP'))].map((s) => `<button class="btn ghost" data-trap="${s}" style="margin:.15em .15em 0 0">${s}</button>`).join('')}<input id="trapq" placeholder="or type a trap name" style="margin-top:.3em;width:100%;font:inherit;background:#0d0e10;color:#fff;border:1px solid #555;border-radius:4px;text-transform:uppercase"></div>`
+  else body = acts.map(([k, a, l]) => `<button class="act" data-chest="${a}"><kbd>${k}</kbd><span class="lbl">${l}</span></button>`).join('')
+  return `<div class="menu hud ${cls || ''}" style="${style || ''}"><div class="title"><span>A chest</span><small>after combat</small></div>${body}</div>`
+}
+function reportsHtml() {
+  if (!P.reports.length) return '<div class="k">No reports yet. The chest looks the same whatever it holds.</div>'
+  return P.reports.map((r) => `<div>${r.by} <span class="k">(${r.how})</span>: <b>${r.said}</b></div>`).join('') + '<div class="k" style="font-size:.85em">Reports, not facts: an inspection can be wrong.</div>'
+}
+function profileHtml() {
+  const s = P.profile; if (!s) return ''
+  const m = tm(s), base = TEAM0[s - 1]
+  // Shown from the display state, not Go's final state: during playback the
+  // final values would reveal results before their messages.
+  const sp = m.sp
+  return `<div class="hud modal" style="position:absolute"><h4><span>${m.slot} ${m.name} · ${m.cls} · level ${base.lvl}</span><button class="btn ghost" data-do="closeprofile">Close <kbd>Esc</kbd></button></h4><table><tr><td class="k">HP</td><td class="mono">${m.hp}/${m.max}</td><td class="k">AC</td><td class="mono">${m.ac}</td><td class="k">Status</td><td>${m.st}</td></tr><tr><td class="k">Line</td><td colspan="5">${s <= 3 ? 'front (1–3)' : 'back (4–6)'}</td></tr>${sp ? `<tr><td class="k">Spells</td><td colspan="5" class="mono">${Object.entries(sp).map(([l, n]) => `L${l}: ${n}`).join('  ')}</td></tr>` : ''}<tr><td class="k">Items</td><td colspan="5">${base.items.join(', ')}</td></tr></table><div class="ro">Read-only during combat (D8). Equip, trade and reorder belong to Camp; they are not offered here.</div></div>`
+}
+
+function overlayHtml() {
+  const ph = P.phase, ap = opts.ap
+  let h = ''
+  const camName = { explore: P.camMode === 'fp' ? 'First person' : `Attached · ${tm(P.camSlot).name}`, encounter: 'Combat framing (easing in)', orders: 'Combat framing', review: 'Combat framing', playback: 'Event focus', chest: 'Chest close-up', return: 'Returning to the exploration camera' }[ph]
+  h += `<div class="hud camtag" style="position:absolute">${camName}${opts.vis === 'unbounded' && lastLeaks ? ` · <span class="leakcount">${lastLeaks} surfaces outside the permitted set</span>` : ''}</div>`
+  if (P.banner) h += `<div class="banner" style="position:absolute">${P.banner}</div>`
+
+  if (ph === 'explore') {
+    h += `<div class="hud hint" style="position:absolute"><kbd>↑</kbd> replay the last step · <kbd>V</kbd> camera${P.camMode === 'att' ? ' · <kbd>1</kbd>–<kbd>6</kbd> follow' : ''} · <kbd>Return</kbd> <span class="k">fixture:</span> Go reports an encounter</div>`
+    h += pipsHtml()
+  }
+  if (ph === 'encounter') { h += pipsHtml(); h += groupLabels() }
+  if (ph === 'return') { h += pipsHtml(); if (P.lastMsg) h += `<div class="hud msgline" style="position:absolute;bottom:17%">${P.lastMsg.map((l) => `<span class="line">${l}</span>`).join('')}<span class="line k" style="font-family:inherit;margin-top:.3em">Exploring again · <kbd>R</kbd> restart</span></div>` }
+
+  if (ph === 'orders' || ph === 'review') {
+    if (P.roundStart && GO.st.round > 1 && ph === 'orders' && !P.orders.some(Boolean)) h += `<div class="anch hud prompt" style="position:absolute;top:9%">Round ${GO.st.round}: orders again${P.lastOrders ? ` · <button class="btn ghost" data-do="repeat">Repeat last round’s orders</button>` : ''}</div>`
+    h += groupLabels()
+    if (ph === 'orders') {
+      const pend = P.pending
+      if (ap === 'A' || ap === 'C') {
+        // The menu sits beside the member being ordered, towards the nearer
+        // wall, so it hides as little of the opponents as possible.
+        const a = lastAnchors['p' + P.actor]
+        const x = a ? a[2] : 30, y = a ? a[3] : 60
+        const side = x >= 50 || x < 24 ? `left:${Math.min(x + 5, 72)}%` : `right:${100 - x + 5}%`
+        const box = pend && pend.need === 'spell' ? spellHtml(P.actor) : menuHtml(P.actor)
+        if (!pend || pend.need === 'spell') h += `<div class="anch" style="position:absolute;${side};top:${Math.max(6, Math.min(y - 14, 40))}%">${P.toast ? `<div class="toast" style="margin-bottom:.4em">${P.toast}</div>` : ''}${box}</div>`
+        else if (P.toast) h += `<div class="toast" style="position:absolute;left:50%;top:16%;transform:translateX(-50%)">${P.toast}</div>`
+        h += targetPromptHtml()
+        h += orderTags(false)
+        h += pipsHtml({ orders: ap === 'A' })
+      } else {
+        h += targetPromptHtml()
+        if (P.toast) h += `<div class="toast" style="position:absolute;left:50%;top:16%;transform:translateX(-50%)">${P.toast}</div>`
+      }
+    } else {
+      // review
+      if (ap === 'A') {
+        h += orderTags(true)
+        h += `<div class="hud prompt" style="position:absolute;top:8%">All six orders given. <b>Return</b> to fight · click a tag or press <kbd>1</kbd>–<kbd>6</kbd> to change · <kbd>B</kbd> back · <kbd>C</kbd> clear all</div>`
+        h += pipsHtml({ orders: true })
+      } else if (ap === 'C') {
+        h += orderTags(false)
+        h += `<div class="hud card" style="position:absolute"><h4><span>Round ${GO.st.round} · orders</span><span class="k">review</span></h4><table>${reviewRows(true)}</table><div style="margin-top:.2em">${oppRows()}</div><div class="row" style="margin-top:.4em"><button class="btn" data-do="commit">Fight <kbd>Return</kbd></button><button class="btn ghost" data-do="back">Back <kbd>B</kbd></button><button class="btn ghost" data-do="clear">Clear all <kbd>C</kbd></button></div><div class="k" style="font-size:.85em">Click a row or press 1–6 to change one order.</div></div>`
+        h += pipsHtml()
+      }
+    }
+  }
+
+  if (ph === 'playback') {
+    const b = P.blocks[P.bi]
+    const lines = curLines().map((l) => `<span class="line">${l}</span>`).join('')
+    const anchorKey = b && (b.tgt || b.actor)
+    if (ap === 'A') {
+      h += groupLabels()
+      if (b && anchorKey && lastAnchors[anchorKey]) h += `<div class="anch hud bubble" style="position:absolute;${at(anchorKey, 0, -1)}">${lines}</div>`
+      else h += `<div class="hud msgline" style="position:absolute">${lines}</div>`
+      h += `<div class="hud" style="position:absolute;right:1.2%;top:2.2%">${playbackCtl()}</div>`
+      h += pipsHtml()
+    } else if (ap === 'C') {
+      h += groupLabels()
+      h += `<div class="hud msgline" style="position:absolute">${lines}</div>`
+      h += `<div class="hud card" style="position:absolute"><h4><span>Round ${GO.st.result ? GO.st.round : GO.st.round - 1}</span><span class="k">${opts.timing === 'classic' ? 'values update at round end' : 'values update per event'}</span></h4>${oppRows()}${logHtml(6)}${playbackCtl()}</div>`
+      h += pipsHtml()
+    } else {
+      h += groupLabels()
+      h += `<div class="hud msgline" style="position:absolute;bottom:6%">${lines}</div>`
+    }
+  }
+
+  if (ph === 'chest') {
+    if (ap === 'B') h += P.lastMsg ? `<div class="hud msgline" style="position:absolute;bottom:6%">${P.lastMsg.map((l) => `<span class="line">${l}</span>`).join('')}</div>` : ''
+    else {
+      h += `<div class="anch" style="position:absolute;${at('chest', 6, -12)}">${chestMenuHtml()}</div>`
+      if (P.lastMsg) h += `<div class="hud msgline" style="position:absolute">${P.lastMsg.map((l) => `<span class="line">${l}</span>`).join('')}</div>`
+      if (ap === 'C') h += `<div class="hud card" style="position:absolute;top:auto;bottom:22%;width:27%"><h4><span>What the team has been told</span></h4>${reportsHtml()}</div>`
+      else if (P.reports.length) h += `<div class="anch hud" style="position:absolute;${at('chest', -30, -10)};font-size:.85em">${reportsHtml()}</div>`
+      h += pipsHtml()
+    }
+    if (P.toast) h += `<div class="toast" style="position:absolute;left:50%;top:10%;transform:translateX(-50%)">${P.toast}</div>`
+  }
+  h += profileHtml()
+  return h
+}
+
+function panelHtml() {
+  if (opts.ap !== 'B' || !combatUI()) return ''
+  const ph = P.phase
+  const team = `<div><h4>Team ${ph === 'orders' || ph === 'review' ? '· orders' : ''}</h4><table><tr><th></th><th>Name</th><th>Class</th><th>HP</th><th>St</th><th>${ph === 'orders' || ph === 'review' ? 'Order' : ''}</th></tr>${P.view.team.map((m) => `<tr class="ed${m.slot === 3 ? ' front' : ''}${ph === 'orders' && m.slot === P.actor ? ' sel' : ''}" data-slot="${m.slot}"><td>${m.slot}</td><td><b>${m.name}</b> <span class="info" data-info="${m.slot}">i</span></td><td class="k">${m.cls}</td><td class="mono${P.changed[m.slot] ? ' warn' : ''}">${m.hp}/${m.max}<span class="hpbar"><i style="width:${(100 * m.hp) / m.max}%"></i></span></td><td>${m.st}</td><td class="ordc">${ph === 'orders' || ph === 'review' ? orderText(P.orders[m.slot - 1], true) : ''}</td></tr>`).join('')}</table></div>`
+  let mid = '', right = ''
+  if (ph === 'orders') {
+    const pend = P.pending
+    if (pend && pend.need === 'spell') mid = `<div>${spellHtml(P.actor).replace('menu hud spells', 'spells')}</div>`
+    else if (pend && pend.need === 'group') mid = `<div><h4>${tm(P.actor).name} · target</h4>${GO.aliveGroups().map((gi) => `<button class="btn ghost grpbtn" data-group="${gi}"><kbd>${gi + 1}</kbd> ${P.view.groups[gi].n} ${gname(gi, true)}</button>`).join('')}<div class="k">Esc cancel</div></div>`
+    else if (pend && pend.need === 'ally') mid = `<div><h4>${tm(P.actor).name} · on whom?</h4><div class="k">Press 1–6 or click a row in the team table.</div></div>`
+    else mid = `<div><h4>${P.actor} ${tm(P.actor).name} · ${P.actor <= 3 ? 'front' : 'back'} line</h4><div class="acts">${GO.menu(P.actor).map((a) => `<button class="act${a.ok ? '' : ' off'}" data-act="${a.key}" title="${a.why || a.note || ''}"><kbd>${a.key}</kbd><span class="lbl">${a.label}${a.ok ? '' : `<span class="why">${a.why}</span>`}</span></button>`).join('')}</div>${P.toast ? `<div class="toast">${P.toast}</div>` : ''}</div>`
+    right = `<div><h4>Opponents</h4>${oppRows()}<div class="k" style="margin-top:auto">Round ${GO.st.round} · ${P.orders.filter(Boolean).length}/6 · <kbd>Tab</kbd> next · <kbd>B</kbd> back</div></div>`
+  } else if (ph === 'review') {
+    mid = `<div><h4>Confirm round ${GO.st.round}</h4><div class="k">All six orders given. Click a member to change an order.</div><div class="row" style="margin-top:.4em"><button class="btn" data-do="commit">Fight <kbd>Return</kbd></button><button class="btn ghost" data-do="back">Back</button><button class="btn ghost" data-do="clear">Clear all</button></div></div>`
+    right = `<div><h4>Opponents</h4>${oppRows()}</div>`
+  } else if (ph === 'playback') {
+    mid = `<div><h4>Messages</h4>${logHtml(7)}</div>`
+    right = `<div><h4>Opponents</h4>${oppRows()}<div style="margin-top:auto">${playbackCtl()}</div></div>`
+  } else if (ph === 'chest') {
+    mid = `<div>${chestMenuHtml('', 'background:none;border:0;box-shadow:none;padding:0')}${P.toast ? `<div class="toast">${P.toast}</div>` : ''}</div>`
+    right = `<div><h4>Reports</h4>${reportsHtml()}</div>`
+  }
+  return `<div class="panel">${team}${mid}${right}</div>`
+}
+
+// ── reviewer side ──────────────────────────────────────────────────────
+const STEPS = [
+  ['Exploring the dungeon', 'explore'], ['Encounter begins; camera reframes', 'encounter'], ['Select a party member', 'orders'],
+  ['Actions appear in context', 'orders'], ['Choose an action and a target', 'target'], ['Orders collected for all six', 'orders'],
+  ['Review and confirm the round', 'review'], ['Round plays back as messages and effects', 'play'], ['HP, status and counts update in order', 'play'],
+  ['Next round, or the encounter ends', 'round2'], ['Treasure inspection', 'chest'], ['Return to the exploration camera', 'return'],
+]
+function currentSteps() {
+  const ph = P.phase
+  if (ph === 'explore') return [0]
+  if (ph === 'encounter') return [1]
+  if (ph === 'orders') { if (P.roundStart && GO.st.round > 1 && !P.orders.some(Boolean)) return [9]; return P.pending ? [4] : P.orders.some(Boolean) ? [5, 3] : [2, 3] }
+  if (ph === 'review') return [6]
+  if (ph === 'playback') return [7, 8]
+  if (ph === 'chest') return [10]
+  return [11]
+}
+function sideHtml() {
+  const cur = currentSteps(), maxDone = Math.max(...cur)
+  $('#steps').innerHTML = STEPS.map(([t, j], i) => `<li class="${cur.includes(i) ? 'on' : i < maxDone ? 'done' : ''}">${t}<button data-jump="${j}">go</button></li>`).join('')
+  $('#notes').innerHTML = notesHtml()
+  $('#truth').innerHTML = truthHtml()
+}
+function truthHtml() {
+  const g = GO.st, v = P.view
+  const diff = (a, b) => (a !== b ? ' class="diff"' : '')
+  const rows = g.team.map((m, i) => `<tr><td>${m.slot} ${m.name}</td><td${diff(m.hp, v.team[i].hp)}>${m.hp}</td><td${diff(m.hp, v.team[i].hp)}>${v.team[i].hp}</td><td${diff(m.st, v.team[i].st)}>${m.st}/${v.team[i].st}</td></tr>`).join('')
+  const grows = g.groups.map((x, i) => `<tr><td>group ${i + 1}</td><td${diff(x.n, v.groups[i].n)}>${x.n}${x.asleep ? ` (${x.asleep}z)` : ''}</td><td${diff(x.n, v.groups[i].n)}>${v.groups[i].n}${v.groups[i].asleep ? ` (${v.groups[i].asleep}z)` : ''}</td><td>${(x.known ? x.id : x.unk)[1]}</td></tr>`).join('')
+  return `<h3>Engine state vs what the user sees</h3><table><tr><th></th><th>Go (final)</th><th>Shown</th><th>Status</th></tr>${rows}${grows}</table>
+    <div class="k" style="font-size:12px;margin-top:4px">${P.phase === 'playback' ? 'The round is already resolved and committed in Go. The presentation is only part-way through showing it.' : 'Outside playback the two always agree.'}</div>
+    <div class="hiddeninfo">Engine only, never sent to the GUI: chest trap = ${g.chest.trap}${g.groups.some((x) => !x.known) ? `; unidentified groups are really ${g.groups.filter((x) => !x.known).map((x) => x.id[1]).join(', ')}` : ''}.</div>`
+}
+function notesHtml() {
+  const ph = P.phase, ap = opts.ap
+  const L = (lab, t) => `<li><span class="lab">${lab}</span>${t}</li>`
+  const N = {
+    explore: [L('Hypothesis', 'Minimal HUD while moving: a team strip and nothing else. The map and camera choices from the storyboard still apply.'), L('Fact', 'The prototype starts with the step Go has just resolved (the glide). In the game the encounter roll follows a successful move (cmd/istary/main.go, handleMazeInput).'), L('Scenery', `Policy: <b>${opts.vis}</b>. Press V for the attached camera, then try the Reverse shots during combat to see what each policy draws behind the team.`)],
+    encounter: [L('Hypothesis', 'No battle screen: the camera eases from the exploration view to an elevated framing in the same corridor, with the same light.'), L('Fact', 'Group names start unidentified; Go decides identification each round (engine/combat.go:622).'), L('Design', 'Monsters are placed in group order ahead of the team. Staging suggests no range, cover or flanking.')],
+    orders: [L('Fact', 'Order rules in the terminal today: Fight only for members 1–3; Dispel for Priests, Bishops above level 3, Lords above level 8; Use with no usable item counts as Parry; one living group means no target question (cmd/istary/main.go:3917–4005).'), L('Approved', 'In the product the menu, its reasons and the targets come from the Go controller. Svelte shows them and sends the choice back.'), L('Hypothesis', 'Unavailable actions stay visible with the reason, rather than disappearing. Pressing one explains why.'), ap === 'B' ? L('Approach B', 'Everything is in one predictable place; the scene shrinks to make room.') : L(`Approach ${ap}`, 'The menu sits beside the member being ordered; the scene stays full size.')],
+    review: [L('Fact', 'Classic B)ack at the confirm prompt clears every order and starts again from member 1 (cmd/istary/main.go:3531–3546).'), L('Hypothesis', 'Changing one order directly gives Go the same set of orders as clearing and re-entering, so the outcome cannot differ. It needs a controller command to set one member’s order (decision X19).'), ap === 'C' ? L('Approach C', 'The summary card appears only now, when there is something to confirm.') : '' ],
+    playback: [L('Fact', 'Go resolves the whole round before anything is shown (engine/combat.go:603, ExecuteRound). The table on the right shows the gap between the committed state and the display.'), L('Fact', 'Classic freezes displayed HP, status and monster counts for the whole round and updates them after the last message (engine/combat.go:634, DisplayPartySnap). Switch “Per event” to compare.'), L('Fact', 'Classic messages advance on a timer only; no key skips them (cmd/istary/main.go:3559). Manual and “show rest” are presentation options to approve (X20).'), L('Hypothesis', opts.rev ? 'Reverse shots frame the monster that acts. They look back at the team, so they need a scenery policy for the space behind it.' : 'Without reverse shots every focus shot looks forward, so the scenery policy rarely matters.')],
+    chest: [L('Fact', 'Chest actions: Open, Inspect, Calfo, Disarm, Leave; one inspection per member; an inspection can report the wrong trap (engine/combat.go:2938).'), L('Knowledge', 'Engine: the real trap (pink box, never sent). Team: the reports. User sees: the reports, labelled with who said what. User may attempt: what Go offers.'), L('Compatibility', 'The engine’s Disarm has no trap-name entry; whether Classic asks for one is an open question. The trap chooser here shows one way it could look.')],
+    return: [L('Hypothesis', 'The camera restores the user’s own exploration camera (first person or attached); the team did not move.'), L('Design', 'Combat UI leaves with the encounter. In B the panel slides away; in C the summary card closes.')],
+  }
+  return `<h3>What this moment tests</h3><ul>${(N[ph] || []).join('')}</ul>`
+}
+
+function draw() {
+  stage.classList.toggle('with-panel', opts.ap === 'B' && combatUI())
+  drawScene()
+  ovl.innerHTML = overlayHtml()
+  panelEl.innerHTML = panelHtml()
+  sideHtml()
+  const q = document.querySelector('#spellq')
+  if (q && document.activeElement !== q && !opts.still) { q.focus(); q.setSelectionRange(q.value.length, q.value.length) }
+}
+
+// ── events ─────────────────────────────────────────────────────────────
+stage.addEventListener('click', (e) => {
+  const t = e.target.closest('[data-act],[data-spell],[data-group],[data-slot],[data-info],[data-do],[data-chest],[data-trap]')
+  if (!t) { stage.focus(); return }
+  if (t.dataset.info) { P.profile = +t.dataset.info; draw(); return }
+  if (t.dataset.act) return chooseAction(t.dataset.act)
+  if (t.dataset.spell) return chooseSpell(t.dataset.spell)
+  if (t.dataset.group) return chooseGroup(+t.dataset.group)
+  if (t.dataset.chest) return chestAct(t.dataset.chest)
+  if (t.dataset.trap) return chestDo('disarm', P.chestPending.slot, t.dataset.trap)
+  if (t.dataset.do) return ({ commit, back, clear: clearAll, repeat: repeatLast, next: advance, rest: showRest, closeprofile: () => { P.profile = null; draw() } })[t.dataset.do]()
+  if (t.dataset.slot) return slotKey(+t.dataset.slot)
+})
+// Clicking a figure in the scene: nearest anchor.
+sceneEl.addEventListener('click', (e) => {
+  if (e.target.closest('.ovl > *')) return
+  const r = sceneEl.getBoundingClientRect(), x = (100 * (e.clientX - r.left)) / r.width, y = (100 * (e.clientY - r.top)) / r.height
+  let best = null, bd = 7
+  for (const [k, a] of Object.entries(lastAnchors)) {
+    if (!/^(p\d|g\d)$/.test(k)) continue
+    const foot = k[0] === 'p' ? lastAnchors['pf' + k[1]] : null
+    const cy = foot ? (a[3] + foot[3]) / 2 : a[3] + 8
+    const d = Math.hypot(x - a[2], (y - cy) * 0.6)
+    if (d < bd) { bd = d; best = k }
+  }
+  if (!best) return
+  if (best[0] === 'g') chooseGroup(+best[1]); else slotKey(+best[1])
+})
+function slotKey(s) {
+  if (P.phase === 'explore' && P.camMode === 'att') { P.camSlot = s; setCam(SHOT.att(s), 500); draw(); return }
+  if (P.phase === 'chest' && P.chestPending && P.chestPending.stage === 'who') return chestWho(s)
+  if (P.pending && P.pending.need === 'ally') return chooseAlly(s)
+  if (P.pending && P.pending.need === 'group') return chooseGroup(s - 1)
+  if (P.phase === 'orders' || P.phase === 'review') return chooseActor(s)
+  P.profile = s; draw()
+}
+document.addEventListener('keydown', (e) => {
+  if (e.target.closest && e.target.closest('.controls')) return
+  const typing = e.target.id === 'spellq' || e.target.id === 'trapq'
+  const k = e.key
+  if (typing) {
+    if (k === 'Escape') { P.pending = null; P.chestPending = null; draw(); stage.focus(); e.preventDefault() }
+    if (k === 'Enter') {
+      e.preventDefault()
+      if (e.target.id === 'spellq') { const first = GO.spells(P.actor).find((s) => s.name.startsWith(P.spellFilter) && s.ok); if (first) { stage.focus(); chooseSpell(first.name) } else toast('No usable spell matches that name.') }
+      else { const v = e.target.value.trim().toUpperCase(); if (v) { stage.focus(); chestDo('disarm', P.chestPending.slot, v) } }
+    }
+    return
+  }
+  if (P.profile && (k === 'Escape' || k === 'i' || k === 'I')) { P.profile = null; draw(); e.preventDefault(); return }
+  const up = k.length === 1 ? k.toUpperCase() : k
+  const ph = P.phase
+  if (up === 'R' && ['explore', 'return'].includes(ph)) { restart(); return }
+  if (ph === 'explore') {
+    if (k === 'ArrowUp' || up === 'W') { e.preventDefault(); startExplore(true) }
+    else if (up === 'V') { P.camMode = P.camMode === 'fp' ? 'att' : 'fp'; setCam(P.camMode === 'fp' ? SHOT.fp() : SHOT.att(P.camSlot), 600); draw() }
+    else if (/^[1-6]$/.test(k)) slotKey(+k)
+    else if (k === 'Enter') startEncounter()
+    return
+  }
+  if (ph === 'encounter' && k === 'Enter') { clearTimeout(P.timer); P.banner = null; startOrders(); return }
+  if (/^[1-6]$/.test(k)) { e.preventDefault(); slotKey(+k); return }
+  if (up === 'I' && ph !== 'chest') { P.profile = ph === 'orders' ? P.actor : 1; draw(); return }
+  if (ph === 'orders') {
+    if ('FPSUDR'.includes(up) && up.length === 1 && !P.pending) chooseAction(up)
+    else if (k === 'Escape') { P.pending = null; draw() }
+    else if (up === 'B' || k === 'Backspace') { e.preventDefault(); back() }
+    else if (k === 'Tab') { e.preventDefault(); P.actor = ((P.actor - 1 + (e.shiftKey ? 5 : 1)) % 6) + 1; P.pending = null; draw() }
+    else if (k === 'Enter' && allOrdered()) { P.phase = 'review'; P.editing = false; draw() }
+    else if (k === 'Enter') toast(`${6 - P.orders.filter(Boolean).length} member(s) still need an order.`)
+  } else if (ph === 'review') {
+    if (k === 'Enter') commit()
+    else if (up === 'B' || k === 'Backspace') { e.preventDefault(); back() }
+    else if (up === 'C') clearAll()
+  } else if (ph === 'playback') {
+    if (k === 'Enter' && e.shiftKey) showRest()
+    else if (k === ' ' || k === 'Enter') { e.preventDefault(); advance() }
+    else if (up === 'A') { opts.pb = opts.pb === 'auto' ? 'manual' : 'auto'; document.querySelector(`[name=pb][value=${opts.pb}]`).checked = true; if (opts.pb === 'auto') advance(); else draw() }
+  } else if (ph === 'chest') {
+    const map = { O: 'open', I: 'inspect', C: 'calfo', D: 'disarm', L: 'leave' }
+    if (k === 'Escape') { P.chestPending = null; draw() }
+    else if (map[up] && !P.chestPending) chestAct(map[up])
+  }
+})
+
+// ── toolbar ────────────────────────────────────────────────────────────
+function readOpts() {
+  opts.ap = document.querySelector('[name=ap]:checked').value
+  opts.vis = document.querySelector('[name=vis]:checked').value
+  opts.pb = document.querySelector('[name=pb]:checked').value
+  opts.timing = document.querySelector('[name=timing]:checked').value
+  opts.speed = +$('#speed').value
+  opts.leaks = $('#leaks').checked
+  opts.rev = $('#rev').checked
+  opts.ann = $('#ann').checked
+  document.body.classList.toggle('annotate', opts.ann)
+}
+document.querySelector('.controls').addEventListener('change', (e) => {
+  const was = opts.timing
+  readOpts()
+  if (e.target.name === 'timing' && P.phase === 'playback' && was !== opts.timing) toast('The timing applies from the next round.')
+  if (e.target.name === 'pb' && opts.pb === 'auto' && P.phase === 'playback') advance()
+  draw()
+})
+function restart() { clearTimeout(P.timer); resetPresentation(); startExplore(true) }
+$('#restart').addEventListener('click', restart)
+addEventListener('resize', () => draw())
+document.addEventListener('input', (e) => { if (e.target.id === 'spellq') { P.spellFilter = e.target.value.toUpperCase().replace(/[^A-Z]/g, ''); draw() } })
+
+// ── reviewer jumps (also used to make the stills) ────────────────────────
+const DEFAULT_R1 = [{ slot: 1, act: 'fight', tg: 0 }, { slot: 2, act: 'fight', tg: 0 }, { slot: 3, act: 'dispel', tg: 1 }, { slot: 4, act: 'parry' }, { slot: 5, act: 'spell', spell: 'HALITO', tg: 0 }, { slot: 6, act: 'spell', spell: 'KATINO', tg: 0 }]
+function jump(j) {
+  const still = opts.still
+  opts.still = true
+  clearTimeout(P.timer); resetPresentation()
+  const [name, arg] = String(j).split(':')
+  const toOrders = () => { startOrders() }
+  const giveR1 = (n) => { for (const o of DEFAULT_R1.slice(0, n)) { P.orders[o.slot - 1] = clone(o) } P.actor = nextUnordered(1) || 6; if (allOrdered()) P.phase = 'review' }
+  const playTo = (n) => { giveR1(6); P.phase = 'review'; commit(); while (P.bi < n && P.phase === 'playback') advance() }
+  switch (name) {
+    case 'explore': startExplore(false); break
+    case 'attached': P.camMode = 'att'; P.camSlot = +(arg || 1); startExplore(false); break
+    case 'encounter': startEncounter(); P.banner = 'ENCOUNTER'; break
+    case 'orders': toOrders(); break
+    case 'actor': toOrders(); giveR1(+(arg || 1) - 1); P.actor = +(arg || 1); P.phase = 'orders'; break
+    case 'target': toOrders(); chooseAction('F'); break
+    case 'spell': toOrders(); giveR1(4); P.actor = 5; P.phase = 'orders'; chooseAction('S'); break
+    case 'unavail': toOrders(); giveR1(3); P.actor = 4; P.phase = 'orders'; chooseAction('F'); break
+    case 'review': toOrders(); giveR1(6); break
+    case 'play': toOrders(); playTo(+(arg || 1)); break
+    case 'reverse': toOrders(); playTo(1); break
+    case 'round2': toOrders(); playTo(99); advance(); break
+    case 'chest': toOrders(); playTo(99); advance(); P.orders = [{ slot: 1, act: 'fight', tg: 0 }, { slot: 2, act: 'fight', tg: 0 }, { slot: 3, act: 'fight', tg: 1 }, { slot: 4, act: 'parry' }, { slot: 5, act: 'spell', spell: 'HALITO', tg: 1 }, { slot: 6, act: 'parry' }]; P.phase = 'review'; commit(); while (P.phase === 'playback') advance(); if (arg) { chestDo('inspect', 4); chestDo('inspect', 2) } break
+    case 'return': toOrders(); jump('chest'); opts.still = true; chestDo('inspect', 4); chestDo('disarm', 4, 'POISON NEEDLE'); chestDo('open', 4); startReturn(); break
+    case 'profile': toOrders(); P.profile = 5; break
+    default: startExplore(true)
+  }
+  opts.still = still
+  draw()
+}
+stage.closest('main').addEventListener('click', (e) => { const b = e.target.closest('[data-jump]'); if (b) jump(b.dataset.jump) })
+
+// ── start ──────────────────────────────────────────────────────────────
+function fromHash() {
+  const h = new URLSearchParams(location.hash.slice(1))
+  const set = (name, v) => { const el = document.querySelector(`[name=${name}][value="${v}"]`); if (el) el.checked = true }
+  if (h.get('ap')) set('ap', h.get('ap'))
+  if (h.get('vis')) set('vis', h.get('vis'))
+  if (h.get('pb')) set('pb', h.get('pb'))
+  if (h.get('timing')) set('timing', h.get('timing'))
+  if (h.get('rev') === '0') $('#rev').checked = false
+  if (h.get('leaks') === '0') $('#leaks').checked = false
+  if (h.get('ann') === '0') $('#ann').checked = false
+  readOpts()
+  opts.still = h.get('still') === '1'
+  return h.get('jump')
+}
+const j0 = fromHash()
+resetPresentation()
+if (j0) { jump(j0); if (opts.still) document.documentElement.classList.add('still') }
+else startExplore(true)
+</script>
+</body>
+</html>

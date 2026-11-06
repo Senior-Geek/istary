@@ -385,6 +385,10 @@ None of this is approved. These are the consequences that would follow.
    already approximates this. The D6 commit-semantics design (still open)
    must account for "round already resolved, display not yet complete" when
    saving or quitting mid-replay.
+   - **Correction (combat review):** the display snapshot does not
+     approximate per-message deltas. It freezes values for the whole round.
+     Per-message deltas would be new structured events; see
+     `COMBAT-EXPERIENCE-REVIEW.md` §7.
 4. **Stable identity.**
    - **Need:** the camera's attached player and map annotations that name
      players need stable character identity (architecture §2.5), not
