@@ -318,3 +318,27 @@ func TestCombatPlaybackWaitsForBoon(t *testing.T) {
 		t.Fatalf("boon with no prompt: %v", err)
 	}
 }
+
+// The round ends only after Advance has said Done: with the last block
+// still on screen, EndRound is refused (M5c makes completion explicit).
+func TestCombatEndRoundNeedsDone(t *testing.T) {
+	seed(3)
+	c, _ := confirmed(t, 1)
+	c.Commit()
+	all := len(c.Game.Combat.Events())
+	for len(c.RevealedEvents()) < all {
+		c.Advance()
+	}
+	if _, err := c.EndRound(); !errors.Is(err, ErrPlaybackUnfinished) {
+		t.Fatalf("EndRound with the last block on screen: %v", err)
+	}
+	if v, _ := c.CombatView(); v.Next != NextAdvance || v.Current != all-1 {
+		t.Fatalf("view on the last block: next %s current %d", v.Next, v.Current)
+	}
+	if st, _ := c.Advance(); !st.Done {
+		t.Fatal("no Done after the last block")
+	}
+	if _, err := c.EndRound(); err != nil {
+		t.Fatal(err)
+	}
+}
