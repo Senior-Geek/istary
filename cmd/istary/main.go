@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"math/rand"
 	"os"
@@ -3775,7 +3776,8 @@ func handleCombatChoose(game *engine.GameState, ev *tcell.EventKey) {
 	}
 
 	member := party[combat.CurrentActor]
-	if member == nil || !member.IsAlive() {
+	ctrl := app.New(game)
+	if !app.CanGiveOrder(member) {
 		combat.CurrentActor = findNextActor(game, combat.CurrentActor)
 		if combat.CurrentActor >= len(party) {
 			combat.Phase = engine.CombatConfirm
@@ -3791,28 +3793,12 @@ func handleCombatChoose(game *engine.GameState, ev *tcell.EventKey) {
 		}
 		idx := int(ev.Rune()) - '1'
 		if idx >= 0 && idx < len(combat.UsableItems) {
-			itemIdx := combat.UsableItems[idx]
-			member := game.Town.Party.Members[combat.CurrentActor]
-			poss := member.Items[itemIdx]
-			item := &game.Scenario.Items[poss.ItemIndex]
-			sp := engine.SpellTable[item.SpellPower-1]
 			combat.SelectingUseItem = false
-
-			// Auto-target: group spells → first alive group, person spells → self
-			targetGroup := combat.FirstAliveGroup()
-			targetAlly := combat.CurrentActor
-			if sp.Target == engine.TargetMonsterGroup || sp.Target == engine.TargetAllMonsters {
-				targetAlly = -1
-			} else {
-				targetGroup = -1
+			// The controller aims the item's spell (group spells at the
+			// first living group, others at the user).
+			if ctrl.SetOrder(member, app.Order{Action: engine.ActionUse, Item: combat.UsableItems[idx]}) == nil {
+				advanceActor(game)
 			}
-			combat.Actions[combat.CurrentActor] = engine.PartyAction{
-				Action:      engine.ActionUse,
-				UseItemIdx:  itemIdx,
-				TargetGroup: targetGroup,
-				TargetAlly:  targetAlly,
-			}
-			advanceActor(game)
 		}
 		return
 	}
@@ -3834,12 +3820,7 @@ func handleCombatChoose(game *engine.GameState, ev *tcell.EventKey) {
 			digit := ev.Rune()
 			if digit >= '1' && digit <= '4' {
 				groupIdx := int(digit - '1')
-				if groupIdx < len(combat.Groups) && combat.Groups[groupIdx].AliveCount() > 0 {
-					combat.Actions[combat.CurrentActor] = engine.PartyAction{
-						Action:      engine.ActionSpell,
-						SpellName:   combat.PendingSpellName,
-						TargetGroup: groupIdx,
-					}
+				if ctrl.SetOrder(member, app.Order{Action: engine.ActionSpell, Spell: combat.PendingSpellName, Group: groupIdx}) == nil {
 					combat.SelectingSpellGroup = false
 					combat.PendingSpellName = ""
 					advanceActor(game)
@@ -3860,12 +3841,8 @@ func handleCombatChoose(game *engine.GameState, ev *tcell.EventKey) {
 			digit := ev.Rune()
 			if digit >= '1' && digit <= '6' {
 				idx := int(digit - '1')
-				if idx < len(party) && party[idx] != nil {
-					combat.Actions[combat.CurrentActor] = engine.PartyAction{
-						Action:      engine.ActionSpell,
-						SpellName:   combat.PendingSpellName,
-						TargetAlly:  idx,
-					}
+				if idx < len(party) && party[idx] != nil &&
+					ctrl.SetOrder(member, app.Order{Action: engine.ActionSpell, Spell: combat.PendingSpellName, Ally: party[idx]}) == nil {
 					combat.SelectingSpellTarget = false
 					combat.PendingSpellName = ""
 					advanceActor(game)
@@ -3887,11 +3864,7 @@ func handleCombatChoose(game *engine.GameState, ev *tcell.EventKey) {
 			digit := ev.Rune()
 			if digit >= '1' && digit <= '4' {
 				groupIdx := int(digit-'1')
-				if groupIdx < len(combat.Groups) && combat.Groups[groupIdx].AliveCount() > 0 {
-					combat.Actions[combat.CurrentActor] = engine.PartyAction{
-						Action:      combat.GroupAction,
-						TargetGroup: groupIdx,
-					}
+				if ctrl.SetOrder(member, app.Order{Action: combat.GroupAction, Group: groupIdx}) == nil {
 					combat.SelectingGroup = false
 					advanceActor(game)
 				}
@@ -3910,95 +3883,66 @@ func handleCombatChoose(game *engine.GameState, ev *tcell.EventKey) {
 		ch -= 32
 	}
 
-	switch ch {
-	case 'F': // Fight — only front row (positions 1-3, index 0-2) can melee
-		// Dead characters sort to back each round (Pascal DSPPARTY),
-		// so back row naturally fills forward positions as front row dies.
-		if combat.CurrentActor >= app.FrontRowSize {
-			return // back row — can't melee
+	// Which orders are available, and why not, comes from the controller
+	// (app/combat.go); this switch only runs the prompts.
+	menu, err := ctrl.CombatOrderMenu(member)
+	if err != nil {
+		return
+	}
+	available := func(a engine.CombatAction) bool {
+		for _, o := range menu {
+			if o.Action == a {
+				return o.Available
+			}
 		}
-		targetGroup := combat.FirstAliveGroup()
-		if targetGroup < 0 {
-			return
-		}
-		// From p-code CUTIL IC 0-200: if multiple groups alive, ask which group
+		return false
+	}
+	// askGroup gives a group order at once when one group is alive, or asks
+	// which group (from p-code CUTIL IC 0-200).
+	askGroup := func(a engine.CombatAction, prompt string) {
 		if combat.AliveGroupCount() > 1 {
 			combat.SelectingGroup = true
-			combat.GroupAction = engine.ActionFight
-			combat.GroupPrompt = "FIGHT AGAINST GROUP# ?"
-		} else {
-			combat.Actions[combat.CurrentActor] = engine.PartyAction{
-				Action:      engine.ActionFight,
-				TargetGroup: targetGroup,
-			}
+			combat.GroupAction = a
+			combat.GroupPrompt = prompt
+		} else if ctrl.SetOrder(member, app.Order{Action: a, Group: combat.FirstAliveGroup()}) == nil {
 			advanceActor(game)
+		}
+	}
+	order := func(a engine.CombatAction) {
+		if ctrl.SetOrder(member, app.Order{Action: a, Item: -1}) == nil {
+			advanceActor(game)
+		}
+	}
+
+	switch ch {
+	case 'F': // Fight — only the front row (positions 1-3) can melee
+		if available(engine.ActionFight) {
+			askGroup(engine.ActionFight, "FIGHT AGAINST GROUP# ?")
 		}
 
 	case 'S': // Spell
-		if member.IsCaster() {
+		if available(engine.ActionSpell) {
 			combat.InputtingSpell = true
 			combat.SpellInput = ""
 		}
 
 	case 'P': // Parry
-		combat.Actions[combat.CurrentActor] = engine.PartyAction{
-			Action: engine.ActionParry,
-		}
-		advanceActor(game)
+		order(engine.ActionParry)
 
 	case 'R': // Run
-		combat.Actions[combat.CurrentActor] = engine.PartyAction{
-			Action: engine.ActionRun,
-		}
-		advanceActor(game)
+		order(engine.ActionRun)
 
 	case 'U': // Use item — Pascal COMBAT2.TEXT lines 51-173
-		member := game.Town.Party.Members[combat.CurrentActor]
-		if member == nil {
-			return
-		}
-		// Build list of usable items: SpellPower > 0 AND equipped
-		combat.UsableItems = nil
-		for i := 0; i < member.ItemCount; i++ {
-			poss := member.Items[i]
-			if poss.ItemIndex > 0 && poss.ItemIndex < len(game.Scenario.Items) {
-				item := &game.Scenario.Items[poss.ItemIndex]
-				if item.SpellPower > 0 && poss.Equipped {
-					combat.UsableItems = append(combat.UsableItems, i)
-				}
-			}
-		}
+		combat.UsableItems = ctrl.CombatUsableItems(member)
 		if len(combat.UsableItems) == 0 {
-			// No usable items — treat as parry
-			combat.Actions[combat.CurrentActor] = engine.PartyAction{
-				Action: engine.ActionParry,
-			}
-			advanceActor(game)
+			order(engine.ActionUse) // nothing usable: recorded as Parry
 		} else {
 			combat.SelectingUseItem = true
 		}
 
 	case 'D': // Dispel undead
-		// From game.pas lines 4387-4393: Priest always, Lord level>8, Bishop level>3
-		canDispel := member.Class == engine.Priest ||
-			(member.Class == engine.Lord && member.Level > 8) ||
-			(member.Class == engine.Bishop && member.Level > 3)
-		if canDispel {
-			targetGroup := combat.FirstAliveGroup()
-			if targetGroup < 0 {
-				return
-			}
-			if combat.AliveGroupCount() > 1 {
-				combat.SelectingGroup = true
-				combat.GroupAction = engine.ActionDispel
-				combat.GroupPrompt = "DISPELL WHICH GROUP# ?"
-			} else {
-				combat.Actions[combat.CurrentActor] = engine.PartyAction{
-					Action:      engine.ActionDispel,
-					TargetGroup: targetGroup,
-				}
-				advanceActor(game)
-			}
+		if available(engine.ActionDispel) {
+			askGroup(engine.ActionDispel, "DISPELL WHICH GROUP# ?")
 		}
 
 	}
@@ -4022,27 +3966,25 @@ func handleSpellInput(game *engine.GameState, ev *tcell.EventKey) {
 			combat.InputtingSpell = false
 			return
 		}
-		sp := engine.LookupSpell(combat.SpellInput)
-		if sp == nil {
-			combat.Messages = []string{"** UNKNOWN SPELL **"}
+		member := game.Town.Party.Members[combat.CurrentActor]
+		ctrl := app.New(game)
+		target, err := ctrl.CombatSpellTarget(member, combat.SpellInput)
+		var refusal *app.Refusal
+		if errors.As(err, &refusal) {
+			// "** UNKNOWN SPELL **" or "** CANT CAST **"
+			combat.Messages = []string{refusal.Message}
 			combat.MessageIndex = 0
 			combat.SpellInput = ""
 			return
-		}
-
-		member := game.Town.Party.Members[combat.CurrentActor]
-		if !member.CanCastSpell(sp) {
-			combat.Messages = []string{"** CANT CAST **"}
-			combat.MessageIndex = 0
-			combat.SpellInput = ""
+		} else if err != nil {
 			return
 		}
 
 		combat.InputtingSpell = false
 
 		// Determine target based on spell type — from p-code CUTIL procs 27/28
-		switch sp.Target {
-		case engine.TargetSingleMonster, engine.TargetMonsterGroup:
+		switch target {
+		case app.TargetGroup:
 			// Attack spell targeting a group — ask which group if multiple
 			if combat.AliveGroupCount() > 1 {
 				combat.SelectingSpellGroup = true
@@ -4051,27 +3993,15 @@ func handleSpellInput(game *engine.GameState, ev *tcell.EventKey) {
 				return
 			}
 			// Only 1 group — auto-select
-			combat.Actions[combat.CurrentActor] = engine.PartyAction{
-				Action:      engine.ActionSpell,
-				SpellName:   combat.SpellInput,
-				TargetGroup: combat.FirstAliveGroup(),
-			}
-		case engine.TargetAllMonsters:
-			combat.Actions[combat.CurrentActor] = engine.PartyAction{
-				Action:    engine.ActionSpell,
-				SpellName: combat.SpellInput,
-			}
-		case engine.TargetPartyMember:
+			ctrl.SetOrder(member, app.Order{Action: engine.ActionSpell, Spell: combat.SpellInput, Group: combat.FirstAliveGroup()})
+		case app.TargetMember:
 			// Heal/buff targeting a person — ask who
 			combat.SelectingSpellTarget = true
 			combat.PendingSpellName = combat.SpellInput
 			combat.SpellInput = ""
 			return
-		case engine.TargetParty, engine.TargetSelf:
-			combat.Actions[combat.CurrentActor] = engine.PartyAction{
-				Action:    engine.ActionSpell,
-				SpellName: combat.SpellInput,
-			}
+		default:
+			ctrl.SetOrder(member, app.Order{Action: engine.ActionSpell, Spell: combat.SpellInput})
 		}
 
 		combat.SpellInput = ""
@@ -4094,7 +4024,7 @@ func handleSpellInput(game *engine.GameState, ev *tcell.EventKey) {
 func findNextActor(game *engine.GameState, from int) int {
 	party := game.Town.Party.Members
 	for i := from + 1; i < len(party); i++ {
-		if party[i] != nil && party[i].IsAlive() {
+		if app.CanGiveOrder(party[i]) {
 			return i
 		}
 	}
