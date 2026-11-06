@@ -10,7 +10,8 @@
   a browser. It plays the same illustrative fixture as combat.html
   (combat-fixture.js): the object named GO stands in for the Go controller,
   and everything it returns (order menus, legality, targets, the resolved
-  round) would come from Go in the product.
+  round) would come from Go in the product. combat-fixture-hard.js (GO_HARD)
+  is the difficult-case fixture, chosen in the toolbar.
 
   Model: six adventurers, one battlefield, one action at a time.
 -->
@@ -77,6 +78,15 @@
   .card.cand { border-color: var(--ok); }
   .card.changed { animation: flash 1.1s; }
   .card.quiet { opacity: .8; }
+  .card.dead { opacity: .62; border-style: dashed; }
+  .card.dead .st { color: #d6d6d6; }
+  .card.para .st { color: #cfe3ff; }
+  .movenote { font-size: .9em; color: #ffe7a8; margin-bottom: .25em; }
+  .gostop { width: 60%; text-align: left; font-size: .92em; }
+  .gostop table { width: 100%; border-collapse: collapse; margin: .3em 0; }
+  .gostop td, .gostop th { padding: .05em .4em; text-align: left; }
+  .gostop th { color: #aaa69d; font-weight: 500; }
+  .gostop tr.diff td { color: #ffb4a0; }
   @keyframes flash { 0% { background: rgba(255,110,80,.6); } 100% { background: var(--hud); } }
   .info { display: inline-block; width: 1.2em; height: 1.2em; line-height: 1.2em; text-align: center; border-radius: 50%; border: 1px solid rgba(255,255,255,.4); font-size: .78em; cursor: pointer; color: #ddd; margin-left: .2em; }
 
@@ -153,9 +163,18 @@
 <body class="annotate">
 <main>
   <h1>Istary combat refinement <span class="tag">M2 design exploration · not approved</span></h1>
-  <p class="lede">Six adventurers, one battlefield, one action at a time. This page refines approach C: a stable battlefield camera, one structured team and order summary, one place for messages, and the resolved round shown one action at a time. Same fixture as the A/B/C comparison, which stays in <a href="combat.html">combat.html</a>. Everything is illustrative and not connected to the engine; placeholder figures are not an art style. <a href="storyboard.html">← M2 storyboard</a></p>
+  <p class="lede">Six adventurers, one battlefield, one action at a time. This page refines approach C: a stable battlefield camera, one structured team and order summary, one place for messages, and the resolved round shown one action at a time. Same fixture as the A/B/C comparison, which stays in <a href="combat.html">combat.html</a>; choose <b>Encounter → Difficult cases</b> for deaths, paralysis, the formation re-sort, four groups and other locations (<a href="../COMBAT-DIFFICULT-CASES.md">notes</a>). Everything is illustrative and not connected to the engine; placeholder figures are not an art style. <a href="storyboard.html">← M2 storyboard</a></p>
 
   <div class="controls" role="toolbar">
+    <fieldset><legend>Encounter</legend>
+      <select id="fx" aria-label="Encounter fixture"><option value="a">Original (2 groups)</option><option value="hard">Difficult cases (4 groups)</option></select>
+      <select id="loc" aria-label="Location"><option value="corridor">Corridor</option><option value="room">Room</option><option value="junction">Junction</option><option value="deadend">Narrow dead end</option></select>
+    </fieldset>
+    <fieldset id="hardopts"><legend>Difficult cases: review options</legend>
+      <label title="When the party is re-sorted by status"><input type="radio" name="sortAt" value="classic" checked> Re-sort: Classic</label>
+      <label><input type="radio" name="sortAt" value="go"> Go today</label>
+      <label title="When the strip's condition label changes"><input type="checkbox" id="lab"> Label at message</label>
+    </fieldset>
     <fieldset><legend>Camera during the round</legend>
       <label><input type="radio" name="cam" value="fixed" checked> Stable, no camera movement</label>
       <label><input type="radio" name="cam" value="push"> Stable + restrained push-in</label>
@@ -193,6 +212,7 @@
 
 <script src="combat-scene.js"></script>
 <script src="combat-fixture.js"></script>
+<script src="combat-fixture-hard.js"></script>
 <script>
 'use strict'
 const CS = window.CombatScene
@@ -206,18 +226,31 @@ const GC = CS.GROUP_COLOR
 const $ = (s) => document.querySelector(s)
 const stage = $('#stage'), sceneEl = $('#scene'), ovl = $('#ovl')
 const P = {}
-const opts = { cam: 'fixed', pb: 'manual', speed: 1, vis: 'shell', ann: true, still: false, at: 0.5 }
+const opts = { cam: 'fixed', pb: 'manual', speed: 1, vis: 'shell', ann: true, still: false, at: 0.5, fx: 'a', loc: 'corridor', sortAt: 'classic', lab: 'round', dk: 1, mk: 1 }
+// The stand-in controller: GO (the original encounter) or GO_HARD (the
+// difficult cases). Both have the same interface; GO_HARD adds canAct,
+// beginRound (the round-start re-sort) and goPreview.
+let CTL = GO
+const canAct = (s) => (CTL.canAct ? CTL.canAct(s).ok : true)
+const whyNot = (s) => (CTL.canAct ? CTL.canAct(s).why : '')
+const condWord = (st) => ({ PARALYZE: 'paralyzed', ASLEEP: 'asleep', DEAD: 'dead', ASHED: 'ashes', LOST: 'lost', STONED: 'stoned', AFRAID: 'afraid' })[st] || st.toLowerCase()
+const locName = () => (opts.fx === 'hard' ? opts.loc : 'corridor')
 
 function resetPresentation() {
-  GO.reset()
+  CTL = opts.fx === 'hard' ? GO_HARD : GO
+  if (CTL.resortAt) CTL.resortAt = opts.sortAt
+  CTL.reset()
   Object.assign(P, {
     phase: 'explore', actor: 1, orders: Array(6).fill(null), pending: null, spellFilter: '', editing: false,
-    lastOrders: null, view: { team: clone(GO.st.team), groups: clone(GO.st.groups) },
+    lastOrders: null, view: { team: clone(CTL.st.team), groups: clone(CTL.st.groups) },
     // What the messages have shown so far this round (figures only). The
     // numbers stay on the Classic round snapshot until the round ends.
     seen: null, blocks: [], bi: -1, ev: null, roundDone: 0,
     chestPending: null, reports: [], lastMsg: null, toast: null, profile: null, banner: null,
     timer: null, changed: {}, hover: 0, teamZ: 0, reveal: 0,
+    // Figures (X26): per monster figure and per member, what the messages
+    // have revealed, with any death animation in progress.
+    figs: buildFigs(), pfig: {}, move: null, moveNote: null, goRows: null, finalLines: null, after: false,
   })
   cam.cur = null; cam.anim = null
 }
@@ -248,8 +281,76 @@ const REFORM = FORM.map(([x, z], i) => [i === 3 ? -0.8 : x, i < 3 ? z + 0.65 : z
 function pointOf(k) {
   if (!k) return null
   if (k[0] === 'p') { const f = REFORM[+k[1] - 1]; return [f[0], 0.8, f[1]] }
-  const g = P.view.groups[+k[1]]; const at = g.at.slice(0, Math.max(1, g.n))
-  return [at.reduce((s, p) => s + p[0], 0) / at.length, 0.8, at.reduce((s, p) => s + p[1], 0) / at.length]
+  const fs = P.figs[+k[1]] || [], live = fs.filter((f) => f.st !== 'dead')
+  const at = live.length ? live : fs.length ? fs : [{ x: 0, z: 5 }]
+  return [at.reduce((s, p) => s + p.x, 0) / at.length, 0.8, at.reduce((s, p) => s + p.z, 0) / at.length]
+}
+
+// ── figures: what the messages have revealed (X26) ───────────────────────
+// Monster figures are laid out once per encounter (presentation, from the
+// visible floor only) and keep their places; the dead are removed at the
+// round's display update, as Go compacts the groups (engine/combat.go:92).
+function buildFigs() {
+  const G = CTL.st.groups
+  if (G[0].at) return G.map((g) => g.at.slice(0, g.n).map((p, i) => ({ x: p[0], z: p[1], h: p[2], look: 'blob', color: g.color, st: i < g.asleep ? 'asleep' : 'ok' })))
+  const pos = CS.layout(G, locName())
+  return G.map((g, gi) => pos[gi].map(([x, z]) => ({ x, z, h: g.h, look: g.look, alt: g.alt, color: g.color, st: 'ok' })))
+}
+// Party conditions as figures show them. The strip's label stays on the
+// Classic round snapshot unless the reviewer option says otherwise.
+const COND = { PARALYZE: 'paralyzed', STONED: 'paralyzed', ASLEEP: 'asleep', DEAD: 'ghost', LOST: 'ghost', ASHED: 'ashes' }
+const PARTY_DEATH_MS = 1100
+const clamp01 = (k) => Math.max(0, Math.min(1, k))
+// Progress of a death animation. In a still, the current event's deaths use
+// the `dk` option; earlier ones are complete.
+// With reduced motion, deaths and formation moves show their end state.
+const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches
+function animK(o) { if (!o || o.t0 == null || (!opts.still && reduced())) return 1; if (opts.still) return o.ev === P.bi ? opts.dk : 1; return clamp01((performance.now() - o.t0) / o.dur) }
+function killFig(f) { if (f.st === 'dead' || f.st === 'dying') return; f.st = 'dying'; f.t0 = performance.now(); f.dur = CS.DEATH_MS[f.look] || 900; f.ev = P.bi }
+function applyCount(gi, n, asleep) {
+  // The original fixture reports counts: the first `asleep` living figures
+  // sleep, figures beyond `n` die.
+  const fs = P.figs[gi], live = fs.map((f, i) => i).filter((i) => fs[i].st !== 'dead' && fs[i].st !== 'dying')
+  live.forEach((i, k) => { if (k >= n) killFig(fs[i]); else fs[i].st = k < asleep ? 'asleep' : 'ok' })
+}
+function applyDelta(d) {
+  if (d.k === 'count') applyCount(d.gi, d.n, d.asleep)
+  else if (d.k === 'fig') { const f = P.figs[d.gi][d.idx]; if (!f) return; if (d.to === 'dead') killFig(f); else f.st = d.to }
+  else if (d.k === 'name') P.view.groups[d.gi].known = true
+  else if (d.k === 'cond' || d.k === 'st') {
+    const name = d.name || tm(d.slot).name, st = d.st
+    if (st === 'POISON') P.pfig[name] = Object.assign({}, P.pfig[name], { poison: true })
+    else if (st === 'DEAD') P.pfig[name] = { st: 'dying', t0: performance.now(), dur: PARTY_DEATH_MS, ev: P.bi }
+    else P.pfig[name] = { st: COND[st] || 'ok' }
+    if (opts.lab === 'msg') { const m = P.view.team.find((x) => x.name === name); if (m) m.st = st }
+  }
+}
+function partyCond(m) {
+  const pf = P.pfig[m.name]
+  const poison = (pf && pf.poison) || m.st === 'POISON'
+  if (pf && pf.st === 'dying') { const k = animK(pf); return k >= 1 ? { state: 'ghost', poison } : { state: 'dying', k, poison } }
+  return { state: pf && pf.st ? pf.st : COND[m.st] || 'ok', poison }
+}
+// Skipping never loses an outcome: whatever is mid-animation jumps to its end.
+function finishAnims() {
+  for (const fs of P.figs) for (const f of fs) if (f.st === 'dying') { f.st = 'dead'; f.t0 = null }
+  for (const pf of Object.values(P.pfig)) if (pf.st === 'dying') { pf.st = 'ghost'; pf.t0 = null }
+  P.move = null
+}
+const animating = () => P.figs.some((fs) => fs.some((f) => f.st === 'dying' && animK(f) < 1)) || Object.values(P.pfig).some((p) => p.st === 'dying' && animK(p) < 1) || (P.move && moveK() < 1)
+let looping = false
+function kick() {
+  if (looping || opts.still) return
+  looping = true
+  const loop = () => { if (!animating()) { looping = false; draw(); return } drawScene(); requestAnimationFrame(loop) }
+  requestAnimationFrame(loop)
+}
+const moveK = () => (!P.move || (!opts.still && reduced()) ? 1 : opts.still ? opts.mk : clamp01((performance.now() - P.move.t0) / P.move.dur))
+function slotXZ(m) {
+  const to = REFORM[m.slot - 1]
+  if (!P.move || P.move.from[m.name] == null) return [to[0], to[1]]
+  const fr = REFORM[P.move.from[m.name] - 1], e = ease(moveK())
+  return [fr[0] + (to[0] - fr[0]) * e, fr[1] + (to[1] - fr[1]) * e]
 }
 const ease = (k) => (k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2)
 const camLerp = (a, b, e) => ({ pos: CS.lerp3(a.pos, b.pos, e), target: CS.lerp3(a.target, b.target, e), fov: a.fov + (b.fov - a.fov) * e })
@@ -289,18 +390,22 @@ function orderText(o) {
   }
 }
 const plainOrder = (o) => orderText(o).replace(/<[^>]+>/g, '')
-const allOrdered = () => P.orders.every(Boolean)
-const nextUnordered = (from) => { for (let i = 0; i < 6; i++) { const s = ((from - 1 + i) % 6) + 1; if (!P.orders[s - 1]) return s } return 0 }
+// Members who cannot act (paralyzed, dead) are not offered an order, as
+// findNextActor skips them (cmd/istary/main.go:4097).
+const allOrdered = () => P.orders.every((o, i) => o || !canAct(i + 1))
+const nextUnordered = (from) => { for (let i = 0; i < 6; i++) { const s = ((from - 1 + i) % 6) + 1; if (!P.orders[s - 1] && canAct(s)) return s } return 0 }
+const nextActing = (from, dir) => { for (let i = 1; i <= 6; i++) { const s = ((from - 1 + dir * i + 60) % 6) + 1; if (canAct(s)) return s } return from }
 function toast(msg) { P.toast = msg; clearTimeout(P.toastT); P.toastT = setTimeout(() => { P.toast = null; draw() }, 2800); draw() }
 
 // ── input: orders (same flow as combat.html; legality comes from GO) ────
 function chooseActor(s) {
+  if (!canAct(s) && ['orders', 'review'].includes(P.phase)) { toast(`${tm(s).name} is ${whyNot(s)} and cannot act this round.`); return }
   if (P.phase === 'review') { P.phase = 'orders'; P.editing = true }
   if (P.phase !== 'orders') return
   P.actor = s; P.pending = null; draw()
 }
 function chooseAction(key) {
-  const item = GO.menu(P.actor).find((a) => a.key === key)
+  const item = CTL.menu(P.actor).find((a) => a.key === key)
   if (!item) return
   if (!item.ok) { toast(`${item.label} is not available for ${tm(P.actor).name}: ${item.why}.`); return }
   const o = { slot: P.actor, act: item.act, item: item.item }
@@ -308,9 +413,9 @@ function chooseAction(key) {
   needTarget(o)
 }
 function needTarget(o) {
-  const kind = GO.targetKind(o)
+  const kind = CTL.targetKind(o)
   if (kind === 'group') {
-    const alive = GO.aliveGroups()
+    const alive = CTL.aliveGroups()
     if (alive.length === 1) { o.tg = alive[0]; return setOrder(o) }
     P.pending = { o, need: 'group' }; draw(); return
   }
@@ -318,18 +423,19 @@ function needTarget(o) {
   setOrder(o)
 }
 function chooseSpell(name) {
-  const sp = GO.spells(P.actor).find((s) => s.name === name)
+  const sp = CTL.spells(P.actor).find((s) => s.name === name)
   if (!sp) return
   if (!sp.ok) { toast(`${sp.name}: ${sp.why}.`); return }
   const o = P.pending.o; o.spell = sp.name; needTarget(o)
 }
 function chooseGroup(gi) {
   if (!P.pending || P.pending.need !== 'group') return
-  if (!GO.alive(gi)) { toast(`Group ${gi + 1} has no one left to target.`); return }
+  if (!CTL.alive(gi)) { toast(`Group ${gi + 1} has no one left to target.`); return }
   P.pending.o.tg = gi; setOrder(P.pending.o)
 }
 function chooseAlly(s) { if (P.pending && P.pending.need === 'ally') { P.pending.o.ally = s; setOrder(P.pending.o) } }
 function setOrder(o) {
+  o.by = tm(o.slot).name
   P.orders[o.slot - 1] = o; P.pending = null
   if (P.editing && allOrdered()) { P.editing = false; P.phase = 'review'; draw(); return }
   const n = nextUnordered(o.slot + 1)
@@ -337,16 +443,25 @@ function setOrder(o) {
 }
 function back() {
   if (P.pending) { P.pending = null; draw(); return }
-  if (P.phase === 'review') { P.phase = 'orders'; P.editing = true; P.actor = 6; draw(); return }
-  if (P.phase === 'orders' && P.actor > 1) { P.actor--; draw() }
+  if (P.phase === 'review') { P.phase = 'orders'; P.editing = true; P.actor = nextActing(7, -1); draw(); return }
+  if (P.phase === 'orders') { const s = nextActing(P.actor, -1); if (s < P.actor) { P.actor = s; draw() } }
 }
-function clearAll() { P.orders = Array(6).fill(null); P.actor = 1; P.phase = 'orders'; P.editing = false; P.pending = null; draw() }
+function clearAll() { P.orders = Array(6).fill(null); P.actor = nextUnordered(1) || 1; P.phase = 'orders'; P.editing = false; P.pending = null; draw() }
 function repeatLast() {
   if (!P.lastOrders) return
-  const alive = GO.aliveGroups()
-  P.orders = P.lastOrders.map((o) => {
-    const c = Object.assign({}, o)
-    if (c.act === 'spell') { const sp = GO.spells(c.slot).find((s) => s.name === c.spell); if (!sp || !sp.ok) return null }
+  const alive = CTL.aliveGroups()
+  // A repeated order follows its member, not its slot: after a re-sort the
+  // member may stand elsewhere. Go still decides legality.
+  const prev = {}
+  for (const o of P.lastOrders) if (o) prev[o.by] = o
+  P.orders = P.view.team.map((m) => {
+    const o = prev[m.name]
+    if (!o || !canAct(m.slot)) return null
+    const c = Object.assign({}, o, { slot: m.slot })
+    const item = CTL.menu(m.slot).find((a) => a.act === c.act)
+    if (!item || !item.ok) return null
+    if (c.ally) { const was = P.lastTeam[c.ally - 1]; const now = P.view.team.find((x) => x.name === was); c.ally = now ? now.slot : null; if (!c.ally) return null }
+    if (c.act === 'spell') { const sp = CTL.spells(c.slot).find((s) => s.name === c.spell); if (!sp || !sp.ok) return null }
     if (c.tg != null && !alive.includes(c.tg)) { if (alive.length === 1) c.tg = alive[0]; else return null }
     return c
   })
@@ -373,17 +488,44 @@ function startEncounter() {
   draw()
 }
 function startOrders() {
-  P.phase = 'orders'; P.actor = 1; P.orders = Array(6).fill(null); P.pending = null; P.editing = false; P.reveal = 1
+  P.phase = 'orders'; P.orders = Array(6).fill(null); P.pending = null; P.editing = false; P.reveal = 1; P.goRows = null
+  // Classic timing: the party is re-sorted when the round begins, before any
+  // order is given (requirement E5 reports who moved). Figures walk to their
+  // new places; the strip shows the new lines at once.
+  const moved = CTL.beginRound ? CTL.beginRound() : []
+  P.moveNote = null
+  if (moved.length) {
+    P.view.team = clone(CTL.st.team)
+    P.move = { t0: performance.now(), dur: 1000, from: Object.fromEntries(moved.map((x) => [x.name, x.from])) }
+    const up = moved.filter((x) => x.from > 3 && x.to <= 3).map((x) => x.name), down = moved.filter((x) => x.from <= 3 && x.to > 3).map((x) => `${x.name} (${condWord(x.st)})`)
+    P.moveNote = `New lines this round: ${down.join(' and ')} to the back; ${up.join(', ')} to the front.`
+    P.changed = Object.fromEntries(moved.map((x) => [x.to, 1]))
+    kick()
+  }
+  P.actor = nextUnordered(1) || 1
   if (!sameShot(cam.cur, SHOT.battle())) setCam(SHOT.battle(), 600)
   draw()
 }
 function commit() {
   if (!allOrdered()) return
-  P.lastOrders = clone(P.orders)
-  P.blocks = GO.commit(P.orders)
-  P.seen = P.view.groups.map((g) => ({ n: g.n, asleep: g.asleep }))
-  P.bi = -1; P.phase = 'playback'; P.changed = {}; P.roundDone = 0; P.toast = null; P.ev = null
+  finishAnims()
+  // Reviewer option: Go's timing today. The re-sort would happen now, after
+  // the orders were given by slot. Show what that does and stop.
+  if (CTL.goPreview && CTL.resortAt === 'go') {
+    const rows = CTL.goPreview(P.orders)
+    if (rows.some((r) => r.by !== r.enteredFor)) { P.goRows = rows; P.phase = 'gostop'; P.toast = null; draw(); return }
+  }
+  P.lastOrders = clone(P.orders); P.lastTeam = P.view.team.map((m) => m.name)
+  P.lastSt = Object.fromEntries(P.view.team.map((m) => [m.name, m.st]))
+  P.blocks = CTL.commit(P.orders)
+  P.seen = true
+  P.bi = -1; P.phase = 'playback'; P.changed = {}; P.roundDone = 0; P.toast = null; P.ev = null; P.moveNote = null
   advance()
+}
+function goBackClassic() {
+  opts.sortAt = 'classic'; CTL.resortAt = 'classic'
+  const el = document.querySelector('[name=sortAt][value=classic]'); if (el) el.checked = true
+  startOrders()
 }
 
 // One action at a time. Each event: identify the actor, direct attention,
@@ -402,11 +544,13 @@ function advance() {
   // Skipping ahead never skips what an action showed: finish the current
   // one (its figures fall or sleep) before the next begins.
   if (P.ev && !P.ev.impact && P.bi >= 0) setT(1)
+  finishAnims()
   P.bi++
   if (P.bi >= P.blocks.length) return endRound()
   const b = P.blocks[P.bi]
   // Identification is not part of the frozen snapshot: names update at once.
   if (b.silent) { for (const d of b.deltas || []) if (d.k === 'name') P.view.groups[d.gi].known = true; return advance() }
+  if (b.end) P.finalLines = b.lines
   if (opts.cam === 'push') {
     const to = b.actor && significant(b) ? SHOT.push(b) : SHOT.battle()
     if (!sameShot(cam.cur, to)) setCam(to, 550)
@@ -425,7 +569,14 @@ function advance() {
   // Timers, not frames, own the result and the pacing, so a hidden or
   // throttled page still shows every outcome in order.
   P.impactT = setTimeout(() => { if (P.ev === ev && !ev.impact) { setT(Math.max(ev.t, IMPACT)); draw() } }, ms * IMPACT + 40)
-  if (opts.pb === 'auto') P.timer = setTimeout(advance, ms + (900 + 420 * b.lines.length) / opts.speed)
+  // Automatic pacing: the reading time for the message, or long enough for a
+  // death the message reveals to finish, whichever is longer. A death plays
+  // during the reading time; it only extends the event when it is longer.
+  const dies = (b.deltas || []).flatMap((d) => (d.k === 'fig' && d.to === 'dead' ? [CS.DEATH_MS[P.figs[d.gi][d.idx] ? P.figs[d.gi][d.idx].look : 'blob'] || 900] : d.k === 'count' && d.n < P.figs[d.gi].filter((f) => f.st !== 'dead').length ? [CS.DEATH_MS.blob] : (d.k === 'cond' || d.k === 'st') && d.st === 'DEAD' ? [PARTY_DEATH_MS] : []))
+  const read = ms + (900 + 420 * b.lines.length) / opts.speed
+  const death = dies.length ? ms * IMPACT + Math.max(...dies) + 120 * (dies.length - 1) + 350 : 0
+  P.evDur = Math.max(read, death)
+  if (opts.pb === 'auto') P.timer = setTimeout(advance, P.evDur)
   draw()
   requestAnimationFrame(step)
 }
@@ -435,8 +586,14 @@ function setT(t) {
   ev.t = t
   if (!ev.impact && t >= IMPACT) {
     ev.impact = true
-    // What the message now says, the figures now show (fallen, asleep).
-    for (const d of b.deltas || []) if (d.k === 'count') P.seen[d.gi] = { n: d.n, asleep: d.asleep }
+    // What the message now says, the figures now show: a death begins, a
+    // sleeper slumps, a cured member stands again. Several deaths in one
+    // block start a little apart.
+    const before = performance.now()
+    for (const d of b.deltas || []) if (d.k !== 'hp' && d.k !== 'name') applyDelta(d)
+    let n = 0
+    for (const fs of P.figs) for (const f of fs) if (f.st === 'dying' && f.ev === P.bi && f.t0 >= before) f.t0 += 120 * n++
+    kick()
     return true
   }
   return false
@@ -444,10 +601,13 @@ function setT(t) {
 function showRest() {
   if (P.phase !== 'playback') return
   clearTimeout(P.timer); clearTimeout(P.impactT)
+  if (P.ev && !P.ev.impact && P.bi >= 0) setT(1)
   for (let i = P.bi + 1; i < P.blocks.length; i++) {
     const b = P.blocks[i]
-    for (const d of b.deltas || []) { if (d.k === 'count') P.seen[d.gi] = { n: d.n, asleep: d.asleep }; if (d.k === 'name') P.view.groups[d.gi].known = true }
+    if (b.end) P.finalLines = b.lines
+    for (const d of b.deltas || []) if (d.k !== 'hp') applyDelta(d)
   }
+  finishAnims()
   P.bi = P.blocks.length - 1; P.ev = { t: 1, impact: true }; P.rest = true
   if (opts.cam === 'push') setCam(SHOT.battle(), 400)
   draw()
@@ -456,13 +616,18 @@ function endRound() {
   // The round has been shown: the display catches up with Go in one step,
   // as Classic does after the last message.
   const before = P.view.team
-  P.view.team = clone(GO.st.team); P.view.groups = clone(GO.st.groups)
+  finishAnims()
+  P.view.team = clone(CTL.st.team); P.view.groups = clone(CTL.st.groups)
   P.changed = {}
-  P.view.team.forEach((m, i) => { if (m.hp !== before[i].hp || m.st !== before[i].st) P.changed[m.slot] = 1 })
+  P.view.team.forEach((m, i) => { if (m.hp !== before[i].hp || m.st !== (P.lastSt || {})[m.name]) P.changed[m.slot] = 1 })
+  // The remains are cleared with the display update; survivors keep places.
+  P.figs = P.figs.map((fs) => fs.filter((f) => f.st !== 'dead'))
+  P.pfig = {}
   P.blocks = []; P.bi = -1; P.ev = null; P.seen = null; P.rest = false
-  if (GO.st.result === 'victory') return startChest()
-  if (GO.st.result === 'fled') { P.lastMsg = ['THE PARTY FLED!']; return startReturn() }
-  P.roundDone = GO.st.round - 1
+  if (CTL.st.result === 'victory' && !CTL.st.chest) { P.lastMsg = P.finalLines; P.after = true; return startReturn() }
+  if (CTL.st.result === 'victory') return startChest()
+  if (CTL.st.result === 'fled') { P.lastMsg = ['THE PARTY FLED!']; return startReturn() }
+  P.roundDone = CTL.st.round - 1
   startOrders()
 }
 function startChest() {
@@ -471,7 +636,7 @@ function startChest() {
 }
 function chestAct(act) {
   if (P.phase !== 'chest') return
-  const who = GO.chestWho(act)
+  const who = CTL.chestWho(act)
   if (act === 'leave') return chestDo('leave', 4)
   if (!who.length) { toast(act === 'inspect' ? 'Every member has already inspected this chest.' : act === 'calfo' ? 'No one can cast CALFO now.' : 'No one can do that.'); return }
   P.chestPending = { act, who, stage: 'who' }; draw()
@@ -483,7 +648,7 @@ function chestWho(s) {
   chestDo(p.act, s)
 }
 function chestDo(act, s, trap) {
-  const r = GO.chest(act, s, trap)
+  const r = CTL.chest(act, s, trap)
   if (r.report) P.reports.push(r.report)
   for (const d of r.deltas || []) if (d.k === 'st') { tm(d.slot).st = d.st; P.changed = { [d.slot]: 1 } }
   if (r.then) r.then()
@@ -504,7 +669,25 @@ function startReturn() {
 // Lunge profile for the active combatant: out, hold, back.
 function lunge(t) { return t < IMPACT ? ease(t / IMPACT) : t < 0.62 ? 1 : 1 - ease((t - 0.62) / 0.38) }
 
+// Gallery of party conditions and monster death styles (reviewer aid).
+const GALLERY = [['humanoid', -1.35, 3.7, 1.15], ['skeleton', 0, 3.7, 1.55], ['slime', 1.35, 3.7, 0.8], ['flying', -0.8, 5.6, 0.75, 1.15], ['large', 0.95, 5.9, 2.45]]
+const galleryK = (look) => (P.gT0 != null ? clamp01((performance.now() - P.gT0) / (look === 'party' ? PARTY_DEATH_MS : CS.DEATH_MS[look] || 900)) : P.gk)
+function galleryShot() {
+  const states = ['ok', 'paralyzed', 'asleep', 'dying', 'ghost', 'ashes']
+  const party = P.view.team.map((m) => ({ slot: m.slot, color: m.color, at: REFORM[m.slot - 1], state: states[m.slot - 1], k: m.slot === 4 ? galleryK('party') : 1 }))
+  const groups = GALLERY.map(([look, x, z, h, alt], gi) => ({ members: [{ x, z, h, look, alt, color: ['#6b7a4e', '#9a927e', '#5f8f5a', '#5b5f86', '#7d5f4a'][gi], state: galleryK(look) >= 1 ? 'dead' : 'dying', k: galleryK(look) }], ring: null }))
+  return Object.assign({}, cam.cur, { policy: opts.vis, teamZ: 0, loc: 'corridor', party, groups, rowLine: 0.22, effects: [] })
+}
+function galleryPlay() {
+  P.gT0 = performance.now(); kickGallery()
+}
+function kickGallery() {
+  const loop = () => { if (P.phase !== 'gallery' || P.gT0 == null) return; drawScene(); if (performance.now() - P.gT0 < 1300) requestAnimationFrame(loop); else { P.gT0 = null; P.gk = 1; draw() } }
+  requestAnimationFrame(loop)
+  setTimeout(() => { if (P.gT0 != null && performance.now() - P.gT0 >= 1300) { P.gT0 = null; P.gk = 1; draw() } }, 1400)
+}
 function sceneShot() {
+  if (P.phase === 'gallery') return galleryShot()
   const v = P.view, ph = P.phase
   const b = ph === 'playback' && P.bi >= 0 ? P.blocks[P.bi] : null
   const ev = P.ev || { t: 1, impact: true }
@@ -522,32 +705,32 @@ function sceneShot() {
 
   const team = ['explore', 'return'].includes(ph) || ph === 'encounter' ? P.reveal : 1
   const party = v.team.map((m) => {
-    const f = REFORM[m.slot - 1]
-    let x = f[0], z = f[1]
+    let [x, z] = slotXZ(m)
+    const cond = partyCond(m)
     const acting = live && b.actor === 'p' + m.slot
     if (acting && reach) { const tp = pointOf(b.tgt) || [x, 0, z + 3]; const dx = tp[0] - x, dz = tp[2] - z, d = Math.hypot(dx, dz) || 1; x += (dx / d) * reach * L; z += (dz / d) * reach * L }
     if (hit('p' + m.slot)) z -= 0.12
     return {
-      slot: m.slot, color: m.color, state: m.st === 'POISON' ? 'poison' : 'ok', at: [x, z],
+      slot: m.slot, color: m.color, state: cond.state, k: cond.k, poison: cond.poison, at: [x, z],
       selected: (ph === 'orders' && m.slot === P.actor) || acting || (ph === 'review' && P.hover === m.slot),
       target: markP(m.slot),
       candidate: (pend && pend.need === 'ally') || (P.chestPending && P.chestPending.stage === 'who' && P.chestPending.who.includes(m.slot)),
       dim: team < 1 ? Math.max(0.01, team) : live && !acting && !markP(m.slot) ? 0.72 : undefined,
     }
   })
-  const showFoes = inCombat()
-  const seen = P.seen
-  const groups = showFoes ? v.groups.map((g, gi) => {
-    const sn = seen ? seen[gi] : g
+  const showFoes = inCombat() || ph === 'gostop'
+  const groups = showFoes ? P.figs.map((fs, gi) => {
     const actingG = live && b.actor === 'g' + gi
+    const struck = hit('g' + gi) ? fs.findIndex((f) => f.st === 'ok' || f.st === 'asleep') : -1
     return {
-      members: g.at.slice(0, g.n).map((p, i) => {
-        let x = p[0], z = p[1]
+      members: fs.map((f, i) => {
+        let x = f.x, z = f.z
         if (actingG && i === b.sub) { const tp = pointOf(b.tgt); const dx = tp[0] - x, dz = tp[2] - z, d = Math.hypot(dx, dz) || 1; x += (dx / d) * reach * L; z += (dz / d) * reach * L }
-        if (hit('g' + gi) && i === Math.max(0, sn.n - 1)) z += 0.15
-        return { x, z, h: p[2], color: g.color, asleep: i < sn.asleep, fading: i >= sn.n, dim: ph === 'encounter' ? Math.max(0.01, P.reveal) : live && !actingG && !markG(gi) ? 0.72 : undefined }
+        if (i === struck) z += 0.15
+        const k = f.st === 'dying' ? animK(f) : 1
+        return { x, z, h: f.h, look: f.look, alt: f.alt, color: f.color, asleep: f.st === 'asleep', state: f.st === 'dying' ? (k >= 1 ? 'dead' : 'dying') : f.st === 'dead' ? 'dead' : undefined, k, dim: ph === 'encounter' ? Math.max(0.01, P.reveal) : live && !actingG && !markG(gi) ? 0.72 : undefined }
       }),
-      ring: actingG ? 'actor' : markG(gi) ? 'mark' : pend && pend.need === 'group' && g.n ? 'target' : ['orders', 'review'].includes(ph) ? '' : null,
+      ring: actingG ? 'actor' : markG(gi) ? 'mark' : pend && pend.need === 'group' && v.groups[gi].n ? 'target' : ['orders', 'review'].includes(ph) ? '' : null,
     }
   }) : []
   let effects = []
@@ -556,9 +739,9 @@ function sceneShot() {
     if (ev.impact) effects = effects.concat(b.fx || [])
   }
   return Object.assign({}, cam.cur, {
-    policy: opts.vis, teamZ: P.teamZ || 0,
+    policy: opts.vis, teamZ: P.teamZ || 0, loc: locName(),
     party: team > 0 ? party : [], groups,
-    rowLine: inCombat() && ph !== 'encounter' ? 0.22 : 0,
+    rowLine: (inCombat() && ph !== 'encounter') || ph === 'gostop' ? 0.22 : 0,
     chest: ph === 'chest' || (ph === 'return' && cam.anim) ? { x: 0, z: 4.4, selected: !!P.chestPending } : null,
     effects,
   })
@@ -580,7 +763,7 @@ const at = (k, dx, dy) => { const a = lastAnchors[k]; return a ? `left:${a[2] + 
 // and (in combat) their orders. The front line is always the left group.
 function stripHtml() {
   const ph = P.phase, b = ph === 'playback' ? P.blocks[P.bi] : null
-  const showOrders = ['orders', 'review', 'playback'].includes(ph)
+  const showOrders = ['orders', 'review', 'playback', 'gostop'].includes(ph)
   const card = (m) => {
     const s = m.slot, o = P.orders[s - 1]
     const cls = ['card']
@@ -591,20 +774,25 @@ function stripHtml() {
     if ((P.pending && P.pending.need === 'ally') || (P.chestPending && P.chestPending.stage === 'who' && P.chestPending.who.includes(s))) cls.push('cand')
     if (m.hp < m.max) cls.push('hurt')
     if (P.changed[s]) cls.push('changed')
-    return `<div class="${cls.join(' ')}" data-slot="${s}"><div class="nm"><b>${s} ${m.name}</b><span><span class="st ${m.st === 'POISON' ? 'poison' : ''}">${m.st}</span><span class="info" data-info="${s}" title="Character (read-only)">i</span></span></div><div class="nm"><span class="k">${m.cls}</span><span class="mono">${m.hp}/${m.max}</span></div><div class="bar"><i style="width:${(100 * m.hp) / m.max}%"></i></div>${showOrders ? `<span class="ord${o ? '' : ' none'}">${o ? orderText(o) : ph === 'orders' && s === P.actor ? 'choosing…' : '—'}</span>` : ''}</div>`
+    // The label is the authoritative condition (Classic round snapshot); the
+    // card is subdued for a dead member, cooler for a paralyzed one.
+    const lab = { DEAD: 'dead', ASHED: 'dead', LOST: 'dead', PARALYZE: 'para', STONED: 'para', ASLEEP: 'para' }[m.st]
+    if (lab) cls.push(lab)
+    const ordHtml = !canAct(s) && ['orders', 'review'].includes(ph) ? `<span class="ord none">cannot act · ${whyNot(s)}</span>` : `<span class="ord${o ? '' : ' none'}">${o ? orderText(o) : ph === 'orders' && s === P.actor ? 'choosing…' : '—'}</span>`
+    return `<div class="${cls.join(' ')}" data-slot="${s}"><div class="nm"><b>${s} ${m.name}</b><span><span class="st ${m.st === 'POISON' ? 'poison' : ''}">${m.st}</span><span class="info" data-info="${s}" title="Character (read-only)">i</span></span></div><div class="nm"><span class="k">${m.cls}</span><span class="mono">${m.hp}/${m.max}</span></div><div class="bar"><i style="width:${(100 * m.hp) / m.max}%"></i></div>${showOrders ? ordHtml : ''}</div>`
   }
   const T = P.view.team
-  const combat = showOrders || ph === 'chest'
+  const combat = showOrders || ph === 'chest' || ph === 'encounter'
   return `<div class="strip"><div class="line">${combat ? '<span class="lt">Front line · 1–3</span>' : ''}<div class="cards">${T.slice(0, 3).map(card).join('')}</div></div><div class="line">${combat ? '<span class="lt">Back line · 4–6</span>' : ''}<div class="cards">${T.slice(3).map(card).join('')}</div></div></div>`
 }
 function menuHtml(slot) {
   const m = tm(slot)
-  const rows = GO.menu(slot).map((a) => `<button class="act${a.ok ? '' : ' off'}${P.orders[slot - 1] && P.orders[slot - 1].act === a.act ? ' cur' : ''}" data-act="${a.key}" aria-disabled="${!a.ok}"><kbd>${a.key}</kbd><span class="lbl">${a.label}${a.note ? ` <span class="note">· ${a.note}</span>` : ''}${a.ok ? '' : `<span class="why">${a.why}</span>`}</span></button>`).join('')
+  const rows = CTL.menu(slot).map((a) => `<button class="act${a.ok ? '' : ' off'}${P.orders[slot - 1] && P.orders[slot - 1].act === a.act ? ' cur' : ''}" data-act="${a.key}" aria-disabled="${!a.ok}"><kbd>${a.key}</kbd><span class="lbl">${a.label}${a.note ? ` <span class="note">· ${a.note}</span>` : ''}${a.ok ? '' : `<span class="why">${a.why}</span>`}</span></button>`).join('')
   return `<div class="menu hud"><div class="title"><span>${slot} ${m.name} <small>${slot <= 3 ? 'front' : 'back'} line</small></span><small>Esc · B</small></div>${rows}</div>`
 }
 function spellHtml(slot) {
   const q = P.spellFilter
-  const list = GO.spells(slot).filter((s) => !q || s.name.startsWith(q))
+  const list = CTL.spells(slot).filter((s) => !q || s.name.startsWith(q))
   return `<div class="menu hud spells"><div class="title"><span>${tm(slot).name}: which spell?</span><small>Esc</small></div><input id="spellq" placeholder="type a name…" value="${q}" autocomplete="off" spellcheck="false">${list.map((s) => `<button class="act${s.ok ? '' : ' off'}" data-spell="${s.name}"><span class="lbl"><b>${s.name}</b> <span class="k">L${s.lvl} · ${s.left} left${s.tgt === 'group' ? ' · a group' : s.tgt === 'ally' ? ' · a member' : ''}</span>${s.ok ? '' : `<span class="why">${s.why}</span>`}</span></button>`).join('') || '<div class="k">No known spell starts with that.</div>'}</div>`
 }
 function groupLabels() {
@@ -634,7 +822,7 @@ function chestHtml() {
 }
 function profileHtml() {
   const s = P.profile; if (!s) return ''
-  const m = tm(s), base = TEAM0[s - 1]
+  const m = tm(s), base = CTL.base ? CTL.base(s) : TEAM0[s - 1]
   // Display state, not Go's final state (see combat.html for the reason).
   return `<div class="hud modal"><h4><span>${m.slot} ${m.name} · ${m.cls} · level ${base.lvl}</span><button class="btn ghost" data-do="closeprofile">Close <kbd>Esc</kbd></button></h4><table><tr><td class="k">HP</td><td class="mono">${m.hp}/${m.max}</td><td class="k">AC</td><td class="mono">${m.ac}</td><td class="k">Status</td><td>${m.st}</td></tr><tr><td class="k">Line</td><td colspan="5">${s <= 3 ? 'front (1–3)' : 'back (4–6)'}</td></tr>${m.sp ? `<tr><td class="k">Spells</td><td colspan="5" class="mono">${Object.entries(m.sp).map(([l, n]) => `L${l}: ${n}`).join('  ')}</td></tr>` : ''}<tr><td class="k">Items</td><td colspan="5">${base.items.join(', ')}</td></tr></table><div class="ro">Read-only during combat (D8).</div></div>`
 }
@@ -643,37 +831,45 @@ function msgboxHtml() {
   const ph = P.phase
   const T = P.toast ? `<div class="toast">${P.toast}</div>` : ''
   const box = (inner) => `<div class="hud msgbox">${T}${inner}</div>`
+  if (ph === 'explore' && P.after) return box(`<div class="prompt k">Exploring on with the whole team · <kbd>↑</kbd> step · <kbd>R</kbd> restart the encounter</div>`)
   if (ph === 'explore') return box(`<div class="prompt k"><kbd>↑</kbd> replay the step · <kbd>Return</kbd> <span class="k">fixture:</span> Go reports an encounter</div>`)
   if (ph === 'encounter') return ''
   if (ph === 'orders') {
     const p = P.pending, m = tm(P.actor), n = P.orders.filter(Boolean).length
     let line
-    if (p && p.need === 'group') line = `<b>${m.name}</b> · ${plainOrder(Object.assign({}, p.o, { tg: null })).replace(/ →.*/, '')}: which group? ${GO.aliveGroups().map((gi) => `<kbd>${gi + 1}</kbd>`).join(' ')} or click one`
+    if (p && p.need === 'group') line = `<b>${m.name}</b> · ${plainOrder(Object.assign({}, p.o, { tg: null })).replace(/ →.*/, '')}: which group? ${CTL.aliveGroups().map((gi) => `<kbd>${gi + 1}</kbd>`).join(' ')} or click one`
     else if (p && p.need === 'ally') line = `<b>${m.name}</b> · ${p.o.spell}: on whom? <kbd>1</kbd>–<kbd>6</kbd> or click a member`
     else if (p) line = `<b>${m.name}</b>: type or choose a spell`
     else line = `<b>${m.name}</b> (${P.actor <= 3 ? 'front' : 'back'} line): choose an order`
     const again = P.roundDone && !n && P.lastOrders ? `<button class="btn ghost" data-do="repeat">Repeat round ${P.roundDone}’s orders</button>` : ''
-    return box(`<div class="prompt">${line}</div><div class="meta k">${P.roundDone && !n ? `<span>Round ${P.roundDone} shown; values updated.</span>` : ''}<span>Round ${GO.st.round} · ${n} of 6 orders</span>${again || '<span><kbd>Tab</kbd> next · <kbd>B</kbd> back</span>'}</div>`)
+    const need = [1, 2, 3, 4, 5, 6].filter(canAct).length
+    return box(`${P.moveNote && !n ? `<div class="movenote">${P.moveNote}</div>` : ''}<div class="prompt">${line}</div><div class="meta k">${P.roundDone && !n ? `<span>Round ${P.roundDone} shown; values updated.</span>` : ''}<span>Round ${CTL.st.round} · ${n} of ${need} orders${need < 6 ? ` <span class="k">(${6 - need} cannot act)</span>` : ''}</span>${again || '<span><kbd>Tab</kbd> next · <kbd>B</kbd> back</span>'}</div>`)
   }
-  if (ph === 'review') return box(`<div class="prompt">All six orders are set. Check them in the strip below.</div><div class="meta"><button class="btn" data-do="commit">Fight <kbd>Return</kbd></button><button class="btn ghost" data-do="clear">Clear all <kbd>C</kbd></button><span class="k">Change one: click a member or press <kbd>1</kbd>–<kbd>6</kbd></span></div>`)
+  if (ph === 'gostop') {
+    const rows = P.goRows.map((r) => `<tr class="${r.by !== r.enteredFor ? 'diff' : ''}"><td>${r.slot}</td><td>${r.enteredFor}</td><td>${r.order ? plainOrder(r.order) + (r.stale ? ' <span class="k">(left from the last round)</span>' : '') : '—'}</td><td><b>${r.by}</b>${r.skipped ? ` <span class="k">(${condWord(r.st)}, skipped)</span>` : ''}</td></tr>`).join('')
+    return `<div class="hud msgbox gostop"><div class="prompt"><b>Go today:</b> the re-sort happens now, after the orders were given by slot. Each order stays with its slot.</div><table><tr><th>Slot</th><th>Given for</th><th>Order</th><th>Carried out by</th></tr>${rows}</table><div class="meta"><button class="btn" data-do="classic">Use Classic timing <kbd>Return</kbd></button><span class="k">Not modelled further: what a member does with an order it cannot carry out.</span></div></div>`
+  }
+  if (ph === 'review') return box(`<div class="prompt">All ${[1, 2, 3, 4, 5, 6].filter(canAct).length === 6 ? 'six' : 'the'} orders are set. Check them in the strip below.</div><div class="meta"><button class="btn" data-do="commit">Fight <kbd>Return</kbd></button><button class="btn ghost" data-do="clear">Clear all <kbd>C</kbd></button><span class="k">Change one: click a member or press <kbd>1</kbd>–<kbd>6</kbd></span></div>`)
   if (ph === 'playback') {
     const b = P.blocks[P.bi], ev = P.ev || { impact: true }
     const n = P.blocks.slice(0, P.bi + 1).filter((x) => !x.silent).length
     const lines = b ? b.lines.map((l, i) => `<span class="${i > 0 && !ev.impact ? 'pending' : ''}">${l}</span>`).join('') : ''
-    return box(`<div class="lines">${lines}</div><div class="meta k"><span>Round ${GO.st.result ? GO.st.round : GO.st.round - 1} · action ${n}</span>${opts.pb === 'manual' ? `<button class="btn" data-do="next">Next <kbd>Space</kbd></button>` : '<span>automatic</span>'}<button class="btn ghost" data-do="rest">Show the rest <kbd>⇧↩</kbd></button></div>`)
+    return box(`<div class="lines">${lines}</div><div class="meta k"><span>Round ${CTL.st.result ? CTL.st.round : CTL.st.round - 1} · action ${n}</span>${opts.pb === 'manual' ? `<button class="btn" data-do="next">Next <kbd>Space</kbd></button>` : '<span>automatic</span>'}<button class="btn ghost" data-do="rest">Show the rest <kbd>⇧↩</kbd></button></div>`)
   }
   if (ph === 'chest') return chestHtml()
-  if (ph === 'return') return P.lastMsg ? box(`<div class="lines">${P.lastMsg.map((l) => `<span>${l}</span>`).join('')}</div><div class="meta k">Exploring again · <kbd>R</kbd> restart</div>`) : ''
+  if (ph === 'gallery') return box(`<div class="prompt">Provisional condition and death styles. Party, left to right: OK, paralyzed, asleep, dying, ghost (dead), ashes.</div><div class="meta"><label class="k">Death progress <input type="range" id="gk" min="0" max="1" step="0.05" value="${P.gk}"></label><button class="btn" data-do="gplay">Play</button></div>`)
+  if (ph === 'return') return P.lastMsg ? box(`<div class="lines">${P.lastMsg.map((l) => `<span>${l}</span>`).join('')}</div><div class="meta k">Exploring again · ${P.after ? '<kbd>↑</kbd> step on · ' : ''}<kbd>R</kbd> restart</div>`) : ''
   return ''
 }
 
 function overlayHtml() {
   const ph = P.phase
   let h = ''
-  const camName = { explore: 'First person', encounter: 'Rising to the battlefield view', orders: 'Battlefield view', review: 'Battlefield view', playback: opts.cam === 'push' ? 'Battlefield view · restrained push-in' : 'Battlefield view · stable', chest: 'Chest close-up', return: cam.anim ? 'Returning to first person' : 'First person' }[ph]
+  const camName = { gostop: 'Battlefield view', gallery: 'Battlefield view · condition and death styles', explore: 'First person', encounter: 'Rising to the battlefield view', orders: 'Battlefield view', review: 'Battlefield view', playback: opts.cam === 'push' ? 'Battlefield view · restrained push-in' : 'Battlefield view · stable', chest: 'Chest close-up', return: cam.anim ? 'Returning to first person' : 'First person' }[ph]
   h += `<div class="hud camtag">${camName}</div>`
   if (P.banner) h += `<div class="banner">${P.banner}</div>`
-  if (inCombat() && ph !== 'encounter') h += groupLabels()
+  if ((inCombat() && ph !== 'encounter') || ph === 'gostop') h += groupLabels()
+  if (ph === 'gallery') h += GALLERY.map(([look], gi) => `<div class="anch hud glabel gal" style="${at('g' + gi, 0, look === 'flying' ? -1 : 2)}">${look}</div>`).join('')
   if (ph === 'encounter' && cam.k >= 1) h += groupLabels()
   if (ph === 'orders') {
     const pend = P.pending
@@ -702,8 +898,19 @@ const STEPS = [
   ['An unavailable command', 'unavail'], ['Review and confirm', 'review'], ['An adventurer acts', 'play:3'], ['A monster acts', 'play:2'],
   ['Round complete; next orders', 'round2'], ['Victory and the chest', 'chest:1'], ['Back to exploration', 'return'],
 ]
+// The difficult cases (combat-fixture-hard.js). h:R:N = round R, Nth action
+// shown (0 = order entry); an optional last number is the death progress.
+const STEPS_H = [
+  ['Four groups, one large', 'h:1:0'], ['A large group falls asleep', 'h:1:1'], ['A front-line member is paralyzed', 'h:1:4'],
+  ['Three die in one action', 'h:1:6:0.5'], ['A member is slain', 'h:1:7:0.4'], ['…and stays with the team', 'h:1:7:1'],
+  ['Round end: values and new lines', 'hmove:0.5'], ['Orders: two cannot act', 'h:2:0'], ['The paralysis is cured', 'h:2:2'],
+  ['Fliers fall asleep and land', 'h:2:3'], ['Bones fall apart', 'h:3:1:0.55'], ['A large collapse', 'h:4:3:0.7'],
+  ['Victory; exploring on', 'hreturn'], ['Re-sort at Go’s timing today', 'hgo'], ['Conditions and death styles', 'gallery'],
+]
+const steps = () => (opts.fx === 'hard' ? STEPS_H : STEPS)
 function currentSteps() {
   const ph = P.phase
+  if (opts.fx === 'hard') return P.stepOn != null ? [P.stepOn] : []
   if (ph === 'explore') return [0]
   if (ph === 'encounter') return [1]
   if (ph === 'orders') { if (P.roundDone && !P.orders.some(Boolean)) return [8]; return P.pending && P.pending.need !== 'spell' ? [3] : [2] }
@@ -714,7 +921,7 @@ function currentSteps() {
 }
 function sideHtml() {
   const cur = currentSteps(), maxDone = Math.max(...cur)
-  $('#steps').innerHTML = STEPS.map(([t, j], i) => `<li class="${cur.includes(i) ? 'on' : i < maxDone ? 'done' : ''}">${t}<button data-jump="${j}">go</button></li>`).join('')
+  $('#steps').innerHTML = steps().map(([t, j], i) => `<li class="${cur.includes(i) ? 'on' : i < maxDone ? 'done' : ''}">${t}<button data-jump="${j}">go</button></li>`).join('')
   $('#notes').innerHTML = notesHtml()
   $('#truth').innerHTML = truthHtml()
 }
@@ -724,15 +931,16 @@ function sideHtml() {
 function drawPlan() {
   if (!opts.ann) return
   const c = cam.cur; if (!c) return
-  const sx = (x) => 70 + x * 11, sz = (z) => 192 - (z + 2.5) * 11
+  const sx = (x) => 70 + x * 6.4, sz = (z) => 192 - (z + 2.5) * 8
   let s = ''
-  for (const k of Object.keys(CS.MAP)) { const [cx, cz] = k.split(',').map(Number); if (cz < -1) continue; s += `<rect x="${sx(cx * 4 - 2)}" y="${sz(cz * 4 + 2)}" width="44" height="44" fill="none" stroke="currentColor" stroke-opacity=".25"/>` }
+  const MAPL = CS.LOCATIONS[locName()].map
+  for (const k of Object.keys(MAPL)) { const [cx, cz] = k.split(',').map(Number); if (cz < -1 || Math.abs(cx) > 2) continue; s += `<rect x="${sx(cx * 4 - 2)}" y="${sz(cz * 4 + 2)}" width="${4 * 6.4}" height="32" fill="none" stroke="currentColor" stroke-opacity=".25"/>` }
   s += `<rect x="${sx(0)}" y="${sz(16)}" width="${sx(6) - sx(0)}" height="${sz(-2.5) - sz(16)}" fill="#f2c14e" fill-opacity=".07"/>`
   s += `<line x1="${sx(0)}" y1="${sz(-2.5)}" x2="${sx(0)}" y2="${sz(16)}" stroke="currentColor" stroke-dasharray="4 3"/>`
   s += `<text x="${sx(-0.6)}" y="${sz(9.5)}" font-size="9" fill="currentColor" transform="rotate(-90 ${sx(-0.6)} ${sz(9.5)})">axis of action</text>`
   s += `<text x="${sx(1.2)}" y="${sz(-1.2)}" font-size="8" fill="currentColor" fill-opacity=".8">camera side</text>`
-  REFORM.forEach((f, i) => { s += `<circle cx="${sx(f[0])}" cy="${sz(f[1])}" r="3" fill="${P.view.team[i].color}"/>` })
-  if (inCombat() || P.phase === 'chest') P.view.groups.forEach((g, gi) => g.at.slice(0, g.n).forEach((p) => { s += `<circle cx="${sx(p[0])}" cy="${sz(p[1])}" r="3" fill="${GC[gi]}"/>` }))
+  P.view.team.forEach((m) => { const [x, z] = slotXZ(m); s += `<circle cx="${sx(x)}" cy="${sz(z)}" r="3" fill="${m.color}" ${partyCond(m).state === 'ghost' ? 'fill-opacity=".35"' : ''}/>` })
+  if (inCombat() || P.phase === 'gostop') P.figs.forEach((fs, gi) => fs.forEach((f) => { if (f.st !== 'dead') s += `<circle cx="${sx(f.x)}" cy="${sz(f.z)}" r="${f.look === 'large' ? 4.5 : 3}" fill="${GC[gi]}"/>` }))
   const d = [c.target[0] - c.pos[0], c.target[2] - c.pos[2]], dl = Math.hypot(...d) || 1, half = (c.fov * Math.PI) / 360
   const ray = (a) => { const ca = Math.cos(a), sa = Math.sin(a); return [c.pos[0] + ((d[0] * ca - d[1] * sa) / dl) * 7, c.pos[2] + ((d[0] * sa + d[1] * ca) / dl) * 7] }
   const r1 = ray(half), r2 = ray(-half)
@@ -741,13 +949,13 @@ function drawPlan() {
   $('#plan').innerHTML = `<h3>Camera and axis (plan, reviewer aid)</h3><svg viewBox="0 0 140 200" role="img" aria-label="Plan of the corridor with the axis of action and the camera">${s}</svg><div class="k" style="font-size:12px">Blue: camera and its field of view. The camera never crosses the dashed axis, so the team and the monsters keep their screen positions.</div>`
 }
 function truthHtml() {
-  const g = GO.st, v = P.view
+  const g = CTL.st, v = P.view
   const diff = (a, b) => (a !== b ? ' class="diff"' : '')
-  const rows = g.team.map((m, i) => `<tr><td>${m.slot} ${m.name}</td><td${diff(m.hp, v.team[i].hp)}>${m.hp}</td><td${diff(m.hp, v.team[i].hp)}>${v.team[i].hp}</td><td${diff(m.st, v.team[i].st)}>${m.st}/${v.team[i].st}</td></tr>`).join('')
-  const grows = g.groups.map((x, i) => `<tr><td>group ${i + 1}</td><td${diff(x.n, v.groups[i].n)}>${x.n}${x.asleep ? ` (${x.asleep}z)` : ''}</td><td${diff(x.n, v.groups[i].n)}>${v.groups[i].n}${v.groups[i].asleep ? ` (${v.groups[i].asleep}z)` : ''}</td><td>${P.seen ? `figures: ${P.seen[i].n}${P.seen[i].asleep ? ` (${P.seen[i].asleep}z)` : ''}` : ''}</td></tr>`).join('')
+  const rows = g.team.map((m, i) => `<tr><td>${m.slot} ${m.name}${P.view.team[i].name !== m.name ? ` <span class="diff">(shown: ${P.view.team[i].name})</span>` : ''}</td><td${diff(m.hp, v.team[i].hp)}>${m.hp}</td><td${diff(m.hp, v.team[i].hp)}>${v.team[i].hp}</td><td${diff(m.st, v.team[i].st)}>${m.st}/${v.team[i].st}</td></tr>`).join('')
+  const grows = g.groups.map((x, i) => `<tr><td>group ${i + 1}</td><td${diff(x.n, v.groups[i].n)}>${x.n}${x.asleep ? ` (${x.asleep}z)` : ''}</td><td${diff(x.n, v.groups[i].n)}>${v.groups[i].n}${v.groups[i].asleep ? ` (${v.groups[i].asleep}z)` : ''}</td><td>${P.seen ? `figures: ${P.figs[i].filter((f) => f.st === 'ok' || f.st === 'asleep').length}${P.figs[i].some((f) => f.st === 'asleep') ? ` (${P.figs[i].filter((f) => f.st === 'asleep').length}z)` : ''}` : ''}</td></tr>`).join('')
   return `<h3>Engine state vs what the user sees</h3><table><tr><th></th><th>Go (final)</th><th>Shown</th><th>Status / figures</th></tr>${rows}${grows}</table>
     <div class="k" style="font-size:12px;margin-top:4px">${P.phase === 'playback' ? 'The round is resolved and committed in Go. Numbers stay on the Classic round snapshot; figures follow the messages shown so far.' : 'Outside playback the two always agree.'}</div>
-    <div class="hiddeninfo">Engine only, never sent to the GUI: chest trap = ${g.chest.trap}${g.groups.some((x) => !x.known) ? `; unidentified groups are really ${g.groups.filter((x) => !x.known).map((x) => x.id[1]).join(', ')}` : ''}; the order of the remaining actions.</div>`
+    <div class="hiddeninfo">Engine only, never sent to the GUI: ${g.chest ? `chest trap = ${g.chest.trap}` : 'no chest in this fixture'}${g.groups.some((x) => !x.known) ? `; unidentified groups are really ${g.groups.filter((x) => !x.known).map((x) => x.id[1]).join(', ')}` : ''}; the order of the remaining actions.</div>`
 }
 function notesHtml() {
   const ph = P.phase
@@ -762,12 +970,56 @@ function notesHtml() {
     chest: [L('Design', 'The chest uses the message location: message, actions and reports in one panel. The strip stays, for choosing who acts.'), L('Fact', 'One inspection per member; an inspection can report the wrong trap (engine/combat.go:2938). The real trap is never sent.')],
     return: [L('Design', 'The camera returns to first person; the team fades out as the camera enters its square. The strip stays.')],
   }
-  return `<h3>What this moment tests</h3><ul>${(N[ph] || []).join('')}</ul>`
+  let list = N[ph] || []
+  if (opts.fx === 'hard') list = hardNotes(ph, b).concat(ph === 'playback' ? list.slice(0, 1) : [])
+  return `<h3>What this moment tests</h3><ul>${list.join('')}</ul>`
+}
+function hardNotes(ph, b) {
+  const L = (lab, t) => `<li><span class="lab">${lab}</span>${t}</li>`
+  const txt = b ? b.lines.join(' ') : ''
+  const out = []
+  if (ph === 'gallery') return [L('Design', 'Provisional treatments (X26 addendum). Party: OK, paralyzed (rigid, cold tint, pale rim), asleep (slumped, z), dying, ghost (the dead member remains with the team), ashes. Monsters: humanoid, skeleton, slime, flier, large.'), L('Design', 'Each style lasts 0.7–1.2 s and is chosen from the revealed result and the creature’s visible look, never from hidden engine data. Drag the slider or play.'), L('Rule', 'A ghost is a visual convention only: no spirit, no mechanic. The dead member stays in the six-member roster.')]
+  if (ph === 'gostop') return [L('Finding', 'Go re-sorts the party at the start of ExecuteRound (engine/combat.go:610), after the orders were given by slot. cs.Actions is not reordered, so an order stays with its slot while the members move. Verified with a scratch Go probe: an order given for the member in slot 3 was carried out by the member who moved into slot 3.'), L('Fact', 'The engine’s own comments place Classic’s sort in DSPPARTY at round start in CUTIL (engine/combat.go:282, 607, 634), before order entry. The prototype’s default follows that. Not changed: no engine changes in this assignment.')]
+  if (ph === 'orders' && P.moveNote) out.push(L('Fact', 'The re-sort moves any worse status behind better ones, not only death: paralyzed and asleep members move back too (port of sortPartyByStatus, engine/combat.go:585; exchange sort, not stable).'), L('Design', 'Figures walk to their new places and the strip shows the new lines. The one-line notice is presentation, from requirement E5; Classic simply redraws the party.'))
+  if (ph === 'orders' && [1, 2, 3, 4, 5, 6].some((s) => !canAct(s))) out.push(L('Fact', 'Paralyzed and dead members are not offered an order (findNextActor uses IsAlive, cmd/istary/main.go:4097). Their cards say so; their figures take no part.'))
+  if (ph === 'orders' && CTL.st.round === 3) out.push(L('Fact', 'The cured member stays in the back line: the sort only moves worse statuses back; it never moves an OK member forward past another OK member.'))
+  if (ph === 'orders' && CTL.st.round === 1 && !P.pending) out.push(L('Camera', `Four groups in the ${CS.LOCATIONS[locName()].name.toLowerCase()}. Placement uses only the floor the team can see from its square (CS.layout); large creatures take two places, rows compress when the visible floor is short.`))
+  if (/PARALYZED/.test(txt)) out.push(L('Design', 'The paralyzed member stays upright and recognisable, rigid with a cold tint, from the moment the message says so. The strip label changes at round end (Classic), unless “Label at message” is on.'))
+  if (/SLAIN/.test(txt)) out.push(L('Design', 'The member staggers and collapses (about 1.1 s), then remains as a translucent figure in place. Numbers stay frozen; DEAD appears on the card at the round’s update.'))
+  if (/DIES|KILLS ONE|DISPELLED/.test(txt)) out.push(L('Design', 'Each death plays its style from the revealed result. Several deaths in one action start 120 ms apart. Remains stay until the round’s update, when Go compacts the group.'))
+  if (/ASLEEP/.test(txt)) out.push(L('Design', 'Sleepers slump grey with a z; sleeping fliers come down to the floor. The label count changes at round end.'))
+  if (/CURED/.test(txt)) out.push(L('Design', 'The figure stands normally again at the message. The card still reads PARALYZE until the round’s update (Classic), which is the X26 two-layer rule; see open question Q-D1.'))
+  if (ph === 'playback' && P.evDur) out.push(L('Pacing', `This action holds for ${(P.evDur / 1000).toFixed(1)} s in automatic play: the reading time, or the death animation if longer.`))
+  if (ph === 'explore' || ph === 'return') out.push(L('Design', 'The encounter is over and the team explores on. The dead member is still in the roster (strip, subdued and dashed); deciding to go back for resurrection is the player’s choice.'))
+  return out
 }
 
+// Group labels must stay readable when groups crowd (four groups, a dead
+// end): a label that would cover the message area or another label moves
+// up, or to the right of the message area. Presentation only.
+function placeLabels() {
+  const st = stage.getBoundingClientRect(); if (!st.width) return
+  const box = ovl.querySelector('.msgbox'), mb = box ? box.getBoundingClientRect() : null
+  const hit = (a, b) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom
+  const placed = []
+  const labels = [...ovl.querySelectorAll('.glabel:not(.gal)')].sort((a, b) => b.getBoundingClientRect().top - a.getBoundingClientRect().top)
+  for (const el of labels) {
+    let dx = 0, dy = 0
+    for (let n = 0; n < 12; n++) {
+      const r = el.getBoundingClientRect(), R = { left: r.left + dx, right: r.right + dx, top: r.top + dy, bottom: r.bottom + dy }
+      const other = placed.find((p) => hit(R, p))
+      if (mb && hit(R, mb)) dx += mb.right + 6 - R.left
+      else if (other) { dy -= R.bottom - other.top + 3; if (R.top + dy < st.top + 4) { dy = other.top - r.top; dx += other.right + 6 - R.left } }
+      else break
+    }
+    if (dx || dy) el.style.translate = `${dx}px ${dy}px`
+    const r = el.getBoundingClientRect(); placed.push({ left: r.left, right: r.right, top: r.top, bottom: r.bottom })
+  }
+}
 function draw() {
   drawScene()
   ovl.innerHTML = overlayHtml()
+  placeLabels()
   sideHtml()
   const q = document.querySelector('#spellq') || document.querySelector('#trapq')
   if (q && document.activeElement !== q && !opts.still) { q.focus(); q.setSelectionRange(q.value.length, q.value.length) }
@@ -783,7 +1035,7 @@ stage.addEventListener('click', (e) => {
   if (t.dataset.group) return chooseGroup(+t.dataset.group)
   if (t.dataset.chest) return chestAct(t.dataset.chest)
   if (t.dataset.trap) return chestDo('disarm', P.chestPending.slot, t.dataset.trap)
-  if (t.dataset.do) return ({ commit, clear: clearAll, repeat: repeatLast, next: advance, rest: showRest, closeprofile: () => { P.profile = null; draw() } })[t.dataset.do]()
+  if (t.dataset.do) return ({ commit, clear: clearAll, repeat: repeatLast, next: advance, rest: showRest, classic: goBackClassic, gplay: galleryPlay, closeprofile: () => { P.profile = null; draw() } })[t.dataset.do]()
   if (t.dataset.slot) return slotKey(+t.dataset.slot)
 })
 stage.addEventListener('mouseover', (e) => {
@@ -821,7 +1073,7 @@ document.addEventListener('keydown', (e) => {
     if (k === 'Escape') { P.pending = null; P.chestPending = null; draw(); stage.focus(); e.preventDefault() }
     if (k === 'Enter') {
       e.preventDefault()
-      if (e.target.id === 'spellq') { const first = GO.spells(P.actor).find((s) => s.name.startsWith(P.spellFilter) && s.ok); if (first) { stage.focus(); chooseSpell(first.name) } else toast('No usable spell matches that name.') }
+      if (e.target.id === 'spellq') { const first = CTL.spells(P.actor).find((s) => s.name.startsWith(P.spellFilter) && s.ok); if (first) { stage.focus(); chooseSpell(first.name) } else toast('No usable spell matches that name.') }
       else { const v = e.target.value.trim().toUpperCase(); if (v) { stage.focus(); chestDo('disarm', P.chestPending.slot, v) } }
     }
     return
@@ -831,11 +1083,12 @@ document.addEventListener('keydown', (e) => {
   const ph = P.phase
   if (up === 'K') { setCamMode(opts.cam === 'fixed' ? 'push' : 'fixed'); return }
   if (up === 'R' && ['explore', 'return'].includes(ph)) { restart(); return }
-  if (ph === 'explore') {
+  if (ph === 'explore' || (ph === 'return' && P.after)) {
     if (k === 'ArrowUp' || up === 'W') { e.preventDefault(); startExplore(true) }
-    else if (k === 'Enter') startEncounter()
+    else if (k === 'Enter' && !P.after) startEncounter()
     return
   }
+  if (ph === 'gostop') { if (k === 'Enter') goBackClassic(); return }
   if (ph === 'encounter' && k === 'Enter') { clearTimeout(P.timer); P.banner = null; startOrders(); return }
   if (/^[1-6]$/.test(k)) { e.preventDefault(); slotKey(+k); return }
   if (up === 'I' && ph !== 'chest') { P.profile = ph === 'orders' ? P.actor : 1; draw(); return }
@@ -844,7 +1097,7 @@ document.addEventListener('keydown', (e) => {
     else if (k === 'Escape') { P.pending = null; draw() }
     else if (up === 'B' || k === 'Backspace') { e.preventDefault(); back() }
     else if (up === 'C') clearAll()
-    else if (k === 'Tab') { e.preventDefault(); P.actor = ((P.actor - 1 + (e.shiftKey ? 5 : 1)) % 6) + 1; P.pending = null; draw() }
+    else if (k === 'Tab') { e.preventDefault(); P.actor = nextActing(P.actor, e.shiftKey ? -1 : 1); P.pending = null; draw() }
     else if (k === 'Enter' && allOrdered()) { P.phase = 'review'; P.editing = false; draw() }
     else if (k === 'Enter') toast(`${6 - P.orders.filter(Boolean).length} member(s) still need an order.`)
   } else if (ph === 'review') {
@@ -869,27 +1122,57 @@ function readOpts() {
   opts.pb = document.querySelector('[name=pb]:checked').value
   opts.speed = +$('#speed').value
   opts.ann = $('#ann').checked
+  opts.fx = $('#fx').value
+  opts.loc = opts.fx === 'hard' ? $('#loc').value : 'corridor'
+  $('#loc').disabled = opts.fx !== 'hard'
+  $('#hardopts').disabled = opts.fx !== 'hard'
+  opts.sortAt = document.querySelector('[name=sortAt]:checked').value
+  opts.lab = $('#lab').checked ? 'msg' : 'round'
   document.body.classList.toggle('annotate', opts.ann)
 }
 document.querySelector('.controls').addEventListener('change', (e) => {
   readOpts()
   if (e.target.name === 'cam') return setCamMode(opts.cam)
   if (e.target.name === 'pb' && opts.pb === 'auto' && P.phase === 'playback') advance()
+  if (['fx', 'loc', 'sortAt'].includes(e.target.id || e.target.name)) return restart()
   draw()
 })
 function restart() { clearTimeout(P.timer); resetPresentation(); startExplore(true) }
 $('#restart').addEventListener('click', restart)
 addEventListener('resize', () => draw())
-document.addEventListener('input', (e) => { if (e.target.id === 'spellq') { P.spellFilter = e.target.value.toUpperCase().replace(/[^A-Z]/g, ''); draw() } })
+document.addEventListener('input', (e) => { if (e.target.id === 'gk') { P.gk = +e.target.value; P.gT0 = null; drawScene(); return } if (e.target.id === 'spellq') { P.spellFilter = e.target.value.toUpperCase().replace(/[^A-Z]/g, ''); draw() } })
 
 // ── reviewer jumps (also used to make the stills) ────────────────────────
 const DEFAULT_R1 = [{ slot: 1, act: 'fight', tg: 0 }, { slot: 2, act: 'fight', tg: 0 }, { slot: 3, act: 'dispel', tg: 1 }, { slot: 4, act: 'parry' }, { slot: 5, act: 'spell', spell: 'HALITO', tg: 0 }, { slot: 6, act: 'spell', spell: 'KATINO', tg: 0 }]
 const R2 = [{ slot: 1, act: 'fight', tg: 0 }, { slot: 2, act: 'fight', tg: 0 }, { slot: 3, act: 'fight', tg: 1 }, { slot: 4, act: 'parry' }, { slot: 5, act: 'spell', spell: 'HALITO', tg: 1 }, { slot: 6, act: 'parry' }]
+// Difficult cases: play rounds with the default orders (by position after
+// each re-sort) up to the Nth action shown.
+function giveH(r) { (ORDERS_H[r] || []).forEach((o, i) => { if (o && canAct(i + 1)) { P.orders[i] = Object.assign(clone(o), { by: tm(i + 1).name }) } }) }
+function shown() { return P.blocks.slice(0, P.bi + 1).filter((x) => !x.silent).length }
+function playH(r, n) {
+  // Rounds before r in full; round r up to its nth shown action (null = all).
+  for (let i = CTL.st.round; i <= r && !CTL.st.result; i++) {
+    startOrders()
+    if (i === r && n === 0) return
+    giveH(i)
+    P.phase = 'review'; commit()
+    if (P.phase === 'gostop') return
+    while (P.phase === 'playback' && (i < r || n == null || shown() < n)) advance()
+  }
+}
+function setHard() { if (opts.fx !== 'hard') { $('#fx').value = 'hard'; readOpts() } }
 function jump(j) {
   const still = opts.still
   opts.still = true
+  const [name, arg, a2, a3] = String(j).split(':')
+  if (name[0] === 'h' || name === 'gallery') setHard()
+  if (name === 'hgo') { document.querySelector('[name=sortAt][value=go]').checked = true; readOpts() }
+  else if (name[0] === 'h' && opts.sortAt === 'go' && name !== 'hgo') { document.querySelector('[name=sortAt][value=classic]').checked = true; readOpts() }
   clearTimeout(P.timer); resetPresentation()
-  const [name, arg] = String(j).split(':')
+  P.stepOn = opts.fx === 'hard' ? STEPS_H.findIndex((x) => x[1] === String(j)) : null
+  if (P.stepOn < 0) P.stepOn = null
+  // A step's own death progress, unless the address gives one (stills).
+  if (name === 'h' && a3 != null && !/[#&]dk=/.test(location.hash)) opts.dk = +a3
   const giveR1 = (n) => { for (const o of DEFAULT_R1.slice(0, n)) P.orders[o.slot - 1] = clone(o); P.actor = nextUnordered(1) || 6; if (allOrdered()) P.phase = 'review' }
   const playTo = (n) => { giveR1(6); P.phase = 'review'; commit(); while (P.bi < n - 1 && P.phase === 'playback') advance() }
   const finishR1 = () => { giveR1(6); commit(); while (P.phase === 'playback') advance() }
@@ -912,10 +1195,18 @@ function jump(j) {
     case 'chest': startOrders(); finishR1(); P.orders = clone(R2); P.phase = 'review'; commit(); while (P.phase === 'playback') advance(); if (arg) { chestDo('inspect', 4); chestDo('inspect', 2) } break
     case 'return': jump('chest'); opts.still = true; chestDo('inspect', 4); chestDo('disarm', 4, 'POISON NEEDLE'); chestDo('open', 4); startReturn(); P.reveal = 0; break
     case 'profile': startOrders(); P.profile = 5; break
+    case 'h': startExplore(false); P.reveal = 1; setCam(SHOT.battle(), 0); playH(+arg, a2 === 'end' ? null : +(a2 || 0)); if (a3 != null && +a3 >= 1) finishAnims(); break
+    case 'hmove': startExplore(false); setCam(SHOT.battle(), 0); playH(1, null); P.move && (P.move.t0 = performance.now()); if (!location.hash.includes('mk=')) opts.mk = +(arg || 0.5); break
+    case 'hgo': startExplore(false); setCam(SHOT.battle(), 0); playH(1, null); P.orders = Array(6).fill(null)
+      ;[[3, { act: 'spell', spell: 'DIALKO', ally: 2 }], [4, { act: 'parry' }], [5, { act: 'spell', spell: 'HALITO', tg: 3 }], [6, { act: 'spell', spell: 'KATINO', tg: 2 }]].forEach(([sl, o]) => { P.orders[sl - 1] = Object.assign({ slot: sl, by: tm(sl).name }, o) })
+      P.phase = 'review'; commit(); break
+    case 'hreturn': startExplore(false); setCam(SHOT.battle(), 0); playH(4, null); if (P.phase === 'return') { setCam(SHOT.fp(), 0); P.reveal = 0; P.phase = 'explore' } break
+    case 'gallery': startOrders(); P.phase = 'gallery'; P.gk = opts.dk; P.gT0 = null; break
     default: startExplore(true)
   }
   opts.still = still
   draw()
+  kick()
 }
 stage.closest('main').addEventListener('click', (e) => { const b = e.target.closest('[data-jump]'); if (b) jump(b.dataset.jump) })
 
@@ -923,8 +1214,12 @@ stage.closest('main').addEventListener('click', (e) => { const b = e.target.clos
 function fromHash() {
   const h = new URLSearchParams(location.hash.slice(1))
   const set = (name, v) => { const el = document.querySelector(`[name=${name}][value="${v}"]`); if (el) el.checked = true }
-  for (const n of ['cam', 'vis', 'pb']) if (h.get(n)) set(n, h.get(n))
+  for (const n of ['cam', 'vis', 'pb', 'sortAt']) if (h.get(n)) set(n, h.get(n))
   if (h.get('ann') === '0') $('#ann').checked = false
+  if (h.get('fx')) $('#fx').value = h.get('fx')
+  if (h.get('loc')) $('#loc').value = h.get('loc')
+  if (h.get('lab') === 'msg') $('#lab').checked = true
+  for (const n of ['dk', 'mk']) if (h.get(n)) opts[n] = +h.get(n)
   readOpts()
   opts.still = h.get('still') === '1'
   if (h.get('at')) opts.at = +h.get('at')
