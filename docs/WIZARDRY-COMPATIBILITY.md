@@ -87,6 +87,7 @@ separate question, listed under follow-up.
 | 11 | Inn stays: the guide implies weeks pass and age matters (PG p.34, 61); no aging found for Inn stays. Aging was found only for Temple, class change and camp disband | Unclear | Long-term character life |
 | 12 | Shop stock changes (PG p.30) are kept in memory only; the save holds only roster and party (`engine/save.go` `SaveState`) | Unclear | Whether the original saved stock is not established |
 | 13 | Some magic item prices in `scenarios/wiz1/wiz1_gamedata.json` look like mis-decoded multi-word numbers. Examples: LONG SWORD+1 65536, EVIL SWORD + 3 327680, SHIELD + 3 1638400 | Unclear | Possible data-import defect; the guide gives no prices to check against |
+| 15 | Party re-sort and orders: the guide moves the dead (and incapacitated) to the back "at the end of the round" (PG p.48, p.55), so orders are given against the new lines. The engine sorts at the start of `ExecuteRound`, after orders were entered by slot, and does not move the orders with the members (`engine/combat.go:610`, `:199`). A scratch Go probe showed an order given for one member carried out by another. Skipped slots keep the previous round's order; ally targets are slots | **Difference** (timing; order transfer) | Combat outcomes can follow the wrong member. Istary corrections C1–C3 approved in principle (decision log); see `design/m2-exploration/COMBAT-DESIGN-BASELINE.md` §3 |
 | 14 | The terminal game has a map overlay (`M` key, README "Map overlay"). The guide expects hand mapping (PG p.43–45) | Engine only | **D9 approved:** automap is a gameplay enhancement, not Classic. The terminal overlay is left as is |
 
 ## 4. Detailed matrix
@@ -218,7 +219,7 @@ numbers.
 |---|---|---|---|
 | F1 | F)IGHT (slots 1–3), P)ARRY, D)ISPELL, S)PELL, U)SE, R)UN, T)AKE BACK (p.47) | F)IGHT S)PELL P)ARRY R)UN U)SE D)ISPELL, GO B)ACK (`render`) | Match |
 | F2 | Only slots 1–3 melee and take physical hits; spells reach anyone (p.48, 55) | Fight limited by `app.FrontRowSize`; monster targeting not traced | Partly checked |
-| F3 | The dead move to the back at the end of the round (p.48) | `sortPartyByStatus` at round start also moves sleeping or paralysed members back (consistent with "killed or incapacitated", p.55) | Match (in effect) |
+| F3 | The dead move to the back at the end of the round (p.48) | `sortPartyByStatus` also moves sleeping or paralysed members back (consistent with "killed or incapacitated", p.55). It runs at the start of `ExecuteRound`, after order entry; orders stay with slots (finding #15) | Status order: Match. Timing and orders: **Difference** |
 | F4 | Surprise gives a free round; no spells in it (p.48, 56) | 20% / 20% surprise rolls (`engine/combat.go`) | Spell restriction: not investigated |
 | F5 | Truce offers from peaceful monsters, with consequences (p.48) | `F)IGHT OR L)EAVE IN PEACE` | Consequences: not investigated |
 | F6 | XP divided among survivors (p.6) | Divided by the full party; paid to the living | **Difference** |
@@ -268,8 +269,9 @@ comprehensive investigation was carried out for the design baseline.
 4. **Poison behaviour** on return to the Castle (finding #2, row P7).
 5. **Inn aging** (finding #11, row N4).
 6. **Chest trap-name entry** (finding #8, row H2).
+7. **Party re-sort timing and order binding** (finding #15). *Proposed addition, not part of the agreed order; the user may move it up.* It is on the critical path to GUI combat. Characterization tests first, then corrections C1–C3 (approved in principle).
 
-For items 3–6, start with read-only characterization tests that pin today's
+For items 3–7, start with read-only characterization tests that pin today's
 engine behaviour (roadmap M1). Then seek historical evidence. Shop stock
 persistence (finding #12) gets a characterization test at the same time.
 
@@ -293,7 +295,8 @@ matching row above is updated to say which behaviour Istary Classic follows.
 
 | Finding / row | Historical revision | Evidence | Decision | Implementation change | Date |
 |---|---|---|---|---|---|
-| — | — | — | *No discrepancy decided yet. The current engine remains the provisional executable baseline.* | — | 2026-11-06 |
+| — | — | — | *No other discrepancy decided yet. The current engine remains the provisional executable baseline.* | — | 2026-11-06 |
+| #15, F3 | Player's Guide 1987 printing; engine at `bb01fb4` | PG p.48, p.55; `probes/resort-probe_test.go.txt` under `design/m2-exploration/` | **Approved in principle** as an Istary correction of an implementation quirk, consistent with the guide. Orders, ally targets and repeated orders stay with the character (C1). The formation change applies at the round boundary, before order entry (C2; timing to be confirmed in M1). No stale orders (C3). The status order of the sort is unchanged, and recovery does not move members forward | Pending: M1 characterization tests first, then the change with tests. Goldens affected only as explained by C1–C3 | 2026-11-06 |
 
 ## 7. Maintenance
 
