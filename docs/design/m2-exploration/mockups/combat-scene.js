@@ -170,6 +170,9 @@
     let g = `<ellipse cx="${bx}" cy="${by}" rx="${w * 0.85}" ry="${w * 0.24}" fill="rgba(0,0,0,0.5)"/>`
     if (m.selected) g += `<ellipse class="selring" cx="${bx}" cy="${by}" rx="${w * 1.05}" ry="${w * 0.33}" fill="none" stroke="#f2c14e" stroke-width="2.5"/>`
     else if (m.candidate) g += `<ellipse class="candring" cx="${bx}" cy="${by}" rx="${w * 1.05}" ry="${w * 0.33}" fill="none" stroke="#8fd18f" stroke-width="2" stroke-dasharray="5 3"/>`
+    // The refined prototype's target marker: the same white ring for a member
+    // and (via groupRing 'mark') for a monster group.
+    if (m.target) g += `<ellipse cx="${bx}" cy="${by}" rx="${w * 1.2}" ry="${w * 0.38}" fill="rgba(255,255,255,0.10)" stroke="#ffffff" stroke-width="2.5"/>`
     const bodyY = by - h * 0.8
     g += `<rect x="${bx - w / 2}" y="${bodyY}" width="${w}" height="${h * 0.8}" rx="${w * 0.34}" fill="${col}" stroke="${m.selected ? '#f2c14e' : '#0b0b0b'}" stroke-width="${m.selected ? 2 : 1}"/>`
     g += `<rect x="${bx - w / 2}" y="${bodyY}" width="${w}" height="${h * 0.8}" rx="${w * 0.34}" fill="url(#cs-shade)"/>`
@@ -177,7 +180,7 @@
     const fs = Math.max(9, Math.min(17, h * 0.15))
     g += `<text x="${bx}" y="${by - h * 0.42}" font-size="${fs}" text-anchor="middle" fill="#fff" font-family="ui-monospace,Menlo,monospace" font-weight="700" style="paint-order:stroke" stroke="rgba(0,0,0,0.6)" stroke-width="2.5">${m.slot}</text>`
     if (m.state === 'poison') g += `<circle cx="${bx + w * 0.55}" cy="${by - h * 1.02}" r="${Math.max(3, h * 0.05)}" fill="#7bd36a" stroke="#000"/>`
-    if (m.dim) g = `<g opacity="0.45">${g}</g>`
+    if (m.dim) g = `<g opacity="${typeof m.dim === 'number' ? m.dim : 0.45}">${g}</g>`
     return g
   }
 
@@ -194,6 +197,7 @@
       g += `<text x="${bx + w * 0.4}" y="${by - h * 0.9}" font-size="${Math.max(10, h * 0.2)}" fill="#b9b2ff" font-weight="700" font-family="ui-monospace,Menlo,monospace">z</text>`
     }
     if (m.fading) g = `<g opacity="0.3">${g}</g>`
+    if (typeof m.dim === 'number') g = `<g opacity="${m.dim}">${g}</g>`
     return g
   }
 
@@ -209,6 +213,13 @@
     const p = polyPath(cam, pts)
     if (!p) return null
     const col = GROUP_COLOR[gi % 4]
+    // Refined prototype: 'actor' (gold, the group acting now) and 'mark' (white,
+    // the group targeted now) match the member rings, so one highlight
+    // language covers both sides.
+    if (state === 'actor' || state === 'mark') {
+      const c2 = state === 'actor' ? '#f2c14e' : '#ffffff'
+      return { depth: p.depth + 0.5, svg: `<path class="grp ${state}" d="${p.d}" fill="${state === 'mark' ? 'rgba(255,255,255,0.10)' : col + '22'}" stroke="${c2}" stroke-width="2.5"/>` }
+    }
     const cls = state === 'target' ? 'grp target' : state === 'chosen' ? 'grp chosen' : 'grp'
     return { depth: p.depth + 0.5, svg: `<path class="${cls}" d="${p.d}" fill="${state ? col + '22' : 'none'}" stroke="${col}" stroke-width="${state ? 2.5 : 1.3}" ${state ? '' : 'stroke-dasharray="6 5" opacity="0.7"'}/>` }
   }
@@ -226,6 +237,7 @@
       case 'dispel': return `<g class="fx">${a ? `<path d="M${a[0]},${a[1]}L${tx},${ty + 20}" stroke="#f4f4ff" stroke-width="2" opacity="0.8"/>` : ''}<circle cx="${tx}" cy="${ty + 22}" r="38" fill="url(#cs-holy)"/></g>`
       case 'heal': return `<g class="fx"><circle cx="${tx}" cy="${ty + 30}" r="30" fill="url(#cs-heal)"/><text x="${tx + 18}" y="${ty - 4}" font-size="20" fill="#8fe38f" font-weight="800" font-family="ui-monospace,Menlo,monospace" style="paint-order:stroke" stroke="#000" stroke-width="3">${e.text || ''}</text></g>`
       case 'parry': return `<g class="fx"><path d="M${tx - 22},${ty + 50}Q${tx},${ty - 10} ${tx + 22},${ty + 50}" fill="none" stroke="#7fb8ff" stroke-width="4" stroke-linecap="round"/></g>`
+      case 'cast': return `<g class="fx"><circle cx="${tx}" cy="${ty + 34}" r="30" fill="url(#cs-holy)" opacity="0.55"/><circle cx="${tx}" cy="${ty + 34}" r="24" fill="none" stroke="#ffe7a8" stroke-width="1.5" stroke-dasharray="2 4"/></g>`
       case 'focus': return `<g class="fx"><circle cx="${tx}" cy="${ty + 30}" r="44" fill="none" stroke="#f2c14e" stroke-width="1.5" stroke-dasharray="3 5"/></g>`
       default: return ''
     }
@@ -284,6 +296,15 @@
       if (leak && shot.showLeaks) { svg += `<path d="${p.d}" fill="rgba(255,60,140,0.18)" stroke="#ff3c8c" stroke-width="2.5" stroke-dasharray="7 4"/>`; leaks++ }
       else if (leak) leaks++
       items.push({ depth: p.depth + (face.kind === 'wall' ? 0 : 1000), svg })
+    }
+
+    // Refined prototype: a faint floor line between the front line (1-3) and
+    // the back line (4-6). Presentation only; the rules know two lines and
+    // nothing about distance.
+    if (shot.rowLine) {
+      const zl = teamZ * S + 0.45
+      const p = polyPath(cam, [[-1.7, 0.015, zl - 0.03], [1.7, 0.015, zl - 0.03], [1.7, 0.015, zl + 0.03], [-1.7, 0.015, zl + 0.03]])
+      if (p) items.push({ depth: p.depth + 998, svg: `<path d="${p.d}" fill="rgba(242,193,78,${shot.rowLine})"/>` })
     }
 
     // Light pool under the team: atmosphere only.
