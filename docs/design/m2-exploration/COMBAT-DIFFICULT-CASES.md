@@ -287,6 +287,14 @@ whichever is longer.
 
 ## 10. Open questions (not decisions)
 
+**Since settled** (2026-11-06, `COMBAT-DESIGN-BASELINE.md`):
+- **Q-D7** is settled by X29 and corrections C1–C2: orders stay with the
+  character, and the formation change comes before order entry.
+- **Q-D9** is settled by X29.
+- **Q-D4** is now provisional assumption A2.
+
+The rest are carried into the baseline's §5.
+
 - **Q-D1. Strip condition label timing.** The addendum asks for "the party
   strip's condition label authoritative" and also for Classic's round-end
   numbers.

@@ -1,7 +1,8 @@
 # M2 presentation design exploration
 
 Status: **design exploration for review** (2026-11-06). Apart from the
-combat presentation decisions X25–X28 (approved 2026-11-06), nothing in this
+combat decisions X25–X34 and the governing principle below (approved
+2026-11-06; consolidated in `COMBAT-DESIGN-BASELINE.md`), nothing in this
 directory is approved. Nothing here changes the application, the engine, the
 save format or the approved baseline documents.
 
@@ -30,6 +31,7 @@ Choosing a direction, a renderer or a layout is left to the user.
 | [mockups/combat-fixture.js](mockups/combat-fixture.js) | The illustrative fixture both combat prototypes play, moved out of `combat.html` |
 | [mockups/leak-check.js](mockups/leak-check.js) | Node script: which never-seen surfaces each camera shot would expose |
 | [stills/combat-refined/](stills/combat-refined/) | Stills of the refined prototype, and the stable vs push-in comparison |
+| [COMBAT-DESIGN-BASELINE.md](COMBAT-DESIGN-BASELINE.md) | **Start here for combat.** The consolidated M2 combat baseline: approved decisions, historical observations vs Istary corrections, provisional assumptions, open questions, engine and controller work before GUI combat, the acceptance report and the recommended next prototype |
 | [COMBAT-DIFFICULT-CASES.md](COMBAT-DIFFICULT-CASES.md) | Third follow-on: the approved model validated against a member killed, a member paralyzed and cured, the formation re-sort (and when Go does it), four groups, sleeping and large creatures, rooms, junctions and dead ends, death animations and pacing; open questions Q-D1–Q-D9 |
 | [mockups/combat-fixture-hard.js](mockups/combat-fixture-hard.js) | The difficult-case fixture (choose **Difficult cases** in `combat-refined.html`) |
 | [mockups/fixture-check.js](mockups/fixture-check.js) | Node checks: the re-sort port against Go, outcomes stated by their messages, pacing |
@@ -50,6 +52,8 @@ Choosing a direction, a renderer or a layout is left to the user.
 No hypothesis or alternative in this directory is a requirement.
 
 ## Approved principles carried forward (not changed)
+
+- **Combat (approved 2026-11-06).** Preserve Wizardry's gameplay challenges, but eliminate unnecessary software-era interface and implementation quirks (`COMBAT-DESIGN-BASELINE.md` §1).
 
 - **One engine, one state.** One authoritative Go engine and game state; no rule is reimplemented in Svelte or in a renderer (charter §2.4).
 - **Classic rules are historically verified.** The engine is the provisional baseline, and open discrepancies stay tracked in `WIZARDRY-COMPATIBILITY.md` (D1). This exploration does not resolve any of them.
@@ -86,6 +90,7 @@ Each item needs the user's approval before implementation depends on it.
 | X16 | Art direction | Placeholder geometric; stylised low-poly; painted; Classic line art | Out of scope here; needs its own checkpoint (D12 bears on reusing original monster pictures) |
 | X17–X24 | Combat interaction approach, scenery policy, order changes, playback pacing, value-update timing, playback camera, repeat orders, unavailable actions | See `COMBAT-EXPERIENCE-REVIEW.md` §11 | See that section |
 | X25–X28 | Combat camera, combat results (with the party-condition addendum), combat layout, playback | See `COMBAT-PRESENTATION-MODEL.md` §10 | **Approved 2026-11-06** (X25 supersedes the X22 proposal). Treatments for deaths and conditions are provisional until reviewed in the browser |
+| X29–X34 | Orders bound to character identity; formation rules for incapacitated members; recovery does not rearrange, with restore and reorder; dead members represented, paralysis distinct; continuous environment and refined hybrid presentation; authoritative vs displayed vs known state | See `COMBAT-DESIGN-BASELINE.md` §2.2 | **Approved 2026-11-06.** Corrections C1–C3 change engine behaviour and need compatibility decision records first (`WIZARDRY-COMPATIBILITY.md` finding #15) |
 
 ## Correction (combat review)
 
@@ -130,3 +135,4 @@ These are detailed in the documents above.
 5. **Try the combat prototype.** Open `mockups/combat.html` and play a round in approach C, then A and B. Read `COMBAT-EXPERIENCE-REVIEW.md` alongside it.
 6. **Try the refinement.** Open `mockups/combat-refined.html`, play a round with the stable camera, then press `K` and play it again with the push-in. Read `COMBAT-PRESENTATION-MODEL.md` alongside it, and `COMBAT-EVENT-REQUIREMENTS.md` for what Go would have to supply.
 7. **Try the difficult cases.** In `mockups/combat-refined.html` choose **Encounter → Difficult cases** and step through the 15 moments, then try the other locations and **Re-sort: Go today**. Read `COMBAT-DIFFICULT-CASES.md` alongside it.
+8. **Read the combat baseline.** `COMBAT-DESIGN-BASELINE.md` summarises what is approved, what is assumed and what is open, and recommends the next step.

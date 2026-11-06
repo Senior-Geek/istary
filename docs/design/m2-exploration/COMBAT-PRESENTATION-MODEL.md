@@ -393,6 +393,10 @@ were put for review follow it, for the record.
   - **Playback control:** manual and automatic playback stay; skipping never
     discards an outcome.
 
+Further combat decisions X29–X34 (formation, orders, representation, state)
+were approved later the same day and are consolidated, with the governing
+principle, in `COMBAT-DESIGN-BASELINE.md`.
+
 As proposed for review:
 
 | ID | Question | Options | Proposed |

@@ -52,7 +52,7 @@ without parsing strings):
 | E1 | **One structured event per action block, produced by the same code that writes its messages.** Fields: actor (member slot, or group and member index), action kind as performed, target (group, member, or none), the message lines, and the changes the block reports: HP, member condition (paralyzed, asleep, dead, ashed, cured), and for monsters which members died or fell asleep (per member, not only counts; several deaths in one block are common). | Identify the actor, place the gold and white rings, choose the gesture, fade or sleep figures at the right moment. Same code path, so the event and the message cannot disagree. |
 | E2 | **Display state as View fields.** The round snapshot (counts, HP, status) and the index of the last action shown. | Numbers stay frozen (Classic) without Svelte keeping its own copy; survives a reload (D6, question 6). |
 | E3 | **Order-entry View.** For each member: the order menu with available or not and the reason, spells with points and reasons, target kind, line (front or back) for this round, and the current order. Plus the round number. | The command menu, unavailable reasons, front/back grouping in the strip. |
-| E4 | **Commands.** `SetOrder(member, order)`, `ClearOrders`, `Commit`, `Advance`, `AdvanceAll`. | Order entry, review edits (X19), playback. |
+| E4 | **Commands.** `SetOrder(character, order)` keyed by character identity, never by slot (X29), `ClearOrders`, `Commit`, `Advance`, `AdvanceAll`. Formation commands: reorder, and restore the preferred formation, where allowed (X31, baseline Q-B2). | Order entry, review edits (X19), playback. |
 | E5 | **Formation change.** Who moved between lines at the re-sort, with each member's condition, reported before the next order entry. Depends on the re-sort happening before order entry, as in Classic. Go today sorts after it (open question Q-D7). | Show a line change explicitly at the round's update: figures walk, the strip regroups (`COMBAT-DIFFICULT-CASES.md` §4). |
 
 **Needed for the full sequence:**
@@ -74,6 +74,9 @@ without parsing strings):
 |---|---|
 | E11 | No initiative order, no count of remaining actions, no monster victims, no true identities of unidentified groups, no chest trap. Events are released to the View one at a time as `Advance` is called, or held in the controller and exposed only up to the shown index. |
 | E12 | An event's outcome fields must not be readable before the event is shown. The presentation chooses gestures and any camera move from the action kind (X28). |
+
+The engine and controller work these require, in order, is listed in
+`COMBAT-DESIGN-BASELINE.md` §6.
 
 ## Open points for the controller design
 
