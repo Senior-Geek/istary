@@ -1,8 +1,10 @@
 # P1a/P1b: combat engine characterization and event spike
 
-Status: **experiment for review** (2026-11-06). P1a and P1b are on the
-local branch `spike/p1-combat-events`; P1c (§7) is on
-`spike/p1c-order-binding`, made from it. Neither is merged. It follows
+Status: **accepted and integrated** (2026-11-06). P1a and P1b were done on
+`spike/p1-combat-events` and P1c (§7) on `spike/p1c-order-binding`. Both are
+integrated into `main` locally, by fast-forward with the spike commits kept,
+and not pushed. One fix was added during the integration review (§3,
+"Integration fix"). It follows
 `COMBAT-DESIGN-BASELINE.md` §8, P1a and P1b only. It makes no rule change,
 no save-format change and no GUI change, and it does not implement
 corrections C1–C3.
@@ -102,6 +104,16 @@ historical column cites the Player's Guide where it speaks.
 - **Release is the controller's job:** `Events()` returns the whole round at
   once, as `Messages` does. Releasing events one at a time (E11) is
   therefore the controller's job (M5), not the engine's.
+
+**Integration fix (`dee94f6`).**
+- **The leak:** in a surprise round the surprise line opens the first
+  monster's block. When that monster's attack misses, the block's only line
+  is the surprise line, yet the event named the monster and its pre-assigned
+  victim (seed 2).
+- **The fix:** redaction now depends on whether the action itself wrote a
+  line. Such a block is narration, with actor, target and effects withheld.
+- **Tests:** a regression test, and a check that every monster actor is
+  named in its own block.
 
 **Evidence that messages and events agree.**
 
