@@ -1,0 +1,89 @@
+// Istary M2 difficult-case validation: scratch Go probe of the party re-sort.
+//
+// NOT part of the build and not a committed test: kept as evidence for
+// COMBAT-DIFFICULT-CASES.md §4. The .txt extension stops Go tooling from
+// compiling it. To reproduce, copy it into engine/ as zz_resort_probe_test.go,
+// run `go test ./engine -run TestProbeResort -v`, then delete the copy. It
+// changes nothing in the engine.
+//
+// Output on 2026-11-06 (go test, engine at bb01fb4):
+//   TestProbeResortTiming, seed 3:
+//     order entry saw: [ALDA BRAM CORA DREW EDDA FINN]   (BRAM dead)
+//     after re-sort:   [ALDA CORA DREW EDDA FINN BRAM]
+//     run order was given in slot 3 (for CORA)
+//     messages: FINN PARRIED. | CORA PARRIED. | EDDA PARRIED. | ALDA PARRIED. | DREW FAILED TO RUN!
+//   TestProbeResortStatuses:
+//     [A:OK B:PARALYZE C:OK D:OK E:OK F:OK] -> [A C D E F B]
+//     [A:OK B:DEAD C:PARALYZE D:OK E:OK F:OK] -> [A D E F C B]
+//     [A:ASLEEP B:OK C:OK D:OK E:OK F:OK] -> [B C D E F A]
+//     [A:DEAD B:OK C:OK D:ASHED E:OK F:DEAD] -> [B C E A F D]
+
+package engine
+
+import (
+	"strings"
+	"testing"
+)
+
+// Scratch probe, not committed: when does the party re-sort happen relative to
+// order entry, and does an order follow its character or its slot?
+func TestProbeResortTiming(t *testing.T) {
+	names := []string{"ALDA", "BRAM", "CORA", "DREW", "EDDA", "FINN"}
+	for s := int64(1); s < 40; s++ {
+		seed(s)
+		sc := loadScenario(t, 1)
+		var ms []*Character
+		for _, n := range names {
+			ms = append(ms, &Character{Name: n, HP: 10, MaxHP: 10, Level: 1, Agility: 0})
+		}
+		ms[1].Status = Dead
+		ms[1].HP = 0
+		g := &GameState{Scenario: sc, Town: &TownState{Party: &Party{Members: ms}}}
+		mon := &CombatMonster{MonsterID: 0, HP: 50, MaxHP: 50}
+		cs := &CombatState{Phase: CombatConfirm, Round: 2, Actions: make([]PartyAction, 6),
+			Groups: []*MonsterGroup{{MonsterID: 0, Members: []*CombatMonster{mon}, AliveCnt: 1}}}
+		g.Combat = cs
+		for i := range cs.Actions {
+			cs.Actions[i] = PartyAction{Action: ActionParry}
+		}
+		cs.Actions[2] = PartyAction{Action: ActionRun} // entered for slot 3 = CORA
+		before := []string{}
+		for _, m := range ms {
+			before = append(before, m.Name)
+		}
+		cs.ExecuteRound(g)
+		after := []string{}
+		for _, m := range g.Town.Party.Members {
+			after = append(after, m.Name)
+		}
+		msg := strings.Join(cs.Messages, " | ")
+		if strings.Contains(msg, "FAILED TO RUN") {
+			t.Logf("seed %d\n order entry saw: %v\n after re-sort:   %v\n run order was given in slot 3\n messages: %s", s, before, after, msg)
+			return
+		}
+	}
+	t.Log("no failed-run seed found")
+}
+
+// Paralysis and sleep also move a member back, and the sort is not stable.
+func TestProbeResortStatuses(t *testing.T) {
+	mk := func(n string, st Status) *Character { return &Character{Name: n, Status: st} }
+	cases := [][]*Character{
+		{mk("A", OK), mk("B", Paralyzed), mk("C", OK), mk("D", OK), mk("E", OK), mk("F", OK)},
+		{mk("A", OK), mk("B", Dead), mk("C", Paralyzed), mk("D", OK), mk("E", OK), mk("F", OK)},
+		{mk("A", Asleep), mk("B", OK), mk("C", OK), mk("D", OK), mk("E", OK), mk("F", OK)},
+		{mk("A", Dead), mk("B", OK), mk("C", OK), mk("D", Ashed), mk("E", OK), mk("F", Dead)},
+	}
+	for _, c := range cases {
+		in := []string{}
+		for _, m := range c {
+			in = append(in, m.Name+":"+m.Status.String())
+		}
+		sortPartyByStatus(c)
+		out := []string{}
+		for _, m := range c {
+			out = append(out, m.Name+":"+m.Status.String())
+		}
+		t.Logf("%v -> %v", in, out)
+	}
+}
