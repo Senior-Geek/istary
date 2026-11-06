@@ -1,7 +1,8 @@
 # P1a/P1b: combat engine characterization and event spike
 
-Status: **experiment for review** (2026-11-06). This is a local branch,
-`spike/p1-combat-events`, not merged. It follows
+Status: **experiment for review** (2026-11-06). P1a and P1b are on the
+local branch `spike/p1-combat-events`; P1c (§7) is on
+`spike/p1c-order-binding`, made from it. Neither is merged. It follows
 `COMBAT-DESIGN-BASELINE.md` §8, P1a and P1b only. It makes no rule change,
 no save-format change and no GUI change, and it does not implement
 corrections C1–C3.
@@ -182,3 +183,103 @@ Points to settle when approving:
    - Q-D8 (asleep and afraid members offered orders);
    - the silent misses (Q-P1);
    - the controller (M5).
+
+## 7. P1c: corrections C1–C3 (approved, implemented on `spike/p1c-order-binding`)
+
+**What changed.**
+
+| File | Change |
+|---|---|
+| `engine/combat_rounds.go` | New. `BeginNextRound` and `bindOrders` |
+| `engine/combat.go` | The re-sort is removed from the start of `ExecuteRound`, which calls `bindOrders` instead. `NewCombat` records the formation at first order entry. One unexported field, `orderFor` |
+| `cmd/istary/main.go` | The round transition calls `combat.BeginNextRound(game)` in place of its own compaction, round increment, phase and message reset (6 lines become 2) |
+| `engine/combat_characterization_test.go`, `cmd/istary/combat_characterization_test.go` | The five P1a tests that pinned the old behaviour are replaced, and regression tests added (below) |
+
+**C1: orders and ally targets follow characters.**
+- **Recording:** the formation at order entry is recorded as character
+  pointers (`orderFor`), at `NewCombat` and at each `BeginNextRound`. The
+  terminal's order entry is unchanged and still writes `cs.Actions` by slot.
+- **Binding:** at the start of `ExecuteRound`, `bindOrders` re-indexes each
+  order from the character it was given for to that character's current
+  slot. It does the same for an ally target (spells and items): the ally is
+  found by character and given that character's current slot.
+- **Effect:**
+  - The rest of the engine reads `cs.Actions` and `TargetAlly` by slot as
+    before, so legal actions, targeting rules and mechanics are untouched.
+  - When nothing has moved (always, in normal play now that C2 sorts before
+    order entry), `bindOrders` changes nothing.
+  - Orders for a character no longer in the party are dropped.
+  - No persistent IDs.
+
+**C2: the re-sort happens at the round transition.**
+- **Where:** `ExecuteRound` no longer sorts. `BeginNextRound(game)` does what
+  the terminal did at round end: it compacts groups and advances the round.
+  It also re-sorts the party with the unchanged `sortPartyByStatus`, then
+  sets the order-entry phase and clears the messages.
+- **When the terminal calls it:** after the last block of the round has been
+  shown (`advanceCombatMessages`), only when combat continues. Flight,
+  victory and defeat are unchanged.
+- **During playback:** a round's messages, events, display snapshot and
+  formation are untouched until the call, so playback stays valid.
+- **Cured members:** they are not moved forward (the sort never moves an OK
+  member past another).
+
+**C3: no stale orders.** `BeginNextRound` clears all orders. Within a round,
+order entry, B)ack (clear all) and confirmation are unchanged.
+
+**Tests.**
+- **Replaced** (each pinned a P1a behaviour that C1–C3 change; P1a's
+  versions remain at `a27adb4`):
+  - `TestCharResortTiming`;
+  - `TestCharOrdersStayWithSlots` → `TestCharOrdersStayWithCharacters`;
+  - `TestCharStaleOrderCarriedOut` → `TestCharStaleOrdersNeverExecute`;
+  - `TestCharAllyTargetStaysWithSlot` → `TestCharAllyTargetsFollowCharacters`;
+  - in `TestCharRoundCompletion`, orders are now cleared at the transition.
+- **Added:**
+  - `TestCharRoundResultsKeptUntilTransition`;
+  - `TestCharOrdersFollowCharacterIfPositionsChange` (positions changed by
+    hand between order entry and execution);
+  - `TestCharCuredCharacterKeepsPosition`.
+- **What they cover:** death and paralysis moving members back; orders
+  staying with the character; DIALKO curing and DIOS healing the intended
+  character after formation changes; stale orders never executing; cured
+  members keeping their place; and results kept until the transition.
+- **Unchanged:** the P1b event tests pass unchanged, so events and messages
+  stay in step.
+
+**Goldens: none changed.**
+- **Why `maze_wander` did not change.** It has three fighters slain in one
+  round (round 7).
+  - **Old code:** in round 8 the priest, mage and fighter C carried out the
+    dead fighters' leftover Fight orders, because their own Parry orders
+    were in slots the sort had filled with the dead.
+  - **New code:** they are in the front line at order entry. The test's
+    policy gives the front line Fight on group 1.
+  - **Result:** the same actions and the same rolls, so the trace is
+    identical. The old golden had recorded the quirk without showing it.
+- **Differential check.** It played 300 seeded encounters under the old
+  commit (`c117d24`) and the new code, with a policy where the priest and
+  mage always parry.
+  - **Differences:** 148 fights differ.
+  - **Where they start:** in all 148 the traces are identical up to the
+    first difference, which always comes in a round after a party member was
+    incapacitated.
+  - **What the first difference is:** in all 148 it is the same thing. The
+    old code had a priest or mage carry out a dead or disabled member's
+    leftover Fight ("MAGE STABS AT A KOBOLD"); the new code has them parry,
+    as ordered.
+  - **Scope:** no other mechanic or random draw differs before that point.
+    The harness was scratch work and is not committed.
+
+**Remaining risks.**
+- **One terminal call:** the transition relies on the terminal calling
+  `BeginNextRound`. A future controller (M5) must make the same call. It is
+  the only round-advance path today.
+- **The binding is tied to the terminal's order entry:** it uses the
+  formation recorded when order entry begins. If a future order-entry path
+  changes the formation mid-entry (none does), it must refresh `orderFor`.
+  M5's `SetOrder(character, order)` (E4) would remove the slot step
+  altogether.
+- **Out of scope, unchanged:** Q-D8 (asleep and afraid members offered
+  orders), the silent misses (Q-P1), and the other P1a findings.
+

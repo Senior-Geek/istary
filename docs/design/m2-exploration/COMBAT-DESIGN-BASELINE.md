@@ -202,8 +202,9 @@ event stream (E1) are on its critical path.
 
 ## 8. Recommended next bounded technical prototype
 
-*Update:* P1a and P1b were carried out on `spike/p1-combat-events`; see
-`P1-COMBAT-ENGINE-SPIKE.md`. P1c awaits approval.
+*Update:* P1a and P1b were carried out on `spike/p1-combat-events`, and P1c
+(corrections C1–C3) on `spike/p1c-order-binding`, neither merged; see
+`P1-COMBAT-ENGINE-SPIKE.md`.
 
 **P1: Combat order identity and event stream: a headless Go spike.**
 
