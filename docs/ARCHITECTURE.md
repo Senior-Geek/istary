@@ -172,6 +172,33 @@ Classic timing and knowledge:
   groups from live identification and live counts, which can show a
   LATUMAPIC identification or a kill's singular name early.
 
+**Chest** (`app/chest.go`, M5e). After a won fight with a chest, the
+mechanics, chances and messages are the engine's (Pascal REWARDS),
+unchanged. The controller checks the phase and that the member can act. The
+"WHO (#) WILL ...?" prompts and the PAUSE2 waits stay in the front end.
+
+| Operation | Effect |
+|---|---|
+| `OpenChest(ch)`, `InspectChest(ch)`, `CastCalfo(ch)`, `DisarmChest(ch)` | The member acts; the result is shown (`CombatChestResult`). Errors: `ErrNotAtChest`, `ErrNoSuchPartyMember`, `ErrCannotAct`. Anyone may try CALFO ("CAN'T CAST CALFO!"); a second inspection gets "YOU ALREADY LOOKED!" |
+| `LeaveChest()` | Leave it unopened: experience, no treasure |
+| `AdvanceChest() (done, error)` | Shows the next block of a result; `done` when the last is on screen |
+| `EndChestResult() (complete, error)` | After the last block: if the chest was opened or left, the rewards are shared and combat moves to victory (`complete`); otherwise back to the chest menu |
+
+`CombatView` in the chest phase has a `Chest` section:
+- **Stage:** menu, who-open, who-calfo, who-inspect, who-disarm, or result.
+- **Actions:** with availability and notes, for example "no one here can
+  cast CALFO".
+- **Members:** whether each can act, has inspected, and can cast CALFO.
+- **Reports:** every trap the party has been told about, by inspection,
+  CALFO, a disarm that set it off, or opening. Reports are kept as told,
+  right or wrong, with whether the trap went off.
+- **Complete:** whether the chest is finished.
+
+At victory, `XP` and `Gold` hold the revealed rewards. The true trap, the
+chances and the treasure before victory are never in a View. The engine
+records the reports as it writes their messages (`ChestReports`), so nothing
+is read back from text.
+
 **Information boundary.** The playback operations and `CombatView` expose
 only released events: no message, actor, target or effect of a block not yet shown. This
 does not isolate the engine state itself: `Controller.Game` is public, and
@@ -196,8 +223,9 @@ Persistence: call `Controller.Save()` after each action.
 - Timers live in the main loop: combat pacing (`combatTimerTick` decides
   when; the controller does the rest, above), the Wiz 3 story pages, inn
   healing ticks and the title animation goroutine.
-- Combat still in the terminal: the chest (and its message pacing), and
-  order-entry navigation (which member is being ordered, `findNextActor`).
+- Combat still in the terminal: order-entry navigation (which member is
+  being ordered, `findNextActor`), the chest's "WHO (#)" prompts, and the
+  PAUSE1/PAUSE2 timing.
   Everything else goes through the controller, and `CombatView` is the
   presentation contract for GUI combat. The terminal still takes HAMAN's
   1-3 as soon as the choice opens, before its block is shown
