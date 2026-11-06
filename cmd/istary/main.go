@@ -270,17 +270,19 @@ func combatTimerTick(game *engine.GameState, sinceLast time.Duration) bool {
 		return false // not enough time yet
 	}
 
+	// The combat lifecycle is the controller's (app/combat_round.go); this
+	// loop only decides when, by the PAUSE1/PAUSE2 delays above.
+	ctrl := app.New(game)
 	switch {
 	case combat.Phase == engine.CombatInit:
-		// Auto-advance after delay (simulates Apple II disk I/O time)
-		if combat.Surprised == 2 {
-			combat.ExecuteRound(game)
-		} else {
-			combat.Phase = engine.CombatChoose
-			combat.CurrentActor = findNextActor(game, -1)
-		}
+		// Auto-advance after delay (simulates Apple II disk I/O time); a
+		// monster surprise round is executed here.
+		ctrl.StartCombat()
 	case combat.Phase == engine.CombatExecute && !combat.HamanSelecting:
-		advanceCombatMessages(game)
+		// One message block per PAUSE1; after the last, the round ends.
+		if step, err := ctrl.Advance(); err == nil && step.Done {
+			ctrl.EndRound()
+		}
 	case combat.Phase == engine.CombatChestResult:
 		advanceChestMessages(game)
 	case combat.Phase == engine.CombatVictory:
@@ -3531,18 +3533,14 @@ func handleCombatInput(game *engine.GameState, ev *tcell.EventKey) {
 
 	case engine.CombatConfirm:
 		if ev.Key() == tcell.KeyEnter {
-			// Execute the round
-			combat.ExecuteRound(game)
+			// Execute the round (once) and start playback
+			app.New(game).Commit()
 		}
 		if ev.Key() == tcell.KeyRune {
 			ch := ev.Rune()
 			if ch == 'b' || ch == 'B' {
-				// Go back to redo options
-				combat.Phase = engine.CombatChoose
-				combat.CurrentActor = 0
-				for i := range combat.Actions {
-					combat.Actions[i] = engine.PartyAction{}
-				}
+				// Go back to redo options (clears every order)
+				app.New(game).ReturnToOrders()
 			}
 		}
 
@@ -3552,7 +3550,7 @@ func handleCombatInput(game *engine.GameState, ev *tcell.EventKey) {
 			if ev.Key() == tcell.KeyRune {
 				ch := ev.Rune()
 				if ch >= '1' && ch <= '3' {
-					combat.ExecuteHamanChoice(game, int(ch-'1'))
+					app.New(game).ChooseBoon(int(ch - '1'))
 				}
 			}
 			return
@@ -3588,82 +3586,6 @@ func handleCombatInput(game *engine.GameState, ev *tcell.EventKey) {
 			game.Town.Message = "YOUR PARTY HAS PERISHED IN THE MAZE..."
 		}
 	}
-}
-
-// advanceCombatMessages auto-advances combat execute messages.
-// Called by timer (auto-advance) and by keypress (speed through).
-// From Pascal MELEE: each action gets PAUSE1 + CLRRECT. The monster/party
-// display is frozen for the entire round (DSPENEMY only called in CUTIL).
-func advanceCombatMessages(game *engine.GameState) {
-	combat := game.Combat
-	if combat == nil {
-		return
-	}
-
-	if len(combat.Messages) == 0 {
-		return
-	}
-
-	// Find the next action separator from the current position.
-	nextStart := combat.MessageIndex
-	for nextStart < len(combat.Messages) {
-		if combat.Messages[nextStart] == engine.ActionSeparator {
-			nextStart++
-			break
-		}
-		nextStart++
-	}
-
-	// If there are more action blocks to show, advance to the next one
-	if nextStart < len(combat.Messages) {
-		combat.MessageIndex = nextStart
-		return
-	}
-
-	// All messages shown — clear the frozen display snapshot
-	combat.DisplayAliveCounts = nil
-	combat.DisplayPartySnap = nil
-
-	// Resolve round end
-	if combat.Fled {
-		game.Combat = nil
-		game.Phase = engine.PhaseMaze
-		game.MazeMessage = "THE PARTY FLED!"
-		return
-	}
-
-	if combat.AllMonstersDead() {
-		if combat.HasChest {
-			// Pascal CHSTGOLD: BCHEST=true → show chest interaction (traps)
-			combat.Phase = engine.CombatChest
-			combat.ChestSubPhase = engine.ChestMenu
-			combat.Messages = nil
-			combat.MessageIndex = 0
-		} else {
-			// No chest — skip trap interaction, give rewards directly
-			// Pascal CHSTGOLD: GETREWRD/GIVEGOLD always run regardless of BCHEST
-			combat.ChestOpened = true
-			combat.FinalizeChest(game)
-		}
-		return
-	}
-
-	allDead := true
-	for _, m := range game.Town.Party.Members {
-		if m != nil && m.IsAlive() {
-			allDead = false
-			break
-		}
-	}
-	if allDead {
-		combat.Phase = engine.CombatDefeat
-		return
-	}
-
-	// Combat continues: the engine compacts groups, re-sorts the party and
-	// clears last round's orders (Pascal CUTIL), then action selection.
-	combat.BeginNextRound(game)
-	combat.CurrentActor = findNextActor(game, -1)
 }
 
 // advanceChestMessages auto-advances chest result messages.

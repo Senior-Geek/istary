@@ -92,3 +92,40 @@ func TestCharRoundCompletion(t *testing.T) {
 		}
 	}
 }
+
+// Finding #17 corrected (M5b): in the terminal, a successful escape plays
+// its round back, shows "THE PARTY FLED!" on its own tick, then leaves
+// combat for the maze; no further round is executed.
+func TestTerminalEscapeLeavesCombat(t *testing.T) {
+	for s := int64(1); s < 60; s++ {
+		seed(s)
+		g, d := partyInMaze(t)
+		g.Combat = engine.NewCombat(g)
+		g.Phase = engine.PhaseCombat
+		c := g.Combat
+		c.Surprised = 0
+		combatTick(g)
+		for c.Phase == engine.CombatChoose {
+			d.keys("R")
+		}
+		d.enter()
+		if !c.Fled {
+			continue
+		}
+		shown := false
+		for ticks := 0; g.Combat != nil && ticks < 100; ticks++ {
+			if c.Phase != engine.CombatExecute {
+				t.Fatalf("seed %d: phase %v during the escape round", s, c.Phase)
+			}
+			if c.Messages[c.MessageIndex] == "THE PARTY FLED!" {
+				shown = true
+			}
+			combatTick(g)
+		}
+		if !shown || g.Combat != nil || g.Phase != engine.PhaseMaze || g.MazeMessage != "THE PARTY FLED!" {
+			t.Fatalf("seed %d: shown %v, phase %v, maze %q", s, shown, g.Phase, g.MazeMessage)
+		}
+		return
+	}
+	t.Fatal("no seed escaped")
+}
