@@ -107,8 +107,11 @@ type eventLog struct {
 	events []CombatEvent
 	open   *CombatEvent
 	action *CombatEvent // the action whose later blocks inherit its actor
-	snap   combatSnapshot
-	mark   int // len(Messages) when the last event closed
+	// actStart is len(Messages) when the open block's action began. Lines
+	// before it (the surprise line) were not written by the action.
+	actStart int
+	snap     combatSnapshot
+	mark     int // len(Messages) when the last event closed
 	// withheld counts state changes made in silent blocks (none expected;
 	// checked by TestCombatEventsSilentBlocksChangeNothing).
 	withheld int
@@ -175,6 +178,7 @@ func (cs *CombatState) openEvent() *CombatEvent {
 			a.Part++
 			cs.ev.open.Kind, cs.ev.open.Actor, cs.ev.open.Target, cs.ev.open.Part = a.Kind, a.Actor, a.Target, a.Part
 		}
+		cs.ev.actStart = len(cs.Messages)
 		cs.ev.snap = cs.takeSnapshot()
 	}
 	return cs.ev.open
@@ -192,6 +196,7 @@ func (cs *CombatState) beginEvent(kind CombatEventKind, actor, target CombatRef)
 		return
 	}
 	e.Kind, e.Actor, e.Target, e.Part = kind, actor, target, 1
+	cs.ev.actStart = len(cs.Messages)
 	a := *e
 	cs.ev.action = &a
 }
@@ -233,6 +238,12 @@ func (cs *CombatState) closeEvent() {
 	if len(e.Lines) == 0 {
 		cs.ev.withheld += len(e.Effects)
 		e.Silent, e.Actor, e.Target, e.Effects = true, NoRef, NoRef, nil
+	} else if e.Actor.Side != SideNone && e.End == cs.ev.actStart {
+		// The block has lines, but none from its action (the surprise line
+		// before a monster's silent miss): it is narration, and the action
+		// is withheld as in a silent block.
+		cs.ev.withheld += len(e.Effects)
+		e.Kind, e.Actor, e.Target, e.Part, e.Effects = EventNarration, NoRef, NoRef, 0, nil
 	}
 	cs.ev.events = append(cs.ev.events, *e)
 	cs.ev.open = nil

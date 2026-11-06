@@ -60,6 +60,11 @@ func checkEvents(c *engine.CombatState, party []*engine.Character) []string {
 				bad = append(bad, fmt.Sprintf("event %d actor %s not named in %q", i, e.Actor.Name, e.Lines))
 			}
 		}
+		// A monster that acts is named, as the messages name it, in its own
+		// block: an event never names an actor the player was not shown.
+		if e.Actor.Side == engine.SideMonster && !strings.Contains(text, e.Actor.Name) {
+			bad = append(bad, fmt.Sprintf("event %d monster actor %s not named in %q", i, e.Actor.Name, e.Lines))
+		}
 		for _, f := range e.Effects {
 			if f.Who.Side == engine.SideParty && !strings.Contains(text, f.Who.Name) {
 				bad = append(bad, fmt.Sprintf("event %d reports a change to %s that its block does not mention: %q %+v", i, f.Who.Name, e.Lines, f))
