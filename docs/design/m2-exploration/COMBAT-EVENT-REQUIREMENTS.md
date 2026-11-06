@@ -44,6 +44,11 @@ format or the rules.
 
 ## Requirements
 
+**E1 spiked (2026-11-06):** `engine/combat_events.go` on the local branch
+`spike/p1-combat-events`, not merged. It covers E1's actor, kind, target,
+lines and effects, with silent blocks redacted. Results are in
+`P1-COMBAT-ENGINE-SPIKE.md`.
+
 **Minimum for the model** (without these the model cannot be built
 without parsing strings):
 

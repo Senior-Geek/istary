@@ -32,6 +32,7 @@ Choosing a direction, a renderer or a layout is left to the user.
 | [mockups/leak-check.js](mockups/leak-check.js) | Node script: which never-seen surfaces each camera shot would expose |
 | [stills/combat-refined/](stills/combat-refined/) | Stills of the refined prototype, and the stable vs push-in comparison |
 | [COMBAT-DESIGN-BASELINE.md](COMBAT-DESIGN-BASELINE.md) | **Start here for combat.** The consolidated M2 combat baseline: approved decisions, historical observations vs Istary corrections, provisional assumptions, open questions, engine and controller work before GUI combat, the acceptance report and the recommended next prototype |
+| [P1-COMBAT-ENGINE-SPIKE.md](P1-COMBAT-ENGINE-SPIKE.md) | P1a/P1b experiment: what the combat engine does today (pinned by tests), the structured event spike, and whether P1c is ready |
 | [COMBAT-DIFFICULT-CASES.md](COMBAT-DIFFICULT-CASES.md) | Third follow-on: the approved model validated against a member killed, a member paralyzed and cured, the formation re-sort (and when Go does it), four groups, sleeping and large creatures, rooms, junctions and dead ends, death animations and pacing; open questions Q-D1–Q-D9 |
 | [mockups/combat-fixture-hard.js](mockups/combat-fixture-hard.js) | The difficult-case fixture (choose **Difficult cases** in `combat-refined.html`) |
 | [mockups/fixture-check.js](mockups/fixture-check.js) | Node checks: the re-sort port against Go, outcomes stated by their messages, pacing |
