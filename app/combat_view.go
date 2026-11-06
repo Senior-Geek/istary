@@ -40,19 +40,53 @@ type CombatView struct {
 	Current int                `json:"current"`         // index into Events of the block being shown; -1 when none
 	Lines   []string           `json:"lines"`           // the message lines on screen now
 	Boons   []string           `json:"boons,omitempty"` // HAMAN's boons, once the block that offers them is on screen
+	Chest   CombatChestView    `json:"chest"`           // the chest, in the chest phase only
+	XP      int                `json:"xp,omitempty"`    // victory: experience for each survivor
+	Gold    int                `json:"gold,omitempty"`  // victory: gold in each share
+}
+
+// CombatChestView is the chest as the party knows it. The true trap, the
+// chances and the treasure are not in it; reports are what the party was
+// told, right or wrong.
+type CombatChestView struct {
+	Present  bool               `json:"present"`
+	Stage    string             `json:"stage,omitempty"` // menu, who-open, who-calfo, who-inspect, who-disarm, result
+	Actions  []CombatOptionView `json:"actions,omitempty"`
+	Members  []ChestMemberView  `json:"members,omitempty"`
+	Reports  []ChestReportView  `json:"reports,omitempty"`
+	Complete bool               `json:"complete"` // opened or left: the result leads to the rewards
+}
+
+// ChestMemberView says what one party member can do at the chest.
+type ChestMemberView struct {
+	Slot         int    `json:"slot"`
+	Name         string `json:"name"`
+	CanAct       bool   `json:"canAct"`
+	Inspected    bool   `json:"inspected"`    // a second look gets "YOU ALREADY LOOKED!"
+	CanCastCalfo bool   `json:"canCastCalfo"` // knows CALFO and has the spell points
+}
+
+// ChestReportView is one thing the party was told about the trap.
+type ChestReportView struct {
+	Slot   int    `json:"slot"`
+	Member string `json:"member"`
+	How    string `json:"how"`            // inspect, calfo, disarm, open
+	Said   string `json:"said,omitempty"` // the trap named; empty when nothing was learned
+	SetOff bool   `json:"setOff,omitempty"`
 }
 
 // What the front end does next.
 const (
-	NextStart    = "start"     // after the opening pause: StartCombat
-	NextFriendly = "friendly"  // fight or leave in peace (front end)
-	NextOrders   = "orders"    // give the actor an order: SetOrder
-	NextConfirm  = "confirm"   // Commit, or ReturnToOrders
-	NextAdvance  = "advance"   // after the pause: Advance
-	NextChoice   = "choice"    // HAMAN's boon: ChooseBoon
-	NextEndRound = "end-round" // every block shown: EndRound
-	NextChest    = "chest"     // the chest (front end)
-	NextLeave    = "leave"     // after the victory or defeat pause (front end)
+	NextStart       = "start"        // after the opening pause: StartCombat
+	NextFriendly    = "friendly"     // fight or leave in peace (front end)
+	NextOrders      = "orders"       // give the actor an order: SetOrder
+	NextConfirm     = "confirm"      // Commit, or ReturnToOrders
+	NextAdvance     = "advance"      // after the pause: Advance
+	NextChoice      = "choice"       // HAMAN's boon: ChooseBoon
+	NextEndRound    = "end-round"    // every block shown: EndRound
+	NextChest       = "chest"        // choose a chest action and who acts: OpenChest, InspectChest, CastCalfo, DisarmChest, LeaveChest
+	NextChestResult = "chest-result" // after the pause: AdvanceChest, then EndChestResult
+	NextLeave       = "leave"        // after the victory or defeat pause (front end)
 )
 
 // CombatMemberView is one party member as displayed.
@@ -158,8 +192,10 @@ func (c *Controller) CombatView() (CombatView, error) {
 		} else if playbackDone(cs) {
 			v.Next = NextEndRound
 		}
-	case engine.CombatChest, engine.CombatChestResult:
+	case engine.CombatChest:
 		v.Phase, v.Next = "chest", NextChest
+	case engine.CombatChestResult:
+		v.Phase, v.Next = "chest", NextChestResult
 	case engine.CombatVictory:
 		v.Phase, v.Next = "victory", NextLeave
 	case engine.CombatDefeat:
@@ -194,10 +230,72 @@ func (c *Controller) CombatView() (CombatView, error) {
 			v.Current = len(v.Events) - 1
 			v.Lines = append([]string(nil), evs[v.Current].Lines...)
 		}
+	case engine.CombatChest, engine.CombatChestResult:
+		v.Chest = c.chestView(cs)
+		if cs.Phase == engine.CombatChestResult {
+			v.Lines = blockLines(cs.Messages, cs.MessageIndex)
+		}
 	case engine.CombatVictory:
 		v.Lines = messageLines(cs.Messages) // the rewards
+		v.XP, v.Gold = cs.TotalXP, cs.TotalGold
 	}
 	return v, nil
+}
+
+// blockLines returns the lines of the block starting at from.
+func blockLines(msgs []string, from int) []string {
+	var out []string
+	for i := from; i >= 0 && i < len(msgs) && msgs[i] != engine.ActionSeparator; i++ {
+		out = append(out, msgs[i])
+	}
+	return out
+}
+
+// chestView describes the chest from what the party can know.
+func (c *Controller) chestView(cs *engine.CombatState) CombatChestView {
+	v := CombatChestView{Present: true, Complete: cs.ChestOpened || cs.ChestLeft}
+	v.Stage = map[engine.ChestSubPhase]string{engine.ChestMenu: "menu", engine.ChestWhoOpen: "who-open",
+		engine.ChestWhoCalfo: "who-calfo", engine.ChestWhoInspect: "who-inspect", engine.ChestWhoDisarm: "who-disarm"}[cs.ChestSubPhase]
+	if cs.Phase == engine.CombatChestResult {
+		v.Stage = "result"
+	}
+	calfo := engine.LookupSpell("CALFO")
+	anyone, caster, uninspected := false, false, false
+	for i, m := range c.Game.Town.Party.Members {
+		if m == nil {
+			continue
+		}
+		mv := ChestMemberView{Slot: i + 1, Name: m.Name, CanAct: CanGiveOrder(m), CanCastCalfo: calfo != nil && m.CanCastSpell(calfo)}
+		if i < len(cs.ChestInspected) {
+			mv.Inspected = cs.ChestInspected[i]
+		}
+		anyone = anyone || mv.CanAct
+		caster = caster || (mv.CanAct && mv.CanCastCalfo)
+		uninspected = uninspected || (mv.CanAct && !mv.Inspected)
+		v.Members = append(v.Members, mv)
+	}
+	why := ""
+	if !anyone {
+		why = "no one can act"
+	}
+	act := func(action, key, note string) CombatOptionView {
+		return CombatOptionView{Action: action, Key: key, Available: anyone, Reason: why, Note: note, Target: "member"}
+	}
+	calfoNote, inspectNote := "", ""
+	if !caster {
+		calfoNote = "no one here can cast CALFO"
+	}
+	if !uninspected {
+		inspectNote = "everyone has already looked"
+	}
+	if v.Stage != "result" {
+		v.Actions = []CombatOptionView{act("open", "O", ""), act("calfo", "C", calfoNote),
+			{Action: "leave", Key: "L", Available: true, Target: "none"}, act("inspect", "I", inspectNote), act("disarm", "D", "")}
+	}
+	for _, r := range cs.ChestReports {
+		v.Reports = append(v.Reports, ChestReportView{Slot: r.Member + 1, Member: r.Name, How: r.How, Said: r.Said, SetOff: r.SetOff})
+	}
+	return v
 }
 
 func messageLines(msgs []string) []string {

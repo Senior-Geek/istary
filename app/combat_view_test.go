@@ -350,7 +350,7 @@ func TestCombatViewOtherPhases(t *testing.T) {
 		engine.CombatInit:        {"opening", NextStart},
 		engine.CombatFriendly:    {"friendly", NextFriendly},
 		engine.CombatChest:       {"chest", NextChest},
-		engine.CombatChestResult: {"chest", NextChest},
+		engine.CombatChestResult: {"chest", NextChestResult},
 		engine.CombatVictory:     {"victory", NextLeave},
 		engine.CombatDefeat:      {"defeat", NextLeave},
 	} {
