@@ -20,3 +20,6 @@ Thumbs.db
 # Save files
 saves/
 *.sav
+
+# Reference material (copyrighted; kept locally, never committed)
+/docs/reference/
