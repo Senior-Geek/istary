@@ -995,7 +995,7 @@ document.addEventListener('keydown', (e) => {
   } else if (ph === 'chest') {
     const map = { O: 'open', I: 'inspect', C: 'calfo', D: 'disarm', L: 'leave' }
     if (k === 'Escape') { P.chestPending = null; draw() }
-    else if (map[up] && !P.chestPending) chestAct(map[up])
+    else if (map[up] && (!P.chestPending || P.chestPending.stage === 'who')) chestAct(map[up])
   }
 })
 
