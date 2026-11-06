@@ -97,12 +97,31 @@ Eligibility for display: `Creation().ClassAvailability()`.
 | `InParty(town, ch)`, `PartySlot(town, ch)` | Membership from the party list. Never use `InMaze` for this: joining sets it, as does being out in the dungeon |
 | `MaxPartySize`, `FrontRowSize` | 6 members; the first 3 are the front row (only they can melee) |
 
+**Combat order entry** (`app/combat.go`, M5a). Orders are given to a
+character, not a slot; the controller records them in the character's current
+slot and the engine binds them to that character (C1). The rules are those the
+terminal applied in `handleCombatChoose`; none is new. Prompts, keys and
+moving to the next member stay in the front end. No timers, no random numbers.
+
+| Operation | Effect |
+|---|---|
+| `CanGiveOrder(ch)` | Whether `ch` is offered an order: OK, asleep or afraid (engine `IsAlive`). Used by the terminal's `findNextActor` |
+| `CombatOrderMenu(ch) ([]OrderOption, error)` | Fight, Spell, Parry, Run, Use, Dispel, each with `Available`, a `Reason` when not, a `Note` (Use with nothing usable counts as Parry) and the `Target` to choose next (group, member, spell, item or nothing). `ErrCannotAct` for paralyzed, stoned, dead, ashed or lost members |
+| `CombatSpellTarget(ch, name) (OrderTarget, error)` | Checks the spell (`*Refusal` "** UNKNOWN SPELL **" or "** CANT CAST **") and says what it needs: a group, a member or nothing |
+| `CombatUsableItems(ch) []int` | Indexes of equipped items that cast a spell |
+| `SetOrder(ch, Order) error` | Validates and records the order: Fight only from the front row (1-3); Dispel for priests, bishops above level 3, lords above level 8; Fight, Dispel and group spells at a living group; member spells at any party member; Use of a usable item, aimed by the item's spell; Use with nothing usable recorded as Parry. Errors: `ErrNotInCombat`, `ErrNoSuchPartyMember`, `ErrCannotAct`, `ErrOrderUnavailable` (with the reason), `ErrInvalidTarget`, `ErrNoSuchItem`, `ErrInvalidChoice` |
+
+Two cases are kept as found (`WIZARDRY-COMPATIBILITY.md` #17, #18): a group
+spell is recorded with no group when no group is alive, and an item whose
+spell targets a single monster (SCROLL/HALITO) is aimed at its user.
+
 Persistence: call `Controller.Save()` after each action.
 
 ## Still terminal-only
 
 - Every other phase and prompt goes through `legacyDispatch`: title, castle
-  menu, inn, Boltac's, temple, Edge of Town, camp, maze, combat, utilities,
+  menu, inn, Boltac's, temple, Edge of Town, camp, maze, combat (whose order
+  legality now comes from the controller, above), utilities,
   and the rest of the Training Grounds edit menu (inspect, class change,
   reroll, set password, Rite of Passage).
 - Timers live in the main loop: combat auto-advance (`combatTimerTick`), the

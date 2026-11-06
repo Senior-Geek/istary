@@ -315,3 +315,24 @@ func TestCharMessageBlocks(t *testing.T) {
 		t.Fatalf("the surprise line opens the first monster block: %q", cs.Messages)
 	}
 }
+
+// Known defect, kept (compatibility finding #17): after a successful Run,
+// ExecuteRound returns before its round-end step, so the phase stays at
+// CombatConfirm instead of CombatExecute.
+func TestCharSuccessfulRunLeavesConfirm(t *testing.T) {
+	for s := int64(1); s < 50; s++ {
+		seed(s)
+		g, cs := combatFixture(t, []string{"A", "B", "C", "D", "E", "F"}, []Status{OK, OK, OK, OK, OK, OK})
+		cs.Groups[0].Members[0].Status = 0
+		cs.Actions[0] = PartyAction{Action: ActionRun}
+		cs.ExecuteRound(g)
+		if !cs.Fled {
+			continue
+		}
+		if cs.Phase != CombatConfirm {
+			t.Fatalf("seed %d: phase %v after a successful Run", s, cs.Phase)
+		}
+		return
+	}
+	t.Fatal("no successful Run found")
+}
