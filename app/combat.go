@@ -228,10 +228,10 @@ func (c *Controller) SetOrder(ch *engine.Character, o Order) error {
 		}
 		switch target {
 		case TargetGroup:
-			// Kept as found: if no group is alive (reachable after a
-			// successful Run leaves the round at confirmation; see
-			// docs/WIZARDRY-COMPATIBILITY.md #17), the terminal recorded the
-			// spell with no group (-1).
+			// Kept as found: if no group is alive, the terminal recorded the
+			// spell with no group (-1). The known route to that state, a
+			// successful Run leaving the round at confirmation
+			// (docs/WIZARDRY-COMPATIBILITY.md #17), is corrected in M5b.
 			noneAlive := cs.FirstAliveGroup() < 0 && o.Group == -1
 			if !livingGroup(o.Group) && !noneAlive {
 				return ErrInvalidTarget
