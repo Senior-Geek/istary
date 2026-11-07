@@ -322,3 +322,10 @@ offers practice only with characters who are not in it.
   copies of characters.
 
 R1 to R3 (rescue) remain open for M6b-4.
+
+## 12. Implemented so far
+
+- **M6b-0:** atomic saves.
+- **M6b-1:** real expeditions in the GUI, saved after every action, with
+  the temporary restart rule (the party is in the castle after a restart)
+  and the engine's current defeat. No expedition section yet.

@@ -2,8 +2,19 @@
 
 A Wails v2 + Svelte 5 front end. It covers Wizardry I character creation,
 roster management, the party (Gilgamesh's Tavern), combat (M7a) and the
-dungeon (M6a): practice expeditions and practice encounters played through
-`app.Controller`, `app.DungeonView` and `app.CombatView`.
+dungeon (M6a): real expeditions (M6b-1), practice expeditions and practice
+encounters played through `app.Controller`, `app.DungeonView` and
+`app.CombatView`.
+
+**Real expeditions.** "Real expedition" in the Party column takes the party
+itself into the maze, to Camp at the entrance. It plays like a practice
+expedition (below), but everything is kept: the game is saved after every
+action. It ends in the castle, by the stairs or with the party's defeat
+(the engine returns the dead party there); it cannot be abandoned. If
+Istary closes during an expedition, the party is in the castle when it
+starts again, as it was at the last save (resuming in the maze is M6b-2).
+While the party is out, the roster, Tavern and Training Grounds wait. A
+save that fails is shown until one succeeds.
 
 **Practice expeditions.** "Practice expedition" in the Party column takes
 copies of the party into the real maze, to Camp at the entrance.

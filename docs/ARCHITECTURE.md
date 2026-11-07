@@ -311,9 +311,10 @@ always through the game's own leave/enter steps. See
 - **Pacing:** the frontend's: Space or Enter for the next step, or automatic
   at a chosen speed.
 - **How combat is reached:** through `PracticeEncounter(withChest)`, a
-  real encounter from the maze entrance, or a practice expedition (below).
-  Both are played by copies of the party in a separate game that is never
-  saved, so the roster is unchanged. `withChest` gives the encounter a chest
+  real encounter from the maze entrance, a practice expedition, or a real
+  expedition (below). Practice is played by copies of the party in a
+  separate game that is never saved, so the roster is unchanged; a real
+  expedition fights in the saved game. `withChest` gives the encounter a chest
   for practice (the entrance's encounters never have one); it is a practice
   setting, not a rule.
 
@@ -333,8 +334,25 @@ always through the game's own leave/enter steps. See
 - **The screen** (`DungeonScreen.svelte`): a wireframe of the corridor
   (`lib/dungeon.js`), the messages, the party, and the actions with the
   terminal's keys. It is a placeholder, not the Classic renderer.
-- **Not yet:** saved expeditions, the party's real state, rescue and
-  recovery (M6b); Camp's other screens.
+- **Not yet:** saved positions and resuming (M6b-2), rescue and recovery
+  (M6b-4); Camp's other screens (M6b-3).
+
+**Real expeditions (M6b-1).** `RealExpedition()` takes the party itself,
+in the saved game, through the same dungeon, combat and chest operations.
+- **Saving:** every action is saved (atomically), whatever happened, so
+  injuries, spells spent, experience, gold and items are kept. A failed
+  save is in `View.Unsaved` until one succeeds; the action is never
+  repeated, the next successful save writes it.
+- **The end:** only in the castle: the stairs, or the engine's defeat,
+  which returns the dead party there. It cannot be abandoned.
+- **A restart during an expedition** finds the party in the castle with
+  everything saved up to the last action (no position is saved until
+  M6b-2), as in the terminal. An interrupted encounter is gone; rewards
+  are kept only if they had been given.
+- **While the party is out** the Tavern, the Training Grounds, rename,
+  reset, restore, reload and practice are refused.
+- **View:** `View.Real` marks it; the screens label it and offer Abandon
+  only for practice.
 
 ## Randomness
 
