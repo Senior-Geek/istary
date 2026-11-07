@@ -87,8 +87,9 @@ func TestFailedSaveKeepsThePreviousSave(t *testing.T) {
 			g.Town.Roster.Characters[0].Gold = 123456 // a change that must not reach disk
 			injected := failStep(t, step)
 			err := g.Save()
-			if !errors.Is(err, injected) {
-				t.Fatalf("Save error = %v, want the injected failure", err)
+			var nd *NotDurableError
+			if !errors.Is(err, injected) || errors.As(err, &nd) {
+				t.Fatalf("Save error = %v, want the injected failure, not replaced", err)
 			}
 			after, _ := os.ReadFile(path)
 			if !bytes.Equal(after, before) {
@@ -113,7 +114,8 @@ func TestDirectorySyncFailureIsReportedAfterTheSave(t *testing.T) {
 	g.Town.Roster.Characters[0].Gold = 4242
 	injected := failStep(t, "syncdir")
 	err := g.Save()
-	if !errors.Is(err, injected) || !strings.Contains(err.Error(), "saved, but") {
+	var nd *NotDurableError
+	if !errors.Is(err, injected) || !errors.As(err, &nd) || !strings.Contains(err.Error(), "saved, but") {
 		t.Fatalf("Save error = %v", err)
 	}
 	saveStepHook = nil

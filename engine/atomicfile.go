@@ -27,7 +27,8 @@ import (
 //
 // Durability: after a successful return the new contents survive a crash or
 // power loss as far as the platform's sync calls guarantee. A failure of the
-// directory sync (step 5) is reported, but the new file is already in place.
+// directory sync (step 5) is a *NotDurableError: the new file is already in
+// place. Any other error: the old file is untouched.
 func writeFileAtomic(path string, data []byte, perm fs.FileMode) error {
 	if target, err := filepath.EvalSymlinks(path); err == nil {
 		path = target
@@ -83,13 +84,25 @@ func writeFileAtomic(path string, data []byte, perm fs.FileMode) error {
 	renamed = true
 
 	if err := saveStep("syncdir"); err != nil {
-		return fmt.Errorf("saved, but could not sync the directory: %w", err)
+		return &NotDurableError{Err: err}
 	}
 	if err := syncDir(dir); err != nil {
-		return fmt.Errorf("saved, but could not sync the directory: %w", err)
+		return &NotDurableError{Err: err}
 	}
 	return nil
 }
+
+// NotDurableError is a save that replaced the old file but could not sync
+// the folder afterwards: the new contents are in place and are read back,
+// but may not survive a crash or power loss. Any other save error means the
+// file was not replaced: the previous save is intact.
+type NotDurableError struct{ Err error }
+
+func (e *NotDurableError) Error() string {
+	return "saved, but could not sync the directory: " + e.Err.Error()
+}
+
+func (e *NotDurableError) Unwrap() error { return e.Err }
 
 // createTemp creates a new file next to base in dir, named
 // ".<base>.tmp-<random>", with mode perm (less the umask, as for any new
