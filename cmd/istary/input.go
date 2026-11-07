@@ -50,8 +50,6 @@ func legacyDispatch(screen *render.Screen, game *engine.GameState, ev *tcell.Eve
 		return handleTownInput(game, ev)
 	case engine.PhaseCamp:
 		handleCampInput(game, ev)
-	case engine.PhaseMaze:
-		return handleMazeInput(screen, game, ev)
 	case engine.PhaseCombat:
 		handleCombatInput(game, ev)
 	case engine.PhaseUtilities:

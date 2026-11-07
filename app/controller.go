@@ -14,6 +14,9 @@ import "github.com/Senior-Geek/istary/engine"
 // Controller drives one game session.
 type Controller struct {
 	Game *engine.GameState
+
+	// Beep, if set, is called when the game beeps (a step into a wall).
+	Beep func()
 }
 
 // New returns a controller for the given game session.
@@ -37,6 +40,11 @@ func (c *Controller) HandleKey(k Key) bool {
 		return true
 	case engine.PhaseTown:
 		return c.townKey(k)
+	case engine.PhaseCamp:
+		return c.campKey(k)
+	case engine.PhaseMaze:
+		c.mazeKey(k)
+		return true
 	}
 	return false
 }
@@ -53,6 +61,8 @@ func (c *Controller) townKey(k Key) bool {
 		case engine.Tavern:
 			c.tavernMenuKey(k)
 			return true
+		case engine.EdgeOfTown:
+			return c.edgeOfTownKey(k)
 		}
 	case engine.InputTrainingName, engine.InputRoster, engine.InputConfirmCreate,
 		engine.InputPassword, engine.InputConfirmDelete:
