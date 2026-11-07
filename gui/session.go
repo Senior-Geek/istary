@@ -32,6 +32,15 @@ type Session struct {
 	practice      *app.Controller
 	practiceChest bool
 	expedition    bool // practice is an expedition (dungeon.go), not one encounter
+
+	// real is true while the saved party is out on a real expedition
+	// (dungeon.go): from entering the maze until it is back in the castle.
+	// Its actions run on ctrl, the saved game.
+	real bool
+
+	// unsaved is the error of the last save that failed, until a save
+	// succeeds; the view keeps showing it so a failure is not missed.
+	unsaved string
 }
 
 // NewSession loads Wizardry I and the roster from saveDir. saveDir must not
@@ -89,11 +98,29 @@ func (s *Session) do(action func() error) View {
 		return s.view(nil)
 	}
 	s.notice = ""
-	err := action()
-	if saveErr := s.ctrl.Save(); saveErr != nil {
-		err = errors.Join(err, fmt.Errorf("Could not save: %w", saveErr))
+	if s.real {
+		return s.view(errExpeditionOut)
 	}
+	err := action()
+	err = errors.Join(err, s.save())
 	return s.view(err)
+}
+
+// errExpeditionOut refuses town actions while the party is in the maze:
+// as in the game, the roster, the Tavern and the Training Grounds are only
+// reachable from the castle.
+var errExpeditionOut = errors.New("The party is out on an expedition. Return to the castle first.")
+
+// save writes the saved game and remembers a failure until a save succeeds.
+// The action itself has already happened in memory and is never repeated:
+// the next successful save writes it with whatever follows.
+func (s *Session) save() error {
+	if err := s.ctrl.Save(); err != nil {
+		s.unsaved = err.Error()
+		return fmt.Errorf("Could not save: %w", err)
+	}
+	s.unsaved = ""
+	return nil
 }
 
 // State returns the current view without changing anything.
@@ -111,6 +138,9 @@ func (s *Session) ReloadRoster() View {
 		return s.view(nil)
 	}
 	s.notice = ""
+	if s.real {
+		return s.view(errExpeditionOut)
+	}
 	if s.ctrl.Game.Phase == engine.PhaseCreation {
 		return s.view(errors.New("Finish or discard the character being created first."))
 	}

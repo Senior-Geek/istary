@@ -34,15 +34,21 @@ type View struct {
 	FrontRow       int             `json:"frontRow"`    // slots 1..FrontRow are the front row
 	PendingJoin    string          `json:"pendingJoin"` // name waiting for its password
 
-	// Combat (Screen "combat"): the controller's CombatView of the practice
-	// encounter, and nothing else from the combat engine.
+	// Combat (Screen "combat"): the controller's CombatView of the
+	// encounter under way, and nothing else from the combat engine.
 	Combat        *app.CombatView `json:"combat"`
 	PracticeChest bool            `json:"practiceChest"` // the encounter was given a chest for practice
 
 	// Dungeon (Screen "dungeon"): the controller's DungeonView of the
-	// practice expedition, and nothing else from the maze.
+	// expedition under way, and nothing else from the maze.
 	Dungeon    *app.DungeonView `json:"dungeon"`
-	Expedition bool             `json:"expedition"` // a practice expedition is under way (any screen)
+	Expedition bool             `json:"expedition"` // an expedition (practice or real) is under way (any screen)
+	Real       bool             `json:"real"`       // it is the real, saved expedition, not practice
+
+	// Unsaved is the error of the last save that failed; it stays until a
+	// save succeeds. Everything since the last successful save exists only
+	// in memory until then.
+	Unsaved string `json:"unsaved"`
 }
 
 // PartySlotView is one party position.
@@ -262,12 +268,13 @@ func (s *Session) view(err error) View {
 		return v
 	}
 	v.Error = errorText(err)
-	if s.practice != nil {
-		v.Expedition = s.expedition
-		if cv, cerr := s.practice.CombatView(); cerr == nil {
-			v.Screen, v.Combat, v.PracticeChest = "combat", &cv, s.practiceChest
-		} else if s.expedition {
-			dv := s.practice.DungeonView()
+	v.Unsaved = s.unsaved
+	if c := s.active(); c != nil {
+		v.Expedition, v.Real = s.expedition || s.real, s.real
+		if cv, cerr := c.CombatView(); cerr == nil {
+			v.Screen, v.Combat, v.PracticeChest = "combat", &cv, s.practiceChest && !s.real
+		} else if v.Expedition {
+			dv := c.DungeonView()
 			v.Screen, v.Dungeon = "dungeon", &dv
 		}
 	}

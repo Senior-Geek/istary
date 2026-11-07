@@ -1,12 +1,13 @@
 package main
 
 // GUI combat (M7a). Combat is reached through a practice encounter (a real
-// encounter from the engine at the maze entrance) or a practice expedition
-// (dungeon.go, M6a), both played by copies of the current party in a
-// separate game. The practice game is never saved and its results are
-// discarded, so the roster is unchanged whatever happens.
+// encounter from the engine at the maze entrance), a practice expedition
+// (dungeon.go, M6a), or a real expedition (dungeon.go, M6b-1). Practice is
+// played by copies of the current party in a separate game that is never
+// saved, so the roster is unchanged whatever happens; a real expedition
+// plays the saved game and saves after every action.
 //
-// Every combat method calls app.Controller operations on the practice game
+// Every combat method calls app.Controller operations on the active game
 // and returns a View whose Combat field is app.CombatView, the only combat
 // data the front end receives. Pacing (when to Advance) is the front end's.
 
@@ -59,6 +60,9 @@ func cloneCharacter(ch *engine.Character) (*engine.Character, error) {
 // practiceGame returns a new, never-saved game in town whose party is a
 // copy of the current party.
 func (s *Session) practiceGame() (*engine.GameState, error) {
+	if s.real {
+		return nil, errExpeditionOut
+	}
 	g := s.ctrl.Game
 	if g.Phase != engine.PhaseTown || len(g.Town.Party.Members) == 0 {
 		return nil, errors.New("Form a party in the Tavern first.")
@@ -107,11 +111,18 @@ func (s *Session) PracticeEncounter(withChest bool) View {
 	})
 }
 
-// combatDo runs an action on the practice game under the lock. The
-// practice game is never saved. A practice encounter is over when its
-// combat is; an expedition goes on in the maze and at Camp and is over when
-// the party is back in town (by the stairs, or perished). Then the practice
-// game is discarded and a notice says how it ended.
+// combatDo runs a dungeon, combat or chest action under the lock, on the
+// practice game or on the real expedition.
+//
+// The practice game is never saved. A practice encounter is over when its
+// combat is; a practice expedition goes on in the maze and at Camp and is
+// over when the party is back in town (by the stairs, or perished). Then
+// the practice game is discarded and a notice says how it ended.
+//
+// A real expedition plays the saved game, which is saved after every
+// action, whatever happened (as the terminal saves after every key). It is
+// over when the game is back in town: by the stairs, or with the engine's
+// defeat (the dead party is returned to the castle).
 func (s *Session) combatDo(action func() error) View {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -120,6 +131,21 @@ func (s *Session) combatDo(action func() error) View {
 	}
 	s.notice = ""
 	err := action()
+	if s.real {
+		err = errors.Join(err, s.save())
+		if g := s.ctrl.Game; g.Phase == engine.PhaseTown {
+			s.real = false
+			switch {
+			case g.Town.Message != "":
+				s.notice = g.Town.Message + " The expedition is over."
+			case g.MazeMessage != "":
+				s.notice = g.MazeMessage + " The party is back in the castle."
+			default:
+				s.notice = "The party is back in the castle."
+			}
+		}
+		return s.view(err)
+	}
 	if p := s.practice; p != nil {
 		g := p.Game
 		inCombat := g.Phase == engine.PhaseCombat && g.Combat != nil
@@ -155,14 +181,24 @@ func anyAlive(g *engine.GameState) bool {
 	return false
 }
 
-// onPractice runs op against the practice controller.
+// onPractice runs op against the controller of the encounter or expedition
+// under way: the practice game's, or the saved game's on a real expedition.
 func (s *Session) onPractice(op func(c *app.Controller) error) View {
 	return s.combatDo(func() error {
-		if s.practice == nil {
-			return errNoPractice
+		if c := s.active(); c != nil {
+			return op(c)
 		}
-		return op(s.practice)
+		return errNoPractice
 	})
+}
+
+// active returns the controller playing the current encounter or
+// expedition, or nil when none is under way.
+func (s *Session) active() *app.Controller {
+	if s.real {
+		return s.ctrl
+	}
+	return s.practice
 }
 
 // member returns the practice party member in a 1-based slot.
@@ -177,6 +213,9 @@ func member(c *app.Controller, slot int) (*engine.Character, error) {
 // AbandonPractice ends the practice encounter or expedition at once.
 func (s *Session) AbandonPractice() View {
 	return s.combatDo(func() error {
+		if s.real {
+			return errors.New("A real expedition cannot be abandoned; the party must find its way back to the castle.")
+		}
 		if s.practice == nil {
 			return errNoPractice
 		}

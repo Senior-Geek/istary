@@ -14,12 +14,12 @@ import (
 	"github.com/Senior-Geek/istary/engine"
 )
 
-// explore plays a practice expedition as a front end would, reading only
-// the View and calling only Session methods: in the dungeon it picks one of
-// the view's actions (mostly forward), and in combat it fights with drive.
-// It checks at every view that the screen matches the practice game: the
-// combat screen exactly when the engine has started an encounter. record,
-// if set, is given every view.
+// explore plays an expedition (practice or real) as a front end would,
+// reading only the View and calling only Session methods: in the dungeon it
+// picks one of the view's actions (mostly forward), and in combat it fights
+// with drive. It checks at every view that the screen matches the active
+// game: the combat screen exactly when the engine has started an encounter.
+// record, if set, is given every view.
 func explore(t *testing.T, s *Session, rng *rand.Rand, seen map[string]int, record func(View)) View {
 	t.Helper()
 	v := s.State()
@@ -30,10 +30,11 @@ func explore(t *testing.T, s *Session, rng *rand.Rand, seen map[string]int, reco
 		if record != nil {
 			record(v)
 		}
-		if s.practice == nil {
+		c := s.active()
+		if c == nil {
 			return v
 		}
-		g := s.practice.Game
+		g := c.Game
 		engineCombat := g.Phase == engine.PhaseCombat && g.Combat != nil
 		if (v.Screen == "combat") != engineCombat || (v.Screen == "dungeon") == engineCombat {
 			t.Fatalf("step %d: screen %q with engine phase %v", step, v.Screen, g.Phase)
