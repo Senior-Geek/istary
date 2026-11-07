@@ -283,3 +283,47 @@ func TestSaveIntoReadOnlyFolder(t *testing.T) {
 		t.Fatalf("directory = %v", names)
 	}
 }
+
+// Restoring a backup replaces the roster the same way: a failed restore
+// leaves the current roster as it was; a failed backup leaves no file.
+func TestRestoreAndBackupAreAtomic(t *testing.T) {
+	g, path, before := savedGame(t)
+	backup := filepath.Join(t.TempDir(), "backup.json")
+	if err := BackupRoster(g, backup); err != nil {
+		t.Fatal(err)
+	}
+	if got, _ := os.ReadFile(backup); !bytes.Equal(got, before) {
+		t.Fatal("backup differs from the roster")
+	}
+	g.Town.Roster.Characters[0].Gold = 5
+	if err := g.Save(); err != nil {
+		t.Fatal(err)
+	}
+	current, _ := os.ReadFile(path)
+
+	injected := failStep(t, "rename")
+	if err := RestoreRoster(g, backup); !errors.Is(err, injected) {
+		t.Fatalf("restore error = %v", err)
+	}
+	if got, _ := os.ReadFile(path); !bytes.Equal(got, current) {
+		t.Fatal("a failed restore changed the roster")
+	}
+	other := filepath.Join(t.TempDir(), "other.json")
+	if err := BackupRoster(g, other); !errors.Is(err, injected) {
+		t.Fatalf("backup error = %v", err)
+	}
+	if names := dirNames(t, filepath.Dir(other)); len(names) != 0 {
+		t.Fatalf("failed backup left %v", names)
+	}
+	if names := dirNames(t, filepath.Dir(path)); len(names) != 1 {
+		t.Fatalf("roster folder = %v", names)
+	}
+
+	saveStepHook = nil
+	if err := RestoreRoster(g, backup); err != nil {
+		t.Fatal(err)
+	}
+	if got, _ := os.ReadFile(path); !bytes.Equal(got, before) || g.Town.Roster.Characters[0].Gold != 777 {
+		t.Fatal("restore did not bring the backup back")
+	}
+}

@@ -50,7 +50,8 @@ func expandPath(path string) string {
 	return filepath.Clean(path)
 }
 
-// BackupRoster copies the current roster file to the given path.
+// BackupRoster copies the current roster file to the given path, replacing
+// any file there atomically (writeFileAtomic).
 func BackupRoster(game *GameState, destPath string) error {
 	destPath = expandPath(destPath)
 	key := scenarioKey(game.Scenario.Game)
@@ -62,13 +63,15 @@ func BackupRoster(game *GameState, destPath string) error {
 	if err != nil {
 		return fmt.Errorf("read roster: %w", err)
 	}
-	if err := os.WriteFile(destPath, data, 0644); err != nil {
+	if err := writeFileAtomic(destPath, data, 0644); err != nil {
 		return fmt.Errorf("write backup: %w", err)
 	}
 	return nil
 }
 
 // RestoreRoster copies a backup file over the current roster and reloads.
+// The roster is replaced atomically: if the write fails, the current roster
+// is untouched.
 func RestoreRoster(game *GameState, srcPath string) error {
 	srcPath = expandPath(srcPath)
 	data, err := os.ReadFile(srcPath)
@@ -80,7 +83,7 @@ func RestoreRoster(game *GameState, srcPath string) error {
 	if err != nil {
 		return err
 	}
-	if err := os.WriteFile(destPath, data, 0644); err != nil {
+	if err := writeFileAtomic(destPath, data, 0644); err != nil {
 		return fmt.Errorf("write roster: %w", err)
 	}
 	// Reload
