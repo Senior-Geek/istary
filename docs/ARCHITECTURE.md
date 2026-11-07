@@ -211,13 +211,64 @@ state; GUI combat must use `CombatView` alone.
 Enforcing the boundary for all Go callers would mean hiding the engine state
 behind the controller, a larger redesign than M5b.
 
+**Maze and Camp (M6a).** The terminal's maze handler moved into the
+controller unchanged (`app/maze.go`, `mazeKey`, with `checkSquare`,
+`hazardDamage` and `ouchyDamage`). Only key decoding changed, and the beep
+is `Controller.Beep`, set by the terminal to `screen.Beep`. A step is one
+transaction, in the original order: the move, the square's effect, healing
+and poison (25% per step), then the encounter check (1 in 99, a fight zone,
+or a chest alarm). Nothing is skipped, so the random numbers are the
+terminal's. A step can end in combat (`PhaseCombat`).
+
+| Operation | Effect |
+|---|---|
+| `EnterMaze()` | Edge of Town M)AZE: Camp at the entrance (floor 1, 0,0, facing north), fight zones set. `ErrPartyEmpty` without a party |
+| `LeaveCamp()` | Camp L)EAVE; at the stairs the question is asked at once. Only from Camp's menu (`ErrWrongState` while one of Camp's screens is open) |
+| `Forward()`, `TurnLeft()`, `TurnRight()`, `Kick()`, `Camp()`, `Inspect()` | One maze command (F, L, R, K, C, I). Refused with `ErrPromptPending` while the maze waits for an answer |
+| `ContinueMessage()` | [RET] on a message: next page, or dismiss (then an item, a search question or a return to the castle may follow, as in the terminal) |
+| `Answer(yes)` | The stairs or a search question (Y/N). Y on the stairs up returns to the castle |
+| `PressButton(n)` | Button n (1 is A). `ErrInvalidChoice` outside A to the last button |
+| `PickUp()`, `LeaveInspect()` | Inspect's P)ICK UP and L)EAVE |
+
+`HandleKey` routes all maze keys, Camp's L and Edge of Town's M to these; the
+rest of Camp and the Edge of Town is still the terminal's. The operations are
+the keys: tests drive one game with operations and one with keys through
+`HandleKey` from the same random sequence and compare after every step, and
+a differential run of 1,500 key sequences on every floor matched `main` line
+for line (state and screen text).
+
+`DungeonView()` (`app/dungeon_view.go`) is the read-only, JSON-ready view of
+the maze and Camp:
+- **Phase:** camp, maze, combat, town or other.
+- **Party:** as the maze screen lists it.
+- **Corridor:** nearest first, each square's left, right and front walls
+  (open, wall or door), and the wall ahead of an open side. It reaches as
+  far as the Classic view draws: five squares with light, three with QUICK
+  plot, two without, stopping at darkness or the first wall or door ahead.
+- **Viewport, Lines, More:** "OUCH!" and "IT'S VERY DARK HERE", the message
+  area, and "[RET] FOR MORE".
+- **Prompt:** what the maze waits for (messages, stairs, search, buttons,
+  inspect, and the terminal-only map and delay). **Buttons** and **Found**
+  go with it.
+- **Spells:** LIGHT and PROTECT, as on the maze screen.
+- **Actions:** the operations open now (the `Act...` names).
+
+The view shows nothing the maze screen does not: no position, facing or
+floor (only DUMAPIC tells those), no map, nothing past the light, no
+encounter state. A hidden door is a wall without light and a door with it.
+The Classic view also lets one flicker into view one draw in six without
+light; that needs a random number, and building the view never draws one,
+so it is left out (`WIZARDRY-COMPATIBILITY.md` #23). A test checks that
+changing any wall changes the terminal's drawing if and only if it changes
+the corridor.
+
 Persistence: call `Controller.Save()` after each action.
 
 ## Still terminal-only
 
 - Every other phase and prompt goes through `legacyDispatch`: title, castle
-  menu, inn, Boltac's, temple, Edge of Town, camp, maze, combat (whose order
-  legality now comes from the controller, above), utilities,
+  menu, inn, Boltac's, temple, the Edge of Town (except M), Camp (except L),
+  combat (whose order legality now comes from the controller, above), utilities,
   and the rest of the Training Grounds edit menu (inspect, class change,
   reroll, set password, Rite of Passage).
 - Timers live in the main loop: combat pacing (`combatTimerTick` decides
@@ -230,7 +281,6 @@ Persistence: call `Controller.Save()` after each action.
   presentation contract for GUI combat. The terminal still takes HAMAN's
   1-3 as soon as the choice opens, before its block is shown
   (`WIZARDRY-COMPATIBILITY.md` #19); `ChooseBoon` accepts that.
-- `handleMazeInput` takes a `*render.Screen` only to beep.
 - `engine.TitleState.Anim` holds a `*render.WTAnimation` as `interface{}`.
 - `render` keeps package-level state (`SixelSupported`, `ColorMode`,
   `CellWidth`, `CellHeight`).
@@ -260,12 +310,31 @@ always through the game's own leave/enter steps. See
   matching controller operation.
 - **Pacing:** the frontend's: Space or Enter for the next step, or automatic
   at a chosen speed.
-- **How combat is reached:** the GUI has no dungeon yet, so through
-  `PracticeEncounter(withChest)`. That is a real encounter from the maze
-  entrance, fought by copies of the party in a separate game that is never
+- **How combat is reached:** through `PracticeEncounter(withChest)`, a
+  real encounter from the maze entrance, or a practice expedition (below).
+  Both are played by copies of the party in a separate game that is never
   saved, so the roster is unchanged. `withChest` gives the encounter a chest
   for practice (the entrance's encounters never have one); it is a practice
   setting, not a rule.
+
+**GUI dungeon (M6a).** `gui/dungeon.go` is the dungeon bridge.
+- **Starting:** `PracticeExpedition()` copies the party into a separate,
+  never-saved game and calls `EnterMaze`.
+- **What the frontend gets:** `View.Screen` is `dungeon` and `View.Dungeon`
+  is the controller's `app.DungeonView`, the only maze data it receives.
+  `View.Expedition` says an expedition is under way.
+- **Methods:** `DungeonAction(action, button)` performs one of the view's
+  actions through the matching operation; `AbandonPractice` ends it.
+- **Encounters:** a step that meets one leaves `PhaseCombat`, so `View`
+  switches to the combat screen on the same expedition. After a victory the
+  walk goes on, with its losses, in the practice game only.
+- **The end:** when the party is back in town (the stairs, or perished) or
+  the expedition is abandoned, the practice game is discarded.
+- **The screen** (`DungeonScreen.svelte`): a wireframe of the corridor
+  (`lib/dungeon.js`), the messages, the party, and the actions with the
+  terminal's keys. It is a placeholder, not the Classic renderer.
+- **Not yet:** saved expeditions, the party's real state, rescue and
+  recovery (M6b); Camp's other screens.
 
 ## Randomness
 

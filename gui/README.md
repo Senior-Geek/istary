@@ -1,10 +1,25 @@
 # Istary desktop GUI (prototype)
 
 A Wails v2 + Svelte 5 front end. It covers Wizardry I character creation,
-roster management, the party (Gilgamesh's Tavern), and combat (M7a):
-practice encounters played through `app.Controller` and `app.CombatView`.
+roster management, the party (Gilgamesh's Tavern), combat (M7a) and the
+dungeon (M6a): practice expeditions and practice encounters played through
+`app.Controller`, `app.DungeonView` and `app.CombatView`.
 
-**Practice encounters.** There is no dungeon in the GUI yet.
+**Practice expeditions.** "Practice expedition" in the Party column takes
+copies of the party into the real maze, to Camp at the entrance.
+- **Moving:** the buttons or the terminal's keys (F/W/↑ forward, L/A/←
+  left, R/D/→ right, K kick, C camp, I inspect, Enter, Y/N, button letters).
+  Doors need a kick, as in the engine.
+- **Everything happens:** square effects, healing and poison, and
+  encounters, exactly as in the terminal. An encounter opens the combat
+  screen; after a victory the walk goes on.
+- **Nothing is kept:** taking the stairs up, perishing or Abandon ends the
+  expedition and discards it; the roster is not touched.
+- **The screen** (`frontend/src/lib/DungeonScreen.svelte`) draws a simple
+  wireframe of the corridor, not the Classic picture. Camp offers only
+  Leave so far.
+
+**Practice encounters.**
 - **What you fight:** "Practice encounter" in the Party column starts a real
   encounter from the maze entrance, with copies of the party.
 - **Nothing is kept:** the results are discarded and the roster is not
