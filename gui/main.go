@@ -3,6 +3,7 @@
 package main
 
 import (
+	"context"
 	"embed"
 	"log"
 	"os"
@@ -50,6 +51,9 @@ func main() {
 		// enter native fullscreen.
 		Mac:  &mac.Options{},
 		Bind: []interface{}{session},
+		// Let go of the save folder's lock on quitting (the system also
+		// releases it if the app ends any other way).
+		OnShutdown: func(context.Context) { session.Close() },
 	})
 	if err != nil {
 		log.Fatal(err)

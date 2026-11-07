@@ -33,6 +33,23 @@ func newTestSession(t *testing.T) (*Session, string) {
 	return s, dir
 }
 
+// reopened is the app started again on dir while s is still open, as after
+// a restart: s lets go of the save folder, a new session opens it, and s
+// takes it back. The new session no longer holds the folder; use it only
+// to look at what was loaded.
+func reopened(t *testing.T, s *Session, dir string) *Session {
+	t.Helper()
+	s.lock.release()
+	r := NewSession(dir)
+	r.lock.release()
+	lock, err := lockSaveFolder(dir)
+	if err != nil {
+		t.Fatalf("take the folder back: %v", err)
+	}
+	s.lock = lock
+	return r
+}
+
 func mustOK(t *testing.T, v View, wantScreen string) View {
 	t.Helper()
 	if v.Error != "" || v.Fatal != "" {
@@ -117,7 +134,7 @@ func TestCreateSaveAndReload(t *testing.T) {
 	}
 
 	// A new session (as on app restart) reads it back.
-	again := NewSession(dir)
+	again := reopened(t, s, dir)
 	v2 := again.State()
 	if len(v2.Roster) != 1 || !sameExceptSpells(v2.Roster[0], v.Roster[0]) {
 		t.Errorf("reloaded roster = %+v, want %+v", v2.Roster, v.Roster)
@@ -348,7 +365,7 @@ func TestFailedSaveKeepsThePreviousRoster(t *testing.T) {
 	if v.Error != "" {
 		t.Fatalf("save after recovery: %q", v.Error)
 	}
-	if v := NewSession(dir).State(); v.Roster[0].Name != "GANDALF" {
+	if v := reopened(t, s, dir).State(); v.Roster[0].Name != "GANDALF" {
 		t.Fatalf("reloaded name = %q", v.Roster[0].Name)
 	}
 }

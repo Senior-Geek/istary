@@ -41,6 +41,11 @@ type Session struct {
 	// unsaved is the error of the last save that failed, until a save
 	// succeeds; the view keeps showing it so a failure is not missed.
 	unsaved string
+
+	// lock is the save folder's single-writer lock (lock.go); lockNote says
+	// when the folder could not be locked.
+	lock     *saveLock
+	lockNote string
 }
 
 // NewSession loads Wizardry I and the roster from saveDir. saveDir must not
@@ -61,6 +66,16 @@ func (s *Session) open() error {
 	if filepath.Clean(s.saveDir) == filepath.Clean(terminalDir) {
 		return fmt.Errorf("refusing to use the terminal game's save directory %s", terminalDir)
 	}
+	if s.lock == nil {
+		lock, err := lockSaveFolder(s.saveDir)
+		switch {
+		case errors.Is(err, errLockUnsupported):
+			s.lockNote = "This save folder cannot be locked, so make sure no other Istary window uses it."
+		case err != nil:
+			return err
+		}
+		s.lock = lock
+	}
 	engine.SetSaveDir(s.saveDir)
 
 	scenario, err := wiz1.Load()
@@ -69,6 +84,29 @@ func (s *Session) open() error {
 	}
 	s.scenario = scenario
 	return s.reload()
+}
+
+// Close releases the save folder (on quitting). The session cannot be used
+// afterwards.
+func (s *Session) Close() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.lock.release()
+	s.lock = nil
+	if s.startErr == nil {
+		s.startErr = errors.New("This Istary window has closed its save folder.")
+	}
+}
+
+// TryAgain retries a start that failed (another window holding the save
+// folder, for instance).
+func (s *Session) TryAgain() View {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.startErr != nil {
+		s.startErr = s.open()
+	}
+	return s.view(nil)
 }
 
 // terminalSaveDir is the directory the terminal game saves to.

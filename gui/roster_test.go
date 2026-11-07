@@ -72,7 +72,7 @@ func TestDeleteCharacter(t *testing.T) {
 		t.Errorf("saved roster after delete = %v", names)
 	}
 	// Still gone after reload, and creation still works afterwards.
-	if v := NewSession(dir).State(); len(v.Roster) != 1 || v.Roster[0].Name != "FARAMIR" {
+	if v := reopened(t, s, dir).State(); len(v.Roster) != 1 || v.Roster[0].Name != "FARAMIR" {
 		t.Errorf("reloaded roster = %+v", v.Roster)
 	}
 	createMage(t, s, "boromir")
@@ -105,7 +105,7 @@ func TestResetRosterBacksUpThenEmpties(t *testing.T) {
 	if names := savedNames(t, dir); len(names) != 0 {
 		t.Errorf("saved roster after reset = %v", names)
 	}
-	if v := NewSession(dir).State(); len(v.Roster) != 0 {
+	if v := reopened(t, s, dir).State(); len(v.Roster) != 0 {
 		t.Errorf("reloaded roster after reset = %+v", v.Roster)
 	}
 

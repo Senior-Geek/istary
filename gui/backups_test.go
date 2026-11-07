@@ -19,7 +19,7 @@ func TestRenameCharacter(t *testing.T) {
 	if names := savedNames(t, dir); names[0] != "ARAGORN" {
 		t.Errorf("saved names = %v", names)
 	}
-	if v := NewSession(dir).State(); v.Roster[0].Name != "ARAGORN" {
+	if v := reopened(t, s, dir).State(); v.Roster[0].Name != "ARAGORN" {
 		t.Errorf("after reload: %+v", v.Roster)
 	}
 
@@ -127,7 +127,7 @@ func TestRestoreBackup(t *testing.T) {
 	if names := savedNames(t, dir); strings.Join(names, ",") != "OLD ONE,OLD TWO" {
 		t.Errorf("saved after restore = %v", names)
 	}
-	if v := NewSession(dir).State(); len(v.Roster) != 2 {
+	if v := reopened(t, s, dir).State(); len(v.Roster) != 2 {
 		t.Errorf("reload after restore = %+v", v.Roster)
 	}
 	// And the replaced roster can be restored back.

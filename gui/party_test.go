@@ -98,7 +98,7 @@ func TestJoinAndLeaveParty(t *testing.T) {
 	if got := strings.Join(savedParty(t, dir), ","); got != "ARWEN,BEORN" {
 		t.Errorf("saved party = %q", got)
 	}
-	if v := NewSession(dir).State(); partyNames(v) != "ARWEN,BEORN" || !v.Roster[0].InParty {
+	if v := reopened(t, s, dir).State(); partyNames(v) != "ARWEN,BEORN" || !v.Roster[0].InParty {
 		t.Errorf("party after restart = %q", partyNames(v))
 	}
 
@@ -109,7 +109,7 @@ func TestJoinAndLeaveParty(t *testing.T) {
 	if len(v.Roster) != 2 || v.Roster[0].InParty || v.Roster[0].InMaze {
 		t.Errorf("after leaving: %+v", v.Roster[0])
 	}
-	if v := NewSession(dir).State(); partyNames(v) != "BEORN" {
+	if v := reopened(t, s, dir).State(); partyNames(v) != "BEORN" {
 		t.Errorf("party after leave + restart = %q", partyNames(v))
 	}
 	if v := s.LeaveParty(5); v.Error != "No party member in that slot." {

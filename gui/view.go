@@ -49,6 +49,8 @@ type View struct {
 	// save succeeds. Everything since the last successful save exists only
 	// in memory until then.
 	Unsaved string `json:"unsaved"`
+	// Warning is a standing caution: the save folder could not be locked.
+	Warning string `json:"warning"`
 }
 
 // PartySlotView is one party position.
@@ -269,6 +271,7 @@ func (s *Session) view(err error) View {
 	}
 	v.Error = errorText(err)
 	v.Unsaved = s.unsaved
+	v.Warning = s.lockNote
 	if c := s.active(); c != nil {
 		v.Expedition, v.Real = s.expedition || s.real, s.real
 		if cv, cerr := c.CombatView(); cerr == nil {

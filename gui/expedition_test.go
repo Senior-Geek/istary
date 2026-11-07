@@ -78,9 +78,9 @@ func partyStanding(g *engine.GameState) []standing {
 
 // restart opens a new session on the same folder, as when the app starts
 // again, and checks the M6b-1 outcome: the party is in the castle, as saved.
-func restart(t *testing.T, dir string, want []standing, when string) *Session {
+func restart(t *testing.T, s *Session, dir string, want []standing, when string) *Session {
 	t.Helper()
-	r := NewSession(dir)
+	r := reopened(t, s, dir)
 	v := r.State()
 	if v.Fatal != "" || v.Screen != "roster" || v.Expedition || r.ctrl.Game.Phase != engine.PhaseTown {
 		t.Fatalf("%s: after restart: screen %q expedition %v phase %v fatal %q", when, v.Screen, v.Expedition, r.ctrl.Game.Phase, v.Fatal)
@@ -125,7 +125,7 @@ func TestRealExpeditionsThroughTheBridge(t *testing.T) {
 			}
 			mustMatchDisk(t, s, dir, "after an action")
 			if s.real && steps%151 == 0 {
-				restart(t, dir, partyStanding(s.ctrl.Game), "mid-expedition")
+				restart(t, s, dir, partyStanding(s.ctrl.Game), "mid-expedition")
 				seen["restarted mid-expedition"]++
 			}
 		})
@@ -157,7 +157,7 @@ func TestRealExpeditionsThroughTheBridge(t *testing.T) {
 		if !s.real && (v.Screen != "roster" || v.Expedition || v.Real) {
 			t.Fatalf("seed %d: after the expedition: screen %q", seed, v.Screen)
 		}
-		restart(t, dir, partyStanding(s.ctrl.Game), "at the end")
+		restart(t, s, dir, partyStanding(s.ctrl.Game), "at the end")
 	}
 	t.Logf("covered: %v", seen)
 	for _, k := range []string{"encounter", "back in the maze after combat", "prompt stairs", "camp",
@@ -246,7 +246,7 @@ func TestRealExpeditionInterruptions(t *testing.T) {
 	if !s.real {
 		t.Fatal("the walk ended early")
 	}
-	restart(t, dir, partyStanding(s.ctrl.Game), "walking")
+	restart(t, s, dir, partyStanding(s.ctrl.Game), "walking")
 
 	reached := map[string]bool{}
 	for seed := int64(1); seed <= 30 && len(reached) < 3; seed++ {
@@ -263,7 +263,7 @@ func TestRealExpeditionInterruptions(t *testing.T) {
 			continue
 		}
 		mustMatchDisk(t, s, dir, "mid-round")
-		r := restart(t, dir, partyStanding(s.ctrl.Game), "mid-round")
+		r := restart(t, s, dir, partyStanding(s.ctrl.Game), "mid-round")
 		if xp, gold := partyXP(r.ctrl.Game); xp != xp0 || gold != gold0 {
 			t.Fatalf("seed %d: rewards after an interrupted round", seed)
 		}
@@ -274,7 +274,7 @@ func TestRealExpeditionInterruptions(t *testing.T) {
 		if !ok {
 			continue
 		}
-		r = restart(t, dir, partyStanding(s.ctrl.Game), "at the chest")
+		r = restart(t, s, dir, partyStanding(s.ctrl.Game), "at the chest")
 		if xp, gold := partyXP(r.ctrl.Game); xp != xp0 || gold != gold0 {
 			t.Fatalf("seed %d: rewards before the chest was resolved", seed)
 		}
@@ -296,12 +296,12 @@ func TestRealExpeditionInterruptions(t *testing.T) {
 		if xp1 <= xp0 {
 			t.Fatalf("seed %d: no experience at victory", seed)
 		}
-		restart(t, dir, partyStanding(s.ctrl.Game), "after the rewards")
+		restart(t, s, dir, partyStanding(s.ctrl.Game), "after the rewards")
 		v = s.CombatLeave()
 		if v.Screen != "dungeon" || !s.real {
 			t.Fatalf("seed %d: not back in the maze: %q", seed, v.Screen)
 		}
-		r = restart(t, dir, partyStanding(s.ctrl.Game), "back in the maze")
+		r = restart(t, s, dir, partyStanding(s.ctrl.Game), "back in the maze")
 		if xp, gold := partyXP(r.ctrl.Game); xp != xp1 || gold != gold1 {
 			t.Fatalf("seed %d: rewards changed after leaving combat: %d/%d, want %d/%d", seed, xp, gold, xp1, gold1)
 		}
