@@ -350,3 +350,29 @@ compatibility). `engine.SetSaveDir` redirects saves for other front ends; the
 GUI uses `~/Library/Application Support/Istary/dev-saves` and refuses the
 terminal directory. The legacy `~/.config/wizardry/wiz<N>/roster.json` is still
 read. The format is pinned by `engine/testdata/save_roster1.golden.json`.
+
+The file holds the roster and the party's names, nothing about an
+expedition: after a restart the party is in the castle (M6b will add an
+optional expedition section; see `design/m6b/EXPEDITION-PERSISTENCE.md`).
+
+**Atomic replacement (M6b-0).** `Save`, `RestoreRoster` and `BackupRoster`
+write through `engine.writeFileAtomic`: the new contents go to a temporary
+file `.<name>.tmp-<random>` in the same folder, which is synced, given the
+old file's permissions (0644 less the umask for a new file) and renamed over
+the old one; then the folder is synced. A failure before the rename removes
+the temporary file and leaves the previous file byte-identical; a failed
+folder sync is reported although the new file is already in place. A roster
+that is a symbolic link is written through. The bytes written are unchanged
+(`save_roster1.resaved.golden.json` pins a re-save of an existing roster,
+produced with the old writer). Limits:
+
+- Saving needs write permission on the save folder, not just the file.
+- The file is replaced by a new one owned by the user saving; an existing
+  owner or extended attributes on the old file are not carried over.
+- How durable a save is after a crash or power loss depends on the platform:
+  on macOS Go's `File.Sync` uses `F_FULLFSYNC`, and the folder is synced with
+  `fsync`. Tests inject failures at every step but cannot simulate power loss.
+- A temporary file left by a crash between creating it and the rename is
+  never read as a save (its name does not end in `.json`), but nothing
+  removes it yet.
+- The terminal ignores save errors as before; the GUI reports them.
