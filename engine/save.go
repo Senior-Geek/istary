@@ -10,7 +10,10 @@ import (
 // SaveState is the JSON-serializable game state.
 type SaveState struct {
 	Roster     []*Character `json:"roster"`
-	PartyNames []string     `json:"party"` // character names in party order
+	PartyNames []string     `json:"party"` // character names in party order (the castle party)
+	// Expedition is the optional expedition section (expedition.go). Absent
+	// when no expedition is under way.
+	Expedition json.RawMessage `json:"expedition,omitempty"`
 }
 
 // saveDirOverride replaces the default save directory when set. The terminal
@@ -80,11 +83,18 @@ func (g *GameState) Save() error {
 		return err
 	}
 
-	state := SaveState{
-		Roster: g.Town.Roster.Characters,
+	section, err := g.expeditionSection()
+	if err != nil {
+		return fmt.Errorf("marshal expedition: %w", err)
 	}
+	state := SaveState{
+		Roster:     g.Town.Roster.Characters,
+		Expedition: section,
+	}
+	// The party list is the castle party: members of a saved expedition are
+	// listed in its section only.
 	for _, m := range g.Town.Party.Members {
-		if m != nil {
+		if m != nil && !g.OnExpedition(m.Name) {
 			state.PartyNames = append(state.PartyNames, m.Name)
 		}
 	}
@@ -132,6 +142,9 @@ func (g *GameState) Load() error {
 	}
 
 	g.Town.Roster.Characters = state.Roster
+	if err := g.loadExpedition(state.Expedition); err != nil {
+		return fmt.Errorf("parse %s: %w", path, err)
+	}
 
 	// Backfill MaxMageSpells/MaxPriestSpells for saves from before these fields existed
 	// Also migrate legacy Equipment[8]+Inventory[] to flat Items model

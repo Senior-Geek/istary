@@ -2,6 +2,7 @@
 package engine
 
 import (
+	"encoding/json"
 	"math/rand"
 
 	"github.com/Senior-Geek/istary/data"
@@ -82,6 +83,12 @@ type GameState struct {
 	MazeDelay        int          // animation delay value (1-5000, from global 7)
 	ChestAlarm       int          // Pascal CHSTALRM: 1 = alarm trap triggered, forces encounter
 	FightMap         [20][20]bool // Pascal FIGHTMAP: per-level fight zone grid
+
+	// The saved expedition (expedition.go), as loaded or as last set by a
+	// front end that resumes expeditions; nil when none. OtherExpedition is
+	// a section of another version, kept and written back unchanged.
+	Expedition      *Expedition
+	OtherExpedition json.RawMessage
 }
 
 // Phase tracks which part of the game the player is in.
