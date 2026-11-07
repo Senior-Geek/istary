@@ -345,10 +345,13 @@ in the saved game, through the same dungeon, combat and chest operations.
   repeated, the next successful save writes it.
 - **The end:** only in the castle: the stairs, or the engine's defeat,
   which returns the dead party there. It cannot be abandoned.
-- **A restart during an expedition** finds the party in the castle with
-  everything saved up to the last action (no position is saved until
-  M6b-2), as in the terminal. An interrupted encounter is gone; rewards
-  are kept only if they had been given.
+- **A restart during an expedition** resumes it (M6b-2): every save
+  carries the expedition's checkpoint (`app.Controller.Checkpoint`, the
+  last safe point), and on start `Resume` puts it back exactly. An
+  encounter that was under way is over, nothing more awarded; changes it
+  had made outside the characters (a teleporter, an alarm) are kept. A
+  saved expedition that cannot be resumed is kept and shown
+  (`View.Recovery`), with `ReturnExpeditionToCastle`.
 - **While the party is out** the Tavern, the Training Grounds, rename,
   reset, restore, reload and practice are refused.
 - **View:** `View.Real` marks it; the screens label it and offer Abandon
@@ -369,9 +372,26 @@ GUI uses `~/Library/Application Support/Istary/dev-saves` and refuses the
 terminal directory. The legacy `~/.config/wizardry/wiz<N>/roster.json` is still
 read. The format is pinned by `engine/testdata/save_roster1.golden.json`.
 
-The file holds the roster and the party's names, nothing about an
-expedition: after a restart the party is in the castle (M6b will add an
-optional expedition section; see `design/m6b/EXPEDITION-PERSISTENCE.md`).
+The file holds the roster, the castle party's names and, while a GUI
+expedition is out, an optional `expedition` section
+(`engine/expedition.go`; schema in `design/m6b/EXPEDITION-PERSISTENCE.md`
+§13): the members by name, the checkpoint and the changed special squares.
+- **No expedition:** the section is absent, and the file is byte-identical
+  to before.
+- **While one is out:** its members are listed only in the section, never in
+  the castle party.
+- **Other versions:** a section of another version is kept and written back
+  unchanged; the terminal does the same with a GUI expedition.
+- **Members' identity:** while one is saved, the controller refuses to
+  rename or delete its members.
+
+**One window per folder (M6b-2).** The GUI holds an advisory `flock` on
+`istary.lock` in its save folder (`gui/lock.go`).
+- **A second window:** refuses to start and changes nothing.
+- **Release:** the kernel releases the lock when the process ends, a crash
+  included, so it can't go stale.
+- **When the folder is opened:** in `OnStartup`, not `main`, because Wails
+  runs the program to generate bindings.
 
 **Atomic replacement (M6b-0).** `Save`, `RestoreRoster` and `BackupRoster`
 write through `engine.writeFileAtomic`: the new contents go to a temporary
@@ -393,4 +413,7 @@ produced with the old writer). Limits:
 - A temporary file left by a crash between creating it and the rename is
   never read as a save (its name does not end in `.json`), but nothing
   removes it yet.
-- The terminal ignores save errors as before; the GUI reports them.
+- The terminal ignores save errors as before. The GUI reports them and tells
+  a failed save (`View.Unsaved`: nothing replaced) from one that replaced
+  the file but could not sync the folder (`engine.NotDurableError`,
+  `View.Warning`).

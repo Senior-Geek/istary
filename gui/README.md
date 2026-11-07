@@ -11,10 +11,11 @@ itself into the maze, to Camp at the entrance. It plays like a practice
 expedition (below), but everything is kept: the game is saved after every
 action. It ends in the castle, by the stairs or with the party's defeat
 (the engine returns the dead party there); it cannot be abandoned. If
-Istary closes during an expedition, the party is in the castle when it
-starts again, as it was at the last save (resuming in the maze is M6b-2).
+Istary closes or crashes during an expedition, it resumes where it was last
+saved; an encounter it was in is over and its unclaimed rewards are lost.
 While the party is out, the roster, Tavern and Training Grounds wait. A
-save that fails is shown until one succeeds.
+save that fails is shown until one succeeds. Only one Istary window can use
+a save folder at a time.
 
 **Practice expeditions.** "Practice expedition" in the Party column takes
 copies of the party into the real maze, to Camp at the entrance.

@@ -1,6 +1,7 @@
 # M6b: expedition persistence and recovery (design)
 
-Status: **design, not implemented.** Written with M6b-0 (atomic saves), on
+Status: **M6b-2 implemented** (sections 12 and 13 record what was built
+and where it differs from the proposal below). Written with M6b-0 (atomic saves), on
 `m6b-persistent-expeditions`. Decisions D-A to D-F were approved on 2026-11-07
 (`WIZARDRY-COMPATIBILITY.md` decision log). D-G, D-H, W, L and P were approved
 in principle the same day, with the safeguards in section 11; R1 to R3 are
@@ -327,5 +328,122 @@ R1 to R3 (rescue) remain open for M6b-4.
 
 - **M6b-0:** atomic saves.
 - **M6b-1:** real expeditions in the GUI, saved after every action, with
-  the temporary restart rule (the party is in the castle after a restart)
-  and the engine's current defeat. No expedition section yet.
+  the engine's current defeat.
+- **M6b-2:** the expedition section, checkpoints and resume, the
+  single-writer lock (section 13).
+
+## 13. M6b-2 as built
+
+**Schema** (`engine/expedition.go`; `"party"` beside it is the castle
+party, empty while the GUI's party is out):
+
+```jsonc
+"expedition": {
+  "version": 1,
+  "party": ["TORVALD", "..."],            // names; the roster entry is the record
+  "where": {
+    "phase": "maze",                        // or "camp"
+    "level": 0, "x": 5, "y": 0, "facing": 1,
+    "light": 0, "protect": 0, "fizzles": 0,
+    "quickPlot": false, "chestAlarm": 0,    // omitted when false / 0
+    "fightMap": ["0000...", ...],           // 20 strings of 20, indexed [x][y]
+    // what the maze screen shows and any open prompt (omitted when empty):
+    "message": "", "message2": "", "viewport": "", "viewport2": "",
+    "messages": [], "msgScroll": 0, "msgWait": false,
+    "searchYN": false, "searchHere": false, "searchMonster": 0,
+    "back2Shop": false, "tryGet": false, "tryGetItem": 0,
+    "waitButton": false, "buttonCount": 0,
+    "inspecting": false, "inspectFound": [],  // names
+    "campMessage": ""
+  },
+  "interrupted": "combat",                  // or "chest"; omitted when none
+  "squares": [ { "level": 0, "x": 13, "y": 5, "type": "spclenctr", "count": 77, "spclMonster": 77 } ]
+}
+```
+
+- **Migration:** none needed. Old saves have no section and load as
+  before; ordinary saves stay byte-identical (save goldens unchanged).
+- **Other versions:** a section of another version is kept and written
+  back unchanged by every front end. The GUI shows it and won't resume it.
+- **Unreadable section:** a load error (the GUI's fatal banner), never
+  silently dropped.
+- **Squares:** every square whose type, count or special monster differs
+  from the scenario as loaded. On resume, all squares are reset to the
+  scenario as loaded, then these are applied.
+
+**Checkpoints** (`app/expedition.go`): taken after every real-expedition
+action, in the same atomic write as the roster.
+- **Safe points:**
+  - in the maze, with or without an open maze prompt (D-H);
+  - in Camp, resumed at its menu;
+  - during an encounter.
+- **During an encounter:** the checkpoint is the game as it stands without
+  the encounter, marked interrupted, rather than frozen where it began.
+  - Committed changes outside the characters therefore survive a restart:
+    a chest's teleporter, an alarm trap, combat MALOR's move.
+  - Until such a change happens, it is exactly where the encounter began:
+    the square already entered, its fight room cleared (D-G).
+- **On resume after an interruption:**
+  - the encounter is over, with its messages cleared as leaving combat does;
+  - nothing is replayed;
+  - a notice says its unclaimed rewards are lost;
+  - the new state is saved at once.
+- **Exactness, tested:** over 30 seeds with play saved, reloaded and
+  resumed after every safe point, the state matched uninterrupted play at
+  every step, including the random-number sequence. The runs covered every
+  kind of safe point, Murphy's ghost search and the elevator.
+- **Floors:** any non-negative floor is accepted. The B4F–B9F elevator's H
+  and I buttons put the party on floors that do not exist (finding #31).
+  The game is restored as the engine left it, not "rescued".
+- **Problems:** a save that does not match the roster or the maze is
+  reported (`ExpeditionProblem`) and left untouched.
+  - Try resuming again: `ReloadRoster`.
+  - Return its party to the castle: backs the file up first, all members
+    or none.
+  - While it is saved, a new expedition and Reset are refused.
+- **Identity:** while an expedition is saved, renaming or deleting its
+  members is refused in every front end (`ErrOnExpedition`).
+
+**Saves:** the GUI tells three outcomes apart.
+- **Durable:** the save succeeded.
+- **Not replaced:** `View.Unsaved`. The file keeps the previous checkpoint,
+  so a restart resumes there; the action is never replayed.
+- **Replaced but the folder not synced:** `engine.NotDurableError`, shown
+  as `View.Warning`. Saved, but it may not survive power loss.
+
+**Lock (L):** an advisory `flock` on `istary.lock` in the save folder,
+held while the window runs.
+- **A second window:** refuses to start, names the holder and changes
+  nothing; Try again works once the first has closed.
+- **Release:** on quitting (`OnShutdown`), and by the kernel when the
+  process ends in any way, so a crash leaves no lock to clear. Tested with
+  a child process killed by SIGKILL, and live by killing the app.
+- **Folders that can't be locked:** the window runs and warns, rather than
+  strand the player.
+- **Opened at window start:** the folder is opened in `OnStartup`, not
+  `main`, because Wails also runs the program to generate bindings. The
+  live check found that run resuming and saving, which consumed an
+  interrupted encounter.
+- **Not callable from the page:** `start` and `shutdown` are unexported, so
+  the page's bindings can't reach them.
+
+**The terminal:**
+- It keeps a GUI expedition and writes it back.
+- Its members are out: the Tavern refuses them, and they can't be renamed
+  or deleted.
+- Its own play and saves are unchanged, and the goldens are unchanged.
+- Builds of the terminal from before M6b-2 would drop the section.
+
+**Known gaps:**
+- **Escape by restart:** quitting during an encounter ends it without its
+  rewards. This is D-B by design, and exact combat and chest resumption is
+  still needed. Until then a player can escape any fight by restarting.
+- **Special squares reset outside expeditions:** the counters still reset
+  when the app restarts with no expedition saved, so a one-time item or
+  encounter can be had again by finishing an expedition, restarting and
+  going back. This was already true in the terminal, and W covers only
+  expeditions; closing it means keeping the squares outside expeditions too,
+  which needs a decision.
+- **Duplicate names:** Import and Transfer in the terminal can add a
+  character with a member's name. Resume then reports a problem rather than
+  guess.
