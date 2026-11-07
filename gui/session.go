@@ -63,23 +63,23 @@ type Session struct {
 // be the terminal game's directory.
 func NewSession(saveDir string) *Session {
 	s := unopenedSession(saveDir)
-	s.Start()
+	s.start()
 	return s
 }
 
 // errNotStarted is the state of a session that has not opened its folder.
 var errNotStarted = errors.New("Istary is starting.")
 
-// unopenedSession returns a session that has not touched saveDir yet; Start
-// opens it. The app opens it only once Wails starts the window: Wails also
+// unopenedSession returns a session that has not touched saveDir yet; start
+// opens it. The app opens it (start) only once Wails starts the window: Wails also
 // runs the program to generate its bindings (wails build, wails dev), and
 // that run must not lock, resume or save anything.
 func unopenedSession(saveDir string) *Session {
 	return &Session{saveDir: saveDir, startErr: errNotStarted}
 }
 
-// Start opens the save folder: lock, load and resume.
-func (s *Session) Start() {
+// start opens the save folder: lock, load and resume.
+func (s *Session) start() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.startErr = s.open()
@@ -117,9 +117,9 @@ func (s *Session) open() error {
 	return s.reload()
 }
 
-// Close releases the save folder (on quitting). The session cannot be used
+// shutdown releases the save folder (on quitting). The session cannot be used
 // afterwards.
-func (s *Session) Close() {
+func (s *Session) shutdown() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.lock.release()

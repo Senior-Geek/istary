@@ -24,8 +24,6 @@ export function ChooseClass(arg1:number):Promise<main.View>;
 
 export function ChooseRace(arg1:number):Promise<main.View>;
 
-export function Close():Promise<void>;
-
 export function CombatAdvance():Promise<main.View>;
 
 export function CombatBack():Promise<main.View>;

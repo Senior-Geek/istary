@@ -479,7 +479,7 @@ func outAndRestarted(t *testing.T) string {
 	s.DungeonAction(app.ActLeaveCamp, 0)
 	s.DungeonAction(app.ActNo, 0)
 	s.DungeonAction(app.ActRight, 0)
-	s.Close()
+	s.shutdown()
 	return dir
 }
 
@@ -508,7 +508,7 @@ func TestUnresumableExpeditionIsKeptAndRecoverable(t *testing.T) {
 	})
 	path := filepath.Join(dir, "roster1.json")
 	s := NewSession(dir)
-	defer s.Close()
+	defer s.shutdown()
 	v := s.State()
 	if !strings.Contains(v.Recovery, "AGUI is no longer on the roster") || !v.CanReturn || v.Real || v.Screen != "roster" {
 		t.Fatalf("recovery %q canReturn %v real %v screen %q", v.Recovery, v.CanReturn, v.Real, v.Screen)
@@ -556,7 +556,7 @@ func TestOtherVersionExpeditionIsLeftAlone(t *testing.T) {
 		e["future"] = "kept"
 	})
 	s := NewSession(dir)
-	defer s.Close()
+	defer s.shutdown()
 	v := s.State()
 	if !strings.Contains(v.Recovery, "another version") || v.CanReturn || v.Real {
 		t.Fatalf("recovery %q canReturn %v", v.Recovery, v.CanReturn)

@@ -46,10 +46,6 @@ export function ChooseRace(arg1) {
   return window['go']['main']['Session']['ChooseRace'](arg1);
 }
 
-export function Close() {
-  return window['go']['main']['Session']['Close']();
-}
-
 export function CombatAdvance() {
   return window['go']['main']['Session']['CombatAdvance']();
 }

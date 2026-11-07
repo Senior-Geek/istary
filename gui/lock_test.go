@@ -42,7 +42,7 @@ func TestSecondWindowIsRefused(t *testing.T) {
 		t.Fatal("the second window changed the save")
 	}
 
-	s.Close() // as on quitting
+	s.shutdown() // as on quitting
 	if v := s.RenameCharacter(0, "SARUMAN"); v.Fatal == "" {
 		t.Fatal("a closed window still acts")
 	}
@@ -52,7 +52,7 @@ func TestSecondWindowIsRefused(t *testing.T) {
 	if v := second.RenameCharacter(0, "SARUMAN"); v.Error != "" {
 		t.Fatal(v.Error)
 	}
-	second.Close()
+	second.shutdown()
 }
 
 // TestLockHolderProcess is not a test: TestLockSurvivesACrash runs it in a
@@ -91,19 +91,19 @@ func TestLockSurvivesACrash(t *testing.T) {
 	if v := s.State(); v.Fatal != "" {
 		t.Fatalf("start after a crash: %q", v.Fatal)
 	}
-	s.Close()
+	s.shutdown()
 }
 
 // Closing releases the folder at once, and closing twice is harmless.
 func TestCloseReleasesTheFolder(t *testing.T) {
 	s, dir := newTestSession(t)
-	s.Close()
-	s.Close()
+	s.shutdown()
+	s.shutdown()
 	r := NewSession(dir)
 	if v := r.State(); v.Fatal != "" {
 		t.Fatalf("start after close: %q", v.Fatal)
 	}
-	r.Close()
+	r.shutdown()
 }
 
 // Until the window starts, the session touches nothing: Wails also runs the
@@ -118,12 +118,12 @@ func TestUnopenedSessionTouchesNothing(t *testing.T) {
 	if _, err := os.Stat(dir); !os.IsNotExist(err) {
 		t.Fatalf("the save folder was touched: %v", err)
 	}
-	s.Start()
+	s.start()
 	if v := s.State(); v.Fatal != "" {
 		t.Fatal(v.Fatal)
 	}
 	if _, err := os.Stat(filepath.Join(dir, lockFileName)); err != nil {
 		t.Fatalf("not locked after Start: %v", err)
 	}
-	s.Close()
+	s.shutdown()
 }

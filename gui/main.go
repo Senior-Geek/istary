@@ -55,8 +55,8 @@ func main() {
 		Bind: []interface{}{session},
 		// Let go of the save folder's lock on quitting (the system also
 		// releases it if the app ends any other way).
-		OnStartup:  func(context.Context) { session.Start() },
-		OnShutdown: func(context.Context) { session.Close() },
+		OnStartup:  func(context.Context) { session.start() },
+		OnShutdown: func(context.Context) { session.shutdown() },
 	})
 	if err != nil {
 		log.Fatal(err)
