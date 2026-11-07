@@ -64,6 +64,8 @@ export function PracticeEncounter(arg1:boolean):Promise<main.View>;
 
 export function PracticeExpedition():Promise<main.View>;
 
+export function RealExpedition():Promise<main.View>;
+
 export function ReloadRoster():Promise<main.View>;
 
 export function RemovePoint(arg1:number):Promise<main.View>;

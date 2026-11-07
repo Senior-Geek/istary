@@ -10,6 +10,7 @@
   //   call   (fn, ...args) => Promise   runs a Session method and stores the new view
   import * as S from '../../wailsjs/go/main/Session.js'
   import { condition, ranks, step, delay, needsOrder, orderFor, orderLabel, current, highlight, chips, targetKind } from './combat.js'
+  import { expeditionTag } from './dungeon.js'
 
   let { view, busy = false, call } = $props()
 
@@ -108,13 +109,15 @@
 <div class="combat">
   <header class="bar">
     <h2>{phaseTitle[c.phase] ?? 'Combat'} <span class="muted">round {c.round}</span></h2>
-    <span class="tag">{view.expedition ? 'Practice expedition' : 'Practice encounter'}{view.practiceChest ? ' · with a chest' : ''} · results are not kept</span>
+    <span class="tag" class:real={view.real}>{expeditionTag(view)}</span>
     <div class="spacer"></div>
     <label class="muted"><input type="checkbox" bind:checked={auto} /> automatic</label>
     <select bind:value={speed} aria-label="Automatic speed">
       <option value="slow">slow</option><option value="normal">normal</option><option value="fast">fast</option>
     </select>
-    <button class="small" disabled={busy} onclick={() => call(S.AbandonPractice)}>Abandon</button>
+    {#if !view.real}
+      <button class="small" disabled={busy} onclick={() => call(S.AbandonPractice)}>Abandon</button>
+    {/if}
   </header>
 
   <!-- The battlefield: monster groups ahead on a neutral backdrop. -->
@@ -301,6 +304,7 @@
   .bar h2 { margin: 0; }
   .spacer { flex: 1; }
   .tag { font-size: 11px; border: 1px solid var(--line); border-radius: 9px; padding: 1px 8px; color: var(--muted); }
+  .tag.real { color: var(--accent); border-color: var(--accent); }
   .stage { position: relative; min-height: 220px; border-radius: 8px; padding: 14px;
     background: radial-gradient(ellipse at 50% 120%, #3a3329 0%, #1d1a16 55%, #0d0c0b 100%); border: 1px solid var(--line); }
   .groups { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }

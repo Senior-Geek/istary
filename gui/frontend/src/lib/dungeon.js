@@ -88,3 +88,11 @@ export function keyAction(key, dungeon) {
   const action = open.find((a) => actions[a]?.keys.includes(k))
   return action ? { action, button: 0 } : null
 }
+
+// expeditionTag names what is under way, for the dungeon and combat
+// screens: the real expedition, which is saved, or practice, which is not.
+export function expeditionTag(view) {
+  if (view?.real) return 'Real expedition · saved after every action'
+  const what = view?.expedition ? 'Practice expedition' : 'Practice encounter'
+  return what + (view?.practiceChest ? ' · with a chest' : '') + ' · results are not kept'
+}

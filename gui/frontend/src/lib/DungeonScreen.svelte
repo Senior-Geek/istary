@@ -1,5 +1,5 @@
 <script>
-  // The dungeon screen (M6a). It renders view.dungeon (Go's app.DungeonView)
+  // The dungeon screen (M6a; real expeditions M6b-1). It renders view.dungeon (Go's app.DungeonView)
   // and calls Session.DungeonAction with one of the actions Go lists; it
   // keeps no maze state. The picture is a simple wireframe of the corridor
   // Go describes, not the Classic renderer.
@@ -10,7 +10,7 @@
   //   call   (fn, ...args) => Promise   runs a Session method and stores the new view
   import * as S from '../../wailsjs/go/main/Session.js'
   import { ranks, condition } from './combat.js'
-  import { viewBox, scene, points, actions, keyAction } from './dungeon.js'
+  import { viewBox, scene, points, actions, keyAction, expeditionTag } from './dungeon.js'
 
   let { view, busy = false, call } = $props()
 
@@ -39,10 +39,12 @@
 <div class="dungeon">
   <header class="bar">
     <h2>{d.phase === 'camp' ? 'Camp' : 'The maze'}</h2>
-    <span class="tag">Practice expedition · results are not kept</span>
+    <span class="tag" class:real={view.real}>{expeditionTag(view)}</span>
     {#each d.spells ?? [] as s (s)}<span class="tag spell">{s}</span>{/each}
     <div class="spacer"></div>
-    <button class="small" disabled={busy} onclick={() => call(S.AbandonPractice)}>Abandon</button>
+    {#if !view.real}
+      <button class="small" disabled={busy} onclick={() => call(S.AbandonPractice)}>Abandon</button>
+    {/if}
   </header>
 
   <section class="stage">
@@ -127,6 +129,7 @@
   .spacer { flex: 1; }
   .tag { font-size: 11px; border: 1px solid var(--line); border-radius: 9px; padding: 1px 8px; color: var(--muted); }
   .tag.spell { color: #f2c14e; border-color: #6b5a2c; }
+  .tag.real { color: var(--accent); border-color: var(--accent); }
   .stage { position: relative; display: grid; place-items: center; min-height: 260px; border-radius: 8px; padding: 10px;
     background: #0d0c0b; border: 1px solid var(--line); }
   .view { width: min(100%, 360px); aspect-ratio: 1; }

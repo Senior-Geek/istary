@@ -133,6 +133,9 @@
       <div class="banner error">{view.fatal}</div>
     {:else}
       {#if view.error}<div class="banner error">{view.error}</div>{/if}
+      {#if view.unsaved && !view.error}
+        <div class="banner error">Not saved: {view.unsaved}. Play goes on in this window; every action tries to save again.</div>
+      {/if}
       {#if view.notice}<div class="banner notice">{view.notice}</div>{/if}
 
       {#if view.screen === 'combat' && view.combat}
@@ -331,12 +334,22 @@
             onleave={leaveParty} onpassword={submitJoin} oncancel={cancelJoin} />
         </section>
         <section>
+          <h2>Expedition</h2>
+          <p class="muted">Take the party into the maze. Everything that happens to it is saved after
+            every action. If Istary closes during an expedition, the party is back in the castle
+            when it starts again, as it was at the last save.</p>
+          <div class="row">
+            <button class="primary" disabled={busy || view.screen !== 'roster' || !view.party?.length}
+              onclick={() => call(S.RealExpedition)}>Real expedition</button>
+          </div>
+        </section>
+        <section>
           <h2>Practice</h2>
           <p class="muted">A practice expedition walks the real maze with copies of the party,
             encounters included; a practice encounter fights one encounter from the maze entrance.
             Nothing either changes is kept.</p>
           <div class="row">
-            <button class="primary" disabled={busy || view.screen !== 'roster' || !view.party?.length}
+            <button disabled={busy || view.screen !== 'roster' || !view.party?.length}
               onclick={() => call(S.PracticeExpedition)}>Practice expedition</button>
           </div>
           <div class="row">

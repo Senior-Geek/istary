@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { scene, near, far, keyAction, actions } from './dungeon.js'
+import { scene, near, far, keyAction, actions, expeditionTag } from './dungeon.js'
 
 const wall = { left: 'wall', right: 'wall', front: 'open' }
 
@@ -164,4 +164,11 @@ test('the picture is left/right symmetric', () => {
     assert.deepEqual(key(b, 1), key(a, -1))
     assert.deepEqual(b.map((s) => s.depth), a.map((s) => s.depth))
   }
+})
+
+test('the screens say whether the expedition is real or practice', () => {
+  assert.equal(expeditionTag({ real: true, expedition: true }), 'Real expedition · saved after every action')
+  assert.equal(expeditionTag({ expedition: true }), 'Practice expedition · results are not kept')
+  assert.equal(expeditionTag({ practiceChest: true }), 'Practice encounter · with a chest · results are not kept')
+  assert.equal(expeditionTag({ real: true, practiceChest: true }), 'Real expedition · saved after every action')
 })

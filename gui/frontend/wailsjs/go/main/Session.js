@@ -126,6 +126,10 @@ export function PracticeExpedition() {
   return window['go']['main']['Session']['PracticeExpedition']();
 }
 
+export function RealExpedition() {
+  return window['go']['main']['Session']['RealExpedition']();
+}
+
 export function ReloadRoster() {
   return window['go']['main']['Session']['ReloadRoster']();
 }

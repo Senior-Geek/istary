@@ -750,6 +750,8 @@ export namespace main {
 	    practiceChest: boolean;
 	    dungeon?: app.DungeonView;
 	    expedition: boolean;
+	    real: boolean;
+	    unsaved: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new View(source);
@@ -779,6 +781,8 @@ export namespace main {
 	        this.practiceChest = source["practiceChest"];
 	        this.dungeon = this.convertValues(source["dungeon"], app.DungeonView);
 	        this.expedition = source["expedition"];
+	        this.real = source["real"];
+	        this.unsaved = source["unsaved"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
