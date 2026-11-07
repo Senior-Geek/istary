@@ -230,8 +230,9 @@ terminal's. A step can end in combat (`PhaseCombat`).
 | `PressButton(n)` | Button n (1 is A). `ErrInvalidChoice` outside A to the last button |
 | `PickUp()`, `LeaveInspect()` | Inspect's P)ICK UP and L)EAVE |
 
-`HandleKey` routes all maze keys, Camp's L and Edge of Town's M to these; the
-rest of Camp and the Edge of Town is still the terminal's. The operations are
+`HandleKey` routes all maze keys, Camp's L and Edge of Town's M to these
+(all of Camp since M6b-3A, below); the rest of the Edge of Town is still the
+terminal's. The operations are
 the keys: tests drive one game with operations and one with keys through
 `HandleKey` from the same random sequence and compare after every step, and
 a differential run of 1,500 key sequences on every floor matched `main` line
@@ -264,10 +265,48 @@ the corridor.
 
 Persistence: call `Controller.Save()` after each action.
 
+**Camp and the inspect screen (M6b-3A).** The terminal's Camp handler moved
+intact to `app/camp.go`: reorder, equip the whole party, disband, inspect a
+member, cast a spell and choose its target, MALOR, DUMAPIC and use an item.
+The inspect screen it shares with the castle moved to `app/inspect.go`:
+equip, drop, trade gold and items, the spell books, and Camp's identify.
+Only key decoding changed. `HandleKey` takes every Camp key, and in town the
+inspect screens. `RecalcAC` is exported for the terminal's startup and class
+change. A differential run of 400 seeds of random Camp keys matched
+`d7bd206` exactly: 71,130 states and the final random-number state.
+
+Operations (`app/camp_ops.go`). Each one checks that its screen is open,
+then sends the terminal's keys; the game's refusals stay in `Town.Message`.
+
+| Screen | Operations |
+|---|---|
+| Camp menu | `CampInspect(slot)`, `BeginReorder()` then `ReorderPick(slot)`, `EquipParty()`, `Disband()`, `LeaveCamp()` |
+| Inspect (Camp or town) | `LeaveInspection()`, `BeginEquip()` then `EquipChoose(n)` / `EquipSkip()`, `BeginDrop()` then `DropItem(n)` / `EndDrop()`, `BeginTrade()` then `TradeWith(slot)`, `TradeGold(amount)`, `TradeItem(n)`, `EndTrade()`, `OpenSpellBooks()` then `ShowSpellBook(priest)` / `CloseSpellBook()` |
+| Inspect, Camp only | `CastSpell(name)` then `CastOn(slot)` / `CancelCast()`, `LeaveDumapic()`, `Identify()`, `UseItem(n)` |
+
+- **MALOR:** `CastSpell` refuses it (`ErrMalorUnavailable`, finding #25).
+  The terminal's keys still cast it.
+- **Use:** the engine's stub (#30).
+- **Disband:** the engine's (#26).
+
+`CampView()` (`app/camp_view.go`) gives a front end:
+- the screen and the message;
+- equip choices, with unknown names until an item is identified;
+- reorder and trade progress, and the spell waiting for its target;
+- the actions open now.
+
+DUMAPIC's result (facing, squares east and north of the stairs, levels
+below) appears only while its screen is open; nothing else gives a
+position.
+
+A Camp checkpoint records Camp's screen and every Camp field
+(`engine.CampScreen`, by name), and `Resume` restores them exactly. An equip
+or trade interrupted half-way, or an open DUMAPIC, comes back as it was.
+
 ## Still terminal-only
 
 - Every other phase and prompt goes through `legacyDispatch`: title, castle
-  menu, inn, Boltac's, temple, the Edge of Town (except M), Camp (except L),
+  menu, inn, Boltac's, temple, the Edge of Town (except M),
   combat (whose order legality now comes from the controller, above), utilities,
   and the rest of the Training Grounds edit menu (inspect, class change,
   reroll, set password, Rite of Passage).
@@ -335,7 +374,7 @@ always through the game's own leave/enter steps. See
   (`lib/dungeon.js`), the messages, the party, and the actions with the
   terminal's keys. It is a placeholder, not the Classic renderer.
 - **Not yet:** saved positions and resuming (M6b-2), rescue and recovery
-  (M6b-4); Camp's other screens (M6b-3).
+  (M6b-4); Camp's other screens in the GUI (M6b-3B; the controller has them, M6b-3A).
 
 **Real expeditions (M6b-1).** `RealExpedition()` takes the party itself,
 in the saved game, through the same dungeon, combat and chest operations.

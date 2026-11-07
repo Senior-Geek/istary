@@ -331,6 +331,8 @@ R1 to R3 (rescue) remain open for M6b-4.
   the engine's current defeat.
 - **M6b-2:** the expedition section, checkpoints and resume, the
   single-writer lock (section 13).
+- **M6b-3A:** Camp in the controller; Camp checkpoints keep the open Camp
+  screen (section 13).
 
 ## 13. M6b-2 as built
 
@@ -433,6 +435,19 @@ held while the window runs.
   or deleted.
 - Its own play and saves are unchanged, and the goldens are unchanged.
 - Builds of the terminal from before M6b-2 would drop the section.
+
+**Camp screens (M6b-3A).** `where.camp` records Camp's screen by name
+(`"menu"`, `"inspect"`, `"equip"`, `"drop"`, `"trade"`, `"tradeGold"`,
+`"tradeItem"`, `"spellBooks"`, `"spellList"`, `"castSpell"`, `"spellTarget"`,
+`"useItem"`, `"dumapic"`, `"malor"`, `"reorder"`) and every Camp field:
+- the character inspected and the trade partner (by name), typed text;
+- the equip category and choices, and the party-wide equip progress;
+- the reorder so far, the spell book shown, the spell waiting for its
+  target, and MALOR's displacement.
+
+`Resume` restores them exactly, like an open maze prompt (D-H). A Camp test
+saved, reloaded and resumed after every key and followed uninterrupted play
+exactly, at every screen.
 
 **Known gaps:**
 - **Escape by restart:** quitting during an encounter ends it without its
