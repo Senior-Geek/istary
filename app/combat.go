@@ -151,6 +151,25 @@ func (c *Controller) CombatOrderMenu(ch *engine.Character) ([]OrderOption, error
 	}, nil
 }
 
+// SelectCombatActor chooses which member order entry is on: a front end
+// that lets the player pick members freely (the terminal visits them in
+// turn). Only members who can be given an order may be chosen.
+func (c *Controller) SelectCombatActor(ch *engine.Character) error {
+	cs, err := c.combatChoosing()
+	if err != nil {
+		return err
+	}
+	slot := c.partySlot(ch)
+	if slot < 0 {
+		return ErrNoSuchPartyMember
+	}
+	if !CanGiveOrder(ch) {
+		return ErrCannotAct
+	}
+	cs.CurrentActor = slot
+	return nil
+}
+
 // CombatSpellTarget checks that ch may cast the named spell now and says
 // what it needs: a group, a member, or nothing. The refusals are the
 // in-game messages "** UNKNOWN SPELL **" and "** CANT CAST **".

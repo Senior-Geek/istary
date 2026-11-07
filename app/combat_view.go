@@ -27,22 +27,25 @@ import (
 
 // CombatView is the state of combat as the player may see it now.
 type CombatView struct {
-	Phase   string             `json:"phase"`           // opening, friendly, orders, confirm, playback, chest, victory, defeat
-	Next    string             `json:"next"`            // what the front end does next; see the Next* constants
-	Round   int                `json:"round"`           // round number, from 1
-	Frozen  bool               `json:"frozen"`          // party and monster values are the round-start display (playback)
-	Party   []CombatMemberView `json:"party"`           // in formation order
-	Groups  []CombatGroupView  `json:"groups"`          // groups the player can see (count above zero)
-	Actor   int                `json:"actor"`           // slot (from 1) being given an order; 0 when none
-	Menu    []CombatOptionView `json:"menu"`            // the actor's orders, during order entry
-	Orders  []CombatOrderView  `json:"orders"`          // orders given this round, during order entry and confirmation
-	Events  []CombatEventView  `json:"events"`          // released events of the round being played back, in order
-	Current int                `json:"current"`         // index into Events of the block being shown; -1 when none
-	Lines   []string           `json:"lines"`           // the message lines on screen now
-	Boons   []string           `json:"boons,omitempty"` // HAMAN's boons, once the block that offers them is on screen
-	Chest   CombatChestView    `json:"chest"`           // the chest, in the chest phase only
-	XP      int                `json:"xp,omitempty"`    // victory: experience for each survivor
-	Gold    int                `json:"gold,omitempty"`  // victory: gold in each share
+	Phase    string             `json:"phase"`              // opening, friendly, orders, confirm, playback, chest, victory, defeat
+	Next     string             `json:"next"`               // what the front end does next; see the Next* constants
+	Round    int                `json:"round"`              // round number, from 1
+	Frozen   bool               `json:"frozen"`             // party and monster values are the round-start display (playback)
+	Party    []CombatMemberView `json:"party"`              // in formation order
+	Groups   []CombatGroupView  `json:"groups"`             // groups the player can see (count above zero)
+	Actor    int                `json:"actor"`              // slot (from 1) being given an order; 0 when none
+	Menu     []CombatOptionView `json:"menu"`               // the actor's orders, during order entry
+	Spells   []CombatSpellView  `json:"spells,omitempty"`   // the actor's spells that can be cast now, during order entry
+	Items    []CombatItemView   `json:"items,omitempty"`    // the actor's usable items, during order entry
+	Orders   []CombatOrderView  `json:"orders"`             // orders given this round, during order entry and confirmation
+	Events   []CombatEventView  `json:"events"`             // released events of the round being played back, in order
+	Current  int                `json:"current"`            // index into Events of the block being shown; -1 when none
+	Lines    []string           `json:"lines"`              // the message lines on screen now
+	Boons    []string           `json:"boons,omitempty"`    // HAMAN's boons, once the block that offers them is on screen
+	Surprise string             `json:"surprise,omitempty"` // opening: "party" (you surprised them) or "monsters"
+	Chest    CombatChestView    `json:"chest"`              // the chest, in the chest phase only
+	XP       int                `json:"xp,omitempty"`       // victory: experience for each survivor
+	Gold     int                `json:"gold,omitempty"`     // victory: gold in each share
 }
 
 // CombatChestView is the chest as the party knows it. The true trap, the
@@ -119,6 +122,20 @@ type CombatOptionView struct {
 	Target    string `json:"target"` // group, member, spell, item, none
 }
 
+// CombatSpellView is a spell the actor knows and can cast now.
+type CombatSpellView struct {
+	Name   string `json:"name"`
+	Level  int    `json:"level"`
+	Kind   string `json:"kind"`   // mage or priest
+	Target string `json:"target"` // group, member or none
+}
+
+// CombatItemView is an item the actor can use, by the name the player knows.
+type CombatItemView struct {
+	Index int    `json:"index"` // position in the character's items, for SetOrder
+	Name  string `json:"name"`
+}
+
 // CombatOrderView is an order given this round.
 type CombatOrderView struct {
 	Slot   int    `json:"slot"` // from 1
@@ -178,6 +195,7 @@ func (c *Controller) CombatView() (CombatView, error) {
 	switch cs.Phase {
 	case engine.CombatInit:
 		v.Phase, v.Next = "opening", NextStart
+		v.Surprise = map[int]string{1: "party", 2: "monsters"}[cs.Surprised]
 	case engine.CombatFriendly:
 		v.Phase, v.Next = "friendly", NextFriendly
 	case engine.CombatChoose:
@@ -211,11 +229,13 @@ func (c *Controller) CombatView() (CombatView, error) {
 		party := g.Town.Party.Members
 		if cs.CurrentActor >= 0 && cs.CurrentActor < len(party) {
 			v.Actor = cs.CurrentActor + 1
-			if menu, err := c.CombatOrderMenu(party[cs.CurrentActor]); err == nil {
+			actor := party[cs.CurrentActor]
+			if menu, err := c.CombatOrderMenu(actor); err == nil {
 				for _, o := range menu {
 					v.Menu = append(v.Menu, CombatOptionView{Action: actionNames[o.Action], Key: string(o.Key),
 						Available: o.Available, Reason: o.Reason, Note: o.Note, Target: targetNames[o.Target]})
 				}
+				v.Spells, v.Items = c.spellsView(actor), c.itemsView(actor)
 			}
 		}
 		v.Orders = c.ordersView(cs)
@@ -240,6 +260,44 @@ func (c *Controller) CombatView() (CombatView, error) {
 		v.XP, v.Gold = cs.TotalXP, cs.TotalGold
 	}
 	return v, nil
+}
+
+// spellsView lists the spells ch knows and can cast now, in table order.
+func (c *Controller) spellsView(ch *engine.Character) []CombatSpellView {
+	if !ch.IsCaster() {
+		return nil
+	}
+	var out []CombatSpellView
+	for _, sp := range engine.SpellTable {
+		if sp == nil || !ch.CanCastSpell(sp) {
+			continue
+		}
+		target, err := c.CombatSpellTarget(ch, sp.Name)
+		if err != nil {
+			continue
+		}
+		kind := "mage"
+		if sp.Type == engine.PriestSpell {
+			kind = "priest"
+		}
+		out = append(out, CombatSpellView{Name: sp.Name, Level: sp.Level, Kind: kind, Target: targetNames[target]})
+	}
+	return out
+}
+
+// itemsView lists ch's usable items by the name the player knows.
+func (c *Controller) itemsView(ch *engine.Character) []CombatItemView {
+	items := c.Game.Scenario.Items
+	var out []CombatItemView
+	for _, i := range c.CombatUsableItems(ch) {
+		poss := ch.Items[i]
+		name := items[poss.ItemIndex].NameUnknown
+		if poss.Identified {
+			name = items[poss.ItemIndex].Name
+		}
+		out = append(out, CombatItemView{Index: i, Name: name})
+	}
+	return out
 }
 
 // blockLines returns the lines of the block starting at from.
