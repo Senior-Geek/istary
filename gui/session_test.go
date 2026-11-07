@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"os"
 	"path/filepath"
@@ -305,5 +306,49 @@ func TestClassGuideUnreachableByPoints(t *testing.T) {
 	}
 	if l.Status != wantStatus || (wantStatus == "points" && !strings.HasPrefix(l.Note, "Cannot be reached: needs 37 points")) {
 		t.Errorf("lord with %d points: %+v", v.Creation.Points, l)
+	}
+}
+
+// A save that fails (here: the save folder made read-only) is reported, the
+// previous save stays byte-identical with no temporary file left, and the
+// next save after the folder is writable again succeeds. The GUI saves
+// through the same engine Save as the terminal.
+func TestFailedSaveKeepsThePreviousRoster(t *testing.T) {
+	if os.Geteuid() == 0 {
+		t.Skip("root ignores directory permissions")
+	}
+	s, dir := newTestSession(t)
+	createMage(t, s, "radagast")
+	path := filepath.Join(dir, "roster1.json")
+	before, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Chmod(dir, 0o555); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { os.Chmod(dir, 0o755) })
+
+	v := s.RenameCharacter(0, "SARUMAN")
+	if !strings.Contains(v.Error, "Could not save") {
+		t.Fatalf("error = %q, want a save failure", v.Error)
+	}
+	if after, _ := os.ReadFile(path); !bytes.Equal(after, before) {
+		t.Fatal("the previous save changed")
+	}
+	entries, _ := os.ReadDir(dir)
+	for _, e := range entries {
+		if strings.Contains(e.Name(), ".tmp-") {
+			t.Fatalf("temporary file left: %s", e.Name())
+		}
+	}
+
+	os.Chmod(dir, 0o755)
+	v = s.RenameCharacter(0, "GANDALF")
+	if v.Error != "" {
+		t.Fatalf("save after recovery: %q", v.Error)
+	}
+	if v := NewSession(dir).State(); v.Roster[0].Name != "GANDALF" {
+		t.Fatalf("reloaded name = %q", v.Roster[0].Name)
 	}
 }

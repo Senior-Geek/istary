@@ -71,7 +71,8 @@ func scenarioKey(gameName string) string {
 	}
 }
 
-// Save writes the current roster and party to disk.
+// Save writes the current roster and party to disk. The file is replaced
+// atomically (writeFileAtomic): a failed save leaves the previous one intact.
 func (g *GameState) Save() error {
 	key := scenarioKey(g.Scenario.Game)
 	path, err := RosterPath(key)
@@ -93,7 +94,7 @@ func (g *GameState) Save() error {
 		return fmt.Errorf("marshal: %w", err)
 	}
 
-	if err := os.WriteFile(path, data, 0644); err != nil {
+	if err := writeFileAtomic(path, data, 0644); err != nil {
 		return fmt.Errorf("write %s: %w", path, err)
 	}
 	return nil

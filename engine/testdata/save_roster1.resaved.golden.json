@@ -1,0 +1,348 @@
+{
+  "roster": [
+    {
+      "Name": "ALDRIC",
+      "password": "SECRET",
+      "Race": 2,
+      "Class": 2,
+      "Alignment": 0,
+      "Status": 0,
+      "Level": 4,
+      "XP": 4321,
+      "HP": 18,
+      "MaxHP": 22,
+      "Gold": 777,
+      "Age": 1000,
+      "Strength": 12,
+      "IQ": 8,
+      "Piety": 16,
+      "Vitality": 14,
+      "Agility": 6,
+      "Luck": 9,
+      "AC": 4,
+      "MageSpells": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "PriestSpells": [
+        3,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "MaxMageSpells": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "MaxPriestSpells": [
+        4,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "spell_known": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "poison_amt": 1,
+      "max_lev_ac": 4,
+      "items": [
+        {
+          "item_index": 3,
+          "equipped": true,
+          "cursed": false,
+          "identified": true
+        },
+        {
+          "item_index": 7,
+          "equipped": false,
+          "cursed": false,
+          "identified": false
+        },
+        {
+          "item_index": 0,
+          "equipped": false,
+          "cursed": false,
+          "identified": false
+        },
+        {
+          "item_index": 0,
+          "equipped": false,
+          "cursed": false,
+          "identified": false
+        },
+        {
+          "item_index": 0,
+          "equipped": false,
+          "cursed": false,
+          "identified": false
+        },
+        {
+          "item_index": 0,
+          "equipped": false,
+          "cursed": false,
+          "identified": false
+        },
+        {
+          "item_index": 0,
+          "equipped": false,
+          "cursed": false,
+          "identified": false
+        },
+        {
+          "item_index": 0,
+          "equipped": false,
+          "cursed": false,
+          "identified": false
+        }
+      ],
+      "item_count": 2,
+      "Equipment": [
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1
+      ]
+    },
+    {
+      "Name": "BENCHWARMER",
+      "Race": 0,
+      "Class": 0,
+      "Alignment": 1,
+      "Status": 0,
+      "Level": 1,
+      "XP": 0,
+      "HP": 0,
+      "MaxHP": 0,
+      "Gold": 0,
+      "Age": 0,
+      "Strength": 0,
+      "IQ": 0,
+      "Piety": 0,
+      "Vitality": 0,
+      "Agility": 0,
+      "Luck": 0,
+      "AC": 0,
+      "MageSpells": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "PriestSpells": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "MaxMageSpells": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "MaxPriestSpells": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "spell_known": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "items": [
+        {
+          "item_index": 0,
+          "equipped": false,
+          "cursed": false,
+          "identified": false
+        },
+        {
+          "item_index": 0,
+          "equipped": false,
+          "cursed": false,
+          "identified": false
+        },
+        {
+          "item_index": 0,
+          "equipped": false,
+          "cursed": false,
+          "identified": false
+        },
+        {
+          "item_index": 0,
+          "equipped": false,
+          "cursed": false,
+          "identified": false
+        },
+        {
+          "item_index": 0,
+          "equipped": false,
+          "cursed": false,
+          "identified": false
+        },
+        {
+          "item_index": 0,
+          "equipped": false,
+          "cursed": false,
+          "identified": false
+        },
+        {
+          "item_index": 0,
+          "equipped": false,
+          "cursed": false,
+          "identified": false
+        },
+        {
+          "item_index": 0,
+          "equipped": false,
+          "cursed": false,
+          "identified": false
+        }
+      ],
+      "item_count": 0,
+      "Equipment": [
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1
+      ]
+    }
+  ],
+  "party": [
+    "ALDRIC"
+  ]
+}
