@@ -1,9 +1,10 @@
 # M6b: expedition persistence and recovery (design)
 
-Status: **design for review, not implemented.** Written with M6b-0 (atomic
-saves), on `m6b-persistent-expeditions`. Decisions D-A to D-F were approved on
-2026-11-07 (`WIZARDRY-COMPATIBILITY.md` decision log); the points marked
-**Needs approval** below are new.
+Status: **design, not implemented.** Written with M6b-0 (atomic saves), on
+`m6b-persistent-expeditions`. Decisions D-A to D-F were approved on 2026-11-07
+(`WIZARDRY-COMPATIBILITY.md` decision log). D-G, D-H, W, L and P were approved
+in principle the same day, with the safeguards in section 11; R1 to R3 are
+still open.
 
 ## 1. What the engine does today
 
@@ -284,7 +285,7 @@ offers practice only with characters who are not in it.
   - the terminal round trip.
 - **M6b-3 to M6b-5:** as approved. M6b-4 needs decisions R1 to R3 below.
 
-## 10. Needs approval
+## 10. Needs approval (as proposed; see section 11 for the outcome)
 
 - **D-G:** resume an interrupted encounter at the **encounter checkpoint**
   (the party on the encounter square, the room cleared), rather than the
@@ -303,3 +304,21 @@ offers practice only with characters who are not in it.
   per-character position fields; clearing the position when rescued
   characters reach the castle; and the treatment of #26 to #28 as part of
   D-D or as separate proposals.
+
+## 11. Approved in principle (2026-11-07), with safeguards
+
+- **D-G:** an interrupted encounter resumes on the square where it began,
+  which the party had already entered. Nothing is replayed: not the
+  encounter, not the square's effects, not the rewards. Character losses and
+  spent resources stay committed.
+- **D-H:** an open maze prompt may be saved and restored exactly.
+- **W:** changed special squares persist for the expedition.
+- **L:** one writer per save folder, through a lock. Stale-lock recovery
+  (after a crash, or a lock left by another machine or user) must be
+  designed and tested before the lock is implemented.
+- **P:** expedition membership is stored apart from the castle party list,
+  but each character has exactly **one** authoritative record: the roster
+  entry. `expedition.party` holds names that refer to roster entries, never
+  copies of characters.
+
+R1 to R3 (rescue) remain open for M6b-4.
