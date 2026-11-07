@@ -98,6 +98,10 @@ export function DeleteCharacter(arg1, arg2) {
   return window['go']['main']['Session']['DeleteCharacter'](arg1, arg2);
 }
 
+export function DungeonAction(arg1, arg2) {
+  return window['go']['main']['Session']['DungeonAction'](arg1, arg2);
+}
+
 export function FinishStats() {
   return window['go']['main']['Session']['FinishStats']();
 }
@@ -116,6 +120,10 @@ export function ListBackups() {
 
 export function PracticeEncounter(arg1) {
   return window['go']['main']['Session']['PracticeEncounter'](arg1);
+}
+
+export function PracticeExpedition() {
+  return window['go']['main']['Session']['PracticeExpedition']();
 }
 
 export function ReloadRoster() {

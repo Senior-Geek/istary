@@ -230,8 +230,9 @@ func TestPracticeEncountersThroughTheBridge(t *testing.T) {
 	}
 }
 
-// The front end receives combat data only as app.CombatView: no engine type
-// is reachable from View, and the combat part is plain values.
+// The front end receives combat data only as app.CombatView and maze data
+// only as app.DungeonView: no engine type is reachable from View, and both
+// are plain values.
 func TestViewCarriesNoEngineState(t *testing.T) {
 	var walk func(reflect.Type, string)
 	seen := map[reflect.Type]bool{}
@@ -257,6 +258,9 @@ func TestViewCarriesNoEngineState(t *testing.T) {
 	walk(reflect.TypeOf(View{}), "View")
 	if f, _ := reflect.TypeOf(View{}).FieldByName("Combat"); f.Type != reflect.TypeOf(&app.CombatView{}) {
 		t.Fatalf("View.Combat is %v", f.Type)
+	}
+	if f, _ := reflect.TypeOf(View{}).FieldByName("Dungeon"); f.Type != reflect.TypeOf(&app.DungeonView{}) {
+		t.Fatalf("View.Dungeon is %v", f.Type)
 	}
 }
 

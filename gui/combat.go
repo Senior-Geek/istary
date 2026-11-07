@@ -1,10 +1,10 @@
 package main
 
-// GUI combat (M7a). The GUI has no dungeon yet (maze movement is not in the
-// controller), so combat is reached through a practice encounter: a real
-// encounter from the engine at the maze entrance, fought by copies of the
-// current party in a separate game. The practice game is never saved and its
-// results are discarded, so the roster is unchanged whatever happens.
+// GUI combat (M7a). Combat is reached through a practice encounter (a real
+// encounter from the engine at the maze entrance) or a practice expedition
+// (dungeon.go, M6a), both played by copies of the current party in a
+// separate game. The practice game is never saved and its results are
+// discarded, so the roster is unchanged whatever happens.
 //
 // Every combat method calls app.Controller operations on the practice game
 // and returns a View whose Combat field is app.CombatView, the only combat
@@ -21,6 +21,9 @@ import (
 
 // errNoPractice is returned by combat methods when no encounter is running.
 var errNoPractice = errors.New("No encounter is in progress.")
+
+// errPracticeRunning is returned when a practice is already under way.
+var errPracticeRunning = errors.New("An encounter or expedition is already in progress.")
 
 // OrderRequest is an order chosen in the front end. Slots are 1-based as
 // shown; Group is a monster group number (1-based); Ally is a party slot;
@@ -53,6 +56,26 @@ func cloneCharacter(ch *engine.Character) (*engine.Character, error) {
 	return &out, nil
 }
 
+// practiceGame returns a new, never-saved game in town whose party is a
+// copy of the current party.
+func (s *Session) practiceGame() (*engine.GameState, error) {
+	g := s.ctrl.Game
+	if g.Phase != engine.PhaseTown || len(g.Town.Party.Members) == 0 {
+		return nil, errors.New("Form a party in the Tavern first.")
+	}
+	pg := engine.New(s.scenario)
+	pg.Title = nil
+	pg.Phase = engine.PhaseTown
+	for _, m := range g.Town.Party.Members {
+		cp, err := cloneCharacter(m)
+		if err != nil {
+			return nil, fmt.Errorf("copy %s: %w", m.Name, err)
+		}
+		pg.Town.Party.Members = append(pg.Town.Party.Members, cp)
+	}
+	return pg, nil
+}
+
 // PracticeEncounter starts a practice encounter for the current party at the
 // maze entrance. withChest marks the encounter as guarding a chest (the
 // entrance's encounters never do), to try the chest; it is a practice
@@ -60,22 +83,13 @@ func cloneCharacter(ch *engine.Character) (*engine.Character, error) {
 func (s *Session) PracticeEncounter(withChest bool) View {
 	return s.combatDo(func() error {
 		if s.practice != nil {
-			return errors.New("An encounter is already in progress.")
+			return errPracticeRunning
 		}
-		g := s.ctrl.Game
-		if g.Phase != engine.PhaseTown || len(g.Town.Party.Members) == 0 {
-			return errors.New("Form a party in the Tavern first.")
+		pg, err := s.practiceGame()
+		if err != nil {
+			return err
 		}
-		pg := engine.New(s.scenario)
-		pg.Title = nil
 		pg.MazeLevel, pg.PlayerX, pg.PlayerY, pg.Facing = 0, 0, 0, engine.North
-		for _, m := range g.Town.Party.Members {
-			cp, err := cloneCharacter(m)
-			if err != nil {
-				return fmt.Errorf("copy %s: %w", m.Name, err)
-			}
-			pg.Town.Party.Members = append(pg.Town.Party.Members, cp)
-		}
 		for try := 0; try < 50; try++ {
 			pg.Combat = engine.NewCombat(pg)
 			if len(pg.Combat.Groups) > 0 {
@@ -88,14 +102,16 @@ func (s *Session) PracticeEncounter(withChest bool) View {
 		pg.Combat.HasChest = pg.Combat.HasChest || withChest
 		pg.Phase = engine.PhaseCombat
 		s.practice = app.New(pg)
-		s.practiceChest = withChest
+		s.practiceChest, s.expedition = withChest, false
 		return nil
 	})
 }
 
-// combatDo runs a combat action on the practice game under the lock. The
-// practice game is never saved. When combat is over the practice game is
-// discarded and a notice says how it ended.
+// combatDo runs an action on the practice game under the lock. The
+// practice game is never saved. A practice encounter is over when its
+// combat is; an expedition goes on in the maze and at Camp and is over when
+// the party is back in town (by the stairs, or perished). Then the practice
+// game is discarded and a notice says how it ended.
 func (s *Session) combatDo(action func() error) View {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -104,18 +120,39 @@ func (s *Session) combatDo(action func() error) View {
 	}
 	s.notice = ""
 	err := action()
-	if p := s.practice; p != nil && (p.Game.Phase != engine.PhaseCombat || p.Game.Combat == nil) {
-		switch {
-		case p.Game.Phase == engine.PhaseTown:
-			s.notice = "The party perished. Practice encounter over; the roster is unchanged."
-		case p.Game.MazeMessage != "":
-			s.notice = p.Game.MazeMessage + " Practice encounter over; the roster is unchanged."
-		default:
-			s.notice = "Practice encounter over; the roster is unchanged."
+	if p := s.practice; p != nil {
+		g := p.Game
+		inCombat := g.Phase == engine.PhaseCombat && g.Combat != nil
+		exploring := s.expedition && (g.Phase == engine.PhaseMaze || g.Phase == engine.PhaseCamp)
+		if !inCombat && !exploring {
+			what := "Practice encounter"
+			if s.expedition {
+				what = "Practice expedition"
+			}
+			switch {
+			case g.Phase == engine.PhaseTown && (!s.expedition || !anyAlive(g)):
+				s.notice = "The party perished. " + what + " over; the roster is unchanged."
+			case g.Phase == engine.PhaseTown:
+				s.notice = "The party is back in the castle. " + what + " over; the roster is unchanged."
+			case g.MazeMessage != "":
+				s.notice = g.MazeMessage + " " + what + " over; the roster is unchanged."
+			default:
+				s.notice = what + " over; the roster is unchanged."
+			}
+			s.practice, s.expedition = nil, false
 		}
-		s.practice = nil
 	}
 	return s.view(err)
+}
+
+// anyAlive reports whether any party member is alive.
+func anyAlive(g *engine.GameState) bool {
+	for _, m := range g.Town.Party.Members {
+		if m != nil && m.IsAlive() {
+			return true
+		}
+	}
+	return false
 }
 
 // onPractice runs op against the practice controller.
@@ -137,14 +174,18 @@ func member(c *app.Controller, slot int) (*engine.Character, error) {
 	return party[slot-1], nil
 }
 
-// AbandonPractice ends the practice encounter at once.
+// AbandonPractice ends the practice encounter or expedition at once.
 func (s *Session) AbandonPractice() View {
 	return s.combatDo(func() error {
 		if s.practice == nil {
 			return errNoPractice
 		}
-		s.practice = nil
-		s.notice = "Practice encounter abandoned; the roster is unchanged."
+		if s.expedition {
+			s.notice = "Practice expedition abandoned; the roster is unchanged."
+		} else {
+			s.notice = "Practice encounter abandoned; the roster is unchanged."
+		}
+		s.practice, s.expedition = nil, false
 		return nil
 	})
 }

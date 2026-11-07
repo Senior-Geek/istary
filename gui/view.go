@@ -18,7 +18,7 @@ type View struct {
 	Error      string          `json:"error"`   // validation or refusal from the last action
 	Message    string          `json:"message"` // in-game prompt text (e.g. "create it?")
 	Notice     string          `json:"notice"`  // confirmation of the last action
-	Screen     string          `json:"screen"`  // "roster", "confirmCreate" or "creation"
+	Screen     string          `json:"screen"`  // "roster", "confirmCreate", "creation", "combat" or "dungeon"
 	Roster     []CharacterView `json:"roster"`
 	Creation   *CreationView   `json:"creation"`
 	Races      []string        `json:"races"`
@@ -38,6 +38,11 @@ type View struct {
 	// encounter, and nothing else from the combat engine.
 	Combat        *app.CombatView `json:"combat"`
 	PracticeChest bool            `json:"practiceChest"` // the encounter was given a chest for practice
+
+	// Dungeon (Screen "dungeon"): the controller's DungeonView of the
+	// practice expedition, and nothing else from the maze.
+	Dungeon    *app.DungeonView `json:"dungeon"`
+	Expedition bool             `json:"expedition"` // a practice expedition is under way (any screen)
 }
 
 // PartySlotView is one party position.
@@ -258,8 +263,12 @@ func (s *Session) view(err error) View {
 	}
 	v.Error = errorText(err)
 	if s.practice != nil {
+		v.Expedition = s.expedition
 		if cv, cerr := s.practice.CombatView(); cerr == nil {
 			v.Screen, v.Combat, v.PracticeChest = "combat", &cv, s.practiceChest
+		} else if s.expedition {
+			dv := s.practice.DungeonView()
+			v.Screen, v.Dungeon = "dungeon", &dv
 		}
 	}
 

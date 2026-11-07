@@ -368,6 +368,104 @@ export namespace app {
 		    return a;
 		}
 	}
+	export class CorridorView {
+	    left: string;
+	    right: string;
+	    front: string;
+	    leftAhead?: string;
+	    rightAhead?: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new CorridorView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.left = source["left"];
+	        this.right = source["right"];
+	        this.front = source["front"];
+	        this.leftAhead = source["leftAhead"];
+	        this.rightAhead = source["rightAhead"];
+	    }
+	}
+	export class DungeonMemberView {
+	    slot: number;
+	    name: string;
+	    class: string;
+	    ac: number;
+	    hp: number;
+	    maxHp: number;
+	    status: string;
+	    poisoned: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new DungeonMemberView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.slot = source["slot"];
+	        this.name = source["name"];
+	        this.class = source["class"];
+	        this.ac = source["ac"];
+	        this.hp = source["hp"];
+	        this.maxHp = source["maxHp"];
+	        this.status = source["status"];
+	        this.poisoned = source["poisoned"];
+	    }
+	}
+	export class DungeonView {
+	    phase: string;
+	    party: DungeonMemberView[];
+	    corridor: CorridorView[];
+	    dark: boolean;
+	    viewport: string[];
+	    lines: string[];
+	    more: boolean;
+	    prompt: string;
+	    buttons: string[];
+	    found: string[];
+	    spells: string[];
+	    actions: string[];
+	
+	    static createFrom(source: any = {}) {
+	        return new DungeonView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.phase = source["phase"];
+	        this.party = this.convertValues(source["party"], DungeonMemberView);
+	        this.corridor = this.convertValues(source["corridor"], CorridorView);
+	        this.dark = source["dark"];
+	        this.viewport = source["viewport"];
+	        this.lines = source["lines"];
+	        this.more = source["more"];
+	        this.prompt = source["prompt"];
+	        this.buttons = source["buttons"];
+	        this.found = source["found"];
+	        this.spells = source["spells"];
+	        this.actions = source["actions"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 
 }
 
@@ -650,6 +748,8 @@ export namespace main {
 	    pendingJoin: string;
 	    combat?: app.CombatView;
 	    practiceChest: boolean;
+	    dungeon?: app.DungeonView;
+	    expedition: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new View(source);
@@ -677,6 +777,8 @@ export namespace main {
 	        this.pendingJoin = source["pendingJoin"];
 	        this.combat = this.convertValues(source["combat"], app.CombatView);
 	        this.practiceChest = source["practiceChest"];
+	        this.dungeon = this.convertValues(source["dungeon"], app.DungeonView);
+	        this.expedition = source["expedition"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

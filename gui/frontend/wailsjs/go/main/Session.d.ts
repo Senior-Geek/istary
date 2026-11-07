@@ -50,6 +50,8 @@ export function Confirm(arg1:boolean):Promise<main.View>;
 
 export function DeleteCharacter(arg1:string,arg2:string):Promise<main.View>;
 
+export function DungeonAction(arg1:string,arg2:number):Promise<main.View>;
+
 export function FinishStats():Promise<main.View>;
 
 export function JoinParty(arg1:number):Promise<main.View>;
@@ -59,6 +61,8 @@ export function LeaveParty(arg1:number):Promise<main.View>;
 export function ListBackups():Promise<Array<main.BackupInfo>>;
 
 export function PracticeEncounter(arg1:boolean):Promise<main.View>;
+
+export function PracticeExpedition():Promise<main.View>;
 
 export function ReloadRoster():Promise<main.View>;
 
