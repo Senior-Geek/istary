@@ -249,6 +249,24 @@ town location; `gui/location.go` (`goTo`) is the only code that changes it,
 always through the game's own leave/enter steps. See
 `gui/README.md`.
 
+**GUI combat (M7a).** `gui/combat.go` is the combat bridge.
+- **What the frontend gets:** while an encounter runs, `View.Screen` is
+  `combat` and `View.Combat` is the controller's `app.CombatView`. That is
+  the only combat data the frontend receives.
+- **Methods:** `CombatStart`, `CombatFriendly`, `CombatSelect`,
+  `CombatOrder`, `CombatFinishOrders`, `CombatBack`, `CombatCommit`,
+  `CombatAdvance`, `CombatChooseBoon`, `CombatEndRound`, `CombatLeave`,
+  `ChestAction`, `ChestContinue` and `AbandonPractice`. Each calls the
+  matching controller operation.
+- **Pacing:** the frontend's: Space or Enter for the next step, or automatic
+  at a chosen speed.
+- **How combat is reached:** the GUI has no dungeon yet, so through
+  `PracticeEncounter(withChest)`. That is a real encounter from the maze
+  entrance, fought by copies of the party in a separate game that is never
+  saved, so the roster is unchanged. `withChest` gives the encounter a chest
+  for practice (the entrance's encounters never have one); it is a practice
+  setting, not a rule.
+
 ## Randomness
 
 All game randomness uses the global `math/rand` source and is unchanged.

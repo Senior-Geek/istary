@@ -1,8 +1,21 @@
 # Istary desktop GUI (prototype)
 
-A Wails v2 + Svelte 5 front end. This first prototype covers Wizardry I
-character creation only: view the roster, create a character through the
-original workflow, and save it.
+A Wails v2 + Svelte 5 front end. It covers Wizardry I character creation,
+roster management, the party (Gilgamesh's Tavern), and combat (M7a):
+practice encounters played through `app.Controller` and `app.CombatView`.
+
+**Practice encounters.** There is no dungeon in the GUI yet.
+- **What you fight:** "Practice encounter" in the Party column starts a real
+  encounter from the maze entrance, with copies of the party.
+- **Nothing is kept:** the results are discarded and the roster is not
+  touched.
+- **The chest option:** "with a chest" adds a chest to try the chest screen.
+- **The screen** (`frontend/src/lib/CombatScreen.svelte`):
+  - order entry with the actions each member may take and why not;
+  - target choice and the order review;
+  - playback one action at a time (Space or Enter, or automatic);
+  - the chest, victory, defeat and escape;
+  - an expandable "details" log.
 
 All rules come from the Go engine through `app.Controller`. The Svelte code
 only renders `View` (see `view.go`) and calls `Session` methods
