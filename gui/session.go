@@ -62,11 +62,27 @@ type Session struct {
 // NewSession loads Wizardry I and the roster from saveDir. saveDir must not
 // be the terminal game's directory.
 func NewSession(saveDir string) *Session {
-	s := &Session{saveDir: saveDir}
-	if err := s.open(); err != nil {
-		s.startErr = err
-	}
+	s := unopenedSession(saveDir)
+	s.Start()
 	return s
+}
+
+// errNotStarted is the state of a session that has not opened its folder.
+var errNotStarted = errors.New("Istary is starting.")
+
+// unopenedSession returns a session that has not touched saveDir yet; Start
+// opens it. The app opens it only once Wails starts the window: Wails also
+// runs the program to generate its bindings (wails build, wails dev), and
+// that run must not lock, resume or save anything.
+func unopenedSession(saveDir string) *Session {
+	return &Session{saveDir: saveDir, startErr: errNotStarted}
+}
+
+// Start opens the save folder: lock, load and resume.
+func (s *Session) Start() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.startErr = s.open()
 }
 
 func (s *Session) open() error {

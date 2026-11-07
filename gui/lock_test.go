@@ -105,3 +105,25 @@ func TestCloseReleasesTheFolder(t *testing.T) {
 	}
 	r.Close()
 }
+
+// Until the window starts, the session touches nothing: Wails also runs the
+// program to generate its bindings, and that run must not lock, load,
+// resume or save (main opens the folder in OnStartup).
+func TestUnopenedSessionTouchesNothing(t *testing.T) {
+	dir := filepath.Join(t.TempDir(), "saves")
+	s := unopenedSession(dir)
+	if v := s.State(); v.Fatal == "" {
+		t.Fatal("an unopened session acts")
+	}
+	if _, err := os.Stat(dir); !os.IsNotExist(err) {
+		t.Fatalf("the save folder was touched: %v", err)
+	}
+	s.Start()
+	if v := s.State(); v.Fatal != "" {
+		t.Fatal(v.Fatal)
+	}
+	if _, err := os.Stat(filepath.Join(dir, lockFileName)); err != nil {
+		t.Fatalf("not locked after Start: %v", err)
+	}
+	s.Close()
+}

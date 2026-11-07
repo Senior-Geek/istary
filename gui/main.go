@@ -33,7 +33,9 @@ func guiSaveDir() string {
 }
 
 func main() {
-	session := NewSession(guiSaveDir())
+	// The save folder is opened when the window starts (OnStartup), not
+	// here: Wails also runs this program to generate bindings.
+	session := unopenedSession(guiSaveDir())
 
 	err := wails.Run(&options.App{
 		Title:     "Istary — Character Creation",
@@ -53,6 +55,7 @@ func main() {
 		Bind: []interface{}{session},
 		// Let go of the save folder's lock on quitting (the system also
 		// releases it if the app ends any other way).
+		OnStartup:  func(context.Context) { session.Start() },
 		OnShutdown: func(context.Context) { session.Close() },
 	})
 	if err != nil {
