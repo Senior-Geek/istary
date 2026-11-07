@@ -108,7 +108,7 @@
 <div class="combat">
   <header class="bar">
     <h2>{phaseTitle[c.phase] ?? 'Combat'} <span class="muted">round {c.round}</span></h2>
-    <span class="tag">Practice encounter{view.practiceChest ? ' · with a chest' : ''} · results are not kept</span>
+    <span class="tag">{view.expedition ? 'Practice expedition' : 'Practice encounter'}{view.practiceChest ? ' · with a chest' : ''} · results are not kept</span>
     <div class="spacer"></div>
     <label class="muted"><input type="checkbox" bind:checked={auto} /> automatic</label>
     <select bind:value={speed} aria-label="Automatic speed">

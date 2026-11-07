@@ -7,6 +7,7 @@
   import RestorePanel from './lib/RestorePanel.svelte'
   import PartyPanel from './lib/PartyPanel.svelte'
   import CombatScreen from './lib/CombatScreen.svelte'
+  import DungeonScreen from './lib/DungeonScreen.svelte'
 
   let view = $state(null)
   let busy = $state(false)
@@ -136,6 +137,8 @@
 
       {#if view.screen === 'combat' && view.combat}
       <CombatScreen {view} {busy} {call} />
+      {:else if view.screen === 'dungeon' && view.dungeon}
+      <DungeonScreen {view} {busy} {call} />
       {:else}
       <!-- Grid areas: wide = roster and rest beside the party; narrow =
            roster, party, rest stacked. -->
@@ -328,11 +331,16 @@
             onleave={leaveParty} onpassword={submitJoin} oncancel={cancelJoin} />
         </section>
         <section>
-          <h2>Combat</h2>
-          <p class="muted">The GUI has no dungeon yet. A practice encounter fights a real encounter
-            from the maze entrance with copies of the party; nothing it changes is kept.</p>
+          <h2>Practice</h2>
+          <p class="muted">A practice expedition walks the real maze with copies of the party,
+            encounters included; a practice encounter fights one encounter from the maze entrance.
+            Nothing either changes is kept.</p>
           <div class="row">
             <button class="primary" disabled={busy || view.screen !== 'roster' || !view.party?.length}
+              onclick={() => call(S.PracticeExpedition)}>Practice expedition</button>
+          </div>
+          <div class="row">
+            <button disabled={busy || view.screen !== 'roster' || !view.party?.length}
               onclick={() => call(S.PracticeEncounter, practiceChest)}>Practice encounter</button>
             <label class="muted"><input type="checkbox" bind:checked={practiceChest} /> with a chest</label>
           </div>

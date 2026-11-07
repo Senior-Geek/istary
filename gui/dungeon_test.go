@@ -18,13 +18,17 @@ import (
 // the View and calling only Session methods: in the dungeon it picks one of
 // the view's actions (mostly forward), and in combat it fights with drive.
 // It checks at every view that the screen matches the practice game: the
-// combat screen exactly when the engine has started an encounter.
-func explore(t *testing.T, s *Session, rng *rand.Rand, seen map[string]int) View {
+// combat screen exactly when the engine has started an encounter. record,
+// if set, is given every view.
+func explore(t *testing.T, s *Session, rng *rand.Rand, seen map[string]int, record func(View)) View {
 	t.Helper()
 	v := s.State()
 	for step := 0; step < 1500; step++ {
 		if v.Error != "" {
 			t.Fatalf("step %d: %s", step, v.Error)
+		}
+		if record != nil {
+			record(v)
 		}
 		if s.practice == nil {
 			return v
@@ -79,7 +83,7 @@ func TestPracticeExpeditionsThroughTheBridge(t *testing.T) {
 		if v.Screen != "dungeon" || v.Dungeon == nil || v.Dungeon.Phase != "camp" || !slices.Equal(v.Dungeon.Actions, []string{app.ActLeaveCamp}) {
 			t.Fatalf("seed %d: start: %+v", seed, v)
 		}
-		v = explore(t, s, rng, seen)
+		v = explore(t, s, rng, seen, nil)
 		switch {
 		case s.practice != nil:
 			seen["still walking"]++
