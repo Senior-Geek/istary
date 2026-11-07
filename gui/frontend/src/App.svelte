@@ -130,11 +130,25 @@
     <div class="muted">Saves: {view.saveDir}</div>
 
     {#if view.fatal}
-      <div class="banner error">{view.fatal}</div>
+      <div class="banner error">{view.fatal}
+        <button class="small" disabled={busy} onclick={() => call(S.TryAgain)}>Try again</button>
+      </div>
     {:else}
       {#if view.error}<div class="banner error">{view.error}</div>{/if}
       {#if view.unsaved && !view.error}
         <div class="banner error">Not saved: {view.unsaved}. Play goes on in this window; every action tries to save again.</div>
+      {/if}
+      {#if view.warning}<div class="banner error">{view.warning}</div>{/if}
+      {#if view.recovery}
+        <div class="banner error">
+          The saved expedition cannot be resumed: {view.recovery}
+          <div class="row">
+            <button class="small" disabled={busy} onclick={() => call(S.ReloadRoster)}>Try resuming again</button>
+            {#if view.canReturn}
+              <button class="small" disabled={busy} onclick={() => call(S.ReturnExpeditionToCastle)}>Return its party to the castle</button>
+            {/if}
+          </div>
+        </div>
       {/if}
       {#if view.notice}<div class="banner notice">{view.notice}</div>{/if}
 
@@ -336,8 +350,8 @@
         <section>
           <h2>Expedition</h2>
           <p class="muted">Take the party into the maze. Everything that happens to it is saved after
-            every action. If Istary closes during an expedition, the party is back in the castle
-            when it starts again, as it was at the last save.</p>
+            every action. If Istary closes during an expedition, it resumes where it was last saved;
+            an encounter it was in is over, and its unclaimed rewards are lost.</p>
           <div class="row">
             <button class="primary" disabled={busy || view.screen !== 'roster' || !view.party?.length}
               onclick={() => call(S.RealExpedition)}>Real expedition</button>

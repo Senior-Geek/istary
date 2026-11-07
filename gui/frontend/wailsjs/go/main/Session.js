@@ -46,6 +46,10 @@ export function ChooseRace(arg1) {
   return window['go']['main']['Session']['ChooseRace'](arg1);
 }
 
+export function Close() {
+  return window['go']['main']['Session']['Close']();
+}
+
 export function CombatAdvance() {
   return window['go']['main']['Session']['CombatAdvance']();
 }
@@ -150,6 +154,10 @@ export function RestoreBackup(arg1) {
   return window['go']['main']['Session']['RestoreBackup'](arg1);
 }
 
+export function ReturnExpeditionToCastle() {
+  return window['go']['main']['Session']['ReturnExpeditionToCastle']();
+}
+
 export function SetName(arg1) {
   return window['go']['main']['Session']['SetName'](arg1);
 }
@@ -168,4 +176,8 @@ export function State() {
 
 export function SubmitJoinPassword(arg1) {
   return window['go']['main']['Session']['SubmitJoinPassword'](arg1);
+}
+
+export function TryAgain() {
+  return window['go']['main']['Session']['TryAgain']();
 }

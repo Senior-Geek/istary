@@ -752,6 +752,9 @@ export namespace main {
 	    expedition: boolean;
 	    real: boolean;
 	    unsaved: string;
+	    warning: string;
+	    recovery: string;
+	    canReturn: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new View(source);
@@ -783,6 +786,9 @@ export namespace main {
 	        this.expedition = source["expedition"];
 	        this.real = source["real"];
 	        this.unsaved = source["unsaved"];
+	        this.warning = source["warning"];
+	        this.recovery = source["recovery"];
+	        this.canReturn = source["canReturn"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
