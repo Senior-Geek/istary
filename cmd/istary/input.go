@@ -48,8 +48,7 @@ func legacyDispatch(screen *render.Screen, game *engine.GameState, ev *tcell.Eve
 		handleTitleInput(screen, game, ev)
 	case engine.PhaseTown:
 		return handleTownInput(game, ev)
-	case engine.PhaseCamp:
-		handleCampInput(game, ev)
+	// Camp is handled by app.Controller (camp.go).
 	case engine.PhaseCombat:
 		handleCombatInput(game, ev)
 	case engine.PhaseUtilities:

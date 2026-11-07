@@ -185,13 +185,14 @@ func (c *Controller) LeaveCamp() error {
 	return nil
 }
 
-// campKey handles the Camp keys that have moved here (L)EAVE); the rest of
-// Camp is still the front end's.
+// campKey handles a key in Camp: L)EAVE at the menu (LeaveCamp), and
+// everything else (campInput, camp.go).
 func (c *Controller) campKey(k Key) bool {
-	if k.Kind != KeyRune || upper(k.Rune) != 'L' || !c.campAtMenu() {
-		return false
+	if k.Kind == KeyRune && upper(k.Rune) == 'L' && c.campAtMenu() {
+		c.LeaveCamp()
+		return true
 	}
-	c.LeaveCamp()
+	c.campInput(k)
 	return true
 }
 

@@ -52,6 +52,10 @@ func (c *Controller) HandleKey(k Key) bool {
 // townKey routes town keys for the migrated locations and prompts.
 func (c *Controller) townKey(k Key) bool {
 	town := c.Game.Town
+	if inspectModes[town.InputMode] {
+		c.inspectKey(k)
+		return true
+	}
 	switch town.InputMode {
 	case engine.InputNone:
 		switch town.Location {

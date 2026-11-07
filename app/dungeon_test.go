@@ -140,14 +140,14 @@ func TestCampFromTheMaze(t *testing.T) {
 	if c.Game.Phase != engine.PhaseCamp {
 		t.Fatalf("camp: %v", c.Game.Phase)
 	}
-	// Camp's own screens still belong to the front end: leaving is refused
-	// while one is open, and HandleKey passes L on.
+	// Leaving is refused while one of Camp's screens is open; there L is
+	// that screen's key (reorder ignores it) and Camp stays (M6b-3A).
 	c.Game.Town.InputMode = engine.InputReorder
 	if err := c.LeaveCamp(); !errors.Is(err, ErrWrongState) {
 		t.Fatalf("leave camp while reordering: %v", err)
 	}
-	if c.HandleKey(Rune('L')) {
-		t.Fatal("HandleKey took L while reordering")
+	if !c.HandleKey(Rune('L')) || c.Game.Phase != engine.PhaseCamp || c.Game.Town.InputMode != engine.InputReorder {
+		t.Fatal("L while reordering left Camp or the reorder")
 	}
 	c.Game.Town.InputMode = engine.InputNone
 	if !c.HandleKey(Rune('l')) || c.Game.Phase != engine.PhaseMaze {
