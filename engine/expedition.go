@@ -72,6 +72,30 @@ type Checkpoint struct {
 	Inspecting    bool     `json:"inspecting,omitempty"`
 	InspectFound  []string `json:"inspectFound,omitempty"` // names
 	CampMessage   string   `json:"campMessage,omitempty"`
+
+	// Camp is Camp's screen ("menu" at its menu) and fields at the
+	// checkpoint; nil in the maze.
+	Camp *CampScreen `json:"camp,omitempty"`
+}
+
+// CampScreen is an open Camp screen and its progress (M6b-3A), restored
+// exactly like an open maze prompt. Screens are named, not numbered.
+type CampScreen struct {
+	Screen        string   `json:"screen"`              // as app.CampView names it
+	Member        string   `json:"member,omitempty"`    // the inspected (or equipping) character
+	TradeWith     string   `json:"tradeWith,omitempty"` // the character receiving a trade
+	Typed         string   `json:"typed,omitempty"`     // the text typed at a prompt
+	EquipCategory int      `json:"equipCategory,omitempty"`
+	EquipChoices  []int    `json:"equipChoices,omitempty"`
+	EquipParty    bool     `json:"equipParty,omitempty"` // E)QUIP for the whole party
+	EquipPartyIdx int      `json:"equipPartyIdx,omitempty"`
+	ReorderPos    int      `json:"reorderPos,omitempty"`
+	Reordered     []string `json:"reordered,omitempty"` // names placed so far
+	PriestBook    bool     `json:"priestBook,omitempty"`
+	Spell         string   `json:"spell,omitempty"` // waiting for its target
+	MalorEW       int      `json:"malorEW,omitempty"`
+	MalorNS       int      `json:"malorNS,omitempty"`
+	MalorUD       int      `json:"malorUD,omitempty"`
 }
 
 // SquareState is the changeable part of one maze square.

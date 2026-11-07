@@ -3,7 +3,8 @@ package app
 // Saved expeditions (M6b-2; docs/design/m6b/EXPEDITION-PERSISTENCE.md).
 //
 // Checkpoint records the game at a safe point: in the maze (with or without
-// an open maze prompt), in Camp, or during an encounter. Each step has
+// an open maze prompt), in Camp (with any Camp screen open, M6b-3A), or
+// during an encounter. Each step has
 // finished by then: the move, the square's effect, healing and poison and
 // the encounter check all happen within one key press, and an encounter's
 // fight room is already cleared when combat begins. Resume puts the game
@@ -60,6 +61,11 @@ func (c *Controller) Checkpoint(pristine *data.Scenario) (*engine.Expedition, er
 	case engine.PhaseCamp:
 		where.Phase = "camp"
 		where.CampMessage = g.Town.Message
+		screen, err := c.campScreen()
+		if err != nil {
+			return nil, err
+		}
+		where.Camp = screen
 	case engine.PhaseCombat:
 		if g.Combat == nil {
 			return nil, ErrNotOnExpedition
@@ -171,11 +177,18 @@ func (c *Controller) Resume(pristine *data.Scenario) error {
 	g.MazeInspecting, g.MazeInspectFound = w.Inspecting, found
 	g.ShowMap, g.MazeDelayInput, g.MazeDelayBuf = false, false, ""
 
-	g.Town.InputMode, g.Town.EditChar, g.Town.InputBuf = engine.InputNone, nil, ""
-	g.Town.Message = ""
+	town := g.Town
+	town.InputMode, town.EditChar, town.InputBuf, town.TradeTarget = engine.InputNone, nil, "", nil
+	town.EquipCategory, town.EquipChoices, town.EquipPartyMode, town.EquipPartyIdx = 0, nil, false, 0
+	town.ReorderPos, town.ReorderResult, town.PendingSpell = 0, nil, nil
+	town.MalorDeltaEW, town.MalorDeltaNS, town.MalorDeltaUD = 0, 0, 0
+	town.Message = ""
 	if w.Phase == "camp" {
 		g.Phase = engine.PhaseCamp
-		g.Town.Message = w.CampMessage
+		town.Message = w.CampMessage
+		if w.Camp != nil {
+			c.restoreCampScreen(w.Camp)
+		}
 	} else {
 		g.Phase = engine.PhaseMaze
 	}
@@ -254,7 +267,115 @@ func (c *Controller) checkExpedition(e *engine.Expedition) (members, found []*en
 		}
 		found = append(found, ch)
 	}
+	if cs := w.Camp; cs != nil {
+		if w.Phase != "camp" {
+			return nil, nil, &ExpeditionProblem{"a Camp screen is open outside Camp"}
+		}
+		if _, ok := campModes[cs.Screen]; !ok {
+			return nil, nil, &ExpeditionProblem{fmt.Sprintf("unknown Camp screen %q", cs.Screen)}
+		}
+		inParty := func(name string) bool { return name == "" || slices.Contains(e.Party, name) }
+		if !inParty(cs.Member) || !inParty(cs.TradeWith) {
+			return nil, nil, &ExpeditionProblem{"a Camp screen names someone outside the party"}
+		}
+		for _, name := range cs.Reordered {
+			if !inParty(name) {
+				return nil, nil, &ExpeditionProblem{"the reorder names someone outside the party"}
+			}
+		}
+		if cs.Spell != "" && engine.LookupSpell(cs.Spell) == nil {
+			return nil, nil, &ExpeditionProblem{fmt.Sprintf("unknown spell %q", cs.Spell)}
+		}
+		if cs.Member == "" && campNeedsMember[cs.Screen] {
+			return nil, nil, &ExpeditionProblem{fmt.Sprintf("the Camp screen %q has no character", cs.Screen)}
+		}
+		for _, pos := range cs.EquipChoices {
+			if pos < 0 || pos >= 8 {
+				return nil, nil, &ExpeditionProblem{"the equip choices are unreadable"}
+			}
+		}
+	}
 	return members, found, nil
+}
+
+// campModes maps Camp screen names (as CampView names them) to modes.
+var campModes = func() map[string]engine.InputMode {
+	m := map[string]engine.InputMode{"menu": engine.InputNone}
+	for mode, name := range campScreens {
+		m[name] = mode
+	}
+	return m
+}()
+
+// campNeedsMember are the screens that work on one character.
+var campNeedsMember = map[string]bool{
+	"inspect": true, "equip": true, "drop": true, "trade": true, "tradeGold": true, "tradeItem": true,
+	"spellBooks": true, "spellList": true, "castSpell": true, "spellTarget": true, "useItem": true,
+	"dumapic": true, "malor": true,
+}
+
+// campScreen records the open Camp screen ("menu" at the menu) and every
+// Camp field, so that even what a screen leaves behind comes back.
+func (c *Controller) campScreen() (*engine.CampScreen, error) {
+	town := c.Game.Town
+	name, ok := campScreens[town.InputMode]
+	if c.campAtMenu() {
+		name, ok = "menu", true
+	}
+	if !ok {
+		return nil, fmt.Errorf("the Camp screen (mode %d) cannot be recorded", town.InputMode)
+	}
+	nameOf := func(ch *engine.Character) string {
+		if ch == nil {
+			return ""
+		}
+		return ch.Name
+	}
+	cs := &engine.CampScreen{
+		Screen: name, Member: nameOf(town.EditChar), TradeWith: nameOf(town.TradeTarget), Typed: town.InputBuf,
+		EquipCategory: town.EquipCategory, EquipChoices: append([]int(nil), town.EquipChoices...),
+		EquipParty: town.EquipPartyMode, EquipPartyIdx: town.EquipPartyIdx,
+		ReorderPos: town.ReorderPos, PriestBook: town.InspectSpells == engine.PriestSpell,
+		MalorEW: town.MalorDeltaEW, MalorNS: town.MalorDeltaNS, MalorUD: town.MalorDeltaUD,
+	}
+	for _, m := range town.ReorderResult {
+		cs.Reordered = append(cs.Reordered, nameOf(m))
+	}
+	if town.PendingSpell != nil {
+		cs.Spell = town.PendingSpell.Name
+	}
+	return cs, nil
+}
+
+// restoreCampScreen opens a recorded Camp screen with its progress. The
+// expedition was checked first (checkExpedition), so the names are party
+// members.
+func (c *Controller) restoreCampScreen(cs *engine.CampScreen) {
+	town := c.Game.Town
+	member := func(name string) *engine.Character {
+		for _, m := range town.Party.Members {
+			if m != nil && name != "" && m.Name == name {
+				return m
+			}
+		}
+		return nil
+	}
+	town.InputMode = campModes[cs.Screen]
+	town.EditChar, town.TradeTarget, town.InputBuf = member(cs.Member), member(cs.TradeWith), cs.Typed
+	town.EquipCategory, town.EquipChoices = cs.EquipCategory, append([]int(nil), cs.EquipChoices...)
+	town.EquipPartyMode, town.EquipPartyIdx = cs.EquipParty, cs.EquipPartyIdx
+	town.ReorderPos = cs.ReorderPos
+	for _, name := range cs.Reordered {
+		town.ReorderResult = append(town.ReorderResult, member(name))
+	}
+	town.InspectSpells = engine.MageSpell
+	if cs.PriestBook {
+		town.InspectSpells = engine.PriestSpell
+	}
+	if cs.Spell != "" {
+		town.PendingSpell = engine.LookupSpell(cs.Spell)
+	}
+	town.MalorDeltaEW, town.MalorDeltaNS, town.MalorDeltaUD = cs.MalorEW, cs.MalorNS, cs.MalorUD
 }
 
 // ReturnExpeditionToCastle ends a saved expedition that cannot be resumed:
