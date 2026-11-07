@@ -6,6 +6,7 @@
   import CharacterSheet from './lib/CharacterSheet.svelte'
   import RestorePanel from './lib/RestorePanel.svelte'
   import PartyPanel from './lib/PartyPanel.svelte'
+  import CombatScreen from './lib/CombatScreen.svelte'
 
   let view = $state(null)
   let busy = $state(false)
@@ -16,6 +17,7 @@
   let selected = $state(-1)        // roster index shown in the character sheet
   let resetting = $state(false)    // reset confirmation open
   let backups = $state(null)       // backup list while the restore panel is open
+  let practiceChest = $state(false) // practice encounter with a chest
 
   async function call(fn, ...args) {
     busy = true
@@ -122,7 +124,7 @@
 {/snippet}
 
 <main>
-  <h1>Istary — Wizardry I Character Creation</h1>
+  <h1>Istary — Wizardry I</h1>
   {#if view}
     <div class="muted">Saves: {view.saveDir}</div>
 
@@ -132,6 +134,9 @@
       {#if view.error}<div class="banner error">{view.error}</div>{/if}
       {#if view.notice}<div class="banner notice">{view.notice}</div>{/if}
 
+      {#if view.screen === 'combat' && view.combat}
+      <CombatScreen {view} {busy} {call} />
+      {:else}
       <!-- Grid areas: wide = roster and rest beside the party; narrow =
            roster, party, rest stacked. -->
       <div class="layout">
@@ -322,8 +327,19 @@
             {busy} onopen={(i) => { if (view.screen === 'roster') selected = i }}
             onleave={leaveParty} onpassword={submitJoin} oncancel={cancelJoin} />
         </section>
+        <section>
+          <h2>Combat</h2>
+          <p class="muted">The GUI has no dungeon yet. A practice encounter fights a real encounter
+            from the maze entrance with copies of the party; nothing it changes is kept.</p>
+          <div class="row">
+            <button class="primary" disabled={busy || view.screen !== 'roster' || !view.party?.length}
+              onclick={() => call(S.PracticeEncounter, practiceChest)}>Practice encounter</button>
+            <label class="muted"><input type="checkbox" bind:checked={practiceChest} /> with a chest</label>
+          </div>
+        </section>
       </aside>
       </div>
+      {/if}
     {/if}
   {:else}
     <p class="muted">Loading…</p>
