@@ -41,6 +41,17 @@ type Session struct {
 	// unsaved is the error of the last save that failed, until a save
 	// succeeds; the view keeps showing it so a failure is not missed.
 	unsaved string
+	// uncertain is set while the last save replaced the file but could not
+	// sync the folder: saved, but perhaps not durably.
+	uncertain string
+
+	// pristine is Wizardry I as loaded, to find and restore changed special
+	// squares of an expedition (app.Controller.Checkpoint and Resume).
+	pristine *data.Scenario
+
+	// problem is why the saved expedition cannot be resumed, while it
+	// cannot; the expedition stays saved and untouched (expedition.go).
+	problem string
 
 	// lock is the save folder's single-writer lock (lock.go); lockNote says
 	// when the folder could not be locked.
@@ -82,7 +93,11 @@ func (s *Session) open() error {
 	if err != nil {
 		return fmt.Errorf("load Wizardry I data: %w", err)
 	}
-	s.scenario = scenario
+	pristine, err := wiz1.Load()
+	if err != nil {
+		return fmt.Errorf("load Wizardry I data: %w", err)
+	}
+	s.scenario, s.pristine = scenario, pristine
 	return s.reload()
 }
 
@@ -124,6 +139,7 @@ func (s *Session) reload() error {
 		return fmt.Errorf("load roster: %w", err)
 	}
 	s.ctrl = app.New(game)
+	s.resume()
 	return nil
 }
 
@@ -151,14 +167,24 @@ var errExpeditionOut = errors.New("The party is out on an expedition. Return to 
 
 // save writes the saved game and remembers a failure until a save succeeds.
 // The action itself has already happened in memory and is never repeated:
-// the next successful save writes it with whatever follows.
+// the next successful save writes it with whatever follows. A save that
+// replaced the file but could not sync the folder is kept apart: it is
+// saved, perhaps not durably.
 func (s *Session) save() error {
-	if err := s.ctrl.Save(); err != nil {
-		s.unsaved = err.Error()
-		return fmt.Errorf("Could not save: %w", err)
+	err := s.ctrl.Save()
+	var nd *engine.NotDurableError
+	switch {
+	case err == nil:
+		s.unsaved, s.uncertain = "", ""
+		return nil
+	case errors.As(err, &nd):
+		s.unsaved = ""
+		s.uncertain = "Saved, but the save folder could not be synced (" + nd.Err.Error() +
+			"); the last save may not survive a crash or power loss."
+		return nil
 	}
-	s.unsaved = ""
-	return nil
+	s.unsaved = err.Error()
+	return fmt.Errorf("Could not save: %w", err)
 }
 
 // State returns the current view without changing anything.
@@ -328,6 +354,9 @@ func (s *Session) ResetRoster() View {
 		c := s.ctrl
 		if c.Game.Phase != engine.PhaseTown {
 			return errors.New("Finish or discard the character being created first.")
+		}
+		if c.Game.Expedition != nil || c.Game.OtherExpedition != nil {
+			return errExpeditionSaved
 		}
 		// Make sure the file on disk matches memory before copying it.
 		if err := c.Save(); err != nil {

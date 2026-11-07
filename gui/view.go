@@ -49,8 +49,14 @@ type View struct {
 	// save succeeds. Everything since the last successful save exists only
 	// in memory until then.
 	Unsaved string `json:"unsaved"`
-	// Warning is a standing caution: the save folder could not be locked.
+	// Warning is a standing caution: the last save may not be durable, or
+	// the save folder could not be locked.
 	Warning string `json:"warning"`
+
+	// Recovery is why a saved expedition cannot be resumed (it stays saved);
+	// CanReturn says ReturnExpeditionToCastle is offered for it.
+	Recovery  string `json:"recovery"`
+	CanReturn bool   `json:"canReturn"`
 }
 
 // PartySlotView is one party position.
@@ -271,7 +277,9 @@ func (s *Session) view(err error) View {
 	}
 	v.Error = errorText(err)
 	v.Unsaved = s.unsaved
-	v.Warning = s.lockNote
+	v.Warning = strings.TrimSpace(s.uncertain + " " + s.lockNote)
+	v.Recovery = s.problem
+	v.CanReturn = s.problem != "" && s.ctrl.Game.Expedition != nil
 	if c := s.active(); c != nil {
 		v.Expedition, v.Real = s.expedition || s.real, s.real
 		if cv, cerr := c.CombatView(); cerr == nil {

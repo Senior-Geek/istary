@@ -3,9 +3,11 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"math/rand"
 	"os"
 	"path/filepath"
+	"reflect"
 	"slices"
 	"strings"
 	"testing"
@@ -14,10 +16,9 @@ import (
 	"github.com/Senior-Geek/istary/engine"
 )
 
-// Real expeditions (M6b-1): the saved party in the saved game, saved after
-// every action. Until M6b-2 the save holds no position, so a restart during
-// an expedition finds the party in the castle with everything saved up to
-// the last action.
+// Real expeditions: the saved party in the saved game, saved after every
+// action (M6b-1) with the expedition's checkpoint (M6b-2), so a restart
+// during an expedition resumes it at its last safe point.
 
 // onDisk reads the roster file as saved.
 func onDisk(t *testing.T, dir string) engine.SaveState {
@@ -49,8 +50,17 @@ func mustMatchDisk(t *testing.T, s *Session, dir string, when string) {
 			names = append(names, m.Name)
 		}
 	}
-	if !slices.Equal(names, st.PartyNames) {
-		t.Fatalf("%s: party on disk %v, in the game %v", when, st.PartyNames, names)
+	// Out on an expedition the party is in the expedition section, and the
+	// castle party list is empty.
+	var exp engine.Expedition
+	if len(st.Expedition) > 0 {
+		json.Unmarshal(st.Expedition, &exp)
+	}
+	switch {
+	case s.real && (len(st.PartyNames) != 0 || !slices.Equal(exp.Party, names)):
+		t.Fatalf("%s: on disk castle party %v, expedition %v; in the game %v", when, st.PartyNames, exp.Party, names)
+	case !s.real && (len(st.Expedition) != 0 || !slices.Equal(names, st.PartyNames)):
+		t.Fatalf("%s: party on disk %v (expedition %d bytes), in the game %v", when, st.PartyNames, len(st.Expedition), names)
 	}
 }
 
@@ -76,16 +86,44 @@ func partyStanding(g *engine.GameState) []standing {
 	return out
 }
 
-// restart opens a new session on the same folder, as when the app starts
-// again, and checks the M6b-1 outcome: the party is in the castle, as saved.
-func restart(t *testing.T, s *Session, dir string, want []standing, when string) *Session {
+// restart is the app quitting and starting again while s plays: a new
+// session opens the folder (reopened) and resumes. While s is out on a real
+// expedition the party must be back at its last safe point: in the maze or
+// Camp exactly as s shows it, or, if s is in an encounter, where s stands
+// with the encounter over. Otherwise the party is in the castle. Either
+// way every member is exactly as saved.
+func restart(t *testing.T, s *Session, dir string, when string) *Session {
 	t.Helper()
+	g := s.ctrl.Game
+	want := partyStanding(g)
+	inCombat := g.Phase == engine.PhaseCombat
+	before := s.State()
+	where := fmt.Sprintf("L%d (%d,%d) %v", g.MazeLevel, g.PlayerX, g.PlayerY, g.Facing)
 	r := reopened(t, s, dir)
 	v := r.State()
-	if v.Fatal != "" || v.Screen != "roster" || v.Expedition || r.ctrl.Game.Phase != engine.PhaseTown {
-		t.Fatalf("%s: after restart: screen %q expedition %v phase %v fatal %q", when, v.Screen, v.Expedition, r.ctrl.Game.Phase, v.Fatal)
+	rg := r.ctrl.Game
+	switch {
+	case v.Fatal != "" || v.Recovery != "":
+		t.Fatalf("%s: after restart: fatal %q recovery %q", when, v.Fatal, v.Recovery)
+	case s.real:
+		if !r.real || !v.Real || v.Screen != "dungeon" || rg.Combat != nil {
+			t.Fatalf("%s: not resumed: real %v screen %q", when, r.real, v.Screen)
+		}
+		if got := fmt.Sprintf("L%d (%d,%d) %v", rg.MazeLevel, rg.PlayerX, rg.PlayerY, rg.Facing); got != where {
+			t.Fatalf("%s: resumed at %s, was at %s", when, got, where)
+		}
+		if !inCombat && !reflect.DeepEqual(v.Dungeon, before.Dungeon) {
+			t.Fatalf("%s: the dungeon after restart\n%+v\nwas\n%+v", when, v.Dungeon, before.Dungeon)
+		}
+		if inCombat && !strings.Contains(v.Notice, "unclaimed rewards are lost") && !strings.Contains(v.Notice, "chest and its rewards are lost") {
+			t.Fatalf("%s: notice %q", when, v.Notice)
+		}
+	default:
+		if r.real || v.Screen != "roster" || v.Expedition || rg.Phase != engine.PhaseTown {
+			t.Fatalf("%s: after restart: screen %q expedition %v phase %v", when, v.Screen, v.Expedition, rg.Phase)
+		}
 	}
-	if got := partyStanding(r.ctrl.Game); !slices.Equal(got, want) {
+	if got := partyStanding(rg); !slices.Equal(got, want) {
 		t.Fatalf("%s: after restart the party is\n %+v\nwant\n %+v", when, got, want)
 	}
 	return r
@@ -102,8 +140,8 @@ func partyXP(g *engine.GameState) (xp, gold int) {
 
 // Real expeditions played through the bridge: every action is saved, the
 // party's losses and rewards are kept, the expedition ends in the castle
-// (the stairs, or the engine's defeat), and a restart at any point finds
-// the party in the castle exactly as last saved.
+// (the stairs, or the engine's defeat), and a restart at any point resumes
+// it exactly where it was saved.
 func TestRealExpeditionsThroughTheBridge(t *testing.T) {
 	seen := map[string]int{}
 	for seed := int64(1); seed <= 12; seed++ {
@@ -125,7 +163,7 @@ func TestRealExpeditionsThroughTheBridge(t *testing.T) {
 			}
 			mustMatchDisk(t, s, dir, "after an action")
 			if s.real && steps%151 == 0 {
-				restart(t, s, dir, partyStanding(s.ctrl.Game), "mid-expedition")
+				restart(t, s, dir, "mid-expedition")
 				seen["restarted mid-expedition"]++
 			}
 		})
@@ -157,7 +195,7 @@ func TestRealExpeditionsThroughTheBridge(t *testing.T) {
 		if !s.real && (v.Screen != "roster" || v.Expedition || v.Real) {
 			t.Fatalf("seed %d: after the expedition: screen %q", seed, v.Screen)
 		}
-		restart(t, s, dir, partyStanding(s.ctrl.Game), "at the end")
+		restart(t, s, dir, "at the end")
 	}
 	t.Logf("covered: %v", seen)
 	for _, k := range []string{"encounter", "back in the maze after combat", "prompt stairs", "camp",
@@ -228,10 +266,10 @@ func fightTo(t *testing.T, s *Session, rng *rand.Rand, stop ...string) (View, bo
 	return v, false
 }
 
-// Interruptions under the M6b-1 rule: wherever the app stops (walking, in
-// the middle of a round, at the chest, after the rewards), the party is in
-// the castle after a restart, with every committed loss kept, and with the
-// encounter's rewards only if they had been given, never twice.
+// Interruptions: wherever the app stops (walking, in the middle of a round,
+// at the chest, after the rewards), a restart resumes the expedition at its
+// last safe point with every committed loss kept, the encounter over, and
+// its rewards only if they had been given, never twice.
 func TestRealExpeditionInterruptions(t *testing.T) {
 	// Walking.
 	rand.Seed(7)
@@ -246,7 +284,7 @@ func TestRealExpeditionInterruptions(t *testing.T) {
 	if !s.real {
 		t.Fatal("the walk ended early")
 	}
-	restart(t, s, dir, partyStanding(s.ctrl.Game), "walking")
+	restart(t, s, dir, "walking")
 
 	reached := map[string]bool{}
 	for seed := int64(1); seed <= 30 && len(reached) < 3; seed++ {
@@ -263,7 +301,7 @@ func TestRealExpeditionInterruptions(t *testing.T) {
 			continue
 		}
 		mustMatchDisk(t, s, dir, "mid-round")
-		r := restart(t, s, dir, partyStanding(s.ctrl.Game), "mid-round")
+		r := restart(t, s, dir, "mid-round")
 		if xp, gold := partyXP(r.ctrl.Game); xp != xp0 || gold != gold0 {
 			t.Fatalf("seed %d: rewards after an interrupted round", seed)
 		}
@@ -274,7 +312,7 @@ func TestRealExpeditionInterruptions(t *testing.T) {
 		if !ok {
 			continue
 		}
-		r = restart(t, s, dir, partyStanding(s.ctrl.Game), "at the chest")
+		r = restart(t, s, dir, "at the chest")
 		if xp, gold := partyXP(r.ctrl.Game); xp != xp0 || gold != gold0 {
 			t.Fatalf("seed %d: rewards before the chest was resolved", seed)
 		}
@@ -296,12 +334,12 @@ func TestRealExpeditionInterruptions(t *testing.T) {
 		if xp1 <= xp0 {
 			t.Fatalf("seed %d: no experience at victory", seed)
 		}
-		restart(t, s, dir, partyStanding(s.ctrl.Game), "after the rewards")
+		restart(t, s, dir, "after the rewards")
 		v = s.CombatLeave()
 		if v.Screen != "dungeon" || !s.real {
 			t.Fatalf("seed %d: not back in the maze: %q", seed, v.Screen)
 		}
-		r = restart(t, s, dir, partyStanding(s.ctrl.Game), "back in the maze")
+		r = restart(t, s, dir, "back in the maze")
 		if xp, gold := partyXP(r.ctrl.Game); xp != xp1 || gold != gold1 {
 			t.Fatalf("seed %d: rewards changed after leaving combat: %d/%d, want %d/%d", seed, xp, gold, xp1, gold1)
 		}
@@ -427,5 +465,169 @@ func TestRealExpeditionRefusals(t *testing.T) {
 	}
 	if s.ctrl.Game.Town.Roster.Characters[0].Name != "AGUI" {
 		t.Fatal("a refused rename changed the roster")
+	}
+}
+
+// outAndRestarted starts a real expedition, walks out of Camp and returns
+// the folder with the expedition saved and the session closed, as if the
+// app had quit there.
+func outAndRestarted(t *testing.T) string {
+	t.Helper()
+	rand.Seed(5)
+	s, dir := partySession(t, false)
+	s.RealExpedition()
+	s.DungeonAction(app.ActLeaveCamp, 0)
+	s.DungeonAction(app.ActNo, 0)
+	s.DungeonAction(app.ActRight, 0)
+	s.Close()
+	return dir
+}
+
+// editSave changes the saved file as JSON.
+func editSave(t *testing.T, dir string, edit func(st map[string]any)) {
+	t.Helper()
+	path := filepath.Join(dir, "roster1.json")
+	raw, _ := os.ReadFile(path)
+	var st map[string]any
+	if err := json.Unmarshal(raw, &st); err != nil {
+		t.Fatal(err)
+	}
+	edit(st)
+	raw, _ = json.MarshalIndent(st, "", "  ")
+	os.WriteFile(path, raw, 0o644)
+}
+
+// A saved expedition that cannot be resumed (a member deleted outside
+// Istary) is shown, kept, and blocks only what would overwrite it; the
+// player can return its party to the castle, after a backup.
+func TestUnresumableExpeditionIsKeptAndRecoverable(t *testing.T) {
+	dir := outAndRestarted(t)
+	editSave(t, dir, func(st map[string]any) {
+		roster := st["roster"].([]any)
+		st["roster"] = roster[1:] // AGUI, the first member, is gone
+	})
+	path := filepath.Join(dir, "roster1.json")
+	s := NewSession(dir)
+	defer s.Close()
+	v := s.State()
+	if !strings.Contains(v.Recovery, "AGUI is no longer on the roster") || !v.CanReturn || v.Real || v.Screen != "roster" {
+		t.Fatalf("recovery %q canReturn %v real %v screen %q", v.Recovery, v.CanReturn, v.Real, v.Screen)
+	}
+	for name, op := range map[string]func() View{
+		"new expedition": s.RealExpedition,
+		"reset":          s.ResetRoster,
+	} {
+		if v := op(); !strings.Contains(v.Error, "already saved") {
+			t.Errorf("%s: %q", name, v.Error)
+		}
+	}
+	if v := s.DeleteCharacter("BGUI", ""); !strings.Contains(v.Error, "OUT ON AN EXPEDITION") {
+		t.Errorf("deleting a member: %q", v.Error)
+	}
+	if v := s.JoinParty(0); !strings.Contains(v.Error, "OUT") && v.PendingJoin != "" {
+		t.Errorf("a member joined the castle party: %+v", v.Party)
+	}
+	raw, _ := os.ReadFile(path)
+	if !bytes.Contains(raw, []byte(`"expedition"`)) {
+		t.Fatal("the expedition was dropped")
+	}
+
+	v = s.ReturnExpeditionToCastle()
+	if v.Error != "" || v.Recovery != "" || len(v.Party) != 5 || !strings.Contains(v.Notice, "backed up") {
+		t.Fatalf("return: error %q recovery %q party %d notice %q", v.Error, v.Recovery, len(v.Party), v.Notice)
+	}
+	raw, _ = os.ReadFile(path)
+	if bytes.Contains(raw, []byte(`"expedition"`)) {
+		t.Fatal("the section stayed after the return")
+	}
+	entries, _ := os.ReadDir(filepath.Join(dir, "backups"))
+	if len(entries) != 1 || !strings.Contains(entries[0].Name(), "before-return") {
+		t.Fatalf("backups %v", entries)
+	}
+}
+
+// A newer version's expedition is never resumed or ended here, and it is
+// written back unchanged when the castle saves.
+func TestOtherVersionExpeditionIsLeftAlone(t *testing.T) {
+	dir := outAndRestarted(t)
+	editSave(t, dir, func(st map[string]any) {
+		e := st["expedition"].(map[string]any)
+		e["version"] = 2.0
+		e["future"] = "kept"
+	})
+	s := NewSession(dir)
+	defer s.Close()
+	v := s.State()
+	if !strings.Contains(v.Recovery, "another version") || v.CanReturn || v.Real {
+		t.Fatalf("recovery %q canReturn %v", v.Recovery, v.CanReturn)
+	}
+	if v := s.ReturnExpeditionToCastle(); v.Error == "" {
+		t.Fatal("a newer expedition was ended")
+	}
+	createMage(t, s, "radagast") // a castle action that saves
+	raw, _ := os.ReadFile(filepath.Join(dir, "roster1.json"))
+	if !bytes.Contains(raw, []byte(`"future": "kept"`)) || !bytes.Contains(raw, []byte(`"version": 2`)) {
+		t.Fatal("the newer expedition was not written back unchanged")
+	}
+}
+
+// A failed save at a maze step is reported, the file keeps the previous
+// checkpoint (a restart then resumes there, not at the unsaved step), and
+// the step is not replayed: the next save records where the party is.
+func TestFailedSaveKeepsThePreviousCheckpoint(t *testing.T) {
+	if os.Geteuid() == 0 {
+		t.Skip("root ignores directory permissions")
+	}
+	rand.Seed(9)
+	s, dir := partySession(t, false)
+	s.RealExpedition()
+	s.DungeonAction(app.ActLeaveCamp, 0)
+	s.DungeonAction(app.ActNo, 0)
+	saved := s.ctrl.Game.Facing
+
+	os.Chmod(dir, 0o555)
+	v := s.DungeonAction(app.ActRight, 0)
+	os.Chmod(dir, 0o755)
+	if !strings.Contains(v.Error, "Could not save") || v.Unsaved == "" {
+		t.Fatalf("error %q unsaved %q", v.Error, v.Unsaved)
+	}
+	turned := s.ctrl.Game.Facing
+	if turned == saved {
+		t.Fatal("the turn did not happen")
+	}
+	r := reopened(t, s, dir)
+	if r.ctrl.Game.Facing != saved {
+		t.Fatalf("a restart resumed facing %v; the last saved checkpoint faces %v", r.ctrl.Game.Facing, saved)
+	}
+	v = s.State()
+	if s.ctrl.Game.Facing != turned || v.Unsaved == "" {
+		t.Fatal("the failed step was undone or forgotten")
+	}
+	v = s.DungeonAction(app.ActLeft, 0)
+	if v.Error != "" || v.Unsaved != "" {
+		t.Fatalf("next save: %q %q", v.Error, v.Unsaved)
+	}
+	r = reopened(t, s, dir)
+	if r.ctrl.Game.Facing != s.ctrl.Game.Facing || s.ctrl.Game.Facing != saved {
+		t.Fatalf("after the next save: resumed %v, playing %v", r.ctrl.Game.Facing, s.ctrl.Game.Facing)
+	}
+}
+
+// Practice never writes an expedition: with a real expedition saved and
+// not resumable, or with none, practice leaves the file byte-identical.
+func TestPracticeWritesNoExpedition(t *testing.T) {
+	rand.Seed(4)
+	s, dir := partySession(t, false)
+	path := filepath.Join(dir, "roster1.json")
+	before, _ := os.ReadFile(path)
+	s.PracticeExpedition()
+	for i := 0; i < 30 && s.practice != nil; i++ {
+		s.DungeonAction(app.ActLeaveCamp, 0)
+		s.DungeonAction(app.ActNo, 0)
+		s.DungeonAction(app.ActForward, 0)
+	}
+	s.AbandonPractice()
+	if after, _ := os.ReadFile(path); !bytes.Equal(after, before) {
+		t.Fatal("practice changed the save")
 	}
 }

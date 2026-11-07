@@ -13,13 +13,19 @@ package main
 // A real expedition (M6b-1) takes the party itself, in the saved game, and
 // saves after every action: injuries, spells spent, experience, gold and
 // items are kept. It ends only in the castle: by the stairs, or with the
-// engine's defeat, which returns the dead party there. Until M6b-2 adds
-// checkpoints, the save holds no position: if the app closes during an
-// expedition, the party is in the castle when it starts again, with
-// everything saved up to the last action (the terminal behaves the same).
+// engine's defeat, which returns the dead party there.
+//
+// Each save carries the expedition's checkpoint (M6b-2, app.Controller.
+// Checkpoint): the last safe point, in the same atomic write as the roster.
+// When the app starts with an expedition saved, it resumes there (resume);
+// an encounter it was in is over, with nothing more awarded. A saved
+// expedition that cannot be resumed is kept untouched and shown as a
+// problem, with a way to return its party to the castle.
 
 import (
 	"errors"
+	"fmt"
+	"path/filepath"
 
 	"github.com/Senior-Geek/istary/app"
 	"github.com/Senior-Geek/istary/engine"
@@ -52,6 +58,9 @@ func (s *Session) RealExpedition() View {
 		if s.real || s.practice != nil {
 			return errPracticeRunning
 		}
+		if s.ctrl.Game.Expedition != nil || s.ctrl.Game.OtherExpedition != nil {
+			return errExpeditionSaved
+		}
 		c := s.ctrl
 		if c.Game.Phase != engine.PhaseTown || len(c.Game.Town.Party.Members) == 0 {
 			return errors.New("Form a party in the Tavern first.")
@@ -63,6 +72,86 @@ func (s *Session) RealExpedition() View {
 			return err
 		}
 		s.real = true
+		return nil
+	})
+}
+
+// errExpeditionSaved refuses starting an expedition while another one is
+// saved and not resumed: starting would replace it.
+var errExpeditionSaved = errors.New("An expedition is already saved. Resume it or return its party to the castle first.")
+
+// checkpoint updates the saved expedition to where the real expedition now
+// stands, before it is saved: a checkpoint while out, none once the party
+// is back in the castle. If this moment cannot be recorded, the previous
+// checkpoint (the last safe point) is kept and the error says so.
+func (s *Session) checkpoint() error {
+	g := s.ctrl.Game
+	if g.Phase == engine.PhaseTown {
+		g.Expedition = nil
+		return nil
+	}
+	exp, err := s.ctrl.Checkpoint(s.pristine)
+	if err != nil {
+		return fmt.Errorf("This moment could not be recorded (%v); the last safe point is kept.", err)
+	}
+	g.Expedition = exp
+	return nil
+}
+
+// resume picks up a saved expedition after loading: the party is back at
+// its last safe point (the dungeon screen), or, if it cannot be resumed,
+// the problem is shown and the expedition stays saved as it is.
+func (s *Session) resume() {
+	g := s.ctrl.Game
+	s.real, s.problem = false, ""
+	if g.OtherExpedition != nil {
+		s.problem = "This save holds an expedition from another version of Istary. It cannot be resumed here and is left as it is."
+		return
+	}
+	e := g.Expedition
+	if e == nil {
+		return
+	}
+	interrupted := e.Interrupted
+	if err := s.ctrl.Resume(s.pristine); err != nil {
+		s.problem = err.Error()
+		return
+	}
+	s.real = true
+	switch interrupted {
+	case app.InterruptedCombat:
+		s.notice = "Istary closed during an encounter. The party is back in the maze where it stood; the encounter is over and its unclaimed rewards are lost."
+	case app.InterruptedChest:
+		s.notice = "Istary closed while the party dealt with a chest. The party is back in the maze where it stood; the chest and its rewards are lost."
+	default:
+		s.notice = "The expedition resumes where it was last saved."
+	}
+	if err := s.checkpoint(); err == nil {
+		s.save() // record that the encounter, if any, is over
+	}
+}
+
+// ReturnExpeditionToCastle ends a saved expedition that cannot be resumed:
+// its party joins the castle party, as a restart left it before
+// expeditions were saved. A newer version's expedition is never ended here.
+func (s *Session) ReturnExpeditionToCastle() View {
+	return s.do(func() error {
+		g := s.ctrl.Game
+		if s.problem == "" || g.Expedition == nil {
+			return errors.New("There is no saved expedition to return.")
+		}
+		backup, err := s.backupPath("before-return")
+		if err != nil {
+			return err
+		}
+		if err := engine.BackupRoster(g, backup); err != nil {
+			return fmt.Errorf("Backup failed, nothing changed: %w", err)
+		}
+		if err := s.ctrl.ReturnExpeditionToCastle(); err != nil {
+			return err
+		}
+		s.problem = ""
+		s.notice = "The expedition's party is back in the castle (the save before this was backed up as " + filepath.Base(backup) + ")."
 		return nil
 	})
 }

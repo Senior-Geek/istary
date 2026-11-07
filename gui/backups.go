@@ -114,6 +114,9 @@ func (s *Session) RestoreBackup(file string) View {
 			return err
 		}
 		s.notice = fmt.Sprintf("Restored %s. The previous roster was backed up as %s.", file, filepath.Base(before))
+		if s.real {
+			s.notice += " The expedition saved in it resumes."
+		}
 		return nil
 	})
 }

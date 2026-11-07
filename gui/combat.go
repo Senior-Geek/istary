@@ -132,7 +132,7 @@ func (s *Session) combatDo(action func() error) View {
 	s.notice = ""
 	err := action()
 	if s.real {
-		err = errors.Join(err, s.save())
+		err = errors.Join(err, s.checkpoint(), s.save())
 		if g := s.ctrl.Game; g.Phase == engine.PhaseTown {
 			s.real = false
 			switch {
