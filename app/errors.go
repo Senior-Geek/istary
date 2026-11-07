@@ -23,3 +23,8 @@ var (
 type Refusal struct{ Message string }
 
 func (r *Refusal) Error() string { return r.Message }
+
+// ErrOnExpedition refuses renaming or deleting a character who is out on a
+// saved expedition: the expedition refers to its members by name, and their
+// roster entry is their only record.
+var ErrOnExpedition = &Refusal{Message: "** OUT ON AN EXPEDITION **"}

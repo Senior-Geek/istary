@@ -37,7 +37,8 @@ func (c *Controller) ClearRoster() error {
 // Utilities menu's rules: the name is trimmed and uppercased, must not be
 // empty ("NAME CANNOT BE EMPTY") and must not match any roster name,
 // including the character's own ("NAME ALREADY IN USE"). Not available
-// during creation.
+// during creation, nor for a character out on a saved expedition (the
+// expedition refers to its members by name).
 func (c *Controller) RenameCharacter(index int, newName string) error {
 	if c.Game.Phase == engine.PhaseCreation {
 		return ErrWrongState
@@ -45,6 +46,9 @@ func (c *Controller) RenameCharacter(index int, newName string) error {
 	roster := c.Game.Town.Roster.Characters
 	if index < 0 || index >= len(roster) || roster[index] == nil {
 		return ErrNoSuchCharacter
+	}
+	if c.Game.OnExpedition(roster[index].Name) {
+		return ErrOnExpedition
 	}
 	newName = strings.ToUpper(strings.TrimSpace(newName))
 	if newName == "" {

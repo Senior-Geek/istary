@@ -224,7 +224,8 @@ func (c *Controller) BeginDeleteCharacter() error {
 	return nil
 }
 
-// ConfirmDeleteCharacter answers the delete confirmation. Yes removes the
+// ConfirmDeleteCharacter answers the delete confirmation. A character out on
+// a saved expedition is not deleted (ErrOnExpedition). Yes removes the
 // character from the roster and party; no returns to the edit menu.
 func (c *Controller) ConfirmDeleteCharacter(yes bool) error {
 	town := c.Game.Town
@@ -237,6 +238,11 @@ func (c *Controller) ConfirmDeleteCharacter(yes bool) error {
 		return nil
 	}
 	ch := town.EditChar
+	if c.Game.OnExpedition(ch.Name) {
+		town.InputMode = engine.InputCharEdit
+		town.Message = ErrOnExpedition.Message
+		return ErrOnExpedition
+	}
 	for i, rc := range town.Roster.Characters {
 		if rc == ch {
 			town.Roster.Characters = append(town.Roster.Characters[:i], town.Roster.Characters[i+1:]...)

@@ -73,3 +73,26 @@ func TestValidateName(t *testing.T) {
 		}
 	}
 }
+
+// While a saved expedition is out, its members cannot be renamed or
+// deleted (the terminal's Utilities and Training Grounds included).
+func TestExpeditionMembersCannotBeRenamedOrDeleted(t *testing.T) {
+	c := explorers(t)
+	g := c.Game
+	g.Expedition = &engine.Expedition{Version: 1, Party: []string{"WALKER 1"}}
+	if err := c.RenameCharacter(0, "SOMEONE"); err != ErrOnExpedition || g.Town.Roster.Characters[0].Name != "WALKER 1" {
+		t.Fatalf("rename: %v", err)
+	}
+	must(t, c.RenameCharacter(1, "SOMEONE"))
+
+	g.Town.Party.Members = nil
+	must(t, c.EnterTrainingGrounds())
+	g.Town.EditChar = g.Town.Roster.Characters[0]
+	g.Town.InputMode = engine.InputConfirmDelete
+	if err := c.ConfirmDeleteCharacter(true); err != ErrOnExpedition || len(g.Town.Roster.Characters) != 6 {
+		t.Fatalf("delete: %v", err)
+	}
+	if g.Town.Message != ErrOnExpedition.Message || g.Town.InputMode != engine.InputCharEdit {
+		t.Fatalf("delete refusal shown as %q mode %v", g.Town.Message, g.Town.InputMode)
+	}
+}
