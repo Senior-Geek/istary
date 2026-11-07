@@ -26,6 +26,11 @@ type Session struct {
 	saveDir  string
 	startErr error  // fatal startup problem shown instead of the UI
 	notice   string // one-shot confirmation shown after an action
+
+	// practice is the practice encounter's controller (combat.go): a
+	// separate, never-saved game with copies of the party. nil when none.
+	practice      *app.Controller
+	practiceChest bool
 }
 
 // NewSession loads Wizardry I and the roster from saveDir. saveDir must not

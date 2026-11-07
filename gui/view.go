@@ -33,6 +33,11 @@ type View struct {
 	PartyMax       int             `json:"partyMax"`
 	FrontRow       int             `json:"frontRow"`    // slots 1..FrontRow are the front row
 	PendingJoin    string          `json:"pendingJoin"` // name waiting for its password
+
+	// Combat (Screen "combat"): the controller's CombatView of the practice
+	// encounter, and nothing else from the combat engine.
+	Combat        *app.CombatView `json:"combat"`
+	PracticeChest bool            `json:"practiceChest"` // the encounter was given a chest for practice
 }
 
 // PartySlotView is one party position.
@@ -252,6 +257,11 @@ func (s *Session) view(err error) View {
 		return v
 	}
 	v.Error = errorText(err)
+	if s.practice != nil {
+		if cv, cerr := s.practice.CombatView(); cerr == nil {
+			v.Screen, v.Combat, v.PracticeChest = "combat", &cv, s.practiceChest
+		}
+	}
 
 	g := s.ctrl.Game
 	for i, ch := range g.Town.Roster.Characters {

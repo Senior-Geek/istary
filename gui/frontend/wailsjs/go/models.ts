@@ -1,3 +1,376 @@
+export namespace app {
+	
+	export class ChestMemberView {
+	    slot: number;
+	    name: string;
+	    canAct: boolean;
+	    inspected: boolean;
+	    canCastCalfo: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new ChestMemberView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.slot = source["slot"];
+	        this.name = source["name"];
+	        this.canAct = source["canAct"];
+	        this.inspected = source["inspected"];
+	        this.canCastCalfo = source["canCastCalfo"];
+	    }
+	}
+	export class ChestReportView {
+	    slot: number;
+	    member: string;
+	    how: string;
+	    said?: string;
+	    setOff?: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new ChestReportView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.slot = source["slot"];
+	        this.member = source["member"];
+	        this.how = source["how"];
+	        this.said = source["said"];
+	        this.setOff = source["setOff"];
+	    }
+	}
+	export class CombatOptionView {
+	    action: string;
+	    key: string;
+	    available: boolean;
+	    reason?: string;
+	    note?: string;
+	    target: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new CombatOptionView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.action = source["action"];
+	        this.key = source["key"];
+	        this.available = source["available"];
+	        this.reason = source["reason"];
+	        this.note = source["note"];
+	        this.target = source["target"];
+	    }
+	}
+	export class CombatChestView {
+	    present: boolean;
+	    stage?: string;
+	    actions?: CombatOptionView[];
+	    members?: ChestMemberView[];
+	    reports?: ChestReportView[];
+	    complete: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new CombatChestView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.present = source["present"];
+	        this.stage = source["stage"];
+	        this.actions = this.convertValues(source["actions"], CombatOptionView);
+	        this.members = this.convertValues(source["members"], ChestMemberView);
+	        this.reports = this.convertValues(source["reports"], ChestReportView);
+	        this.complete = source["complete"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class CombatRefView {
+	    side: string;
+	    slot?: number;
+	    group?: number;
+	    member?: number;
+	    name?: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new CombatRefView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.side = source["side"];
+	        this.slot = source["slot"];
+	        this.group = source["group"];
+	        this.member = source["member"];
+	        this.name = source["name"];
+	    }
+	}
+	export class CombatEffectView {
+	    who: CombatRefView;
+	    hpChange?: number;
+	    statusFrom: string;
+	    statusTo: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new CombatEffectView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.who = this.convertValues(source["who"], CombatRefView);
+	        this.hpChange = source["hpChange"];
+	        this.statusFrom = source["statusFrom"];
+	        this.statusTo = source["statusTo"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class CombatEventView {
+	    kind: string;
+	    actor: CombatRefView;
+	    target: CombatRefView;
+	    lines: string[];
+	    part?: number;
+	    silent?: boolean;
+	    effects?: CombatEffectView[];
+	
+	    static createFrom(source: any = {}) {
+	        return new CombatEventView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.kind = source["kind"];
+	        this.actor = this.convertValues(source["actor"], CombatRefView);
+	        this.target = this.convertValues(source["target"], CombatRefView);
+	        this.lines = source["lines"];
+	        this.part = source["part"];
+	        this.silent = source["silent"];
+	        this.effects = this.convertValues(source["effects"], CombatEffectView);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class CombatGroupView {
+	    number: number;
+	    count: number;
+	    name: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new CombatGroupView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.number = source["number"];
+	        this.count = source["count"];
+	        this.name = source["name"];
+	    }
+	}
+	export class CombatItemView {
+	    index: number;
+	    name: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new CombatItemView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.index = source["index"];
+	        this.name = source["name"];
+	    }
+	}
+	export class CombatMemberView {
+	    slot: number;
+	    name: string;
+	    class: string;
+	    ac: number;
+	    hp: number;
+	    maxHp: number;
+	    status: string;
+	    poisoned: boolean;
+	    canAct: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new CombatMemberView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.slot = source["slot"];
+	        this.name = source["name"];
+	        this.class = source["class"];
+	        this.ac = source["ac"];
+	        this.hp = source["hp"];
+	        this.maxHp = source["maxHp"];
+	        this.status = source["status"];
+	        this.poisoned = source["poisoned"];
+	        this.canAct = source["canAct"];
+	    }
+	}
+	
+	export class CombatOrderView {
+	    slot: number;
+	    member: string;
+	    action: string;
+	    group?: number;
+	    spell?: string;
+	    ally?: string;
+	    item?: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new CombatOrderView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.slot = source["slot"];
+	        this.member = source["member"];
+	        this.action = source["action"];
+	        this.group = source["group"];
+	        this.spell = source["spell"];
+	        this.ally = source["ally"];
+	        this.item = source["item"];
+	    }
+	}
+	
+	export class CombatSpellView {
+	    name: string;
+	    level: number;
+	    kind: string;
+	    target: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new CombatSpellView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.level = source["level"];
+	        this.kind = source["kind"];
+	        this.target = source["target"];
+	    }
+	}
+	export class CombatView {
+	    phase: string;
+	    next: string;
+	    round: number;
+	    frozen: boolean;
+	    party: CombatMemberView[];
+	    groups: CombatGroupView[];
+	    actor: number;
+	    menu: CombatOptionView[];
+	    spells?: CombatSpellView[];
+	    items?: CombatItemView[];
+	    orders: CombatOrderView[];
+	    events: CombatEventView[];
+	    current: number;
+	    lines: string[];
+	    boons?: string[];
+	    surprise?: string;
+	    chest: CombatChestView;
+	    xp?: number;
+	    gold?: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new CombatView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.phase = source["phase"];
+	        this.next = source["next"];
+	        this.round = source["round"];
+	        this.frozen = source["frozen"];
+	        this.party = this.convertValues(source["party"], CombatMemberView);
+	        this.groups = this.convertValues(source["groups"], CombatGroupView);
+	        this.actor = source["actor"];
+	        this.menu = this.convertValues(source["menu"], CombatOptionView);
+	        this.spells = this.convertValues(source["spells"], CombatSpellView);
+	        this.items = this.convertValues(source["items"], CombatItemView);
+	        this.orders = this.convertValues(source["orders"], CombatOrderView);
+	        this.events = this.convertValues(source["events"], CombatEventView);
+	        this.current = source["current"];
+	        this.lines = source["lines"];
+	        this.boons = source["boons"];
+	        this.surprise = source["surprise"];
+	        this.chest = this.convertValues(source["chest"], CombatChestView);
+	        this.xp = source["xp"];
+	        this.gold = source["gold"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+
+}
+
 export namespace main {
 	
 	export class BackupInfo {
@@ -206,6 +579,28 @@ export namespace main {
 	}
 	
 	
+	export class OrderRequest {
+	    slot: number;
+	    action: string;
+	    group: number;
+	    spell: string;
+	    ally: number;
+	    item: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new OrderRequest(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.slot = source["slot"];
+	        this.action = source["action"];
+	        this.group = source["group"];
+	        this.spell = source["spell"];
+	        this.ally = source["ally"];
+	        this.item = source["item"];
+	    }
+	}
 	export class PartySlotView {
 	    slot: number;
 	    index: number;
@@ -253,6 +648,8 @@ export namespace main {
 	    partyMax: number;
 	    frontRow: number;
 	    pendingJoin: string;
+	    combat?: app.CombatView;
+	    practiceChest: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new View(source);
@@ -278,6 +675,8 @@ export namespace main {
 	        this.partyMax = source["partyMax"];
 	        this.frontRow = source["frontRow"];
 	        this.pendingJoin = source["pendingJoin"];
+	        this.combat = this.convertValues(source["combat"], app.CombatView);
+	        this.practiceChest = source["practiceChest"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
