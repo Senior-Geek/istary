@@ -38,16 +38,20 @@ function front(d, cx, kind) {
   return shapes
 }
 
-// scene turns the corridor into shapes to draw, nearest first.
+// scene turns the corridor into shapes to draw, in painting order: farthest
+// square first, so each square's filled walls cover whatever lies behind them
+// (a wall ahead of a far side opening reaches out behind the nearer side
+// walls). Within a square the shapes never overlap; a door follows its wall.
 export function scene(corridor = []) {
   const out = []
   corridor.forEach((sq, d) => {
-    const f = far(d)
-    if (solid(sq.left)) out.push(...side(d, -1, sq.left))
-    else if (solid(sq.leftAhead)) out.push(...front(d, -2 * f, sq.leftAhead))
-    if (solid(sq.right)) out.push(...side(d, 1, sq.right))
-    else if (solid(sq.rightAhead)) out.push(...front(d, 2 * f, sq.rightAhead))
-    if (solid(sq.front)) out.push(...front(d, 0, sq.front))
+    const f = far(d), shapes = []
+    if (solid(sq.left)) shapes.push(...side(d, -1, sq.left))
+    else if (solid(sq.leftAhead)) shapes.push(...front(d, -2 * f, sq.leftAhead))
+    if (solid(sq.right)) shapes.push(...side(d, 1, sq.right))
+    else if (solid(sq.rightAhead)) shapes.push(...front(d, 2 * f, sq.rightAhead))
+    if (solid(sq.front)) shapes.push(...front(d, 0, sq.front))
+    out.unshift(...shapes.map((s) => ({ ...s, depth: d })))
   })
   return out
 }
