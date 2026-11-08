@@ -19,6 +19,7 @@ func (s *Session) goTo(loc engine.TownLocation) error {
 	if c.Game.Phase != engine.PhaseTown {
 		return app.ErrWrongState // e.g. a character is being created
 	}
+	s.settings = false
 	if err := s.settlePrompt(); err != nil {
 		return err
 	}

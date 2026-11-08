@@ -27,6 +27,14 @@ type View struct {
 	StatNames  []string        `json:"statNames"`
 	NameMax    int             `json:"nameMax"`
 
+	// Navigation (Castle-0, navigation.go): where the player is (a town
+	// location, "settings", or "maze" while an expedition or practice is
+	// under way), the ways out of it, and the party of the game being
+	// played, six positions with the empty ones.
+	Location string         `json:"location"`
+	Exits    []ExitView     `json:"exits"`
+	PartyBar []PartyBarSlot `json:"partyBar"`
+
 	// Party (Gilgamesh's Tavern).
 	Party          []PartySlotView `json:"party"`
 	PartyAlignment string          `json:"partyAlignment"`
@@ -293,6 +301,8 @@ func (s *Session) view(err error) View {
 			}
 		}
 	}
+
+	v.Location, v.Exits, v.PartyBar = s.location(), s.exits(), s.partyBar()
 
 	g := s.ctrl.Game
 	for i, ch := range g.Town.Roster.Characters {

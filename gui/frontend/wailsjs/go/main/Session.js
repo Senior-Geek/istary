@@ -122,6 +122,10 @@ export function ListBackups() {
   return window['go']['main']['Session']['ListBackups']();
 }
 
+export function Navigate(arg1) {
+  return window['go']['main']['Session']['Navigate'](arg1);
+}
+
 export function PracticeEncounter(arg1) {
   return window['go']['main']['Session']['PracticeEncounter'](arg1);
 }

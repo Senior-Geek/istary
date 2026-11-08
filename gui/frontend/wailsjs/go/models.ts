@@ -855,6 +855,22 @@ export namespace main {
 		    return a;
 		}
 	}
+	export class ExitView {
+	    dest: string;
+	    open: boolean;
+	    reason: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ExitView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.dest = source["dest"];
+	        this.open = source["open"];
+	        this.reason = source["reason"];
+	    }
+	}
 	
 	
 	export class OrderRequest {
@@ -877,6 +893,36 @@ export namespace main {
 	        this.spell = source["spell"];
 	        this.ally = source["ally"];
 	        this.item = source["item"];
+	    }
+	}
+	export class PartyBarSlot {
+	    slot: number;
+	    index: number;
+	    name: string;
+	    class: string;
+	    level: number;
+	    hp: number;
+	    maxHp: number;
+	    status: string;
+	    poisoned: boolean;
+	    front: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new PartyBarSlot(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.slot = source["slot"];
+	        this.index = source["index"];
+	        this.name = source["name"];
+	        this.class = source["class"];
+	        this.level = source["level"];
+	        this.hp = source["hp"];
+	        this.maxHp = source["maxHp"];
+	        this.status = source["status"];
+	        this.poisoned = source["poisoned"];
+	        this.front = source["front"];
 	    }
 	}
 	export class PartySlotView {
@@ -922,6 +968,9 @@ export namespace main {
 	    classes: string[];
 	    statNames: string[];
 	    nameMax: number;
+	    location: string;
+	    exits: ExitView[];
+	    partyBar: PartyBarSlot[];
 	    party: PartySlotView[];
 	    partyAlignment: string;
 	    partyMax: number;
@@ -957,6 +1006,9 @@ export namespace main {
 	        this.classes = source["classes"];
 	        this.statNames = source["statNames"];
 	        this.nameMax = source["nameMax"];
+	        this.location = source["location"];
+	        this.exits = this.convertValues(source["exits"], ExitView);
+	        this.partyBar = this.convertValues(source["partyBar"], PartyBarSlot);
 	        this.party = this.convertValues(source["party"], PartySlotView);
 	        this.partyAlignment = source["partyAlignment"];
 	        this.partyMax = source["partyMax"];

@@ -49,6 +49,10 @@ type Session struct {
 	// squares of an expedition (app.Controller.Checkpoint and Resume).
 	pristine *data.Scenario
 
+	// settings is set while the player is in Settings (navigation.go),
+	// which the window opens at the Edge of Town; it is not part of the game.
+	settings bool
+
 	// problem is why the saved expedition cannot be resumed, while it
 	// cannot; the expedition stays saved and untouched (expedition.go).
 	problem string
@@ -155,6 +159,7 @@ func (s *Session) reload() error {
 		return fmt.Errorf("load roster: %w", err)
 	}
 	s.ctrl = app.New(game)
+	s.settings = false
 	s.resume()
 	return nil
 }

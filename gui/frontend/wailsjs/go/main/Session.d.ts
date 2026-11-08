@@ -62,6 +62,8 @@ export function LeaveParty(arg1:number):Promise<main.View>;
 
 export function ListBackups():Promise<Array<main.BackupInfo>>;
 
+export function Navigate(arg1:string):Promise<main.View>;
+
 export function PracticeEncounter(arg1:boolean):Promise<main.View>;
 
 export function PracticeExpedition():Promise<main.View>;
