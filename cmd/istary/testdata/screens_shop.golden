@@ -1,0 +1,250 @@
+=== who will enter
++--------------------------------------+
+! CASTLE                          SHOP !
++----------- CURRENT PARTY: -----------+
+
+ # CHARACTER NAME  CLASS AC HITS STATUS
+ 1 FIGHTER         G-FIG 10  10   10
+ 2 MAGE            G-MAG 10  10   10
+ 3 BISHOP          G-BIS  7  10   10
+
+
+
++--------------------------------------+
+
+       WELCOME TO THE TRADING POST
+WHO WILL ENTER ([RETURN] EXITS) >
+
+
+
+
+
+
+
+
+
+=== main menu
++--------------------------------------+
+! CASTLE                          SHOP !
++----------- CURRENT PARTY: -----------+
+
+ # CHARACTER NAME  CLASS AC HITS STATUS
+ 1 FIGHTER         G-FIG 10  10   10
+ 2 MAGE            G-MAG 10  10   10
+ 3 BISHOP          G-BIS  7  10   10
+
+
+
++--------------------------------------+
+
+      WELCOME BISHOP
+     YOU HAVE 600 GOLD
+
+YOU MAY B)UY  AN ITEM,
+        S)ELL AN ITEM, HAVE AN ITEM
+        U)NCURSED,  OR HAVE AN ITEM
+        I)DENTIFIED, OR L)EAVE
+
+
+
+
+=== catalog, page 1
++--------------------------------------+
+! CASTLE                          SHOP !
++----------- CURRENT PARTY: -----------+
+
+ # CHARACTER NAME  CLASS AC HITS STATUS
+ 1 FIGHTER         G-FIG 10  10   10
+ 2 MAGE            G-MAG 10  10   10
+ 3 BISHOP          G-BIS  7  10   10
+
+
+
++--------------------------------------+
+
+1)     LONG SWORD 25 UNUSABLE
+2)    SHORT SWORD 15 UNUSABLE
+3)  ANOINTED MACE 30
+4) ANOINTED FLAIL 150 UNUSABLE
+5)          STAFF 10
+6)         DAGGER 5 UNUSABLE
+
+YOU HAVE 600 GOLD
+YOU MAY P)URCHASE, SCROLL
+        F)ORWARD OR B)ACK, GO TO THE
+        S)TART, OR L)EAVE
+=== catalog, stocked magic items
++--------------------------------------+
+! CASTLE                          SHOP !
++----------- CURRENT PARTY: -----------+
+
+ # CHARACTER NAME  CLASS AC HITS STATUS
+ 1 FIGHTER         G-FIG 10  10   10
+ 2 MAGE            G-MAG 10  10   10
+ 3 BISHOP          G-BIS  7  10   10
+
+
+
++--------------------------------------+
+
+1) EVIL CHAIN + 2 8000 UNUSABLE
+2)     LONG SWORD 25 UNUSABLE
+3)    SHORT SWORD 15 UNUSABLE
+4)  ANOINTED MACE 30
+5) ANOINTED FLAIL 150 UNUSABLE
+6)          STAFF 10
+
+YOU HAVE 600 GOLD
+YOU MAY P)URCHASE, SCROLL
+        F)ORWARD OR B)ACK, GO TO THE
+        S)TART, OR L)EAVE
+=== purchase prompt
++--------------------------------------+
+! CASTLE                          SHOP !
++----------- CURRENT PARTY: -----------+
+
+ # CHARACTER NAME  CLASS AC HITS STATUS
+ 1 FIGHTER         G-FIG 10  10   10
+ 2 MAGE            G-MAG 10  10   10
+ 3 BISHOP          G-BIS  7  10   10
+
+
+
++--------------------------------------+
+
+1)     LONG SWORD 25 UNUSABLE
+2)    SHORT SWORD 15 UNUSABLE
+3)  ANOINTED MACE 30
+4) ANOINTED FLAIL 150 UNUSABLE
+5)          STAFF 10
+6)         DAGGER 5 UNUSABLE
+
+YOU HAVE 600 GOLD
+
+PURCHASE WHICH ITEM ([RETURN] EXITS) ? >
+
+=== unusable item confirmation
++--------------------------------------+
+! CASTLE                          SHOP !
++----------- CURRENT PARTY: -----------+
+
+ # CHARACTER NAME  CLASS AC HITS STATUS
+ 1 FIGHTER         G-FIG 10  10   10
+ 2 MAGE            G-MAG 10  10   10
+ 3 BISHOP          G-BIS  7  10   10
+
+
+
++--------------------------------------+
+
+
+
+
+
+
+
+
+
+
+
+ UNUSABLE ITEM - CONFIRM BUY (Y/N) ? >
+=== sell list
++--------------------------------------+
+! CASTLE                          SHOP !
++----------- CURRENT PARTY: -----------+
+
+ # CHARACTER NAME  CLASS AC HITS STATUS
+ 1 FIGHTER         G-FIG 10  10   10
+ 2 MAGE            G-MAG 10  10   10
+ 3 BISHOP          G-BIS  7  10   10
+
+
+
++--------------------------------------+
+
+1)          STAFF 5
+2)     CHAIN MAIL 45
+3)         SCROLL 1
+4)  LONG SWORD -1 500
+5)           HELM 1
+6)          ARMOR 1
+
+
+
+WHICH DO YOU WISH TO SELL ? >
+
+=== cursed item refused
++--------------------------------------+
+! CASTLE                          SHOP !
++----------- CURRENT PARTY: -----------+
+
+ # CHARACTER NAME  CLASS AC HITS STATUS
+ 1 FIGHTER         G-FIG 10  10   10
+ 2 MAGE            G-MAG 10  10   10
+ 3 BISHOP          G-BIS  7  10   10
+
+
+
++--------------------------------------+
+
+      WELCOME BISHOP
+     YOU HAVE 600 GOLD
+
+YOU MAY B)UY  AN ITEM,
+        S)ELL AN ITEM, HAVE AN ITEM
+        U)NCURSED,  OR HAVE AN ITEM
+        I)DENTIFIED, OR L)EAVE
+
+     ** WE DONT BUY CURSED ITEMS **
+
+
+=== uncurse list
++--------------------------------------+
+! CASTLE                          SHOP !
++----------- CURRENT PARTY: -----------+
+
+ # CHARACTER NAME  CLASS AC HITS STATUS
+ 1 FIGHTER         G-FIG 10  10   10
+ 2 MAGE            G-MAG 10  10   10
+ 3 BISHOP          G-BIS  7  10   10
+
+
+
++--------------------------------------+
+
+1)          STAFF 5
+2)     CHAIN MAIL 45
+3)         SCROLL 250
+4)  LONG SWORD -1 500
+5)           HELM 50
+6)          ARMOR 750
+
+
+
+WHICH DO YOU WISH UNCURSED ? >
+
+=== identify list
++--------------------------------------+
+! CASTLE                          SHOP !
++----------- CURRENT PARTY: -----------+
+
+ # CHARACTER NAME  CLASS AC HITS STATUS
+ 1 FIGHTER         G-FIG 10  10   10
+ 2 MAGE            G-MAG 10  10   10
+ 3 BISHOP          G-BIS  7  10   10
+
+
+
++--------------------------------------+
+
+1)          STAFF 5
+2)     CHAIN MAIL 45
+3)         SCROLL 250
+4)  LONG SWORD -1 500
+5)           HELM 50
+6)          ARMOR 750
+
+
+
+WHICH DO YOU WISH IDENTIFIED ? >
+

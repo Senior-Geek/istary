@@ -1,0 +1,107 @@
+start CASTLE/who input=0 msg="" FIGHTER:2000 MAGE:40 BISHOP:600 | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+B    BOLTAC'S TRADING POST/who input=0 msg="" FIGHTER:2000 MAGE:40 BISHOP:600 | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+     # enter: who will enter
+9    BOLTAC'S TRADING POST/who input=0 msg="" FIGHTER:2000 MAGE:40 BISHOP:600 | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+     # no such member: nothing
+1    BOLTAC'S TRADING POST/main input=0 msg="" FIGHTER:2000 MAGE:40 BISHOP:600 | FIGHTER AC10 [ ] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+     # the fighter shops
+B    BOLTAC'S TRADING POST/buy input=0 msg="" FIGHTER:2000 MAGE:40 BISHOP:600 | FIGHTER AC10 [ ] | cursor 6 page [1 2 3 4 5 6] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+     # browse: page 1
+F    BOLTAC'S TRADING POST/buy input=0 msg="" FIGHTER:2000 MAGE:40 BISHOP:600 | FIGHTER AC10 [ ] | cursor 12 page [7 8 9 10 11 12] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+     # forward
+F    BOLTAC'S TRADING POST/buy input=0 msg="" FIGHTER:2000 MAGE:40 BISHOP:600 | FIGHTER AC10 [ ] | cursor 19 page [13 14 15 16 18 19] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+     # forward again
+B    BOLTAC'S TRADING POST/buy input=0 msg="" FIGHTER:2000 MAGE:40 BISHOP:600 | FIGHTER AC10 [ ] | cursor 12 page [7 8 9 10 11 12] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+     # back
+S    BOLTAC'S TRADING POST/buy input=0 msg="" FIGHTER:2000 MAGE:40 BISHOP:600 | FIGHTER AC10 [ ] | cursor 6 page [1 2 3 4 5 6] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+     # start
+P    BOLTAC'S TRADING POST/buy input=3 msg="" FIGHTER:2000 MAGE:40 BISHOP:600 | FIGHTER AC10 [ ] | cursor 6 page [1 2 3 4 5 6] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+     # purchase prompt
+1    BOLTAC'S TRADING POST/buy input=0 msg="** JUST WHAT YOU NEEDED **" FIGHTER:1975 MAGE:40 BISHOP:600 | FIGHTER AC10 [ 1i ] | cursor 6 page [1 2 3 4 5 6] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+     # buy a long sword (usable, unlimited)
+F    BOLTAC'S TRADING POST/buy input=0 msg="" FIGHTER:1975 MAGE:40 BISHOP:600 | FIGHTER AC10 [ 1i ] | cursor 12 page [7 8 9 10 11 12] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+F    BOLTAC'S TRADING POST/buy input=0 msg="" FIGHTER:1975 MAGE:40 BISHOP:600 | FIGHTER AC10 [ 1i ] | cursor 19 page [13 14 15 16 18 19] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+F    BOLTAC'S TRADING POST/buy input=0 msg="" FIGHTER:1975 MAGE:40 BISHOP:600 | FIGHTER AC10 [ 1i ] | cursor 26 page [20 21 22 23 25 26] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+F    BOLTAC'S TRADING POST/buy input=0 msg="" FIGHTER:1975 MAGE:40 BISHOP:600 | FIGHTER AC10 [ 1i ] | cursor 47 page [27 28 32 39 41 47] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+F    BOLTAC'S TRADING POST/buy input=0 msg="" FIGHTER:1975 MAGE:40 BISHOP:600 | FIGHTER AC10 [ 1i ] | cursor 5 page [62 1 2 3 4 5] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+     # to the stocked magic items
+S    BOLTAC'S TRADING POST/buy input=0 msg="" FIGHTER:1975 MAGE:40 BISHOP:600 | FIGHTER AC10 [ 1i ] | cursor 6 page [1 2 3 4 5 6] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+RET  BOLTAC'S TRADING POST/main input=0 msg="" FIGHTER:1975 MAGE:40 BISHOP:600 | FIGHTER AC10 [ 1i ] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+     # leave the catalog
+L    BOLTAC'S TRADING POST/who input=0 msg="" FIGHTER:1975 MAGE:40 BISHOP:600 | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+     # leave: who will enter
+2    BOLTAC'S TRADING POST/main input=0 msg="" FIGHTER:1975 MAGE:40 BISHOP:600 | MAGE AC10 [ ] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+     # the mage shops (40 GP)
+B    BOLTAC'S TRADING POST/buy input=0 msg="" FIGHTER:1975 MAGE:40 BISHOP:600 | MAGE AC10 [ ] | cursor 6 page [1 2 3 4 5 6] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+P    BOLTAC'S TRADING POST/buy input=3 msg="" FIGHTER:1975 MAGE:40 BISHOP:600 | MAGE AC10 [ ] | cursor 6 page [1 2 3 4 5 6] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+1    BOLTAC'S TRADING POST/confirm input=0 msg="UNUSABLE ITEM - CONFIRM BUY (Y/N) ? >" FIGHTER:1975 MAGE:40 BISHOP:600 | MAGE AC10 [ ] | cursor 1 page [1 2 3 4 5 6] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+     # a long sword: unusable by a mage, confirm
+N    BOLTAC'S TRADING POST/buy input=0 msg="" FIGHTER:1975 MAGE:40 BISHOP:600 | MAGE AC10 [ ] | cursor 1 page [1 2 3 4 5 6] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+     # no
+P    BOLTAC'S TRADING POST/buy input=3 msg="" FIGHTER:1975 MAGE:40 BISHOP:600 | MAGE AC10 [ ] | cursor 1 page [1 2 3 4 5 6] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+1    BOLTAC'S TRADING POST/confirm input=0 msg="UNUSABLE ITEM - CONFIRM BUY (Y/N) ? >" FIGHTER:1975 MAGE:40 BISHOP:600 | MAGE AC10 [ ] | cursor 1 page [1 2 3 4 5 6] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+Y    BOLTAC'S TRADING POST/buy input=0 msg="** ITS YOUR MONEY **" FIGHTER:1975 MAGE:15 BISHOP:600 | MAGE AC10 [ 1i ] | cursor 1 page [1 2 3 4 5 6] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+     # yes: its your money; the catalog cursor is now the item
+F    BOLTAC'S TRADING POST/buy input=0 msg="" FIGHTER:1975 MAGE:15 BISHOP:600 | MAGE AC10 [ 1i ] | cursor 7 page [2 3 4 5 6 7] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+     # the page after a confirmed buy starts from it
+P    BOLTAC'S TRADING POST/buy input=3 msg="" FIGHTER:1975 MAGE:15 BISHOP:600 | MAGE AC10 [ 1i ] | cursor 7 page [2 3 4 5 6 7] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+3    BOLTAC'S TRADING POST/buy input=0 msg="** YOU CANNOT AFFORD IT **" FIGHTER:1975 MAGE:15 BISHOP:600 | MAGE AC10 [ 1i ] | cursor 7 page [2 3 4 5 6 7] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+     # the flail (150 GP): can't afford
+P    BOLTAC'S TRADING POST/buy input=3 msg="" FIGHTER:1975 MAGE:15 BISHOP:600 | MAGE AC10 [ 1i ] | cursor 7 page [2 3 4 5 6 7] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+RET  BOLTAC'S TRADING POST/buy input=0 msg="" FIGHTER:1975 MAGE:15 BISHOP:600 | MAGE AC10 [ 1i ] | cursor 7 page [2 3 4 5 6 7] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+     # RETURN leaves the purchase prompt
+RET  BOLTAC'S TRADING POST/main input=0 msg="" FIGHTER:1975 MAGE:15 BISHOP:600 | MAGE AC10 [ 1i ] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+     # RETURN leaves the catalog
+S    BOLTAC'S TRADING POST/sell input=0 msg="" FIGHTER:1975 MAGE:15 BISHOP:600 | MAGE AC10 [ 1i ] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+     # sell
+1    BOLTAC'S TRADING POST/sell input=0 msg="** ANYTHING ELSE, SIRE? **" FIGHTER:1975 MAGE:27 BISHOP:600 | MAGE AC10 [ ] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+     # sell the long sword: half of 25; the sell list stays open
+RET  BOLTAC'S TRADING POST/main input=0 msg="" FIGHTER:1975 MAGE:27 BISHOP:600 | MAGE AC10 [ ] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+     # RETURN at a list: the main menu
+S    BOLTAC'S TRADING POST/main input=0 msg="" FIGHTER:1975 MAGE:27 BISHOP:600 | MAGE AC10 [ ] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+     # sell with no items: nothing
+U    BOLTAC'S TRADING POST/main input=0 msg="" FIGHTER:1975 MAGE:27 BISHOP:600 | MAGE AC10 [ ] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+     # uncurse with no items: nothing
+I    BOLTAC'S TRADING POST/main input=0 msg="" FIGHTER:1975 MAGE:27 BISHOP:600 | MAGE AC10 [ ] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+     # identify with no items: nothing
+RET  BOLTAC'S TRADING POST/who input=0 msg="" FIGHTER:1975 MAGE:27 BISHOP:600 | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+     # RETURN at the main menu: who will enter
+3    BOLTAC'S TRADING POST/main input=0 msg="" FIGHTER:1975 MAGE:27 BISHOP:600 | BISHOP AC7 [ 5ie 11ie 28 29iec 14 35c ] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+     # the bishop shops
+S    BOLTAC'S TRADING POST/sell input=0 msg="" FIGHTER:1975 MAGE:27 BISHOP:600 | BISHOP AC7 [ 5ie 11ie 28 29iec 14 35c ] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+     # sell
+4    BOLTAC'S TRADING POST/main input=0 msg="** WE DONT BUY CURSED ITEMS **" FIGHTER:1975 MAGE:27 BISHOP:600 | BISHOP AC7 [ 5ie 11ie 28 29iec 14 35c ] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+     # the cursed long sword: refused, back to the main menu
+S    BOLTAC'S TRADING POST/sell input=0 msg="" FIGHTER:1975 MAGE:27 BISHOP:600 | BISHOP AC7 [ 5ie 11ie 28 29iec 14 35c ] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
+3    BOLTAC'S TRADING POST/sell input=0 msg="** ANYTHING ELSE, SIRE? **" FIGHTER:1975 MAGE:27 BISHOP:601 | BISHOP AC7 [ 5ie 11ie 29iec 14 35c ] | stock 1:-1 11:-1 14:-1 18:2 28:28 29:1 35:1 24:0
+     # the unidentified scroll: 1 GP (B6)
+1    BOLTAC'S TRADING POST/sell input=0 msg="** ANYTHING ELSE, SIRE? **" FIGHTER:1975 MAGE:27 BISHOP:606 | BISHOP AC7 [ 11ie 29iec 14 35c ] | stock 1:-1 11:-1 14:-1 18:2 28:28 29:1 35:1 24:0
+     # the equipped staff: sold, no question (B7), AC unchanged (#35)
+RET  BOLTAC'S TRADING POST/main input=0 msg="" FIGHTER:1975 MAGE:27 BISHOP:606 | BISHOP AC7 [ 11ie 29iec 14 35c ] | stock 1:-1 11:-1 14:-1 18:2 28:28 29:1 35:1 24:0
+U    BOLTAC'S TRADING POST/uncurse input=0 msg="" FIGHTER:1975 MAGE:27 BISHOP:606 | BISHOP AC7 [ 11ie 29iec 14 35c ] | stock 1:-1 11:-1 14:-1 18:2 28:28 29:1 35:1 24:0
+     # uncurse
+1    BOLTAC'S TRADING POST/main input=0 msg="** THAT IS NOT A CURSED ITEM **" FIGHTER:1975 MAGE:27 BISHOP:606 | BISHOP AC7 [ 11ie 29iec 14 35c ] | stock 1:-1 11:-1 14:-1 18:2 28:28 29:1 35:1 24:0
+     # the chain mail is not cursed: back to the main menu
+U    BOLTAC'S TRADING POST/uncurse input=0 msg="" FIGHTER:1975 MAGE:27 BISHOP:606 | BISHOP AC7 [ 11ie 29iec 14 35c ] | stock 1:-1 11:-1 14:-1 18:2 28:28 29:1 35:1 24:0
+4    BOLTAC'S TRADING POST/main input=0 msg="** YOU CANT AFFORD THE FEE **" FIGHTER:1975 MAGE:27 BISHOP:606 | BISHOP AC7 [ 11ie 29iec 14 35c ] | stock 1:-1 11:-1 14:-1 18:2 28:28 29:1 35:1 24:0
+     # the cursed leather: a 750 GP fee, more than the bishop has
+I    BOLTAC'S TRADING POST/identify input=0 msg="" FIGHTER:1975 MAGE:27 BISHOP:606 | BISHOP AC7 [ 11ie 29iec 14 35c ] | stock 1:-1 11:-1 14:-1 18:2 28:28 29:1 35:1 24:0
+     # identify
+1    BOLTAC'S TRADING POST/main input=0 msg="** THAT HAS BEEN IDENTIFIED **" FIGHTER:1975 MAGE:27 BISHOP:606 | BISHOP AC7 [ 11ie 29iec 14 35c ] | stock 1:-1 11:-1 14:-1 18:2 28:28 29:1 35:1 24:0
+     # the chain mail is identified already: back to the main menu
+I    BOLTAC'S TRADING POST/identify input=0 msg="" FIGHTER:1975 MAGE:27 BISHOP:606 | BISHOP AC7 [ 11ie 29iec 14 35c ] | stock 1:-1 11:-1 14:-1 18:2 28:28 29:1 35:1 24:0
+3    BOLTAC'S TRADING POST/identify input=0 msg="** ANYTHING ELSE, SIRE? **" FIGHTER:1975 MAGE:27 BISHOP:556 | BISHOP AC7 [ 11ie 29iec 14i 35c ] | stock 1:-1 11:-1 14:-1 18:2 28:28 29:1 35:1 24:0
+     # the helm: identified for 50; the list stays open
+RET  BOLTAC'S TRADING POST/main input=0 msg="" FIGHTER:1975 MAGE:27 BISHOP:556 | BISHOP AC7 [ 11ie 29iec 14i 35c ] | stock 1:-1 11:-1 14:-1 18:2 28:28 29:1 35:1 24:0
+B    BOLTAC'S TRADING POST/buy input=0 msg="" FIGHTER:1975 MAGE:27 BISHOP:556 | BISHOP AC7 [ 11ie 29iec 14i 35c ] | cursor 6 page [1 2 3 4 5 6] | stock 1:-1 11:-1 14:-1 18:2 28:28 29:1 35:1 24:0
+P    BOLTAC'S TRADING POST/buy input=3 msg="" FIGHTER:1975 MAGE:27 BISHOP:556 | BISHOP AC7 [ 11ie 29iec 14i 35c ] | cursor 6 page [1 2 3 4 5 6] | stock 1:-1 11:-1 14:-1 18:2 28:28 29:1 35:1 24:0
+1    BOLTAC'S TRADING POST/confirm input=0 msg="UNUSABLE ITEM - CONFIRM BUY (Y/N) ? >" FIGHTER:1975 MAGE:27 BISHOP:556 | BISHOP AC7 [ 11ie 29iec 14i 35c ] | cursor 1 page [1 2 3 4 5 6] | stock 1:-1 11:-1 14:-1 18:2 28:28 29:1 35:1 24:0
+     # a long sword: unusable by a bishop, confirm
+RET  BOLTAC'S TRADING POST/buy input=0 msg="" FIGHTER:1975 MAGE:27 BISHOP:556 | BISHOP AC7 [ 11ie 29iec 14i 35c ] | cursor 1 page [1 2 3 4 5 6] | stock 1:-1 11:-1 14:-1 18:2 28:28 29:1 35:1 24:0
+     # RETURN at the confirmation: no
+RET  BOLTAC'S TRADING POST/main input=0 msg="" FIGHTER:1975 MAGE:27 BISHOP:556 | BISHOP AC7 [ 11ie 29iec 14i 35c ] | stock 1:-1 11:-1 14:-1 18:2 28:28 29:1 35:1 24:0
+     # RETURN at the catalog: the main menu
+L    BOLTAC'S TRADING POST/who input=0 msg="" FIGHTER:1975 MAGE:27 BISHOP:556 | stock 1:-1 11:-1 14:-1 18:2 28:28 29:1 35:1 24:0
+     # leave: who will enter
+RET  CASTLE/who input=0 msg="" FIGHTER:1975 MAGE:27 BISHOP:556 | stock 1:-1 11:-1 14:-1 18:2 28:28 29:1 35:1 24:0
+     # RETURN at who will enter: the castle
