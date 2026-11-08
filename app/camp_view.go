@@ -10,6 +10,9 @@ package app
 // spell's purpose). Unidentified items have their unknown names.
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/Senior-Geek/istary/engine"
 )
 
@@ -28,7 +31,21 @@ type CampView struct {
 	SpellBook string            `json:"spellBook,omitempty"` // "mage" or "priest" on the spell list
 	Spell     string            `json:"spell,omitempty"`     // the spell waiting for its target
 	Dumapic   *DumapicView      `json:"dumapic,omitempty"`   // only on the DUMAPIC screen
+	Spells    []CampSpellView   `json:"spells,omitempty"`    // the inspected character's known spells
 	Actions   []string          `json:"actions"`
+}
+
+// CampSpellView is one spell the inspected character knows, and whether
+// CastSpell may be offered for it in Camp. Reason says why not. Anti-magic
+// is not shown: the party learns of it only by casting ("SPELL HAS NO
+// EFFECT").
+type CampSpellView struct {
+	Name     string `json:"name"`
+	Book     string `json:"book"` // "mage" or "priest"
+	Level    int    `json:"level"`
+	Target   bool   `json:"target"` // cast on one party member (CastOn)
+	Castable bool   `json:"castable"`
+	Reason   string `json:"reason,omitempty"`
 }
 
 // EquipChoiceView is one item offered by the equip screen.
@@ -103,6 +120,7 @@ func (c *Controller) CampView() (CampView, error) {
 	}
 	v.Screen = campScreens[town.InputMode]
 	v.Member = PartySlot(town, town.EditChar)
+	v.Spells = campSpellViews(town.EditChar)
 	v.TradeWith = PartySlot(town, town.TradeTarget)
 	items := g.Scenario.Items
 	switch town.InputMode {
@@ -158,4 +176,38 @@ func (c *Controller) CampView() (CampView, error) {
 		v.Actions = []string{ActLeaveDumapic}
 	}
 	return v, nil
+}
+
+// campSpellViews lists ch's known spells for Camp: castable when the game
+// would cast it (CanCastSpell) and it has an effect in Camp (campSpells),
+// except MALOR (finding #25).
+func campSpellViews(ch *engine.Character) []CampSpellView {
+	if ch == nil {
+		return nil
+	}
+	var out []CampSpellView
+	for i, sp := range engine.SpellTable {
+		if i >= len(ch.SpellKnown) || !ch.SpellKnown[i] {
+			continue
+		}
+		v := CampSpellView{Name: sp.Name, Book: "mage", Level: sp.Level, Target: sp.Target == engine.TargetPartyMember}
+		left := ch.MageSpells[sp.Level-1]
+		if sp.Type == engine.PriestSpell {
+			v.Book, left = "priest", ch.PriestSpells[sp.Level-1]
+		}
+		switch {
+		case sp.Name == "MALOR":
+			v.Reason = "MALOR is not available until its floor defect (finding #25) is corrected."
+		case !campSpells[sp.Name]:
+			v.Reason = "No effect in Camp."
+		case left <= 0:
+			v.Reason = fmt.Sprintf("No level %d %s spells left.", sp.Level, v.Book)
+		case !ch.CanCastSpell(sp):
+			v.Reason = fmt.Sprintf("A %s cannot cast %s spells.", strings.ToLower(ch.Class.String()), v.Book)
+		default:
+			v.Castable = true
+		}
+		out = append(out, v)
+	}
+	return out
 }

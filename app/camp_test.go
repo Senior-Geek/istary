@@ -547,3 +547,117 @@ func TestCampOperationsAreTheTerminalKeys(t *testing.T) {
 		}
 	}
 }
+
+// campSpells is exactly the spells Camp gives an effect: cast through the
+// terminal's keys, every other spell answers "NOT IN CAMP" (finding #33),
+// and MALOR opens its own screen.
+func TestCampSpellsAreApplyCampSpells(t *testing.T) {
+	seed(4)
+	c := campers(t, rand.New(rand.NewSource(4)))
+	bishop := c.Game.Town.Party.Members[3]
+	for _, sp := range engine.SpellTable {
+		bishop.SpellKnown[engine.SpellIndex[sp.Name]] = true
+		bishop.MageSpells[sp.Level-1], bishop.PriestSpells[sp.Level-1] = 3, 3
+		c.Game.Fizzles = 0
+		must(t, c.CampInspect(3))
+		c.press(Rune('S'))
+		for _, r := range sp.Name {
+			c.press(Rune(r))
+		}
+		c.press(Key{Kind: KeyEnter})
+		if c.mode() == engine.InputSpellTarget {
+			c.press(Rune('1'))
+		}
+		town := c.Game.Town
+		switch {
+		case sp.Name == "MALOR":
+			if c.mode() != engine.InputMalor || !campSpells[sp.Name] {
+				t.Fatalf("MALOR: mode %v", c.mode())
+			}
+			c.press(Key{Kind: KeyEscape})
+		case (town.Message == "NOT IN CAMP") == campSpells[sp.Name]:
+			t.Fatalf("%s: %q, campSpells %v", sp.Name, town.Message, campSpells[sp.Name])
+		}
+		if c.mode() == engine.InputDumapic {
+			must(t, c.LeaveDumapic())
+		}
+		if c.Game.Phase != engine.PhaseCamp {
+			t.Fatalf("%s left Camp", sp.Name)
+		}
+		must(t, c.LeaveInspection())
+	}
+}
+
+// CampView's spells are the game's answers: a spell listed as castable is
+// cast (never "** CANT CAST **" or "NOT IN CAMP"), and one that is not
+// would be refused or wasted, or is MALOR.
+func TestCampSpellViewsMatchTheGame(t *testing.T) {
+	seen := map[string]bool{}
+	for s := int64(1); s <= 12; s++ {
+		seed(s)
+		rng := rand.New(rand.NewSource(s))
+		c := campers(t, rng)
+		slot := rng.Intn(6)
+		must(t, c.CampInspect(slot))
+		v, _ := c.CampView()
+		ch := c.Game.Town.EditChar
+		var known []string
+		for i, k := range ch.SpellKnown {
+			if k && i < len(engine.SpellTable) {
+				known = append(known, engine.SpellTable[i].Name)
+			}
+		}
+		if len(v.Spells) != len(known) {
+			t.Fatalf("seed %d: %d spells listed, %d known", s, len(v.Spells), len(known))
+		}
+		for i, sv := range v.Spells {
+			if sv.Name != known[i] || sv.Castable == (sv.Reason != "") {
+				t.Fatalf("seed %d: %+v", s, sv)
+			}
+			if sv.Name == "MALOR" {
+				continue
+			}
+			g := cloneCamp(t, c)
+			g.Game.Fizzles = 0
+			g.press(Rune('S'))
+			for _, r := range sv.Name {
+				g.press(Rune(r))
+			}
+			g.press(Key{Kind: KeyEnter})
+			if g.mode() == engine.InputSpellTarget {
+				if !sv.Target {
+					t.Fatalf("seed %d: %s asks for a target", s, sv.Name)
+				}
+				g.press(Rune('1'))
+			} else if sv.Target && sv.Castable {
+				t.Fatalf("seed %d: %s did not ask for a target", s, sv.Name)
+			}
+			msg := g.Game.Town.Message
+			refused := msg == "** CANT CAST **" || msg == "NOT IN CAMP"
+			if refused == sv.Castable {
+				t.Fatalf("seed %d: %s castable %v, the game says %q", s, sv.Name, sv.Castable, msg)
+			}
+			seen[fmt.Sprintf("%v %v %s", sv.Castable, sv.Target, strings.Fields(sv.Reason+" -")[0])] = true
+		}
+	}
+	for _, k := range []string{"true true -", "true false -", "false false No", "false true No", "false false A"} {
+		if !seen[k] {
+			t.Errorf("no spell was %q", k)
+		}
+	}
+}
+
+// cloneCamp is a copy of c's game, through the save, at the same Camp
+// screen (Checkpoint and Resume).
+func cloneCamp(t *testing.T, c *Controller) *Controller {
+	t.Helper()
+	pristine := newController(t, 1).Game.Scenario
+	exp, err := c.Checkpoint(pristine)
+	must(t, err)
+	c.Game.Expedition = exp
+	must(t, c.Save())
+	r := newController(t, 1)
+	must(t, r.Game.Load())
+	must(t, r.Resume(pristine))
+	return r
+}

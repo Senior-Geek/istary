@@ -232,6 +232,14 @@ func handleCampSpellTarget(game *engine.GameState, k Key) {
 	}
 }
 
+// campSpells are the spells applyCampSpell gives an effect in Camp; every
+// other spell is "NOT IN CAMP" and still spent (finding #33). CampView
+// offers only these (TestCampSpellsAreApplyCampSpells keeps them in step).
+var campSpells = map[string]bool{
+	"DIOS": true, "DIALMA": true, "DIAL": true, "MADI": true, "LATUMOFIS": true,
+	"MILWA": true, "LOMILWA": true, "DUMAPIC": true, "MALOR": true,
+}
+
 // applyCampSpell applies a camp-castable spell effect to a target character.
 func applyCampSpell(game *engine.GameState, sp *engine.Spell, target *engine.Character) {
 	town := game.Town
