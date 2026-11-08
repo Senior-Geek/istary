@@ -17,7 +17,7 @@ import (
 
 // terminalMoves is every move between town locations on the terminal's
 // menus: the castle, the Edge of Town, and [RETURN] out of the Training
-// Grounds and the Tavern.
+// Grounds, the Tavern and Boltac's.
 var terminalMoves = []struct {
 	from engine.TownLocation
 	key  *tcell.EventKey
@@ -32,12 +32,14 @@ var terminalMoves = []struct {
 	{engine.EdgeOfTown, runeKey('C'), engine.Castle},
 	{engine.Training, tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone), engine.Castle},
 	{engine.Tavern, tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone), engine.Castle},
+	{engine.Trading, tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone), engine.Castle}, // at WHO WILL ENTER
 }
 
 func runeKey(r rune) *tcell.EventKey { return tcell.NewEventKey(tcell.KeyRune, r, tcell.ModNone) }
 
 // navGame is a scenario-1 game at from, with a one-member party when party
-// is set and a message left on the screen.
+// is set, a message left on the screen and Boltac's catalog where an
+// earlier visit left it.
 func navGame(t *testing.T, party bool, from engine.TownLocation) *engine.GameState {
 	t.Helper()
 	g := newGame(t, 1)
@@ -48,6 +50,7 @@ func navGame(t *testing.T, party bool, from engine.TownLocation) *engine.GameSta
 	}
 	g.Town.Location = from
 	g.Town.Message = "EARLIER MESSAGE"
+	g.Town.ShopCatalog = 9 // left from an earlier visit to Boltac's
 	return g
 }
 
@@ -97,7 +100,7 @@ func TestGoToIsTheTerminalKey(t *testing.T) {
 
 // The controller's exits are exactly the terminal's moves, in menu order.
 func TestExitsAreTheTerminalMenus(t *testing.T) {
-	for _, from := range []engine.TownLocation{engine.Castle, engine.EdgeOfTown, engine.Training, engine.Tavern} {
+	for _, from := range []engine.TownLocation{engine.Castle, engine.EdgeOfTown, engine.Training, engine.Tavern, engine.Trading} {
 		var want, got []engine.TownLocation
 		for _, m := range terminalMoves {
 			if m.from == from {
@@ -122,7 +125,7 @@ func TestNoOtherKeyMoves(t *testing.T) {
 	}
 	keys = append(keys, tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone), tcell.NewEventKey(tcell.KeyEscape, 0, tcell.ModNone))
 	for _, party := range []bool{false, true} {
-		for _, from := range []engine.TownLocation{engine.Castle, engine.EdgeOfTown, engine.Training, engine.Tavern} {
+		for _, from := range []engine.TownLocation{engine.Castle, engine.EdgeOfTown, engine.Training, engine.Tavern, engine.Trading} {
 			for _, k := range keys {
 				g := navGame(t, party, from)
 				d := newDriver(t, g)

@@ -38,11 +38,13 @@ func TestTownExits(t *testing.T) {
 		engine.EdgeOfTown: {engine.Training, engine.Castle},
 		engine.Training:   {engine.Castle},
 		engine.Tavern:     {engine.Castle},
+		engine.Trading:    {engine.Castle},
 	}
 	for _, path := range [][]engine.TownLocation{
 		{engine.Tavern, engine.Castle},
 		{engine.EdgeOfTown, engine.Training, engine.Castle},
 		{engine.EdgeOfTown, engine.Castle},
+		{engine.Trading, engine.Castle},
 	} {
 		for _, to := range path {
 			if got := exitsTo(c); !slices.Equal(got, want[c.Game.Town.Location]) {
@@ -60,7 +62,7 @@ func TestTownExits(t *testing.T) {
 func TestGoToRefusals(t *testing.T) {
 	c := navController(t, true)
 	all := []engine.TownLocation{engine.Castle, engine.Tavern, engine.Inn, engine.Trading, engine.Temple, engine.EdgeOfTown, engine.Training}
-	for _, from := range []engine.TownLocation{engine.Castle, engine.EdgeOfTown, engine.Training, engine.Tavern} {
+	for _, from := range []engine.TownLocation{engine.Castle, engine.EdgeOfTown, engine.Training, engine.Tavern, engine.Trading} {
 		for _, to := range all {
 			c.Game.Town.Location = from
 			if slices.Contains(exitsTo(c), to) {
@@ -88,8 +90,8 @@ func TestGoToRefusals(t *testing.T) {
 }
 
 // The Inn, Boltac's and the Temple refuse a castle with no party, as the
-// castle menu does; with a party they are still the terminal's, and going
-// there changes nothing.
+// castle menu does. With a party GoTo enters Boltac's; the Inn and the
+// Temple are still the terminal's, and going there changes nothing.
 func TestGoToShopsAndServices(t *testing.T) {
 	for _, loc := range []engine.TownLocation{engine.Inn, engine.Trading, engine.Temple} {
 		c := navController(t, false)
@@ -106,11 +108,15 @@ func TestGoToShopsAndServices(t *testing.T) {
 		c = navController(t, true)
 		c.Game.Town.Message = "OLD"
 		before := *c.Game.Town
-		if err := c.GoTo(loc); !errors.Is(err, ErrLocationNotMigrated) || !reflect.DeepEqual(*c.Game.Town, before) {
-			t.Errorf("%v with a party: %v", loc, err)
-		}
 		if e := c.Exits(); e[slices.Index(exitsTo(c), loc)].Refusal != "" {
 			t.Errorf("%v exit with a party: %+v", loc, e)
+		}
+		if loc == engine.Trading { // Boltac's is the controller's (M8-2)
+			if err := c.GoTo(loc); err != nil || c.Game.Town.Location != engine.Trading || c.Game.Town.ShopStep != engine.ShopWho || c.Game.Town.Message != "" {
+				t.Errorf("Boltac's with a party: %v", err)
+			}
+		} else if err := c.GoTo(loc); !errors.Is(err, ErrLocationNotMigrated) || !reflect.DeepEqual(*c.Game.Town, before) {
+			t.Errorf("%v with a party: %v", loc, err)
 		}
 	}
 }
