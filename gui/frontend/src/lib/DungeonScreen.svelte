@@ -11,6 +11,7 @@
   import * as S from '../../wailsjs/go/main/Session.js'
   import { ranks, condition } from './combat.js'
   import { viewBox, scene, points, actions, keyAction, expeditionTag } from './dungeon.js'
+  import CampScreen from './CampScreen.svelte'
 
   let { view, busy = false, call } = $props()
 
@@ -47,6 +48,9 @@
     {/if}
   </header>
 
+  {#if d.phase === 'camp' && view.camp}
+    <CampScreen camp={view.camp} {busy} {call} />
+  {:else}
   <section class="stage">
     {#if d.phase === 'maze'}
       <svg {viewBox} class="view" role="img" aria-label="The corridor ahead">
@@ -98,9 +102,6 @@
         {/each}
       </div>
     {/if}
-    {#if d.phase === 'camp'}
-      <p class="muted">Camp's other choices (equip, spells, reorder) are not in the GUI yet.</p>
-    {/if}
   </section>
 
   <section class="strip">
@@ -120,6 +121,7 @@
       </div>
     {/each}
   </section>
+  {/if}
 </div>
 
 <style>
