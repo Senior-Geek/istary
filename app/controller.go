@@ -67,7 +67,18 @@ func (c *Controller) townKey(k Key) bool {
 			return true
 		case engine.EdgeOfTown:
 			return c.edgeOfTownKey(k)
+		case engine.Trading:
+			c.shopKey(k)
+			return true
+		case engine.Castle:
+			if k.Kind == KeyRune && upper(k.Rune) == 'B' {
+				c.castleShopKey()
+				return true
+			}
 		}
+	case engine.InputShopPurchase:
+		c.shopPurchaseKey(k)
+		return true
 	case engine.InputTrainingName, engine.InputRoster, engine.InputConfirmCreate,
 		engine.InputPassword, engine.InputConfirmDelete:
 		c.trainingPromptKey(k)
