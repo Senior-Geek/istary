@@ -46,8 +46,8 @@ copies of the party into the real maze, to Camp at the entrance.
 - **Nothing is kept:** taking the stairs up, perishing or Abandon ends the
   expedition and discards it; the roster is not touched.
 - **The screen** (`frontend/src/lib/DungeonScreen.svelte`) draws a simple
-  wireframe of the corridor, not the Classic picture. Camp offers only
-  Leave so far.
+  wireframe of the corridor, not the Classic picture, with the party bar
+  at the bottom; in Camp a click on a member there picks them.
 
 **Practice encounters.**
 - **What you fight:** "Practice encounter" at the Edge of Town starts a real

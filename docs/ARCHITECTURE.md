@@ -331,7 +331,8 @@ reveals it.
   bridge refuses each with its reason before anything is pressed, and the
   page shows them disabled with that reason. No bound method takes keys.
 - **The page** (`CampScreen.svelte`, helpers in `lib/camp.js`): the party
-  strip (click or 1-6 to pick a member where the screen asks for one), the
+  bar at the bottom of the dungeon screen (since C0-5; click a member, or
+  press 1-6, to pick a member where the screen asks for one), the
   operation under way, the inspected character's sheet, and each screen's
   controls; Escape takes the screen's way back. Choosing which spell to cast
   or item to use is a picker only; nothing is sent until the choice.
@@ -471,6 +472,34 @@ frame (`LocationFrame.svelte`), in grid areas that never overlap:
     an expedition out and back by the stairs, Settings and Leave the game;
     on every screen every control could be brought into view and was not
     covered, and the page itself never scrolled.
+
+**The party bar on every screen (Castle-0 C0-5).** The maze and Camp show
+the same `PartyBar` at the bottom of the dungeon screen, in place of their
+own party strip and cards; combat keeps its own formation display and
+shows no bar. `View.PartyBar` carries AC as well.
+- **Camp picks through the bar:** a click on a member does what Camp asks
+  (`pickLabel`, from `partyPick`), the member Camp is working with is
+  marked, and the new places while reordering (`placeMark`); the keys 1-6
+  still pick, and with the party hidden Camp says so.
+- **Combat shows no bar** on purpose: it shows the party as of the event
+  being played back, while the bar already has the outcome
+  (`TestPartyBarFollowsPlay` compares the formation only there).
+- **Layout:** the dungeon screen fills the window like the town: header and
+  party bar in view, the maze or Camp between them fitting or scrolling;
+  the corridor picture shrinks to fit. Hide party is in its header and
+  applies everywhere; the choice survives restarts.
+- **Window title:** "Istary".
+- **Tests:** `TestPartyBarFollowsPlay` holds the bar to each screen's party
+  through random Camp play (reorders and trades), exploring with
+  encounters, and the return to the castle; `campViews.test.js` checks the
+  bar's Camp picks against the cards' former ones.
+- **Checked live** at 760x532, 980x692 and 1512x945: the castle, Camp
+  (inspect and reorder by the bar, hidden party and the keys), the maze,
+  the app killed during the expedition with the party hidden and started
+  again (resumed exactly, still hidden), Camp and the stairs back to the
+  castle, and a practice encounter without a bar; the bar always matched
+  Go's party and stayed fully in view, and no control was out of reach or
+  covered.
 - **Tests:** `gui/settings_test.go` (kept across restarts, accepted out on
   an expedition, damaged and unwritable files, roster management leaves it
   alone); `frameViews.test.js` over `frame-views.json` recorded from Go.
@@ -508,8 +537,9 @@ frame (`LocationFrame.svelte`), in grid areas that never overlap:
 - **The end:** when the party is back in town (the stairs, or perished) or
   the expedition is abandoned, the practice game is discarded.
 - **The screen** (`DungeonScreen.svelte`): a wireframe of the corridor
-  (`lib/dungeon.js`), the messages, the party, and the actions with the
-  terminal's keys. It is a placeholder, not the Classic renderer.
+  (`lib/dungeon.js`), the messages, the actions with the terminal's keys,
+  and the shared party bar (C0-5). It is a placeholder, not the Classic
+  renderer.
 - **Not yet:** rescue and recovery (M6b-4). Camp is in the GUI since M6b-3B
   (below), except Disband and MALOR.
 
