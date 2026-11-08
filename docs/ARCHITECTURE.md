@@ -372,9 +372,8 @@ native window under Wails v3. Roster backups live in `<saveDir>/backups`. Its
 `Session` type serialises all calls with a mutex, calls controller operations,
 saves after each one, and returns a `View` for Svelte to render. The GUI shows
 roster, Training Grounds and party together while the game has one current
-town location; `gui/location.go` (`goTo`) changes it for the actions that
-need a particular location, always through the game's own leave/enter steps,
-and `Navigate` (below) walks it. See `gui/README.md`.
+town location, which only `Navigate` (below) changes; an action is accepted
+only at its own location (`gui/location.go`). See `gui/README.md`.
 
 **Town navigation (Castle-0, C0-1).** `Session.Navigate(dest)`
 (`gui/navigation.go`) moves along one of `View.Exits` with
@@ -399,8 +398,24 @@ the Castle (Player's Guide pp.22, 36, 38).
   view as it was), refusals out of town and after a restart, an
   unresumable expedition left as saved, prompts closed, Settings left, and
   the party bar against the Tavern's and the dungeon's party.
-- **Not yet:** the page does not use it (C0-3, C0-4); the existing actions
-  still move with `goTo` (C0-2 makes them check the location instead).
+- **Actions at their locations (C0-2).** Nothing moves the player for an
+  action any more (`goTo` is gone): joining and leaving the party are
+  accepted at the Tavern; creating, renaming and deleting at the Training
+  Grounds; real and practice expeditions at the Edge of Town (so a GUI
+  expedition stands at the Edge of Town, as the terminal's M does); reload,
+  reset and restore in Settings, which a reload or restore keeps the player
+  in. Elsewhere each is refused with where to go ("... Go there first."),
+  before anything is changed or drawn. An open town prompt at the location
+  is closed by the game's cancel steps, as before. Returning an
+  unresumable expedition's party stays open on every town screen.
+- **Not reachable yet (C0-2 to C0-4):** the page has no navigation until
+  C0-3 and C0-4, and opens at the Castle, so the Tavern, Training Grounds,
+  expedition and Settings actions above answer "Go there first" on this
+  branch. A saved expedition still resumes and is played as before.
+- **Tests:** `TestActionsOnlyAtTheirLocations` tries every such action at
+  every location (refused elsewhere with the view, the saved roster and
+  the random numbers unchanged); the bridge tests walk explicitly with
+  `walkTo` before each action.
 
 **GUI combat (M7a).** `gui/combat.go` is the combat bridge.
 - **What the frontend gets:** while an encounter runs, `View.Screen` is

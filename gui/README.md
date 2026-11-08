@@ -6,6 +6,18 @@ dungeon (M6a): real expeditions (M6b-1), practice expeditions and practice
 encounters played through `app.Controller`, `app.DungeonView` and
 `app.CombatView`.
 
+> **Development branch (Castle-0, from C0-2 until C0-4):** most of this
+> window cannot be reached yet. Each action is now accepted only at its own
+> town location: joining and leaving the party at the Tavern; creating,
+> renaming and deleting characters at the Training Grounds; real and
+> practice expeditions at the Edge of Town; reload, reset and restore in
+> Settings. The page cannot walk there yet (`Session.Navigate` has no page
+> until C0-3 and C0-4), and nothing moves the player for it. The window
+> opens at the Castle, so those buttons answer "Go there first". What
+> still works: looking at the roster and the character sheets, returning
+> the party of an unresumable expedition, and a saved expedition, which
+> resumes in the maze on start and is played to its end as before.
+
 **Real expeditions.** "Real expedition" in the Party column takes the party
 itself into the maze, to Camp at the entrance. It plays like a practice
 expedition (below), but everything is kept: the game is saved after every
