@@ -8,6 +8,7 @@
   import PartyPanel from './lib/PartyPanel.svelte'
   import CombatScreen from './lib/CombatScreen.svelte'
   import DungeonScreen from './lib/DungeonScreen.svelte'
+  import LocationFrame from './lib/LocationFrame.svelte'
 
   let view = $state(null)
   let busy = $state(false)
@@ -151,12 +152,19 @@
         </div>
       {/if}
       {#if view.notice}<div class="banner notice">{view.notice}</div>{/if}
+      {#if view.settings?.note}<div class="banner error">{view.settings.note}</div>{/if}
 
       {#if view.screen === 'combat' && view.combat}
       <CombatScreen {view} {busy} {call} />
       {:else if view.screen === 'dungeon' && view.dungeon}
       <DungeonScreen {view} {busy} {call} />
       {:else}
+      <!-- Every town place in one frame (Castle-0 C0-3). Until C0-4 gives
+           each place its own screen, the frame holds the castle's earlier
+           all-in-one content wherever the player is; Go accepts each action
+           only at its own place. -->
+      <LocationFrame {view} {busy} {call}
+        onopen={view.screen === 'roster' ? (i) => { selected = i } : undefined}>
       <!-- Grid areas: wide = roster and rest beside the party; narrow =
            roster, party, rest stacked. -->
       <div class="layout">
@@ -228,9 +236,14 @@
       {#if view.screen === 'roster' && sel}
         {#key sel.index}
           <FloatingPanel title="Character — {sel.name}" onclose={() => { selected = -1 }}>
+            <!-- The sheet offers what the place allows: renaming and deleting
+                 at the Training Grounds, joining and leaving at the Tavern. -->
             <CharacterSheet character={sel} statNames={view.statNames} nameMax={view.nameMax}
-              {busy} error={view.error} onrename={renameSelected} ondelete={deleteSelected}
-              onjoin={() => joinParty(sel.index)} onleave={() => leaveParty(sel.partySlot - 1)} />
+              {busy} error={view.error}
+              onrename={view.location === 'training' ? renameSelected : undefined}
+              ondelete={view.location === 'training' ? deleteSelected : undefined}
+              onjoin={view.location === 'tavern' ? () => joinParty(sel.index) : undefined}
+              onleave={view.location === 'tavern' ? () => leaveParty(sel.partySlot - 1) : undefined} />
           </FloatingPanel>
         {/key}
       {/if}
@@ -374,6 +387,7 @@
         </section>
       </aside>
       </div>
+      </LocationFrame>
       {/if}
     {/if}
   {:else}

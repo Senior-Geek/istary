@@ -10,8 +10,8 @@
   //   nameMax    longest allowed name
   //   busy       disable actions while a request is running
   //   error      last error from Go, shown inside the sheet
-  //   onrename   (newName) => Promise
-  //   ondelete   (password) => Promise
+  //   onrename   (newName) => Promise   rename (optional: where renaming is allowed)
+  //   ondelete   (password) => Promise  delete (optional: where deleting is allowed)
   //   onjoin     () => Promise   ask to join the party (optional)
   //   onleave    () => Promise   leave the party (optional)
   let { character: ch, statNames, nameMax, busy = false, error = '', onrename, ondelete, onjoin, onleave } = $props()
@@ -52,7 +52,9 @@
         </form>
       {:else}
         <div class="name">{ch.name}
-          <button class="small" disabled={busy} onclick={() => { newName = ch.name; renaming = true }}>Rename</button>
+          {#if onrename}
+            <button class="small" disabled={busy} onclick={() => { newName = ch.name; renaming = true }}>Rename</button>
+          {/if}
         </div>
       {/if}
       <div class="line">{ch.race} {ch.class} · {ch.alignment} · Level {ch.level}</div>
@@ -134,6 +136,7 @@
     </section>
   {/if}
 
+  {#if ondelete}
   <section class="actions">
     {#if deleting}
       <form class="confirm" onsubmit={submitDelete}>
@@ -148,6 +151,7 @@
       <button class="danger" disabled={busy} onclick={() => { deleting = true }}>Delete…</button>
     {/if}
   </section>
+  {/if}
 </div>
 
 <style>

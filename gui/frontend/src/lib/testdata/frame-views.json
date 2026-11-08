@@ -1,0 +1,1083 @@
+[
+ {
+  "case": "castle, no party",
+  "screen": "roster",
+  "location": "castle",
+  "exits": [
+   {
+    "dest": "tavern",
+    "open": true,
+    "reason": ""
+   },
+   {
+    "dest": "inn",
+    "open": false,
+    "reason": "YOU HAVE NO PARTY!"
+   },
+   {
+    "dest": "trading",
+    "open": false,
+    "reason": "YOU HAVE NO PARTY!"
+   },
+   {
+    "dest": "temple",
+    "open": false,
+    "reason": "YOU HAVE NO PARTY!"
+   },
+   {
+    "dest": "edge",
+    "open": true,
+    "reason": ""
+   }
+  ],
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "frontRow": 3,
+  "settings": {
+   "partyVisible": true,
+   "note": ""
+  },
+  "expedition": false,
+  "real": false
+ },
+ {
+  "case": "castle",
+  "screen": "roster",
+  "location": "castle",
+  "exits": [
+   {
+    "dest": "tavern",
+    "open": true,
+    "reason": ""
+   },
+   {
+    "dest": "inn",
+    "open": false,
+    "reason": "The Adventurer's Inn is not open in Istary's window yet."
+   },
+   {
+    "dest": "trading",
+    "open": false,
+    "reason": "Boltac's Trading Post is not open in Istary's window yet."
+   },
+   {
+    "dest": "temple",
+    "open": false,
+    "reason": "The Temple of Cant is not open in Istary's window yet."
+   },
+   {
+    "dest": "edge",
+    "open": true,
+    "reason": ""
+   }
+  ],
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "LEAD",
+    "class": "G-FIG",
+    "level": 1,
+    "hp": 8,
+    "maxHp": 8,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "SECOND",
+    "class": "G-FIG",
+    "level": 1,
+    "hp": 2,
+    "maxHp": 8,
+    "status": "OK",
+    "poisoned": true,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "frontRow": 3,
+  "settings": {
+   "partyVisible": true,
+   "note": ""
+  },
+  "expedition": false,
+  "real": false
+ },
+ {
+  "case": "tavern",
+  "screen": "roster",
+  "location": "tavern",
+  "exits": [
+   {
+    "dest": "castle",
+    "open": true,
+    "reason": ""
+   }
+  ],
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "LEAD",
+    "class": "G-FIG",
+    "level": 1,
+    "hp": 8,
+    "maxHp": 8,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "SECOND",
+    "class": "G-FIG",
+    "level": 1,
+    "hp": 2,
+    "maxHp": 8,
+    "status": "OK",
+    "poisoned": true,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "frontRow": 3,
+  "settings": {
+   "partyVisible": true,
+   "note": ""
+  },
+  "expedition": false,
+  "real": false
+ },
+ {
+  "case": "edge",
+  "screen": "roster",
+  "location": "edge",
+  "exits": [
+   {
+    "dest": "training",
+    "open": true,
+    "reason": ""
+   },
+   {
+    "dest": "castle",
+    "open": true,
+    "reason": ""
+   },
+   {
+    "dest": "settings",
+    "open": true,
+    "reason": ""
+   }
+  ],
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "LEAD",
+    "class": "G-FIG",
+    "level": 1,
+    "hp": 8,
+    "maxHp": 8,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "SECOND",
+    "class": "G-FIG",
+    "level": 1,
+    "hp": 2,
+    "maxHp": 8,
+    "status": "OK",
+    "poisoned": true,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "frontRow": 3,
+  "settings": {
+   "partyVisible": true,
+   "note": ""
+  },
+  "expedition": false,
+  "real": false
+ },
+ {
+  "case": "training",
+  "screen": "roster",
+  "location": "training",
+  "exits": [
+   {
+    "dest": "castle",
+    "open": true,
+    "reason": ""
+   }
+  ],
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "LEAD",
+    "class": "G-FIG",
+    "level": 1,
+    "hp": 8,
+    "maxHp": 8,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "SECOND",
+    "class": "G-FIG",
+    "level": 1,
+    "hp": 2,
+    "maxHp": 8,
+    "status": "OK",
+    "poisoned": true,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "frontRow": 3,
+  "settings": {
+   "partyVisible": true,
+   "note": ""
+  },
+  "expedition": false,
+  "real": false
+ },
+ {
+  "case": "settings",
+  "screen": "roster",
+  "location": "settings",
+  "exits": [
+   {
+    "dest": "castle",
+    "open": true,
+    "reason": ""
+   }
+  ],
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "LEAD",
+    "class": "G-FIG",
+    "level": 1,
+    "hp": 8,
+    "maxHp": 8,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "SECOND",
+    "class": "G-FIG",
+    "level": 1,
+    "hp": 2,
+    "maxHp": 8,
+    "status": "OK",
+    "poisoned": true,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "frontRow": 3,
+  "settings": {
+   "partyVisible": true,
+   "note": ""
+  },
+  "expedition": false,
+  "real": false
+ },
+ {
+  "case": "party hidden",
+  "screen": "roster",
+  "location": "castle",
+  "exits": [
+   {
+    "dest": "tavern",
+    "open": true,
+    "reason": ""
+   },
+   {
+    "dest": "inn",
+    "open": false,
+    "reason": "The Adventurer's Inn is not open in Istary's window yet."
+   },
+   {
+    "dest": "trading",
+    "open": false,
+    "reason": "Boltac's Trading Post is not open in Istary's window yet."
+   },
+   {
+    "dest": "temple",
+    "open": false,
+    "reason": "The Temple of Cant is not open in Istary's window yet."
+   },
+   {
+    "dest": "edge",
+    "open": true,
+    "reason": ""
+   }
+  ],
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "LEAD",
+    "class": "G-FIG",
+    "level": 1,
+    "hp": 8,
+    "maxHp": 8,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "SECOND",
+    "class": "G-FIG",
+    "level": 1,
+    "hp": 2,
+    "maxHp": 8,
+    "status": "OK",
+    "poisoned": true,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "frontRow": 3,
+  "settings": {
+   "partyVisible": false,
+   "note": ""
+  },
+  "expedition": false,
+  "real": false
+ },
+ {
+  "case": "confirming a new character",
+  "screen": "confirmCreate",
+  "location": "training",
+  "exits": [
+   {
+    "dest": "castle",
+    "open": true,
+    "reason": ""
+   }
+  ],
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "LEAD",
+    "class": "G-FIG",
+    "level": 1,
+    "hp": 8,
+    "maxHp": 8,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "SECOND",
+    "class": "G-FIG",
+    "level": 1,
+    "hp": 2,
+    "maxHp": 8,
+    "status": "OK",
+    "poisoned": true,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "frontRow": 3,
+  "settings": {
+   "partyVisible": true,
+   "note": ""
+  },
+  "expedition": false,
+  "real": false
+ },
+ {
+  "case": "creating",
+  "screen": "creation",
+  "location": "training",
+  "exits": [
+   {
+    "dest": "castle",
+    "open": false,
+    "reason": "Finish or discard the character being created first."
+   }
+  ],
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "LEAD",
+    "class": "G-FIG",
+    "level": 1,
+    "hp": 8,
+    "maxHp": 8,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "SECOND",
+    "class": "G-FIG",
+    "level": 1,
+    "hp": 2,
+    "maxHp": 8,
+    "status": "OK",
+    "poisoned": true,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "frontRow": 3,
+  "settings": {
+   "partyVisible": true,
+   "note": ""
+  },
+  "expedition": false,
+  "real": false
+ },
+ {
+  "case": "practice expedition",
+  "screen": "dungeon",
+  "location": "maze",
+  "exits": null,
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": -1,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "hp": 1,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": -1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": -1,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": -1,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": -1,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": -1,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "frontRow": 3,
+  "settings": {
+   "partyVisible": true,
+   "note": ""
+  },
+  "expedition": true,
+  "real": false
+ },
+ {
+  "case": "real expedition",
+  "screen": "dungeon",
+  "location": "maze",
+  "exits": null,
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "frontRow": 3,
+  "settings": {
+   "partyVisible": true,
+   "note": ""
+  },
+  "expedition": true,
+  "real": true
+ }
+]
