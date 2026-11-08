@@ -166,6 +166,10 @@ export function SetName(arg1) {
   return window['go']['main']['Session']['SetName'](arg1);
 }
 
+export function SetPartyVisible(arg1) {
+  return window['go']['main']['Session']['SetPartyVisible'](arg1);
+}
+
 export function SetPassword(arg1, arg2) {
   return window['go']['main']['Session']['SetPassword'](arg1, arg2);
 }

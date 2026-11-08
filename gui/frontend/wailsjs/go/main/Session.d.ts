@@ -84,6 +84,8 @@ export function ReturnExpeditionToCastle():Promise<main.View>;
 
 export function SetName(arg1:string):Promise<main.View>;
 
+export function SetPartyVisible(arg1:boolean):Promise<main.View>;
+
 export function SetPassword(arg1:string,arg2:string):Promise<main.View>;
 
 export function StartCreation(arg1:string):Promise<main.View>;

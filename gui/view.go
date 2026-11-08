@@ -35,6 +35,9 @@ type View struct {
 	Exits    []ExitView     `json:"exits"`
 	PartyBar []PartyBarSlot `json:"partyBar"`
 
+	// Settings are the window's own preferences (settings.go).
+	Settings SettingsView `json:"settings"`
+
 	// Party (Gilgamesh's Tavern).
 	Party          []PartySlotView `json:"party"`
 	PartyAlignment string          `json:"partyAlignment"`
@@ -303,6 +306,7 @@ func (s *Session) view(err error) View {
 	}
 
 	v.Location, v.Exits, v.PartyBar = s.location(), s.exits(), s.partyBar()
+	v.Settings = s.settingsView()
 
 	g := s.ctrl.Game
 	for i, ch := range g.Town.Roster.Characters {

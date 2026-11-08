@@ -53,6 +53,11 @@ type Session struct {
 	// which the window opens at the Edge of Town; it is not part of the game.
 	settings bool
 
+	// prefs are the window's own settings (settings.go); prefsNote says
+	// when they could not be read or saved.
+	prefs     Settings
+	prefsNote string
+
 	// problem is why the saved expedition cannot be resumed, while it
 	// cannot; the expedition stays saved and untouched (expedition.go).
 	problem string
@@ -118,6 +123,7 @@ func (s *Session) open() error {
 		return fmt.Errorf("load Wizardry I data: %w", err)
 	}
 	s.scenario, s.pristine = scenario, pristine
+	s.loadSettings()
 	return s.reload()
 }
 
