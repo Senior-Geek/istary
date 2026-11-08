@@ -10,6 +10,8 @@ export function AnswerCreate(arg1:boolean):Promise<main.View>;
 
 export function Back():Promise<main.View>;
 
+export function CampAction(arg1:main.CampRequest):Promise<main.View>;
+
 export function CancelCreation():Promise<main.View>;
 
 export function CancelJoin():Promise<main.View>;

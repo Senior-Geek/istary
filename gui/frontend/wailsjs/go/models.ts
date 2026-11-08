@@ -1,5 +1,113 @@
 export namespace app {
 	
+	export class CampSpellView {
+	    name: string;
+	    book: string;
+	    level: number;
+	    target: boolean;
+	    castable: boolean;
+	    reason?: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new CampSpellView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.book = source["book"];
+	        this.level = source["level"];
+	        this.target = source["target"];
+	        this.castable = source["castable"];
+	        this.reason = source["reason"];
+	    }
+	}
+	export class DumapicView {
+	    facing: string;
+	    east: number;
+	    north: number;
+	    level: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new DumapicView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.facing = source["facing"];
+	        this.east = source["east"];
+	        this.north = source["north"];
+	        this.level = source["level"];
+	    }
+	}
+	export class EquipChoiceView {
+	    number: number;
+	    item: number;
+	    name: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new EquipChoiceView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.number = source["number"];
+	        this.item = source["item"];
+	        this.name = source["name"];
+	    }
+	}
+	export class CampView {
+	    screen: string;
+	    message: string;
+	    member: number;
+	    placed?: number[];
+	    category?: string;
+	    choices?: EquipChoiceView[];
+	    tradeWith: number;
+	    spellBook?: string;
+	    spell?: string;
+	    dumapic?: DumapicView;
+	    spells?: CampSpellView[];
+	    actions: string[];
+	
+	    static createFrom(source: any = {}) {
+	        return new CampView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.screen = source["screen"];
+	        this.message = source["message"];
+	        this.member = source["member"];
+	        this.placed = source["placed"];
+	        this.category = source["category"];
+	        this.choices = this.convertValues(source["choices"], EquipChoiceView);
+	        this.tradeWith = source["tradeWith"];
+	        this.spellBook = source["spellBook"];
+	        this.spell = source["spell"];
+	        this.dumapic = this.convertValues(source["dumapic"], DumapicView);
+	        this.spells = this.convertValues(source["spells"], CampSpellView);
+	        this.actions = source["actions"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 	export class ChestMemberView {
 	    slot: number;
 	    name: string;
@@ -388,6 +496,7 @@ export namespace app {
 	        this.rightAhead = source["rightAhead"];
 	    }
 	}
+	
 	export class DungeonMemberView {
 	    slot: number;
 	    name: string;
@@ -491,6 +600,20 @@ export namespace main {
 	        this.names = source["names"];
 	        this.readable = source["readable"];
 	        this.problem = source["problem"];
+	    }
+	}
+	export class Unavailable {
+	    action: string;
+	    reason: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new Unavailable(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.action = source["action"];
+	        this.reason = source["reason"];
 	    }
 	}
 	export class ItemView {
@@ -599,6 +722,63 @@ export namespace main {
 		    return a;
 		}
 	}
+	export class CampPanel {
+	    view: app.CampView;
+	    party: CharacterView[];
+	    unavailable?: Unavailable[];
+	
+	    static createFrom(source: any = {}) {
+	        return new CampPanel(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.view = this.convertValues(source["view"], app.CampView);
+	        this.party = this.convertValues(source["party"], CharacterView);
+	        this.unavailable = this.convertValues(source["unavailable"], Unavailable);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class CampRequest {
+	    action: string;
+	    slot: number;
+	    n: number;
+	    gold: number;
+	    spell: string;
+	    priest: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new CampRequest(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.action = source["action"];
+	        this.slot = source["slot"];
+	        this.n = source["n"];
+	        this.gold = source["gold"];
+	        this.spell = source["spell"];
+	        this.priest = source["priest"];
+	    }
+	}
+	
 	export class GuideRow {
 	    class: string;
 	    minimums: number[];
@@ -727,6 +907,7 @@ export namespace main {
 	        this.front = source["front"];
 	    }
 	}
+	
 	export class View {
 	    saveDir: string;
 	    fatal: string;
@@ -749,6 +930,7 @@ export namespace main {
 	    combat?: app.CombatView;
 	    practiceChest: boolean;
 	    dungeon?: app.DungeonView;
+	    camp?: CampPanel;
 	    expedition: boolean;
 	    real: boolean;
 	    unsaved: string;
@@ -783,6 +965,7 @@ export namespace main {
 	        this.combat = this.convertValues(source["combat"], app.CombatView);
 	        this.practiceChest = source["practiceChest"];
 	        this.dungeon = this.convertValues(source["dungeon"], app.DungeonView);
+	        this.camp = this.convertValues(source["camp"], CampPanel);
 	        this.expedition = source["expedition"];
 	        this.real = source["real"];
 	        this.unsaved = source["unsaved"];

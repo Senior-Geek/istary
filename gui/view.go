@@ -42,6 +42,7 @@ type View struct {
 	// Dungeon (Screen "dungeon"): the controller's DungeonView of the
 	// expedition under way, and nothing else from the maze.
 	Dungeon    *app.DungeonView `json:"dungeon"`
+	Camp       *CampPanel       `json:"camp"`       // in Camp: its screen and the party's sheets
 	Expedition bool             `json:"expedition"` // an expedition (practice or real) is under way (any screen)
 	Real       bool             `json:"real"`       // it is the real, saved expedition, not practice
 
@@ -287,6 +288,9 @@ func (s *Session) view(err error) View {
 		} else if v.Expedition {
 			dv := c.DungeonView()
 			v.Screen, v.Dungeon = "dungeon", &dv
+			if c.Game.Phase == engine.PhaseCamp {
+				v.Camp = campPanel(c)
+			}
 		}
 	}
 
@@ -295,39 +299,9 @@ func (s *Session) view(err error) View {
 		if ch == nil {
 			continue
 		}
-		v.Roster = append(v.Roster, CharacterView{
-			Index:     i,
-			Name:      ch.Name,
-			Race:      ch.Race.String(),
-			Alignment: ch.Alignment.String(),
-			Class:     ch.Class.String(),
-			Short:     engine.AlignClass(ch.Alignment, ch.Class),
-			Level:     ch.Level,
-			HP:        ch.HP,
-			MaxHP:     ch.MaxHP,
-			AC:        ch.AC,
-			Status:    ch.Status.String(),
-			Gold:      ch.Gold,
-			Age:       ch.Age / 52,
-			Stats:     [6]int{ch.Strength, ch.IQ, ch.Piety, ch.Vitality, ch.Agility, ch.Luck},
-
-			XP:           ch.XP,
-			NextXP:       engine.XPForNextLevel(ch, g),
-			HasPassword:  ch.Password != "",
-			MageSpells:   ch.MageSpells,
-			MaxMage:      ch.MaxMageSpells,
-			PriestSpells: ch.PriestSpells,
-			MaxPriest:    ch.MaxPriestSpells,
-			Spells:       knownSpells(ch),
-			Items:        itemViews(ch, g.Scenario.Items),
-			Poison:       ch.PoisonAmt,
-			InMaze:       ch.InMaze,
-			MazeLevel:    mazeLevel(ch, app.InParty(g.Town, ch)),
-			Legacy:       ch.IsLegacy,
-			InParty:      app.InParty(g.Town, ch),
-			PartySlot:    app.PartySlot(g.Town, ch) + 1,
-			JoinRefusal:  s.ctrl.JoinRefusal(ch),
-		})
+		cv := characterView(g, ch)
+		cv.Index, cv.JoinRefusal = i, s.ctrl.JoinRefusal(ch)
+		v.Roster = append(v.Roster, cv)
 	}
 
 	v.PartyAlignment = app.PartyAlignment(g.Town).String()
@@ -385,6 +359,44 @@ func (s *Session) view(err error) View {
 		v.Creation = cv
 	}
 	return v
+}
+
+// characterView is ch's sheet in game g (the saved game or a practice
+// game). Index and JoinRefusal are the roster's to set.
+func characterView(g *engine.GameState, ch *engine.Character) CharacterView {
+	inParty := app.InParty(g.Town, ch)
+	return CharacterView{
+		Index:     -1,
+		Name:      ch.Name,
+		Race:      ch.Race.String(),
+		Alignment: ch.Alignment.String(),
+		Class:     ch.Class.String(),
+		Short:     engine.AlignClass(ch.Alignment, ch.Class),
+		Level:     ch.Level,
+		HP:        ch.HP,
+		MaxHP:     ch.MaxHP,
+		AC:        ch.AC,
+		Status:    ch.Status.String(),
+		Gold:      ch.Gold,
+		Age:       ch.Age / 52,
+		Stats:     [6]int{ch.Strength, ch.IQ, ch.Piety, ch.Vitality, ch.Agility, ch.Luck},
+
+		XP:           ch.XP,
+		NextXP:       engine.XPForNextLevel(ch, g),
+		HasPassword:  ch.Password != "",
+		MageSpells:   ch.MageSpells,
+		MaxMage:      ch.MaxMageSpells,
+		PriestSpells: ch.PriestSpells,
+		MaxPriest:    ch.MaxPriestSpells,
+		Spells:       knownSpells(ch),
+		Items:        itemViews(ch, g.Scenario.Items),
+		Poison:       ch.PoisonAmt,
+		InMaze:       ch.InMaze,
+		MazeLevel:    mazeLevel(ch, inParty),
+		Legacy:       ch.IsLegacy,
+		InParty:      inParty,
+		PartySlot:    app.PartySlot(g.Town, ch) + 1,
+	}
 }
 
 // errorText turns controller errors into messages for the player.

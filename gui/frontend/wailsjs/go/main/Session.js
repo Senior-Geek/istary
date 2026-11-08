@@ -18,6 +18,10 @@ export function Back() {
   return window['go']['main']['Session']['Back']();
 }
 
+export function CampAction(arg1) {
+  return window['go']['main']['Session']['CampAction'](arg1);
+}
+
 export function CancelCreation() {
   return window['go']['main']['Session']['CancelCreation']();
 }
