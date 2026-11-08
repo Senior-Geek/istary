@@ -21,25 +21,17 @@ html, body {
 
 main { max-width: 920px; margin: 0 auto; padding: 20px 16px 40px; }
 
-/* Party beside the roster when there is room (e.g. maximized or
-   fullscreen); otherwise stacked directly under the roster. */
-.layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  grid-template-areas: "roster" "party" "rest";
-  gap: 0 16px;
-}
-.area-roster { grid-area: roster; min-width: 0; }
-.area-party { grid-area: party; min-width: 0; }
-.area-rest { grid-area: rest; min-width: 0; }
-@media (min-width: 1240px) {
-  main { max-width: 1300px; }
-  .layout {
-    grid-template-columns: minmax(0, 1fr) 330px;
-    grid-template-areas: "roster party" "rest party";
-    align-items: start;
-  }
-}
+@media (min-width: 1240px) { main { max-width: 1300px; } }
+
+/* In town the page is one window-high shell: the banners, then the place's
+   frame, which keeps its head and the party bar in view and scrolls the
+   rest (LocationFrame). */
+main.shell { height: 100vh; display: flex; flex-direction: column; padding: 12px 16px; }
+main.shell .banners { flex: none; margin-bottom: 8px; }
+main.shell .banners:empty { display: none; }
+main.shell .banners .banner:first-child { margin-top: 0; }
+main.shell .banners .banner + .banner { margin-top: 6px; }
+main.shell .place { flex: 1 1 auto; min-height: 0; }
 td.partycell { white-space: nowrap; }
 td.partycell .inparty { color: var(--accent); font-weight: 600; }
 td.partycell .refusal { font-size: 11px; }
