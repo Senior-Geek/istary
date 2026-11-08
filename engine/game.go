@@ -47,6 +47,9 @@ type GameState struct {
 	Title     *TitleState   // title screen state (nil after title dismissed)
 	Util      *UtilState    // utilities state (nil when not in utilities)
 	Version   string        // display version (e.g. "1.0")
+
+	shopStock []int // Boltac's stock in this game, by item index (stock.go)
+
 	BuildDate string        // build date in DD-MMM-YY format (e.g. "15-APR-26")
 
 	// Dungeon position — Pascal coords: (0,0) facing North, X=East, Y=North
@@ -154,6 +157,7 @@ func New(scenario *data.Scenario) *GameState {
 		PlayerX:   0,
 		PlayerY:   0,
 		Facing:    North, // Pascal: DIRECTIO=0=NORTH
+		shopStock: initialStock(scenario.Items),
 	}
 }
 
