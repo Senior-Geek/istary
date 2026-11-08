@@ -633,3 +633,28 @@ func TestPracticeWritesNoExpedition(t *testing.T) {
 		t.Fatal("practice changed the save")
 	}
 }
+
+// "Try resuming again" works from anywhere in town while an expedition
+// cannot be resumed, and resumes it once it can; it is refused otherwise.
+func TestTryResumeAgain(t *testing.T) {
+	dir := outAndRestarted(t)
+	path := filepath.Join(dir, "roster1.json")
+	good, _ := os.ReadFile(path)
+	editSave(t, dir, func(st map[string]any) {
+		st["roster"] = st["roster"].([]any)[1:] // AGUI, the first member, is gone
+	})
+	s := NewSession(dir)
+	defer s.shutdown()
+	walkTo(t, s, "tavern")
+	if v := s.TryResumeAgain(); v.Error != "" || v.Recovery == "" || v.Location != "castle" {
+		t.Fatalf("still unresumable: %q, recovery %q at %q", v.Error, v.Recovery, v.Location)
+	}
+	os.WriteFile(path, good, 0o644) // the member is back
+	walkTo(t, s, "edge")
+	if v := s.TryResumeAgain(); v.Error != "" || v.Recovery != "" || !v.Real || v.Screen != "dungeon" {
+		t.Fatalf("resumable again: %q, recovery %q, real %v, screen %q", v.Error, v.Recovery, v.Real, v.Screen)
+	}
+	if v := s.TryResumeAgain(); v.Error == "" || !v.Real {
+		t.Fatalf("with nothing to resume: %q", v.Error)
+	}
+}

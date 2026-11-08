@@ -168,6 +168,8 @@ func (s *Session) exits() []ExitView {
 		case engine.Inn, engine.Trading, engine.Temple:
 			if v.Open {
 				v.Open, v.Reason = false, notInWindow(full)
+			} else {
+				v.Reason += " " + notInWindow(full) // and the game's own answer first
 			}
 		}
 		out = append(out, v)

@@ -115,3 +115,21 @@ test('no artwork yet: every place shows its themed panel and emblem', () => {
   assert.equal(sceneFor('nowhere'), fallback)
   assert.equal(sceneFor(undefined), fallback)
 })
+
+test('the Inn, Boltac’s and the Temple are always closed, and say why', () => {
+  for (const v of views.filter((v) => v.location === 'castle')) {
+    for (const dest of ['inn', 'trading', 'temple']) {
+      const d = destinations(v).find((x) => x.dest === dest)
+      assert.equal(d.open, false, `${v.case}: ${dest}`)
+      assert.match(d.reason, /not open in Istary's window/, `${v.case}: ${dest}`)
+    }
+  }
+  assert.match(destinations(at('castle, no party')).find((x) => x.dest === 'inn').reason, /^YOU HAVE NO PARTY!/)
+})
+
+test('the Edge of Town’s departures carry Go’s reasons', () => {
+  assert.match(at('castle, no party').departures.real, /Form a party/)
+  assert.match(at('castle, no party').departures.practice, /Form a party/)
+  assert.deepEqual(at('edge').departures, { real: '', practice: '' })
+  assert.ok(at('real expedition').departures.real, 'a second expedition while one is out')
+})

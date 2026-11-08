@@ -855,6 +855,20 @@ export namespace main {
 		    return a;
 		}
 	}
+	export class DeparturesView {
+	    real: string;
+	    practice: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new DeparturesView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.real = source["real"];
+	        this.practice = source["practice"];
+	    }
+	}
 	export class ExitView {
 	    dest: string;
 	    open: boolean;
@@ -986,6 +1000,7 @@ export namespace main {
 	    exits: ExitView[];
 	    partyBar: PartyBarSlot[];
 	    settings: SettingsView;
+	    departures: DeparturesView;
 	    party: PartySlotView[];
 	    partyAlignment: string;
 	    partyMax: number;
@@ -1025,6 +1040,7 @@ export namespace main {
 	        this.exits = this.convertValues(source["exits"], ExitView);
 	        this.partyBar = this.convertValues(source["partyBar"], PartyBarSlot);
 	        this.settings = this.convertValues(source["settings"], SettingsView);
+	        this.departures = this.convertValues(source["departures"], DeparturesView);
 	        this.party = this.convertValues(source["party"], PartySlotView);
 	        this.partyAlignment = source["partyAlignment"];
 	        this.partyMax = source["partyMax"];

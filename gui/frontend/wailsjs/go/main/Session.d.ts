@@ -58,6 +58,8 @@ export function FinishStats():Promise<main.View>;
 
 export function JoinParty(arg1:number):Promise<main.View>;
 
+export function LeaveGame():Promise<main.View>;
+
 export function LeaveParty(arg1:number):Promise<main.View>;
 
 export function ListBackups():Promise<Array<main.BackupInfo>>;
@@ -95,3 +97,5 @@ export function State():Promise<main.View>;
 export function SubmitJoinPassword(arg1:string):Promise<main.View>;
 
 export function TryAgain():Promise<main.View>;
+
+export function TryResumeAgain():Promise<main.View>;

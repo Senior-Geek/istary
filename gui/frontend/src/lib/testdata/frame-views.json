@@ -12,17 +12,17 @@
    {
     "dest": "inn",
     "open": false,
-    "reason": "YOU HAVE NO PARTY!"
+    "reason": "YOU HAVE NO PARTY! The Adventurer's Inn is not open in Istary's window yet."
    },
    {
     "dest": "trading",
     "open": false,
-    "reason": "YOU HAVE NO PARTY!"
+    "reason": "YOU HAVE NO PARTY! Boltac's Trading Post is not open in Istary's window yet."
    },
    {
     "dest": "temple",
     "open": false,
-    "reason": "YOU HAVE NO PARTY!"
+    "reason": "YOU HAVE NO PARTY! The Temple of Cant is not open in Istary's window yet."
    },
    {
     "dest": "edge",
@@ -108,6 +108,10 @@
   "settings": {
    "partyVisible": true,
    "note": ""
+  },
+  "departures": {
+   "real": "Form a party in the Tavern first.",
+   "practice": "Form a party in the Tavern first."
   },
   "expedition": false,
   "real": false
@@ -222,6 +226,10 @@
    "partyVisible": true,
    "note": ""
   },
+  "departures": {
+   "real": "",
+   "practice": ""
+  },
   "expedition": false,
   "real": false
  },
@@ -314,6 +322,10 @@
   "settings": {
    "partyVisible": true,
    "note": ""
+  },
+  "departures": {
+   "real": "",
+   "practice": ""
   },
   "expedition": false,
   "real": false
@@ -418,6 +430,10 @@
    "partyVisible": true,
    "note": ""
   },
+  "departures": {
+   "real": "",
+   "practice": ""
+  },
   "expedition": false,
   "real": false
  },
@@ -511,6 +527,10 @@
    "partyVisible": true,
    "note": ""
   },
+  "departures": {
+   "real": "",
+   "practice": ""
+  },
   "expedition": false,
   "real": false
  },
@@ -603,6 +623,10 @@
   "settings": {
    "partyVisible": true,
    "note": ""
+  },
+  "departures": {
+   "real": "",
+   "practice": ""
   },
   "expedition": false,
   "real": false
@@ -717,6 +741,10 @@
    "partyVisible": false,
    "note": ""
   },
+  "departures": {
+   "real": "",
+   "practice": ""
+  },
   "expedition": false,
   "real": false
  },
@@ -809,6 +837,10 @@
   "settings": {
    "partyVisible": true,
    "note": ""
+  },
+  "departures": {
+   "real": "",
+   "practice": ""
   },
   "expedition": false,
   "real": false
@@ -903,6 +935,10 @@
    "partyVisible": true,
    "note": ""
   },
+  "departures": {
+   "real": "Form a party in the Tavern first.",
+   "practice": "Form a party in the Tavern first."
+  },
   "expedition": false,
   "real": false
  },
@@ -990,6 +1026,10 @@
    "partyVisible": true,
    "note": ""
   },
+  "departures": {
+   "real": "An encounter or expedition is already in progress.",
+   "practice": "An encounter or expedition is already in progress."
+  },
   "expedition": true,
   "real": false
  },
@@ -1076,6 +1116,10 @@
   "settings": {
    "partyVisible": true,
    "note": ""
+  },
+  "departures": {
+   "real": "An encounter or expedition is already in progress.",
+   "practice": "The party is out on an expedition. Return to the castle first."
   },
   "expedition": true,
   "real": true

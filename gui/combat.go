@@ -60,13 +60,10 @@ func cloneCharacter(ch *engine.Character) (*engine.Character, error) {
 // practiceGame returns a new, never-saved game in town whose party is a
 // copy of the current party.
 func (s *Session) practiceGame() (*engine.GameState, error) {
-	if s.real {
-		return nil, errExpeditionOut
+	if err := s.practiceRefusal(); err != nil {
+		return nil, err
 	}
 	g := s.ctrl.Game
-	if g.Phase != engine.PhaseTown || len(g.Town.Party.Members) == 0 {
-		return nil, errors.New("Form a party in the Tavern first.")
-	}
 	pg := engine.New(s.scenario)
 	pg.Title = nil
 	pg.Phase = engine.PhaseTown
@@ -78,6 +75,21 @@ func (s *Session) practiceGame() (*engine.GameState, error) {
 		pg.Town.Party.Members = append(pg.Town.Party.Members, cp)
 	}
 	return pg, nil
+}
+
+// practiceRefusal is why practice (an expedition or an encounter) cannot
+// start now, or nil. The Edge of Town shows it (View.Departures).
+func (s *Session) practiceRefusal() error {
+	g := s.ctrl.Game
+	switch {
+	case s.practice != nil:
+		return errPracticeRunning
+	case s.real:
+		return errExpeditionOut
+	case g.Phase != engine.PhaseTown || len(g.Town.Party.Members) == 0:
+		return errNoParty
+	}
+	return nil
 }
 
 // PracticeEncounter starts a practice encounter for the current party at the

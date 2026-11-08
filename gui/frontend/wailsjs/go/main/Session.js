@@ -114,6 +114,10 @@ export function JoinParty(arg1) {
   return window['go']['main']['Session']['JoinParty'](arg1);
 }
 
+export function LeaveGame() {
+  return window['go']['main']['Session']['LeaveGame']();
+}
+
 export function LeaveParty(arg1) {
   return window['go']['main']['Session']['LeaveParty'](arg1);
 }
@@ -188,4 +192,8 @@ export function SubmitJoinPassword(arg1) {
 
 export function TryAgain() {
   return window['go']['main']['Session']['TryAgain']();
+}
+
+export function TryResumeAgain() {
+  return window['go']['main']['Session']['TryResumeAgain']();
 }

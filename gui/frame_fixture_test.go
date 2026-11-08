@@ -21,12 +21,13 @@ type frameView struct {
 	PartyBar   []PartyBarSlot `json:"partyBar"`
 	FrontRow   int            `json:"frontRow"`
 	Settings   SettingsView   `json:"settings"`
+	Departures DeparturesView `json:"departures"`
 	Expedition bool           `json:"expedition"`
 	Real       bool           `json:"real"`
 }
 
 func frameOf(name string, v View) frameView {
-	return frameView{name, v.Screen, v.Location, v.Exits, v.PartyBar, v.FrontRow, v.Settings, v.Expedition, v.Real}
+	return frameView{name, v.Screen, v.Location, v.Exits, v.PartyBar, v.FrontRow, v.Settings, v.Departures, v.Expedition, v.Real}
 }
 
 // TestFrameViewFixture records the frame's part of real views, at every

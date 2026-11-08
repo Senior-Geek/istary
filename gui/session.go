@@ -53,6 +53,10 @@ type Session struct {
 	// which the window opens at the Edge of Town; it is not part of the game.
 	settings bool
 
+	// quit closes the window (Wails's Quit), for LeaveGame (edge.go); nil
+	// until the window starts, and in tests.
+	quit func()
+
 	// prefs are the window's own settings (settings.go); prefsNote says
 	// when they could not be read or saved.
 	prefs     Settings

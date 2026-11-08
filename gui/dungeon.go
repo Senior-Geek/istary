@@ -58,16 +58,10 @@ func (s *Session) PracticeExpedition() View {
 // and saves.
 func (s *Session) RealExpedition() View {
 	return s.combatDo(func() error {
-		if s.real || s.practice != nil {
-			return errPracticeRunning
-		}
-		if s.ctrl.Game.Expedition != nil || s.ctrl.Game.OtherExpedition != nil {
-			return errExpeditionSaved
+		if err := s.realRefusal(); err != nil {
+			return err
 		}
 		c := s.ctrl
-		if c.Game.Phase != engine.PhaseTown || len(c.Game.Town.Party.Members) == 0 {
-			return errors.New("Form a party in the Tavern first.")
-		}
 		if err := s.at(engine.EdgeOfTown); err != nil {
 			return err
 		}
@@ -78,6 +72,25 @@ func (s *Session) RealExpedition() View {
 		return nil
 	})
 }
+
+// realRefusal is why a real expedition cannot set out now, or nil. The
+// Edge of Town shows it (View.Departures) on the button.
+func (s *Session) realRefusal() error {
+	g := s.ctrl.Game
+	switch {
+	case s.real || s.practice != nil:
+		return errPracticeRunning
+	case g.Expedition != nil || g.OtherExpedition != nil:
+		return errExpeditionSaved
+	case g.Phase != engine.PhaseTown || len(g.Town.Party.Members) == 0:
+		return errNoParty
+	}
+	return nil
+}
+
+// errNoParty refuses setting out with no party (the original's Edge of
+// Town offers M)AZE only to a party).
+var errNoParty = errors.New("Form a party in the Tavern first.")
 
 // errExpeditionSaved refuses starting an expedition while another one is
 // saved and not resumed: starting would replace it.
@@ -157,6 +170,26 @@ func (s *Session) ReturnExpeditionToCastle() View {
 		s.notice = "The expedition's party is back in the castle (the save before this was backed up as " + filepath.Base(backup) + ")."
 		return nil
 	})
+}
+
+// TryResumeAgain reads the save again to resume an expedition that could
+// not be resumed (View.Recovery), from anywhere in town, as starting Istary
+// again would: the expedition resumes if it now can, otherwise the problem
+// is shown again; either way the player starts over at the Castle.
+func (s *Session) TryResumeAgain() View {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.startErr != nil {
+		return s.view(nil)
+	}
+	s.notice = ""
+	switch {
+	case s.problem == "":
+		return s.view(errors.New("There is no saved expedition waiting to be resumed."))
+	case s.ctrl.Game.Phase == engine.PhaseCreation:
+		return s.view(errCreating)
+	}
+	return s.view(s.reload())
 }
 
 // DungeonAction performs one of the dungeon view's actions (app.Act...).
