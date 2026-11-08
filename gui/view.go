@@ -62,6 +62,10 @@ type View struct {
 	Expedition bool             `json:"expedition"` // an expedition (practice or real) is under way (any screen)
 	Real       bool             `json:"real"`       // it is the real, saved expedition, not practice
 
+	// Shop (at Boltac's Trading Post, shop.go): the controller's ShopView
+	// and the last transaction; nil elsewhere.
+	Shop *ShopPanel `json:"shop"`
+
 	// Unsaved is the error of the last save that failed; it stays until a
 	// save succeeds. Everything since the last successful save exists only
 	// in memory until then.
@@ -314,6 +318,7 @@ func (s *Session) view(err error) View {
 	v.Return = s.returnView()
 	v.Settings = s.settingsView()
 	v.Departures = s.departures()
+	v.Shop = s.shopPanel()
 
 	g := s.ctrl.Game
 	for i, ch := range g.Town.Roster.Characters {

@@ -182,6 +182,10 @@ export function SetPassword(arg1, arg2) {
   return window['go']['main']['Session']['SetPassword'](arg1, arg2);
 }
 
+export function ShopAction(arg1) {
+  return window['go']['main']['Session']['ShopAction'](arg1);
+}
+
 export function StartCreation(arg1) {
   return window['go']['main']['Session']['StartCreation'](arg1);
 }

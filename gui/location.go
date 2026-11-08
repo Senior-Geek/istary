@@ -48,6 +48,8 @@ func notAt(loc engine.TownLocation) error {
 		return errors.New("Characters are created, renamed and deleted at the Training Grounds. Go there first.")
 	case engine.EdgeOfTown:
 		return errors.New("Expeditions and practice set out from the Edge of Town. Go there first.")
+	case engine.Trading:
+		return errors.New("Items are bought, sold, uncursed and identified at Boltac's Trading Post, in the Castle. Go there first.")
 	}
 	return fmt.Errorf("That is done at %v. Go there first.", loc)
 }

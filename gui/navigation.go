@@ -106,6 +106,8 @@ func (s *Session) navigate(dest string) error {
 	case dest == settingsPlace:
 		s.settings = true
 		return nil
+	case dest == "trading":
+		s.receipt = nil // a new visit
 	}
 	for _, p := range places {
 		if p.name == dest {

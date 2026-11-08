@@ -49,6 +49,10 @@ type Session struct {
 	// squares of an expedition (app.Controller.Checkpoint and Resume).
 	pristine *data.Scenario
 
+	// receipt is the transaction the last shop action completed (shop.go),
+	// shown at Boltac's until the next shop action or the next visit.
+	receipt *ShopReceipt
+
 	// settings is set while the player is in Settings (navigation.go),
 	// which the window opens at the Edge of Town; it is not part of the game.
 	settings bool
@@ -196,13 +200,17 @@ func (s *Session) do(action func() error) View {
 // reachable from the castle.
 var errExpeditionOut = errors.New("The party is out on an expedition. Return to the castle first.")
 
+// saveGame writes c's game; tests replace it to see how a failure is
+// reported.
+var saveGame = (*app.Controller).Save
+
 // save writes the saved game and remembers a failure until a save succeeds.
 // The action itself has already happened in memory and is never repeated:
 // the next successful save writes it with whatever follows. A save that
 // replaced the file but could not sync the folder is kept apart: it is
 // saved, perhaps not durably.
 func (s *Session) save() error {
-	err := s.ctrl.Save()
+	err := saveGame(s.ctrl)
 	var nd *engine.NotDurableError
 	switch {
 	case err == nil:

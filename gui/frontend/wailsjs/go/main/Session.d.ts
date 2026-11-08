@@ -92,6 +92,8 @@ export function SetPartyVisible(arg1:boolean):Promise<main.View>;
 
 export function SetPassword(arg1:string,arg2:string):Promise<main.View>;
 
+export function ShopAction(arg1:main.ShopRequest):Promise<main.View>;
+
 export function StartCreation(arg1:string):Promise<main.View>;
 
 export function State():Promise<main.View>;

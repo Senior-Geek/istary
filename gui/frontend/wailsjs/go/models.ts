@@ -575,6 +575,111 @@ export namespace app {
 		    return a;
 		}
 	}
+	
+	export class ShopOffer {
+	    item: number;
+	    name: string;
+	    price: number;
+	    stock: number;
+	    usable: boolean;
+	    refusal: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ShopOffer(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.item = source["item"];
+	        this.name = source["name"];
+	        this.price = source["price"];
+	        this.stock = source["stock"];
+	        this.usable = source["usable"];
+	        this.refusal = source["refusal"];
+	    }
+	}
+	export class ShopOwned {
+	    n: number;
+	    item: number;
+	    name: string;
+	    identified: boolean;
+	    equipped: boolean;
+	    cursed: boolean;
+	    price: number;
+	    sellRefusal: string;
+	    fee: number;
+	    uncurseRefusal: string;
+	    identifyRefusal: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ShopOwned(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.n = source["n"];
+	        this.item = source["item"];
+	        this.name = source["name"];
+	        this.identified = source["identified"];
+	        this.equipped = source["equipped"];
+	        this.cursed = source["cursed"];
+	        this.price = source["price"];
+	        this.sellRefusal = source["sellRefusal"];
+	        this.fee = source["fee"];
+	        this.uncurseRefusal = source["uncurseRefusal"];
+	        this.identifyRefusal = source["identifyRefusal"];
+	    }
+	}
+	export class ShopView {
+	    step: string;
+	    prompt: boolean;
+	    message: string;
+	    customer: number;
+	    name: string;
+	    class: string;
+	    gold: number;
+	    confirm: number;
+	    catalog: ShopOffer[];
+	    items: ShopOwned[];
+	    room: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new ShopView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.step = source["step"];
+	        this.prompt = source["prompt"];
+	        this.message = source["message"];
+	        this.customer = source["customer"];
+	        this.name = source["name"];
+	        this.class = source["class"];
+	        this.gold = source["gold"];
+	        this.confirm = source["confirm"];
+	        this.catalog = this.convertValues(source["catalog"], ShopOffer);
+	        this.items = this.convertValues(source["items"], ShopOwned);
+	        this.room = source["room"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 
 }
 
@@ -997,6 +1102,81 @@ export namespace main {
 	        this.note = source["note"];
 	    }
 	}
+	export class ShopReceipt {
+	    action: string;
+	    customer: string;
+	    item: string;
+	    gold: number;
+	    saved: boolean;
+	    durable: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new ShopReceipt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.action = source["action"];
+	        this.customer = source["customer"];
+	        this.item = source["item"];
+	        this.gold = source["gold"];
+	        this.saved = source["saved"];
+	        this.durable = source["durable"];
+	    }
+	}
+	export class ShopPanel {
+	    view: app.ShopView;
+	    last?: ShopReceipt;
+	
+	    static createFrom(source: any = {}) {
+	        return new ShopPanel(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.view = this.convertValues(source["view"], app.ShopView);
+	        this.last = this.convertValues(source["last"], ShopReceipt);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	
+	export class ShopRequest {
+	    action: string;
+	    slot: number;
+	    item: number;
+	    n: number;
+	    yes: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new ShopRequest(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.action = source["action"];
+	        this.slot = source["slot"];
+	        this.item = source["item"];
+	        this.n = source["n"];
+	        this.yes = source["yes"];
+	    }
+	}
 	
 	export class View {
 	    saveDir: string;
@@ -1029,6 +1209,7 @@ export namespace main {
 	    camp?: CampPanel;
 	    expedition: boolean;
 	    real: boolean;
+	    shop?: ShopPanel;
 	    unsaved: string;
 	    warning: string;
 	    recovery: string;
@@ -1070,6 +1251,7 @@ export namespace main {
 	        this.camp = this.convertValues(source["camp"], CampPanel);
 	        this.expedition = source["expedition"];
 	        this.real = source["real"];
+	        this.shop = this.convertValues(source["shop"], ShopPanel);
 	        this.unsaved = source["unsaved"];
 	        this.warning = source["warning"];
 	        this.recovery = source["recovery"];
