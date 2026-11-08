@@ -97,6 +97,30 @@ Eligibility for display: `Creation().ClassAvailability()`.
 | `InParty(town, ch)`, `PartySlot(town, ch)` | Membership from the party list. Never use `InMaze` for this: joining sets it, as does being out in the dungeon |
 | `MaxPartySize`, `FrontRowSize` | 6 members; the first 3 are the front row (only they can melee) |
 
+**Boltac's Trading Post** (`app/shop.go`, `app/shop_ops.go`, `app/shop_view.go`, M8-2).
+The terminal's shop moved here intact (the castle's B, the menus, the
+catalog pages, the PURCHASE WHICH ITEM prompt, RETURN); the terminal reaches
+it through `HandleKey` and keeps no shop code. An old-vs-new comparison
+(random parties, items, gold and stock; random keys; 650,000 key presses)
+found the whole game state identical after every key. Boltac's answers are
+decided once, in `buyQuote`, `sellQuote`, `uncurseQuote` and
+`identifyQuote`, which the keys act on and `ShopView` reports. Stock is the
+game's own (`GameState.Stock`, M8-1). Nothing here draws a random number.
+
+| Operation | Effect |
+|---|---|
+| `ShopEnter(slot)` | Choose the customer (WHO WILL ENTER) |
+| `ShopLeaveCustomer()`, `LeaveShop()` | Back to WHO WILL ENTER; out to the castle (RETURN steps) |
+| `Buy(item)` | P and the item's place: refused (`*Refusal`: last one, can't carry, can't afford) or bought; an item the customer's class cannot use is asked about first. Takes the item itself: the terminal's page and catalog cursor are left as they are, except that an unusable item becomes the cursor, as with the keys |
+| `ConfirmUnusable(yes)` | Answer UNUSABLE ITEM - CONFIRM BUY |
+| `Sell(n)`, `Uncurse(n)`, `ShopIdentify(n)` | S, U or I and the item's number; refusals as `*Refusal` |
+| `ShopView()` | Read-only: the step, Boltac's words, the customer (slot, name, class, gold, room), the item he asks about, the catalog (price, stock, usable, his answer now) and the customer's items (name as known, equipped, cursed, price or why not, fee or why not) |
+
+Tests: operations against the terminal's keys on a twin (random, 300
+seeds), Buy on the page shown exactly P and its place, `ShopView`'s answers
+against what the operations then do, leaving from every step, and the M8-0
+characterization (`cmd/istary/shop_test.go`, goldens unchanged).
+
 **Town navigation** (`app/navigation.go`, Castle-0). The terminal still reads
 the castle menu and the Edge of Town's T and C itself; these make the same
 changes, for front ends without keys. `cmd/istary/navigation_test.go` holds
@@ -105,8 +129,8 @@ checks that no other key on those menus moves anywhere.
 
 | Operation | Effect |
 |---|---|
-| `Exits() []Exit` | The ways out of the current town location in menu order: the castle (Tavern, Inn, Boltac's, Temple, Edge of Town), the Edge of Town (Training Grounds, castle), and back to the castle from the Training Grounds and the Tavern. `Exit.Refusal` is the game's answer if the move is refused now (`YOU HAVE NO PARTY!` for the Inn, Boltac's and the Temple) |
-| `GoTo(loc)` | Make one of those moves as its key does; a refusal is in `Town.Message` and returned as `*Refusal`. The Inn, Boltac's and the Temple are still the terminal's: `ErrLocationNotMigrated`, nothing changed |
+| `Exits() []Exit` | The ways out of the current town location in menu order: the castle (Tavern, Inn, Boltac's, Temple, Edge of Town), the Edge of Town (Training Grounds, castle), and back to the castle from the Training Grounds, the Tavern and Boltac's. `Exit.Refusal` is the game's answer if the move is refused now (`YOU HAVE NO PARTY!` for the Inn, Boltac's and the Temple) |
+| `GoTo(loc)` | Make one of those moves as its key does; a refusal is in `Town.Message` and returned as `*Refusal`. Boltac's is entered as by B; it is left for the castle as by RETURN at WHO WILL ENTER (`LeaveShop` from anywhere in it). The Inn and the Temple are still the terminal's: `ErrLocationNotMigrated`, nothing changed |
 | `EnterEdgeOfTown()` / `LeaveEdgeOfTown()` | Castle E; Edge of Town C |
 
 **Combat order entry** (`app/combat.go`, M5a). Orders are given to a
@@ -345,7 +369,7 @@ reveals it.
 ## Still terminal-only
 
 - Every other phase and prompt goes through `legacyDispatch`: title, castle
-  menu, inn, Boltac's, temple, the Edge of Town (except M),
+  menu (except B), inn, temple, the Edge of Town (except M),
   combat (whose order legality now comes from the controller, above), utilities,
   and the rest of the Training Grounds edit menu (inspect, class change,
   reroll, set password, Rite of Passage).
