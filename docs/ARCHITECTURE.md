@@ -408,14 +408,50 @@ the Castle (Player's Guide pp.22, 36, 38).
   before anything is changed or drawn. An open town prompt at the location
   is closed by the game's cancel steps, as before. Returning an
   unresumable expedition's party stays open on every town screen.
-- **Not reachable yet (C0-2 to C0-4):** the page has no navigation until
-  C0-3 and C0-4, and opens at the Castle, so the Tavern, Training Grounds,
-  expedition and Settings actions above answer "Go there first" on this
-  branch. A saved expedition still resumes and is played as before.
+- **Reachable by walking (C0-3):** the frame below walks between places;
+  until C0-4 each place shows the earlier all-in-one content, whose
+  buttons answer "Go there first" away from their place.
 - **Tests:** `TestActionsOnlyAtTheirLocations` tries every such action at
   every location (refused elsewhere with the view, the saved roster and
   the random numbers unchanged); the bridge tests walk explicitly with
   `walkTo` before each action.
+
+**The location frame (Castle-0 C0-3).** Every town place is drawn in one
+frame (`LocationFrame.svelte`), in grid areas that never overlap:
+- **head:** the place's title, Back (the open way to the Castle, or Go's
+  reason it is closed) and the Show/Hide party toggle;
+- **scene:** the place's artwork (`LocationScene.svelte`, `lib/scenes.js`):
+  a picture cropped around its focus, or, while there is none (all places
+  for now) or it fails to load, a themed panel with the place's emblem;
+- **nav:** the other destinations from `View.Exits` (closed ones with Go's
+  reason written out), then the place's actions;
+- **content:** anything wider, below both;
+- **party:** `PartyBar.svelte`, from `View.PartyBar` only (the practice
+  copies during practice): front and back rows, empty positions, class,
+  level, HP and condition. It stays in view at the bottom; a member of the
+  saved roster opens the existing character sheet, which offers Rename and
+  Delete at the Training Grounds and Join/Leave at the Tavern only.
+- **Sizes:** the artwork beside the destinations from 700px wide (16:9, at
+  most 46% of the height, 36% in short windows); stacked below 700px with
+  the artwork as a 21:9 banner. Checked live at 760x532 (the minimum
+  window), 980x692 and full screen (1512x945, 1920x1080): no overlap, no
+  sideways scrolling, every destination and the party bar in view.
+- **Later:** a graphical maze can draw into the scene area (the `scene`
+  snippet) and an automap into an `aside` beside the nav, without changing
+  how places are reached. The maze, Camp and combat screens are not in the
+  frame yet.
+- **Settings file:** `Session.SetPartyVisible` keeps the toggle in
+  `gui-settings.json` in the save folder (`gui/settings.go`), written with
+  `engine.WriteFileAtomic`, never in the roster file, a checkpoint or a
+  backup. It is accepted anywhere and changes nothing of the game. A
+  missing file is the defaults; a damaged or newer one is left as it is,
+  the defaults are used with a note (`View.Settings.Note`), and the next
+  change replaces it.
+- **Until C0-4** every place shows the earlier all-in-one town content
+  inside the frame.
+- **Tests:** `gui/settings_test.go` (kept across restarts, accepted out on
+  an expedition, damaged and unwritable files, roster management leaves it
+  alone); `frameViews.test.js` over `frame-views.json` recorded from Go.
 
 **GUI combat (M7a).** `gui/combat.go` is the combat bridge.
 - **What the frontend gets:** while an encounter runs, `View.Screen` is

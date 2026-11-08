@@ -6,17 +6,15 @@ dungeon (M6a): real expeditions (M6b-1), practice expeditions and practice
 encounters played through `app.Controller`, `app.DungeonView` and
 `app.CombatView`.
 
-> **Development branch (Castle-0, from C0-2 until C0-4):** most of this
-> window cannot be reached yet. Each action is now accepted only at its own
-> town location: joining and leaving the party at the Tavern; creating,
-> renaming and deleting characters at the Training Grounds; real and
-> practice expeditions at the Edge of Town; reload, reset and restore in
-> Settings. The page cannot walk there yet (`Session.Navigate` has no page
-> until C0-3 and C0-4), and nothing moves the player for it. The window
-> opens at the Castle, so those buttons answer "Go there first". What
-> still works: looking at the roster and the character sheets, returning
-> the party of an unresumable expedition, and a saved expedition, which
-> resumes in the maze on start and is played to its end as before.
+> **Development branch (Castle-0, until C0-4):** each action is accepted
+> only at its own town location: joining and leaving the party at the
+> Tavern; creating, renaming and deleting characters at the Training
+> Grounds; real and practice expeditions at the Edge of Town; reload, reset
+> and restore in Settings. Since C0-3 the window shows where the player is
+> and walks there (Back and the destinations at the top of each place),
+> but every place still shows the earlier all-in-one town content, so a
+> button used at the wrong place answers "Go there first". C0-4 gives each
+> place its own screen. Nothing moves the player for an action.
 
 **Real expeditions.** "Real expedition" in the Party column takes the party
 itself into the maze, to Camp at the entrance. It plays like a practice
@@ -61,6 +59,10 @@ only renders `View` (see `view.go`) and calls `Session` methods
 (`session.go`); it holds no game state or rules of its own.
 
 ## Saves
+
+The window's own preferences (whether the party bar is shown) are kept in
+`gui-settings.json` beside the roster, never in it. A damaged file is left
+alone and the defaults are used until a setting is changed.
 
 The GUI never uses the terminal game's `~/.config/wizardry`. It saves to
 `~/Library/Application Support/Istary/dev-saves`, or to `$ISTARY_SAVE_DIR`
