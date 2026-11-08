@@ -7,8 +7,9 @@ encounters played through `app.Controller`, `app.DungeonView` and
 `app.CombatView`.
 
 **Getting around (Castle-0).** The window opens at the Castle, the hub, as
-the original does. Each place has its own screen: its name and Back to the
-Castle at the top, its destinations ("Go to") and its actions apart, its
+the original does. Each place has its own screen: its name and "← Castle"
+at the top (or press Esc; it abandons only what is unfinished, such as a
+character being created), its destinations ("Go to") and its actions apart, its
 picture (a themed panel until artwork exists), and the party bar at the
 bottom, shown or hidden with Hide party.
 - **The Castle:** Gilgamesh's Tavern, the Edge of Town; the Adventurer's

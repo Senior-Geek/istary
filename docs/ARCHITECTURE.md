@@ -418,8 +418,8 @@ the Castle (Player's Guide pp.22, 36, 38).
 
 **The location frame (Castle-0 C0-3).** Every town place is drawn in one
 frame (`LocationFrame.svelte`), in grid areas that never overlap:
-- **head:** the place's title, Back (the open way to the Castle, or Go's
-  reason it is closed) and the Show/Hide party toggle;
+- **head:** the place's title, "← Castle" (`ReturnToCastle`, also
+  Escape; since C0-6) and the Show/Hide party toggle;
 - **scene:** the place's artwork (`LocationScene.svelte`, `lib/scenes.js`):
   a picture cropped around its focus, or, while there is none (all places
   for now) or it fails to load, a themed panel with the place's emblem;
@@ -427,8 +427,10 @@ frame (`LocationFrame.svelte`), in grid areas that never overlap:
   reason written out), then the place's actions;
 - **content:** anything wider, below both;
 - **party:** `PartyBar.svelte`, from `View.PartyBar` only (the practice
-  copies during practice): front and back rows, empty positions, class,
-  level, HP and condition. It stays in view at the bottom; a member of the
+  copies during practice): three across, the front row (1-3) above the
+  back row (4-6), empty positions included, two lines a card (name, class
+  and row; level, HP, AC and condition) with the HP as a thin bar (C0-6).
+  It stays in view at the bottom; a member of the
   saved roster opens the existing character sheet, which offers Rename and
   Delete at the Training Grounds and Join/Leave at the Tavern only.
 - **Sizes:** the artwork beside the destinations from 700px wide (16:9, at
@@ -503,6 +505,34 @@ shows no bar. `View.PartyBar` carries AC as well.
 - **Tests:** `gui/settings_test.go` (kept across restarts, accepted out on
   an expedition, damaged and unwritable files, roster management leaves it
   alone); `frameViews.test.js` over `frame-views.json` recorded from Go.
+
+**Polish (Castle-0 C0-6).**
+- **"← Castle" and Escape** (`Session.ReturnToCastle`, `View.Return`):
+  from any town place, back to the Castle, abandoning what is unfinished
+  there by the game's own steps: a character being created is discarded
+  (`app.Controller.AbandonCreation`, at any step, as Cancel and Discard
+  do), a join waiting for its password or another open prompt is
+  cancelled, Settings is left. Nothing already done is undone; the note
+  under the button says what returning abandons. At the Castle nothing
+  happens; during an expedition or practice it is refused and changes
+  nothing; with an unresumable expedition it works and leaves the
+  expedition alone. It writes nothing and draws no random number. An open
+  character sheet takes Escape first; the maze, Camp and combat keep their
+  own keys.
+- **Shaded controls** (tokens in `style.css`): buttons are shaded, not
+  outlined: lighter on hover, darker when pressed, olive for the main
+  action, muted red for Reset, Delete and Restore, flat and dim when
+  disabled, a gold outline for keyboard focus, gold shading for what is
+  selected (party members, roster rows).
+- **The compact party bar** (above).
+- **Tests:** `TestAbandonCreationAtEveryStep`; `TestReturnToCastle` (every
+  place, creation at several steps, a pending join, the earlier join
+  kept, the Castle unchanged), `...RefusedOutOfTown`,
+  `...LeavesRecoveryAlone`. Checked live at 760x532 and 980x692: Escape at
+  the Castle, from every place, while creating, with a join pending, with
+  the sheet open, from Settings' reset confirmation, in Camp and in combat;
+  the bar three across with no name cut short; selecting and reordering by
+  the bar; the shades, hover and keyboard focus.
 
 **GUI combat (M7a).** `gui/combat.go` is the combat bridge.
 - **What the frontend gets:** while an encounter runs, `View.Screen` is
