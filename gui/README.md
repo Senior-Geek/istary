@@ -12,9 +12,12 @@ at the top (or press Esc; it abandons only what is unfinished, such as a
 character being created), its destinations ("Go to") and its actions apart, its
 picture (a themed panel until artwork exists), and the party bar at the
 bottom, shown or hidden with Hide party.
-- **The Castle:** Gilgamesh's Tavern, the Edge of Town; the Adventurer's
-  Inn, Boltac's Trading Post and the Temple of Cant are shown closed (not
-  in the window yet).
+- **The Castle:** Gilgamesh's Tavern, Boltac's Trading Post (for a party),
+  the Edge of Town; the Adventurer's Inn and the Temple of Cant are shown
+  closed (not in the window yet).
+- **Boltac's Trading Post (M8-3):** reachable, but its own screen comes in
+  M8-4; until then it shows the place's frame only. Its Go bridge is in
+  place: `Session.ShopAction` and `View.Shop` (docs/ARCHITECTURE.md).
 - **Gilgamesh's Tavern:** form the party: Join, Remove, and the password.
 - **The Edge of Town:** Enter the maze; practice (Istary only); Leave the
   game; the way to the Training Grounds and to Settings.

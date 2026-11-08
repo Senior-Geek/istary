@@ -408,8 +408,8 @@ the Edge of Town; the Training Grounds, the Tavern and Settings lead back to
 the Castle (Player's Guide pp.22, 36, 38).
 - **View:** `Location` (a town location, `settings`, or `maze` while an
   expedition or practice is under way), `Exits` (`{dest, open, reason}`;
-  the Inn, Boltac's and the Temple are closed with the game's refusal or
-  "not open in Istary's window yet"), and `PartyBar`: the six positions of
+  the Inn and the Temple are closed with the game's refusal or "not open
+  in Istary's window yet"; Boltac's is open for a party since M8-3), and `PartyBar`: the six positions of
   the party being played (the practice copies during practice), empty ones
   included, with level, HP, status and poison.
 - **Settings** is the window's own, not a game location: a session flag
@@ -439,6 +439,49 @@ the Castle (Player's Guide pp.22, 36, 38).
   every location (refused elsewhere with the view, the saved roster and
   the random numbers unchanged); the bridge tests walk explicitly with
   `walkTo` before each action.
+
+**Boltac's Trading Post in the window (M8-3).** `gui/shop.go` is the bridge
+to the controller's Boltac's operations (M8-2); the screen is M8-4.
+- **Going there and back:** the Castle's Boltac's exit is open for a party
+  (the castle's `YOU HAVE NO PARTY!` without one). Its one exit, "← Castle"
+  and Escape leave it with `LeaveShop` from any step, as RETURN does: the
+  purchase prompt closes, a question about an unusable item is answered no
+  (`View.Return.Note` says so), the customer leaves. Never saved, no RNG.
+- **View:** `View.Shop` (nil elsewhere) is `{view, last}`: `view` is
+  `app.ShopView` unchanged (step, Boltac's words, the customer, the room
+  left, the catalog with price, stock, usability and Boltac's answer now,
+  the customer's items with sale price, fee and each refusal); `last` is the
+  receipt of the transaction the last shop action completed (action,
+  customer, item, gold change, `saved`, `durable`), until the next shop
+  action or visit.
+- **Actions:** `ShopAction(ShopRequest{action, slot, item, n, yes})` with
+  `enter` (slot), `leave-customer`, `buy` (item: a catalog offer's item),
+  `confirm` (yes), `sell`, `uncurse`, `identify` (n: the item's number). Each
+  is the controller's operation; out-of-turn requests (buying with nobody at
+  the counter, anything but an answer while Boltac asks) are refused first in
+  words. Refused away from Boltac's, during practice and expeditions, and
+  during creation, with nothing changed.
+- **Saving:** a completed transaction, any change to a character, is saved
+  at once, in one atomic write of the roster (gold and item together).
+  Choosing the customer, a refusal, Boltac's question and an answer of no
+  write nothing; neither does looking. Stock is not saved (finding #12).
+- **A failed save** keeps the transaction in the window (as every action):
+  `Error` "Could not save: ...", `Unsaved` until a save succeeds, the
+  receipt's `saved` false and a notice that says it is NOT saved; a restart
+  meanwhile finds the last save. A save that could not sync the folder is
+  saved but not durable (`durable` false, `Warning`). The next transaction
+  saves everything. `saveGame` (session.go) is the tests' seam for a sync
+  failure.
+- **Tests:** `gui/shop_test.go`: each transaction and refusal (funds, room,
+  cursed, identified, not cursed, no such item or offer), the unusable-item
+  question both ways, stock down and up, switching customers, the receipt's
+  lifetime, refusals at every other place and out of town, the failed and
+  the non-durable save, restart and reload (exactly what the window had,
+  once; the save's keys unchanged; stock from the scenario again), and 40
+  seeds of random requests against a twin game driven by the same
+  controller operations (equal after every request; a write exactly when a
+  character changed; the save then equal to the game). The return from every
+  step is `TestReturnFromEveryStepOfBoltacs`. None draws a random number.
 
 **The location frame (Castle-0 C0-3).** Every town place is drawn in one
 frame (`LocationFrame.svelte`), in grid areas that never overlap:
