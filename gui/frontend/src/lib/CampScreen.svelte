@@ -236,7 +236,7 @@
   .work { display: grid; gap: 8px; align-content: start; justify-items: start; }
   .work .dumapic { justify-self: stretch; }
   .why { margin: 2px 0; font-size: 12px; color: var(--muted); }
-  button.on { border-color: var(--accent); }
+  button.on:not(:disabled) { background: var(--selected); }
   .small { font-size: 12px; }
   .book th { text-align: left; padding-right: 10px; color: var(--muted); font-weight: 500; white-space: nowrap; }
   .book .castable { color: var(--accent); font-weight: 600; }

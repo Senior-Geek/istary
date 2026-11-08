@@ -316,7 +316,8 @@
   .tokens i { width: 12px; height: 16px; border-radius: 6px 6px 3px 3px; background: #6b7a4e; display: block; }
   .group.actor { border-color: #f2c14e; box-shadow: 0 0 0 1px #f2c14e, 0 0 12px rgba(242, 193, 78, 0.45); }
   .group.target { border-color: #fff; box-shadow: 0 0 0 1px #fff; }
-  .group.pick { border-style: dashed; border-color: var(--accent); cursor: pointer; }
+  .group.pick { border-style: dashed; border-color: var(--accent); background: var(--pick); cursor: pointer; }
+  .group.pick:hover { background: var(--pick-hover); }
   .messages { margin-top: 14px; min-height: 64px; font-family: ui-monospace, Menlo, monospace; text-align: center; }
   .messages p { margin: 2px 0; }
   .commands { display: grid; gap: 8px; }
@@ -342,7 +343,8 @@
   .card.selected { border-color: #f2c14e; box-shadow: 0 0 0 1px #f2c14e; }
   .card.actor { border-color: #f2c14e; box-shadow: 0 0 0 1px #f2c14e, 0 0 12px rgba(242, 193, 78, 0.45); }
   .card.target { border-color: #fff; box-shadow: 0 0 0 1px #fff; }
-  .card.pick { border-style: dashed; border-color: var(--accent); cursor: pointer; }
+  .card.pick { border-style: dashed; border-color: var(--accent); background: var(--pick); cursor: pointer; }
+  .card.pick:hover { background: var(--pick-hover); }
   /* Conditions: dead members stay, translucent; paralysis is distinct. */
   .card.dead { opacity: 0.5; border-style: dashed; }
   .card.dead .status { color: #ddd; }

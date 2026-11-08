@@ -43,7 +43,7 @@
 <LocationFrame {view} {busy} {call} {onopen}>
   {#snippet actions()}
     <button class="wide" disabled={busy} onclick={() => call(S.ReloadRoster)}>Reload from disk</button>
-    <button class="wide" disabled={busy} onclick={() => { resetting = true; backups = null }}>Reset roster…</button>
+    <button class="wide danger" disabled={busy} onclick={() => { resetting = true; backups = null }}>Reset roster…</button>
     <button class="wide" disabled={busy} onclick={openRestore}>Restore roster…</button>
   {/snippet}
 

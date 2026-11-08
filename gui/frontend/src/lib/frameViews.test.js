@@ -40,20 +40,16 @@ test('Back is the open way to the Castle from everywhere in town, and nowhere el
       continue
     }
     assert.equal(b.dest, 'castle', v.case)
-    assert.equal(b.label, title('castle'))
-    assert.deepEqual({ dest: b.dest, open: b.open, reason: b.reason }, v.exits.find((e) => e.dest === 'castle'))
+    assert.equal(b.label, 'Castle')
+    assert.equal(b.open, true, v.case)
   }
 })
 
 test('the destinations are the other exits, in Go’s order, closed ones with Go’s reason', () => {
   for (const v of views) {
     const d = destinations(v)
-    const b = back(v)
-    assert.deepEqual(
-      [...(b ? [b.dest] : []), ...d.map((x) => x.dest)].sort(),
-      (v.exits ?? []).map((e) => e.dest).sort(),
-      v.case,
-    )
+    const home = v.exits?.some((e) => e.dest === 'castle') && v.location !== 'castle' ? ['castle'] : []
+    assert.deepEqual([...home, ...d.map((x) => x.dest)].sort(), (v.exits ?? []).map((e) => e.dest).sort(), v.case)
     for (const x of d) {
       const e = v.exits.find((e) => e.dest === x.dest)
       assert.equal(x.open, e.open)
@@ -67,10 +63,11 @@ test('the destinations are the other exits, in Go’s order, closed ones with Go
   assert.match(destinations(at('castle')).find((x) => x.dest === 'inn').reason, /not open/)
 })
 
-test('while a character is being created, Back is shown closed with Go’s reason', () => {
+test('while a character is being created, Back says it discards the character', () => {
   const b = back(at('creating'))
-  assert.equal(b.open, false)
-  assert.match(b.reason, /character being created/)
+  assert.equal(b.open, true)
+  assert.match(b.note, /discards the character being created/)
+  assert.equal(back(at('training')).note, '')
 })
 
 test('the party bar shows six positions, the front three and the back three, empty ones included', () => {

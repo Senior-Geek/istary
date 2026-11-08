@@ -42,11 +42,12 @@
   <header class="head">
     <h2 class="title">{here}</h2>
     {#if way}
-      <button class="back" disabled={busy || !way.open} onclick={() => go(way.dest)}>← {way.label}</button>
+      <button class="back" disabled={busy || !way.open} onclick={() => call(S.ReturnToCastle)}
+        title="Back to the Castle (Esc)">← {way.label} <kbd>Esc</kbd></button>
     {/if}
     <button class="toggle" aria-pressed={partyShown} disabled={busy}
       onclick={() => call(S.SetPartyVisible, !partyShown)}>{partyShown ? 'Hide party' : 'Show party'}</button>
-    {#if way && !way.open}<p class="why head-why">{way.reason}</p>{/if}
+    {#if way?.note}<p class="why head-why">{way.note}</p>{/if}
   </header>
 
   <div class="body">
@@ -61,7 +62,7 @@
         <ul>
           {#each ways as w (w.dest)}
             <li>
-              <button class:primary={w.open} disabled={busy || !w.open} onclick={() => go(w.dest)}>{w.label}</button>
+              <button disabled={busy || !w.open} onclick={() => go(w.dest)}>{w.label}</button>
               {#if !w.open}<span class="why">{w.reason}</span>{/if}
             </li>
           {/each}
@@ -102,6 +103,7 @@
   .head { grid-area: head; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
   .title { margin: 0 auto 0 0; font-size: 20px; color: var(--text); letter-spacing: 0.02em; }
   .head button { margin: 0; }
+  .back kbd { font: 600 10px ui-monospace, Menlo, monospace; opacity: 0.7; margin-left: 4px; }
   .head-why { flex-basis: 100%; margin: 0; text-align: right; }
   .body {
     grid-area: body; min-height: 0; overflow-y: auto; overflow-x: hidden;

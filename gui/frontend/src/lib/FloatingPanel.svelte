@@ -62,7 +62,10 @@
   }
 
   function onkeydown(e) {
-    if (e.key === 'Escape') onclose?.()
+    if (e.key === 'Escape') {
+      e.preventDefault() // the panel takes Escape; nothing behind it does
+      onclose?.()
+    }
   }
   function onresize() {
     geom = constrain(geom, viewport(), min)

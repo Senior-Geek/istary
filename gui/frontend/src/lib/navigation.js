@@ -21,16 +21,16 @@ export function title(location) {
   return places[location]?.title ?? location ?? ''
 }
 
-// back is the exit to the location's parent, as Go lists it ({ dest, open,
-// reason, label }), or null where there is none (the Castle, the maze).
+// back is the way back to the Castle (Go's view.return: { open, note }),
+// labelled, or null where there is none (at the Castle, out of town). It
+// abandons what is unfinished; note says what, if anything.
 export function back(view) {
-  const parent = places[view.location]?.parent
-  const exit = view.exits?.find((e) => e.dest === parent)
-  return exit ? { ...exit, label: title(parent) } : null
+  return view.return ? { ...view.return, dest: 'castle', label: 'Castle' } : null
 }
 
-// destinations are the other exits, in Go's order, labelled.
+// destinations are the exits other than the way back, in Go's order,
+// labelled.
 export function destinations(view) {
-  const b = back(view)
-  return (view.exits ?? []).filter((e) => e.dest !== b?.dest).map((e) => ({ ...e, label: title(e.dest) }))
+  const home = places[view.location]?.parent
+  return (view.exits ?? []).filter((e) => e.dest !== home).map((e) => ({ ...e, label: title(e.dest) }))
 }

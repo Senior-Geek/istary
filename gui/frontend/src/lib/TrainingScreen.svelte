@@ -79,7 +79,8 @@
 <LocationFrame {view} {busy} {call} {onopen}>
   {#snippet actions()}
     {#if creating}
-      <p class="note">Creating <b>{c?.name ?? 'a character'}</b>. Finish or discard it to leave the Training Grounds.</p>
+      <p class="note">Creating <b>{c?.name ?? 'a character'}</b>. Keep it at the last step; ← Castle (or Esc)
+        discards it.</p>
     {:else}
       <form class="create" onsubmit={(e) => { e.preventDefault(); call(S.StartCreation, newName) }}>
         <label for="newname">Create a character</label>

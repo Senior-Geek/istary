@@ -39,6 +39,16 @@
   const select = (index) => { selected = selected === index ? -1 : index }
   const open = (index) => { selected = index }
 
+  // Escape in town is "← Castle" (ReturnToCastle), as in the frame's head;
+  // an open character sheet takes Escape first. The maze, Camp and combat
+  // keep their own keys.
+  function onkey(e) {
+    if (e.key !== 'Escape' || e.defaultPrevented || busy || !view?.return?.open) return
+    if (view.screen === 'combat' || view.screen === 'dungeon' || (sel && view.screen === 'roster')) return
+    e.preventDefault()
+    call(S.ReturnToCastle)
+  }
+
   async function renameSelected(name) {
     await call(S.RenameCharacter, selected, name)
   }
@@ -48,6 +58,8 @@
     if (!view.error) selected = -1
   }
 </script>
+
+<svelte:window onkeydown={onkey} />
 
 <main class:shell>
   {#if view}
