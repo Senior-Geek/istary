@@ -87,6 +87,7 @@ func TestResetRosterBacksUpThenEmpties(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	walkTo(t, s, "settings")
 	v := s.ResetRoster()
 	if v.Error != "" || len(v.Roster) != 0 || !strings.Contains(v.Notice, "backed up to") {
 		t.Fatalf("reset: error=%q notice=%q roster=%d", v.Error, v.Notice, len(v.Roster))
@@ -121,6 +122,7 @@ func TestResetRosterBacksUpThenEmpties(t *testing.T) {
 
 	// A second reset in the same second gets its own file.
 	createMage(t, s, "gimli")
+	walkTo(t, s, "settings")
 	s.ResetRoster()
 	if n := len(backupFiles(t, dir)); n != 2 {
 		t.Errorf("after second reset: %d backups, want 2", n)
@@ -129,6 +131,7 @@ func TestResetRosterBacksUpThenEmpties(t *testing.T) {
 
 func TestResetRosterWithNoSaveYet(t *testing.T) {
 	s, dir := newTestSession(t)
+	walkTo(t, s, "settings")
 	v := s.ResetRoster()
 	if v.Error != "" || len(backupFiles(t, dir)) != 1 {
 		t.Errorf("reset on a fresh save folder: error=%q backups=%v", v.Error, backupFiles(t, dir))
@@ -154,6 +157,7 @@ func TestRosterManagementLeavesTerminalSavesAlone(t *testing.T) {
 	createMage(t, s, "sam")
 	s.DeleteCharacter("sam", "secret")
 	createMage(t, s, "rosie")
+	walkTo(t, s, "settings")
 	s.ResetRoster()
 	terminal := filepath.Join(os.Getenv("HOME"), ".config", "wizardry")
 	if _, err := os.Stat(terminal); !os.IsNotExist(err) {

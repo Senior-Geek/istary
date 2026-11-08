@@ -50,6 +50,42 @@ func reopened(t *testing.T, s *Session, dir string) *Session {
 	return r
 }
 
+// routes are the ways from the Castle to each town location.
+var routes = map[string][]string{
+	"castle":   nil,
+	"tavern":   {"tavern"},
+	"edge":     {"edge"},
+	"training": {"edge", "training"},
+	"settings": {"edge", "settings"},
+}
+
+// walkTo walks the player to place by Navigate, from wherever in town the
+// player is, by way of the Castle, as a player would: actions are accepted
+// only at their own location.
+func walkTo(t *testing.T, s *Session, place string) View {
+	t.Helper()
+	v := s.State()
+	if v.Location == place {
+		return v
+	}
+	route, ok := routes[place]
+	if !ok {
+		t.Fatalf("no way to %q", place)
+	}
+	if v.Location != "castle" {
+		route = append([]string{"castle"}, route...)
+	}
+	for _, step := range route {
+		if v = s.Navigate(step); v.Error != "" {
+			t.Fatalf("walking to %s, at %s: %q", place, step, v.Error)
+		}
+	}
+	if v.Location != place {
+		t.Fatalf("walked to %q, at %q", place, v.Location)
+	}
+	return v
+}
+
 func mustOK(t *testing.T, v View, wantScreen string) View {
 	t.Helper()
 	if v.Error != "" || v.Fatal != "" {
@@ -79,6 +115,7 @@ func spendAll(t *testing.T, s *Session, v View, order []int) View {
 // createMage runs the whole creation workflow through the bound methods.
 func createMage(t *testing.T, s *Session, name string) View {
 	t.Helper()
+	walkTo(t, s, "training")
 	v := mustOK(t, s.StartCreation(name), "confirmCreate")
 	if !strings.Contains(v.Message, "DOES NOT EXIST") {
 		t.Fatalf("confirm message = %q", v.Message)
@@ -149,6 +186,7 @@ func TestCreateSaveAndReload(t *testing.T) {
 		t.Errorf("spells after reload = %v", got)
 	}
 	// ReloadRoster in the same session matches a fresh session.
+	walkTo(t, s, "settings")
 	if v3 := s.ReloadRoster(); len(v3.Roster) != 1 || !reflect.DeepEqual(v3.Roster[0], v2.Roster[0]) {
 		t.Errorf("ReloadRoster = %+v", v3.Roster)
 	}
@@ -184,6 +222,7 @@ func TestRefusesTerminalSaveDirectory(t *testing.T) {
 
 func TestValidationMessages(t *testing.T) {
 	s, _ := newTestSession(t)
+	walkTo(t, s, "training")
 	if v := s.StartCreation("   "); v.Error != "Enter a character name." || v.Screen != "roster" {
 		t.Errorf("blank name: %q screen=%s", v.Error, v.Screen)
 	}
@@ -217,6 +256,7 @@ func TestValidationMessages(t *testing.T) {
 
 func TestDeclineAndBack(t *testing.T) {
 	s, _ := newTestSession(t)
+	walkTo(t, s, "training")
 	mustOK(t, s.StartCreation("merry"), "confirmCreate")
 	mustOK(t, s.AnswerCreate(false), "roster")
 
@@ -240,6 +280,7 @@ func TestDeclineAndBack(t *testing.T) {
 
 func TestClassGuideInView(t *testing.T) {
 	s, _ := newTestSession(t)
+	walkTo(t, s, "training")
 	mustOK(t, s.StartCreation("guide"), "confirmCreate")
 	mustOK(t, s.AnswerCreate(true), "creation")
 	mustOK(t, s.SetPassword("", ""), "creation")
@@ -304,6 +345,7 @@ func TestClassGuideInView(t *testing.T) {
 
 func TestClassGuideUnreachableByPoints(t *testing.T) {
 	s, _ := newTestSession(t)
+	walkTo(t, s, "training")
 	mustOK(t, s.StartCreation("lordling"), "confirmCreate")
 	mustOK(t, s.AnswerCreate(true), "creation")
 	mustOK(t, s.SetPassword("", ""), "creation")

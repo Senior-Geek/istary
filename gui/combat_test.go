@@ -21,6 +21,7 @@ import (
 
 // partySession returns a session whose party is six adventurers, joined
 // through the Tavern as the GUI does.
+// partySession is a session with a party of six, at the Edge of Town.
 func partySession(t *testing.T, weak bool) (*Session, string) {
 	return alignedPartySession(t, weak, engine.Neutral)
 }
@@ -49,11 +50,13 @@ func alignedPartySession(t *testing.T, weak bool, align engine.Alignment) (*Sess
 		chars = append(chars, ch)
 	}
 	rosterWith(t, s, chars...)
+	walkTo(t, s, "tavern")
 	for i := range chars {
 		if v := s.JoinParty(i); v.PendingJoin != "" {
 			s.SubmitJoinPassword("") // the Tavern asks even for no password
 		}
 	}
+	walkTo(t, s, "edge") // where the party sets out
 	if n := len(s.State().Party); n != 6 {
 		t.Fatalf("party of %d", n)
 	}
@@ -325,7 +328,7 @@ func TestPracticeJSONHidesEngineFacts(t *testing.T) {
 // encounter; abandoning discards it.
 func TestPracticeRefusals(t *testing.T) {
 	s, _ := newTestSession(t)
-	if v := s.PracticeEncounter(false); v.Error == "" || v.Screen == "combat" {
+	if v := s.PracticeEncounter(false); !strings.Contains(v.Error, "Form a party") || v.Screen == "combat" {
 		t.Fatalf("no party: %+v", v)
 	}
 	if v := s.CombatCommit(); v.Error != errNoPractice.Error() {

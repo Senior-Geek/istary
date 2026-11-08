@@ -89,6 +89,9 @@ func (s *Session) RestoreBackup(file string) View {
 		if c.Game.Phase != engine.PhaseTown {
 			return errors.New("Finish or discard the character being created first.")
 		}
+		if err := s.inSettingsNow(); err != nil {
+			return err
+		}
 		if file == "" || file != filepath.Base(file) || !strings.HasSuffix(file, ".json") {
 			return errors.New("Choose a backup from the list.")
 		}
@@ -113,6 +116,7 @@ func (s *Session) RestoreBackup(file string) View {
 		if err := s.reload(); err != nil {
 			return err
 		}
+		s.stayInSettings()
 		s.notice = fmt.Sprintf("Restored %s. The previous roster was backed up as %s.", file, filepath.Base(before))
 		if s.real {
 			s.notice += " The expedition saved in it resumes."

@@ -49,6 +49,7 @@ func TestSecondWindowIsRefused(t *testing.T) {
 	if v := second.TryAgain(); v.Fatal != "" || len(v.Roster) != 1 {
 		t.Fatalf("try again after the first closed: %q", v.Fatal)
 	}
+	walkTo(t, second, "training")
 	if v := second.RenameCharacter(0, "SARUMAN"); v.Error != "" {
 		t.Fatal(v.Error)
 	}

@@ -514,16 +514,18 @@ func TestUnresumableExpeditionIsKeptAndRecoverable(t *testing.T) {
 		t.Fatalf("recovery %q canReturn %v real %v screen %q", v.Recovery, v.CanReturn, v.Real, v.Screen)
 	}
 	for name, op := range map[string]func() View{
-		"new expedition": s.RealExpedition,
-		"reset":          s.ResetRoster,
+		"new expedition": func() View { walkTo(t, s, "edge"); return s.RealExpedition() },
+		"reset":          func() View { walkTo(t, s, "settings"); return s.ResetRoster() },
 	} {
 		if v := op(); !strings.Contains(v.Error, "already saved") {
 			t.Errorf("%s: %q", name, v.Error)
 		}
 	}
+	walkTo(t, s, "training")
 	if v := s.DeleteCharacter("BGUI", ""); !strings.Contains(v.Error, "OUT ON AN EXPEDITION") {
 		t.Errorf("deleting a member: %q", v.Error)
 	}
+	walkTo(t, s, "tavern")
 	if v := s.JoinParty(0); !strings.Contains(v.Error, "OUT") && v.PendingJoin != "" {
 		t.Errorf("a member joined the castle party: %+v", v.Party)
 	}

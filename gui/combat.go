@@ -93,6 +93,9 @@ func (s *Session) PracticeEncounter(withChest bool) View {
 		if err != nil {
 			return err
 		}
+		if err := s.at(engine.EdgeOfTown); err != nil {
+			return err
+		}
 		pg.MazeLevel, pg.PlayerX, pg.PlayerY, pg.Facing = 0, 0, 0, engine.North
 		for try := 0; try < 50; try++ {
 			pg.Combat = engine.NewCombat(pg)

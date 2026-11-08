@@ -175,6 +175,7 @@ func TestNavigationRefusedOutOfTown(t *testing.T) {
 		}
 	}
 
+	walkTo(t, s, "training")
 	mustOK(t, s.StartCreation("NEWCOMER"), "confirmCreate")
 	mustOK(t, s.AnswerCreate(true), "creation")
 	refused("creating", "training", errCreating.Error())
@@ -182,6 +183,7 @@ func TestNavigationRefusedOutOfTown(t *testing.T) {
 	mustOK(t, s.Back(), "creation")
 	mustOK(t, s.CancelCreation(), "roster")
 
+	walkTo(t, s, "edge")
 	s.PracticeExpedition()
 	refused("practice expedition", "maze", errPracticeOut.Error())
 	if v := s.State(); v.Exits != nil {
@@ -233,12 +235,14 @@ func TestNavigationLeavesAnUnresumableExpeditionAlone(t *testing.T) {
 func TestNavigationClosesAnOpenPrompt(t *testing.T) {
 	s, dir := newTestSession(t)
 	rosterWith(t, s, hero("GUARDED", engine.Good, "pw"))
+	walkTo(t, s, "tavern")
 	if v := s.JoinParty(0); v.PendingJoin != "GUARDED" || v.Location != "tavern" {
 		t.Fatalf("pending %q at %q", v.PendingJoin, v.Location)
 	}
 	if v := navigate(t, s, dir, "castle"); v.Error != "" || v.Location != "castle" || v.PendingJoin != "" || len(v.Party) != 0 {
 		t.Fatalf("leaving the Tavern: %q at %q, pending %q", v.Error, v.Location, v.PendingJoin)
 	}
+	walkTo(t, s, "training")
 	if v := mustOK(t, s.StartCreation("NEWCOMER"), "confirmCreate"); v.Location != "training" {
 		t.Fatalf("creating at %q", v.Location)
 	}
@@ -247,30 +251,31 @@ func TestNavigationClosesAnOpenPrompt(t *testing.T) {
 	}
 }
 
-// Settings is left by going back to the Castle; anything else that moves
-// the game (an action that goes to another location, a reload) leaves it
-// too.
-func TestSettingsIsLeftWithTheEdgeOfTown(t *testing.T) {
+// Settings is left only by going back to the Castle; reading the roster
+// again there (a reload) keeps the player in Settings. Coming back to the
+// Edge of Town later is the Edge of Town, not Settings.
+func TestSettingsIsLeftForTheCastle(t *testing.T) {
 	s, dir := newTestSession(t)
-	rosterWith(t, s, hero("WALKER", engine.Good, ""))
-	navigate(t, s, dir, "edge")
+	rosterWith(t, s, hero("WALKER", engine.Good, ""), hero("SPARE", engine.Good, ""))
+	join(t, s, 0, "")
+	walkTo(t, s, "edge")
 	if v := navigate(t, s, dir, "settings"); v.Location != "settings" || !slices.Equal(dests(v.Exits), []string{"castle"}) {
 		t.Fatalf("settings: at %q, exits %v", v.Location, dests(v.Exits))
 	}
-	if v := s.JoinParty(0); v.Location != "tavern" {
-		t.Fatalf("joining from Settings: at %q", v.Location)
+	if v := s.JoinParty(1); v.Error != notAt(engine.Tavern).Error() || v.Location != "settings" {
+		t.Fatalf("joining from Settings: %q at %q", v.Error, v.Location)
 	}
-	s.SubmitJoinPassword("")
+	for _, act := range []func() View{s.RealExpedition, s.PracticeExpedition} {
+		if v := act(); v.Error != notAt(engine.EdgeOfTown).Error() || v.Location != "settings" {
+			t.Fatalf("setting out from Settings: %q at %q", v.Error, v.Location)
+		}
+	}
+	if v := s.ReloadRoster(); v.Error != "" || v.Location != "settings" {
+		t.Fatalf("after a reload: %q at %q", v.Error, v.Location)
+	}
 	navigate(t, s, dir, "castle")
 	if v := navigate(t, s, dir, "edge"); v.Location != "edge" {
 		t.Fatalf("back at the Edge of Town: at %q", v.Location)
-	}
-	navigate(t, s, dir, "settings")
-	if v := s.ReloadRoster(); v.Location != "castle" {
-		t.Fatalf("after a reload: at %q", v.Location)
-	}
-	if v := navigate(t, s, dir, "edge"); v.Location != "edge" {
-		t.Fatalf("after a reload, the Edge of Town: at %q", v.Location)
 	}
 }
 
@@ -285,6 +290,7 @@ func TestPartyBarIsThePartyBeingPlayed(t *testing.T) {
 	join(t, s, 1, "")
 	join(t, s, 0, "")
 	lead.PoisonAmt = 2
+	walkTo(t, s, "edge")
 
 	v := s.State()
 	if len(v.PartyBar) != app.MaxPartySize {
@@ -328,6 +334,60 @@ func TestPartyBarIsThePartyBeingPlayed(t *testing.T) {
 			if p.Name != m.Name || p.Class != m.Class || p.HP != m.HP || p.MaxHP != m.MaxHP || p.Status != m.Status || p.Poisoned != m.Poisoned {
 				t.Fatalf("after %s: bar %+v, dungeon %+v", act, p, m)
 			}
+		}
+	}
+}
+
+// Every action that belongs to a location is accepted there and refused
+// everywhere else, with the reason, without changing the view, the saved
+// roster or the random numbers, and without moving the player.
+func TestActionsOnlyAtTheirLocations(t *testing.T) {
+	type action struct {
+		name, at string
+		do       func(s *Session) View
+	}
+	actions := []action{
+		{"join", "tavern", func(s *Session) View { return s.JoinParty(1) }},
+		{"leave party", "tavern", func(s *Session) View { return s.LeaveParty(0) }},
+		{"create", "training", func(s *Session) View { return s.StartCreation("NEWBIE") }},
+		{"rename", "training", func(s *Session) View { return s.RenameCharacter(1, "RENAMED") }},
+		{"delete", "training", func(s *Session) View { return s.DeleteCharacter("SPARE", "") }},
+		{"real expedition", "edge", func(s *Session) View { return s.RealExpedition() }},
+		{"practice expedition", "edge", func(s *Session) View { return s.PracticeExpedition() }},
+		{"practice encounter", "edge", func(s *Session) View { return s.PracticeEncounter(false) }},
+		{"reload", "settings", func(s *Session) View { return s.ReloadRoster() }},
+		{"reset roster", "settings", func(s *Session) View { return s.ResetRoster() }},
+		{"restore backup", "settings", func(s *Session) View { return s.RestoreBackup("none.json") }},
+	}
+	why := map[string]string{
+		"tavern":   notAt(engine.Tavern).Error(),
+		"training": notAt(engine.Training).Error(),
+		"edge":     notAt(engine.EdgeOfTown).Error(),
+		"settings": errNotInSettings.Error(),
+	}
+	for _, a := range actions {
+		for place := range routes {
+			s, dir := newTestSession(t)
+			rosterWith(t, s, hero("WALKER", engine.Good, ""), hero("SPARE", engine.Good, ""))
+			join(t, s, 0, "")
+			walkTo(t, s, place)
+			before, saved := s.State(), onDisk(t, dir)
+			rand.Seed(13)
+			v := a.do(s)
+			next := rand.Int63()
+			if place == a.at {
+				if v.Error == why[a.at] {
+					t.Errorf("%s at %s: refused", a.name, place)
+				}
+				s.shutdown()
+				continue
+			}
+			rand.Seed(13)
+			if v.Error != why[a.at] || !sameView(v, before) || next != rand.Int63() ||
+				!reflect.DeepEqual(onDisk(t, dir), saved) {
+				t.Errorf("%s at %s: not refused cleanly: %q", a.name, place, v.Error)
+			}
+			s.shutdown()
 		}
 	}
 }

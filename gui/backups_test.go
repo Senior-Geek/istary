@@ -54,8 +54,10 @@ func TestListBackups(t *testing.T) {
 	}
 	createMage(t, s, "one")
 	createMage(t, s, "two")
+	walkTo(t, s, "settings")
 	s.ResetRoster()
 	createMage(t, s, "three")
+	walkTo(t, s, "settings")
 	s.ResetRoster()
 	os.WriteFile(filepath.Join(dir, "backups", "broken.json"), []byte("{oops"), 0644)
 	os.WriteFile(filepath.Join(dir, "backups", "notes.txt"), []byte("ignored"), 0644)
@@ -95,6 +97,7 @@ func TestRestoreBackup(t *testing.T) {
 	s, dir := newTestSession(t)
 	createMage(t, s, "old one")
 	createMage(t, s, "old two")
+	walkTo(t, s, "settings")
 	s.ResetRoster()
 	var oldBackup string
 	for _, b := range s.ListBackups() {
@@ -105,9 +108,10 @@ func TestRestoreBackup(t *testing.T) {
 	createMage(t, s, "current")
 	current, _ := os.ReadFile(filepath.Join(dir, "roster1.json"))
 
+	walkTo(t, s, "settings")
 	v := s.RestoreBackup(oldBackup)
-	if v.Error != "" || len(v.Roster) != 2 || v.Roster[0].Name != "OLD ONE" {
-		t.Fatalf("restore: error=%q roster=%+v", v.Error, v.Roster)
+	if v.Error != "" || len(v.Roster) != 2 || v.Roster[0].Name != "OLD ONE" || v.Location != "settings" {
+		t.Fatalf("restore: error=%q roster=%+v at %q", v.Error, v.Roster, v.Location)
 	}
 	if !strings.Contains(v.Notice, "before-restore") {
 		t.Errorf("notice should name the safety backup: %q", v.Notice)
@@ -139,10 +143,12 @@ func TestRestoreBackup(t *testing.T) {
 func TestRestoreBackupRefusals(t *testing.T) {
 	s, dir := newTestSession(t)
 	createMage(t, s, "keeper")
+	walkTo(t, s, "settings")
 	s.ResetRoster()
 	createMage(t, s, "present")
 	os.WriteFile(filepath.Join(dir, "backups", "broken.json"), []byte("{oops"), 0644)
 	backupsBefore := len(s.ListBackups())
+	walkTo(t, s, "settings")
 
 	for file, want := range map[string]string{
 		"":                "Choose a backup from the list.",
@@ -151,6 +157,7 @@ func TestRestoreBackupRefusals(t *testing.T) {
 		"broken.json":     "Cannot restore broken.json: not a roster file.",
 		"missing.json":    "Cannot restore missing.json: cannot read file.",
 	} {
+		walkTo(t, s, "settings")
 		v := s.RestoreBackup(file)
 		if v.Error != want || len(v.Roster) != 1 || v.Roster[0].Name != "PRESENT" {
 			t.Errorf("restore %q: error=%q roster=%+v", file, v.Error, v.Roster)
@@ -160,6 +167,7 @@ func TestRestoreBackupRefusals(t *testing.T) {
 		t.Errorf("refused restores should not create backups: %d -> %d", backupsBefore, n)
 	}
 
+	walkTo(t, s, "training")
 	mustOK(t, s.StartCreation("busy"), "confirmCreate")
 	mustOK(t, s.AnswerCreate(true), "creation")
 	var good string
@@ -176,8 +184,11 @@ func TestRestoreBackupRefusals(t *testing.T) {
 func TestBackupRestoreLeavesTerminalSavesAlone(t *testing.T) {
 	s, _ := newTestSession(t)
 	createMage(t, s, "pip")
+	walkTo(t, s, "settings")
 	s.ResetRoster()
+	walkTo(t, s, "settings")
 	s.RestoreBackup(s.ListBackups()[0].File)
+	walkTo(t, s, "training")
 	s.RenameCharacter(0, "peregrin")
 	terminal := filepath.Join(os.Getenv("HOME"), ".config", "wizardry")
 	if _, err := os.Stat(terminal); !os.IsNotExist(err) {

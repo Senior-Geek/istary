@@ -42,6 +42,9 @@ func (s *Session) PracticeExpedition() View {
 		if err != nil {
 			return err
 		}
+		if err := s.at(engine.EdgeOfTown); err != nil {
+			return err
+		}
 		c := app.New(pg)
 		if err := c.EnterMaze(); err != nil {
 			return err
@@ -65,7 +68,7 @@ func (s *Session) RealExpedition() View {
 		if c.Game.Phase != engine.PhaseTown || len(c.Game.Town.Party.Members) == 0 {
 			return errors.New("Form a party in the Tavern first.")
 		}
-		if err := s.goTo(engine.Castle); err != nil {
+		if err := s.at(engine.EdgeOfTown); err != nil {
 			return err
 		}
 		if err := c.EnterMaze(); err != nil {

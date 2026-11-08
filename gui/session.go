@@ -229,8 +229,12 @@ func (s *Session) ReloadRoster() View {
 	if s.ctrl.Game.Phase == engine.PhaseCreation {
 		return s.view(errors.New("Finish or discard the character being created first."))
 	}
+	if err := s.inSettingsNow(); err != nil {
+		return s.view(err)
+	}
 	err := s.reload()
 	if err == nil {
+		s.stayInSettings()
 		s.notice = fmt.Sprintf("Roster reloaded from %s.", s.saveDir)
 	}
 	return s.view(err)
@@ -240,7 +244,7 @@ func (s *Session) ReloadRoster() View {
 func (s *Session) StartCreation(name string) View {
 	return s.do(func() error {
 		c := s.ctrl
-		if err := s.goTo(engine.Training); err != nil {
+		if err := s.at(engine.Training); err != nil {
 			return err
 		}
 		result, err := c.TrainingEnterName(name)
@@ -336,7 +340,7 @@ func (s *Session) Confirm(keep bool) View {
 func (s *Session) DeleteCharacter(name, password string) View {
 	return s.do(func() error {
 		c := s.ctrl
-		if err := s.goTo(engine.Training); err != nil {
+		if err := s.at(engine.Training); err != nil {
 			return err
 		}
 		result, err := c.TrainingEnterName(name)
@@ -375,6 +379,9 @@ func (s *Session) ResetRoster() View {
 		c := s.ctrl
 		if c.Game.Phase != engine.PhaseTown {
 			return errors.New("Finish or discard the character being created first.")
+		}
+		if err := s.inSettingsNow(); err != nil {
+			return err
 		}
 		if c.Game.Expedition != nil || c.Game.OtherExpedition != nil {
 			return errExpeditionSaved
@@ -436,6 +443,9 @@ func (s *Session) RenameCharacter(index int, newName string) View {
 		roster := s.ctrl.Game.Town.Roster.Characters
 		if index < 0 || index >= len(roster) || roster[index] == nil {
 			return app.ErrNoSuchCharacter
+		}
+		if err := s.at(engine.Training); err != nil {
+			return err
 		}
 		old := roster[index].Name
 		if err := s.ctrl.RenameCharacter(index, newName); err != nil {

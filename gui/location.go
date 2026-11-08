@@ -1,54 +1,67 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/Senior-Geek/istary/app"
 	"github.com/Senior-Geek/istary/engine"
 )
 
-// The game has one current town location, but the GUI shows the roster,
-// Training Grounds and party side by side. Every GUI operation that needs a
-// particular location calls goTo first; nothing else changes the location.
+// The game has one current town location, and the player walks between
+// locations with Navigate (navigation.go); nothing else moves the game in
+// town. An action that belongs to a location is accepted only there: the
+// party is formed at the Tavern, characters are created, renamed and
+// deleted at the Training Grounds, expeditions and practice set out from
+// the Edge of Town, and the roster is reloaded, reset and restored in
+// Settings.
 
-// goTo moves the game to loc (Castle, Training Grounds or Tavern) through
-// the game's own transitions: close any open prompt, leave the current
-// location for the castle, then enter loc.
-func (s *Session) goTo(loc engine.TownLocation) error {
-	c := s.ctrl
-	if c.Game.Phase != engine.PhaseTown {
+// at accepts an action that belongs to loc (the Tavern, the Training
+// Grounds or the Edge of Town) only while the player is there, and closes
+// any town prompt open there with the game's own cancel steps.
+func (s *Session) at(loc engine.TownLocation) error {
+	g := s.ctrl.Game
+	if g.Phase != engine.PhaseTown {
 		return app.ErrWrongState // e.g. a character is being created
 	}
-	s.settings = false
-	if err := s.settlePrompt(); err != nil {
-		return err
+	if g.Town.Location != loc || s.inSettings() {
+		return notAt(loc)
 	}
-	town := c.Game.Town
-	if town.Location == loc {
-		return nil
+	return s.settlePrompt()
+}
+
+// inSettingsNow accepts a Settings action only while the player is in
+// Settings.
+func (s *Session) inSettingsNow() error {
+	if !s.inSettings() {
+		return errNotInSettings
 	}
-	switch town.Location {
-	case engine.Castle:
-	case engine.Training:
-		if err := c.LeaveTrainingGrounds(); err != nil {
-			return err
-		}
-	case engine.Tavern:
-		if err := c.LeaveTavern(); err != nil {
-			return err
-		}
-	default:
-		app.GoToCastle(town) // locations the GUI never opens
-	}
+	return nil
+}
+
+// notAt is the refusal of an action that belongs to loc, elsewhere.
+func notAt(loc engine.TownLocation) error {
 	switch loc {
-	case engine.Castle:
-		return nil
-	case engine.Training:
-		return c.EnterTrainingGrounds()
 	case engine.Tavern:
-		return c.EnterTavern()
+		return errors.New("The party is formed at Gilgamesh's Tavern. Go there first.")
+	case engine.Training:
+		return errors.New("Characters are created, renamed and deleted at the Training Grounds. Go there first.")
+	case engine.EdgeOfTown:
+		return errors.New("Expeditions and practice set out from the Edge of Town. Go there first.")
 	}
-	return fmt.Errorf("the GUI cannot go to %v", loc)
+	return fmt.Errorf("That is done at %v. Go there first.", loc)
+}
+
+var errNotInSettings = errors.New("The roster is reloaded, reset and restored in Settings, at the Edge of Town. Go there first.")
+
+// stayInSettings puts the player back in Settings after the roster was
+// read again (a reload or a restore starts a new game at the castle), by
+// the castle's own way to the Edge of Town. A resumed expedition is in the
+// maze instead.
+func (s *Session) stayInSettings() {
+	if s.active() == nil && s.ctrl.EnterEdgeOfTown() == nil {
+		s.settings = true
+	}
 }
 
 // settlePrompt closes any open town prompt using the game's own cancel

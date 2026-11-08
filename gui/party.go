@@ -19,7 +19,7 @@ func (s *Session) JoinParty(index int) View {
 			return app.ErrNoSuchCharacter
 		}
 		ch := roster[index]
-		if err := s.goTo(engine.Tavern); err != nil {
+		if err := s.at(engine.Tavern); err != nil {
 			return err
 		}
 		needs, err := c.AddMember(ch.Name)
@@ -67,7 +67,7 @@ func (s *Session) LeaveParty(slot int) View {
 			return app.ErrNoSuchPartyMember
 		}
 		name := members[slot].Name
-		if err := s.goTo(engine.Tavern); err != nil {
+		if err := s.at(engine.Tavern); err != nil {
 			return err
 		}
 		if err := c.RemoveMember(slot); err != nil {

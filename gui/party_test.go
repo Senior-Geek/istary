@@ -59,6 +59,7 @@ func partyNames(v View) string {
 // join runs the two-step join and fails the test on any error.
 func join(t *testing.T, s *Session, index int, password string) View {
 	t.Helper()
+	walkTo(t, s, "tavern")
 	v := s.JoinParty(index)
 	if v.Error != "" || v.PendingJoin == "" {
 		t.Fatalf("join %d: error=%q pending=%q", index, v.Error, v.PendingJoin)
@@ -74,6 +75,7 @@ func TestJoinAndLeaveParty(t *testing.T) {
 	s, dir := newTestSession(t)
 	rosterWith(t, s, hero("ARWEN", engine.Good, "STAR"), hero("BEORN", engine.Neutral, ""))
 
+	walkTo(t, s, "tavern")
 	v := s.JoinParty(0)
 	if v.Error != "" || v.PendingJoin != "ARWEN" || v.Screen != "roster" {
 		t.Fatalf("ask to join: error=%q pending=%q screen=%s", v.Error, v.PendingJoin, v.Screen)
@@ -191,6 +193,7 @@ func TestPartyFullAndRows(t *testing.T) {
 func TestPendingJoinIsCancelledByOtherActions(t *testing.T) {
 	s, _ := newTestSession(t)
 	rosterWith(t, s, hero("ONE", engine.Neutral, "PW"))
+	walkTo(t, s, "tavern")
 	if v := s.JoinParty(0); v.PendingJoin != "ONE" {
 		t.Fatal("expected a pending join")
 	}
@@ -198,25 +201,34 @@ func TestPendingJoinIsCancelledByOtherActions(t *testing.T) {
 		t.Errorf("cancel: pending=%q error=%q", v.PendingJoin, v.Error)
 	}
 	s.JoinParty(0)
-	// Starting creation goes to the Training Grounds and closes the prompt.
-	v := mustOK(t, s.StartCreation("newbie"), "confirmCreate")
-	if v.PendingJoin != "" {
-		t.Error("pending join should be cancelled when moving to the Training Grounds")
+	// Creating a character is refused at the Tavern, and the join waits.
+	if v := s.StartCreation("newbie"); v.Error != notAt(engine.Training).Error() || v.PendingJoin != "ONE" {
+		t.Errorf("creating at the Tavern: error=%q pending=%q", v.Error, v.PendingJoin)
 	}
+	// Leaving the Tavern closes the prompt.
+	if v := walkTo(t, s, "training"); v.PendingJoin != "" {
+		t.Error("pending join should be cancelled when leaving the Tavern")
+	}
+	mustOK(t, s.StartCreation("newbie"), "confirmCreate")
 	if v := s.SubmitJoinPassword("PW"); v.Error != "That action is not available right now." {
 		t.Errorf("password with no pending join: %q", v.Error)
 	}
 }
 
-// Moving between Training Grounds and Tavern in any order works.
+// Moving between Training Grounds and Tavern in any order works, and each
+// action is accepted at its own location only.
 func TestLocationTransitions(t *testing.T) {
 	s, dir := newTestSession(t)
 	createMage(t, s, "alpha") // ends at the Training Grounds
 	join(t, s, 0, "secret")   // Training Grounds -> castle -> Tavern
-	createMage(t, s, "beta")  // Tavern -> castle -> Training Grounds
+	createMage(t, s, "beta")  // Tavern -> castle -> Edge of Town -> Training Grounds
 	join(t, s, 1, "secret")
+	if v := s.DeleteCharacter("alpha", "secret"); v.Error != notAt(engine.Training).Error() || partyNames(v) != "ALPHA,BETA" {
+		t.Fatalf("delete at the Tavern: error=%q party=%q", v.Error, partyNames(v))
+	}
+	walkTo(t, s, "training")
 	if v := s.DeleteCharacter("alpha", "secret"); v.Error != "" || partyNames(v) != "BETA" {
-		t.Fatalf("delete from Tavern: error=%q party=%q", v.Error, partyNames(v))
+		t.Fatalf("delete at the Training Grounds: error=%q party=%q", v.Error, partyNames(v))
 	}
 	if got := strings.Join(savedParty(t, dir), ","); got != "BETA" {
 		t.Errorf("saved party after delete = %q", got)
@@ -239,6 +251,7 @@ func TestPartyWithRosterManagement(t *testing.T) {
 	join(t, s, 1, "")
 
 	// Rename keeps the slot; the save stores the new name.
+	walkTo(t, s, "training")
 	if v := s.RenameCharacter(1, "samwise"); v.Error != "" || partyNames(v) != "FRODO,SAMWISE" {
 		t.Fatalf("rename: error=%q party=%q", v.Error, partyNames(v))
 	}
@@ -246,6 +259,7 @@ func TestPartyWithRosterManagement(t *testing.T) {
 		t.Errorf("saved party after rename = %q", got)
 	}
 	// Reset backs up the roster with its party and clears both.
+	walkTo(t, s, "settings")
 	if v := s.ResetRoster(); v.Error != "" || len(v.Party) != 0 {
 		t.Fatalf("reset: error=%q party=%q", v.Error, partyNames(v))
 	}

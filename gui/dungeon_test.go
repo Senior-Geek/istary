@@ -117,7 +117,7 @@ func TestPracticeExpeditionsThroughTheBridge(t *testing.T) {
 
 func TestExpeditionRefusals(t *testing.T) {
 	s, _ := newTestSession(t)
-	if v := s.PracticeExpedition(); v.Error == "" || s.practice != nil {
+	if v := s.PracticeExpedition(); !strings.Contains(v.Error, "Form a party") || s.practice != nil {
 		t.Fatal("an expedition with no party started")
 	}
 	if v := s.DungeonAction(app.ActForward, 0); v.Error == "" {

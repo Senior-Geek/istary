@@ -56,11 +56,13 @@ func campSession(t *testing.T, rng *rand.Rand, real bool) (*Session, string) {
 		chars = append(chars, ch)
 	}
 	rosterWith(t, s, chars...)
+	walkTo(t, s, "tavern")
 	for i := range chars {
 		if v := s.JoinParty(i); v.PendingJoin != "" {
 			s.SubmitJoinPassword("")
 		}
 	}
+	walkTo(t, s, "edge") // where the party sets out
 	var v View
 	if real {
 		v = s.RealExpedition()
