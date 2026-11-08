@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math/rand"
 	"testing"
 
 	"github.com/Senior-Geek/istary/engine"
@@ -210,5 +211,62 @@ func TestNormalize(t *testing.T) {
 	}
 	if got := NormalizePassword("pa$$word-is-too-long"); got != "PA$$WORD-IS-TOO" {
 		t.Errorf("NormalizePassword = %q", got)
+	}
+}
+
+// Abandoning creation at any step leaves the town exactly as it was before
+// creation began, as Cancel and Discard do, and draws no random number.
+func TestAbandonCreationAtEveryStep(t *testing.T) {
+	steps := []func(c *Controller) error{
+		func(c *Controller) error { return c.SetCreationPassword("", "") },
+		func(c *Controller) error { return c.ChooseRace(engine.Human) },
+		func(c *Controller) error { seed(9); return c.ChooseAlignment(engine.Good) },
+		func(c *Controller) error {
+			for c.Creation().BonusPoints > 0 {
+				c.SelectStat(0)
+				if err := c.AddStatPoint(); err != nil {
+					return err
+				}
+				if c.Creation().Stats[0] >= 18 {
+					c.SelectStat(3)
+				}
+			}
+			return c.FinishStats()
+		},
+		func(c *Controller) error { return c.ChooseClass(engine.Fighter) },
+	}
+	for k := 0; k <= len(steps); k++ {
+		c := newController(t, 1)
+		c.EnterTrainingGrounds()
+		before := snapshot(t, c.Game.Town)
+		beginCreation(c, "HERO")
+		for _, step := range steps[:k] {
+			if err := step(c); err != nil {
+				t.Fatalf("after %d steps: %v", k, err)
+			}
+		}
+		at := c.Creation().Step
+		seed(21)
+		if err := c.AbandonCreation(); err != nil {
+			t.Fatalf("abandon at %v: %v", at, err)
+		}
+		next := rand.Int63()
+		seed(21)
+		if next != rand.Int63() {
+			t.Errorf("abandon at %v drew a random number", at)
+		}
+		if c.Game.Phase != engine.PhaseTown || snapshot(t, c.Game.Town) != before {
+			t.Errorf("abandon at %v: phase %v, town\n%s\nwas\n%s", at, c.Game.Phase, snapshot(t, c.Game.Town), before)
+		}
+	}
+
+	c := newController(t, 1)
+	if err := c.AbandonCreation(); !errors.Is(err, ErrWrongState) {
+		t.Errorf("not creating: %v", err)
+	}
+	beginCreation(c, "HERO")
+	c.Creation().Reroll = true
+	if err := c.AbandonCreation(); !errors.Is(err, ErrWrongState) || c.Game.Phase != engine.PhaseCreation {
+		t.Errorf("a reroll: %v", err)
 	}
 }

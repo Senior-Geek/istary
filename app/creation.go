@@ -212,6 +212,21 @@ func (c *Controller) CreationBack() error {
 	return nil
 }
 
+// AbandonCreation discards the character being created at any step, as
+// Cancel at the name step and Discard at the end do: nothing of it was
+// kept, and the game is back in town where creation began. A reroll from
+// the Training Grounds edit menu (which replaces a roster character) is
+// not abandoned this way.
+func (c *Controller) AbandonCreation() error {
+	cs := c.Game.Town.Creation
+	if c.Game.Phase != engine.PhaseCreation || cs == nil || cs.Reroll {
+		return ErrWrongState
+	}
+	c.Game.Phase = engine.PhaseTown
+	c.Game.Town.Creation = nil
+	return nil
+}
+
 // ConfirmCreation keeps or discards the finished character. Keeping it rolls
 // HP, gold and age, adds it to the roster and returns it. A reroll from the
 // Training Grounds edit menu returns to that menu with the new character.
