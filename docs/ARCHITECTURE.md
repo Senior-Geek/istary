@@ -97,6 +97,18 @@ Eligibility for display: `Creation().ClassAvailability()`.
 | `InParty(town, ch)`, `PartySlot(town, ch)` | Membership from the party list. Never use `InMaze` for this: joining sets it, as does being out in the dungeon |
 | `MaxPartySize`, `FrontRowSize` | 6 members; the first 3 are the front row (only they can melee) |
 
+**Town navigation** (`app/navigation.go`, Castle-0). The terminal still reads
+the castle menu and the Edge of Town's T and C itself; these make the same
+changes, for front ends without keys. `cmd/istary/navigation_test.go` holds
+each move to its key (same town state, no random number, same refusal) and
+checks that no other key on those menus moves anywhere.
+
+| Operation | Effect |
+|---|---|
+| `Exits() []Exit` | The ways out of the current town location in menu order: the castle (Tavern, Inn, Boltac's, Temple, Edge of Town), the Edge of Town (Training Grounds, castle), and back to the castle from the Training Grounds and the Tavern. `Exit.Refusal` is the game's answer if the move is refused now (`YOU HAVE NO PARTY!` for the Inn, Boltac's and the Temple) |
+| `GoTo(loc)` | Make one of those moves as its key does; a refusal is in `Town.Message` and returned as `*Refusal`. The Inn, Boltac's and the Temple are still the terminal's: `ErrLocationNotMigrated`, nothing changed |
+| `EnterEdgeOfTown()` / `LeaveEdgeOfTown()` | Castle E; Edge of Town C |
+
 **Combat order entry** (`app/combat.go`, M5a). Orders are given to a
 character, not a slot; the controller records them in the character's current
 slot and the engine binds them to that character (C1). The rules are those the
@@ -360,9 +372,35 @@ native window under Wails v3. Roster backups live in `<saveDir>/backups`. Its
 `Session` type serialises all calls with a mutex, calls controller operations,
 saves after each one, and returns a `View` for Svelte to render. The GUI shows
 roster, Training Grounds and party together while the game has one current
-town location; `gui/location.go` (`goTo`) is the only code that changes it,
-always through the game's own leave/enter steps. See
-`gui/README.md`.
+town location; `gui/location.go` (`goTo`) changes it for the actions that
+need a particular location, always through the game's own leave/enter steps,
+and `Navigate` (below) walks it. See `gui/README.md`.
+
+**Town navigation (Castle-0, C0-1).** `Session.Navigate(dest)`
+(`gui/navigation.go`) moves along one of `View.Exits` with
+`app.Controller.GoTo`, following the original's layout: the Castle is the
+hub; the Training Grounds, the maze and Settings (Istary's Utilities) are at
+the Edge of Town; the Training Grounds, the Tavern and Settings lead back to
+the Castle (Player's Guide pp.22, 36, 38).
+- **View:** `Location` (a town location, `settings`, or `maze` while an
+  expedition or practice is under way), `Exits` (`{dest, open, reason}`;
+  the Inn, Boltac's and the Temple are closed with the game's refusal or
+  "not open in Istary's window yet"), and `PartyBar`: the six positions of
+  the party being played (the practice copies during practice), empty ones
+  included, with level, HP, status and poison.
+- **Settings** is the window's own, not a game location: a session flag
+  while the game stands at the Edge of Town, cleared by any other move.
+- **Never saved:** the town location is not in the save, so `Navigate`
+  writes nothing and draws no random number. It is refused while an
+  expedition (real, resumed or practice) is under way and during creation;
+  an open town prompt is closed first by the game's cancel steps.
+- **Tests:** every destination from every location (the save folder's
+  files and times and the next random number unchanged, refusals leave the
+  view as it was), refusals out of town and after a restart, an
+  unresumable expedition left as saved, prompts closed, Settings left, and
+  the party bar against the Tavern's and the dungeon's party.
+- **Not yet:** the page does not use it (C0-3, C0-4); the existing actions
+  still move with `goTo` (C0-2 makes them check the location instead).
 
 **GUI combat (M7a).** `gui/combat.go` is the combat bridge.
 - **What the frontend gets:** while an encounter runs, `View.Screen` is
