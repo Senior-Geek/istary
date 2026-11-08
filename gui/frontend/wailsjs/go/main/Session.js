@@ -166,6 +166,10 @@ export function ReturnExpeditionToCastle() {
   return window['go']['main']['Session']['ReturnExpeditionToCastle']();
 }
 
+export function ReturnToCastle() {
+  return window['go']['main']['Session']['ReturnToCastle']();
+}
+
 export function SetName(arg1) {
   return window['go']['main']['Session']['SetName'](arg1);
 }

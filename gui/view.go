@@ -34,6 +34,7 @@ type View struct {
 	Location string         `json:"location"`
 	Exits    []ExitView     `json:"exits"`
 	PartyBar []PartyBarSlot `json:"partyBar"`
+	Return   *ReturnView    `json:"return"` // the way back to the Castle, or nil
 
 	// Settings are the window's own preferences (settings.go).
 	Settings SettingsView `json:"settings"`
@@ -310,6 +311,7 @@ func (s *Session) view(err error) View {
 	}
 
 	v.Location, v.Exits, v.PartyBar = s.location(), s.exits(), s.partyBar()
+	v.Return = s.returnView()
 	v.Settings = s.settingsView()
 	v.Departures = s.departures()
 

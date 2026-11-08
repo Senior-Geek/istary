@@ -119,6 +119,7 @@
    "real": "Form a party in the Tavern first.",
    "practice": "Form a party in the Tavern first."
   },
+  "return": null,
   "expedition": false,
   "real": false
  },
@@ -242,6 +243,7 @@
    "real": "",
    "practice": ""
   },
+  "return": null,
   "expedition": false,
   "real": false
  },
@@ -344,6 +346,10 @@
   "departures": {
    "real": "",
    "practice": ""
+  },
+  "return": {
+   "open": true,
+   "note": ""
   },
   "expedition": false,
   "real": false
@@ -458,6 +464,10 @@
    "real": "",
    "practice": ""
   },
+  "return": {
+   "open": true,
+   "note": ""
+  },
   "expedition": false,
   "real": false
  },
@@ -561,6 +571,10 @@
    "real": "",
    "practice": ""
   },
+  "return": {
+   "open": true,
+   "note": ""
+  },
   "expedition": false,
   "real": false
  },
@@ -663,6 +677,10 @@
   "departures": {
    "real": "",
    "practice": ""
+  },
+  "return": {
+   "open": true,
+   "note": ""
   },
   "expedition": false,
   "real": false
@@ -787,6 +805,7 @@
    "real": "",
    "practice": ""
   },
+  "return": null,
   "expedition": false,
   "real": false
  },
@@ -889,6 +908,10 @@
   "departures": {
    "real": "",
    "practice": ""
+  },
+  "return": {
+   "open": true,
+   "note": ""
   },
   "expedition": false,
   "real": false
@@ -993,6 +1016,10 @@
    "real": "Form a party in the Tavern first.",
    "practice": "Form a party in the Tavern first."
   },
+  "return": {
+   "open": true,
+   "note": "Returning discards the character being created."
+  },
   "expedition": false,
   "real": false
  },
@@ -1090,6 +1117,7 @@
    "real": "An encounter or expedition is already in progress.",
    "practice": "An encounter or expedition is already in progress."
   },
+  "return": null,
   "expedition": true,
   "real": false
  },
@@ -1187,6 +1215,7 @@
    "real": "An encounter or expedition is already in progress.",
    "practice": "The party is out on an expedition. Return to the castle first."
   },
+  "return": null,
   "expedition": true,
   "real": true
  }

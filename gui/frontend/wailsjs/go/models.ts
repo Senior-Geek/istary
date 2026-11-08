@@ -969,6 +969,20 @@ export namespace main {
 	        this.front = source["front"];
 	    }
 	}
+	export class ReturnView {
+	    open: boolean;
+	    note: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ReturnView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.open = source["open"];
+	        this.note = source["note"];
+	    }
+	}
 	export class SettingsView {
 	    partyVisible: boolean;
 	    note: string;
@@ -1001,6 +1015,7 @@ export namespace main {
 	    location: string;
 	    exits: ExitView[];
 	    partyBar: PartyBarSlot[];
+	    return?: ReturnView;
 	    settings: SettingsView;
 	    departures: DeparturesView;
 	    party: PartySlotView[];
@@ -1041,6 +1056,7 @@ export namespace main {
 	        this.location = source["location"];
 	        this.exits = this.convertValues(source["exits"], ExitView);
 	        this.partyBar = this.convertValues(source["partyBar"], PartyBarSlot);
+	        this.return = this.convertValues(source["return"], ReturnView);
 	        this.settings = this.convertValues(source["settings"], SettingsView);
 	        this.departures = this.convertValues(source["departures"], DeparturesView);
 	        this.party = this.convertValues(source["party"], PartySlotView);

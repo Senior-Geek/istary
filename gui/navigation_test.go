@@ -475,3 +475,134 @@ func TestPartyBarFollowsPlay(t *testing.T) {
 		s.shutdown()
 	}
 }
+
+// returnToCastle calls ReturnToCastle and fails if it wrote anything in the
+// save folder or drew a random number.
+func returnToCastle(t *testing.T, s *Session, dir string) View {
+	t.Helper()
+	before := folder(t, dir)
+	rand.Seed(23)
+	v := s.ReturnToCastle()
+	next := rand.Int63()
+	rand.Seed(23)
+	if next != rand.Int63() {
+		t.Fatal("returning to the Castle drew a random number")
+	}
+	if !maps.Equal(before, folder(t, dir)) {
+		t.Fatal("returning to the Castle wrote to the save folder")
+	}
+	return v
+}
+
+// "← Castle" and Escape return from every town place, abandoning only
+// what is unfinished there: a character being created, a join waiting for
+// its password. What was done stays done; at the Castle nothing happens.
+func TestReturnToCastle(t *testing.T) {
+	s, dir := newTestSession(t)
+	rosterWith(t, s, hero("WALKER", engine.Good, ""), hero("GUARDED", engine.Good, "pw"))
+	join(t, s, 0, "")
+	for _, place := range []string{"tavern", "edge", "training", "settings"} {
+		v := walkTo(t, s, place)
+		if v.Return == nil || !v.Return.Open || v.Return.Note != "" {
+			t.Fatalf("at %s: return %+v", place, v.Return)
+		}
+		if v = returnToCastle(t, s, dir); v.Error != "" || v.Location != "castle" || v.Return != nil || partyNames(v) != "WALKER" {
+			t.Fatalf("from %s: %q at %q, party %q", place, v.Error, v.Location, partyNames(v))
+		}
+	}
+	before := s.State()
+	if v := returnToCastle(t, s, dir); v.Error != "" || !sameView(v, before) {
+		t.Fatalf("at the Castle: %q", v.Error)
+	}
+
+	// A join waiting for its password is cancelled; the earlier join stays.
+	walkTo(t, s, "tavern")
+	if v := s.JoinParty(1); v.PendingJoin != "GUARDED" || v.Return == nil || v.Return.Note == "" {
+		t.Fatalf("pending join: %q, return %+v", v.PendingJoin, v.Return)
+	}
+	if v := returnToCastle(t, s, dir); v.Error != "" || v.Location != "castle" || v.PendingJoin != "" || partyNames(v) != "WALKER" {
+		t.Fatalf("with a join pending: %q at %q, pending %q, party %q", v.Error, v.Location, v.PendingJoin, partyNames(v))
+	}
+
+	// A character being created is discarded, at any step; the roster stays.
+	saved := onDisk(t, dir)
+	for _, steps := range []int{0, 1, 2, 4} {
+		walkTo(t, s, "training")
+		mustOK(t, s.StartCreation("NEWCOMER"), "confirmCreate")
+		if steps > 0 {
+			mustOK(t, s.AnswerCreate(true), "creation")
+		}
+		if steps > 1 {
+			mustOK(t, s.SetPassword("", ""), "creation")
+		}
+		if steps > 2 {
+			mustOK(t, s.ChooseRace(0), "creation")
+			mustOK(t, s.ChooseAlignment(0), "creation")
+		}
+		v := s.State()
+		if v.Return == nil || !v.Return.Open || (steps > 0 && v.Return.Note == "") {
+			t.Fatalf("creating (%d steps): return %+v", steps, v.Return)
+		}
+		v = returnToCastle(t, s, dir)
+		if v.Error != "" || v.Location != "castle" || v.Screen != "roster" || v.Creation != nil || len(v.Roster) != 2 {
+			t.Fatalf("creating (%d steps): %q at %q on %q, roster %d", steps, v.Error, v.Location, v.Screen, len(v.Roster))
+		}
+		if steps > 0 && v.Notice != "The character being created was discarded." {
+			t.Fatalf("creating (%d steps): notice %q", steps, v.Notice)
+		}
+	}
+	if !reflect.DeepEqual(saved, onDisk(t, dir)) {
+		t.Fatal("abandoning creation changed the save")
+	}
+}
+
+// Out of town, returning to the Castle is refused and changes nothing:
+// practice, a real expedition, and one resumed after a restart.
+func TestReturnToCastleRefusedOutOfTown(t *testing.T) {
+	rand.Seed(8)
+	s, dir := partySession(t, false)
+	refused := func(when, why string) {
+		t.Helper()
+		before := s.State()
+		if before.Return != nil {
+			t.Fatalf("%s: return offered %+v", when, before.Return)
+		}
+		saved := onDisk(t, dir)
+		if v := s.ReturnToCastle(); v.Error != why || !sameView(v, before) {
+			t.Fatalf("%s: %q", when, v.Error)
+		}
+		if !reflect.DeepEqual(saved, onDisk(t, dir)) {
+			t.Fatalf("%s: the save changed", when)
+		}
+	}
+	s.PracticeExpedition()
+	refused("practice expedition", errPracticeOut.Error())
+	s.AbandonPractice()
+	s.PracticeEncounter(false)
+	refused("practice encounter", errPracticeOut.Error())
+	s.AbandonPractice()
+	s.RealExpedition()
+	refused("in Camp", errExpeditionOut.Error())
+	s.DungeonAction(app.ActLeaveCamp, 0)
+	s.DungeonAction(app.ActNo, 0)
+	refused("in the maze", errExpeditionOut.Error())
+	s.shutdown()
+	s = NewSession(dir)
+	defer s.shutdown()
+	refused("resumed", errExpeditionOut.Error())
+}
+
+// While a saved expedition cannot be resumed, returning to the Castle works
+// as anywhere in town and leaves the expedition as it was saved.
+func TestReturnToCastleLeavesRecoveryAlone(t *testing.T) {
+	dir := outAndRestarted(t)
+	editSave(t, dir, func(st map[string]any) { st["expedition"].(map[string]any)["version"] = 2.0 })
+	s := NewSession(dir)
+	defer s.shutdown()
+	for _, place := range []string{"tavern", "settings", "training"} {
+		walkTo(t, s, place)
+		if v := returnToCastle(t, s, dir); v.Error != "" || v.Location != "castle" || v.Recovery == "" {
+			t.Fatalf("from %s: %q at %q, recovery %q", place, v.Error, v.Location, v.Recovery)
+		}
+	}
+}

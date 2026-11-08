@@ -111,6 +111,75 @@ func (s *Session) navigate(dest string) error {
 	return errNotAnExit
 }
 
+// ReturnView is the way back to the Castle from a town place (the frame's
+// "← Castle", and Escape): Note says what returning abandons, if anything.
+type ReturnView struct {
+	Open bool   `json:"open"`
+	Note string `json:"note"`
+}
+
+// returnView is nil at the Castle and out of town.
+func (s *Session) returnView() *ReturnView {
+	g := s.ctrl.Game
+	switch {
+	case s.active() != nil:
+		return nil
+	case g.Phase == engine.PhaseCreation:
+		return &ReturnView{Open: true, Note: "Returning discards the character being created."}
+	case g.Phase != engine.PhaseTown || (g.Town.Location == engine.Castle && !s.inSettings()):
+		return nil
+	case g.Town.InputMode == engine.InputTavernPassword:
+		return &ReturnView{Open: true, Note: "Returning cancels the join waiting for its password."}
+	}
+	return &ReturnView{Open: true}
+}
+
+// ReturnToCastle goes back to the Castle from anywhere in town, as L)EAVE
+// does from each place: what is unfinished there is abandoned first, by
+// the game's own steps (a character being created is discarded, an open
+// prompt is cancelled), and nothing already done is undone. At the Castle
+// it does nothing. It is refused out of town (an expedition, practice), and
+// like any move it writes nothing and draws no random number.
+func (s *Session) ReturnToCastle() View {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.startErr != nil {
+		return s.view(nil)
+	}
+	s.notice = ""
+	return s.view(s.returnToCastle())
+}
+
+func (s *Session) returnToCastle() error {
+	switch {
+	case s.real:
+		return errExpeditionOut
+	case s.practice != nil:
+		return errPracticeOut
+	}
+	c := s.ctrl
+	if c.Game.Phase == engine.PhaseCreation {
+		if err := c.AbandonCreation(); err != nil {
+			return err
+		}
+		s.notice = "The character being created was discarded."
+	}
+	if c.Game.Phase != engine.PhaseTown {
+		return app.ErrWrongState
+	}
+	if err := s.settlePrompt(); err != nil {
+		return err
+	}
+	if s.inSettings() {
+		s.settings = false
+		return c.LeaveEdgeOfTown()
+	}
+	if c.Game.Town.Location == engine.Castle {
+		return nil
+	}
+	return c.GoTo(engine.Castle)
+}
+
 // navigationRefusal is why the player cannot walk around town now, or nil.
 func (s *Session) navigationRefusal() error {
 	switch {
