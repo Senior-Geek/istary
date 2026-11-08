@@ -54,6 +54,7 @@ func reopened(t *testing.T, s *Session, dir string) *Session {
 var routes = map[string][]string{
 	"castle":   nil,
 	"tavern":   {"tavern"},
+	"trading":  {"trading"},
 	"edge":     {"edge"},
 	"training": {"edge", "training"},
 	"settings": {"edge", "settings"},

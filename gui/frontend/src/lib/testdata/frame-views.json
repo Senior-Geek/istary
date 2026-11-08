@@ -17,7 +17,7 @@
    {
     "dest": "trading",
     "open": false,
-    "reason": "YOU HAVE NO PARTY! Boltac's Trading Post is not open in Istary's window yet."
+    "reason": "YOU HAVE NO PARTY!"
    },
    {
     "dest": "temple",
@@ -140,8 +140,8 @@
    },
    {
     "dest": "trading",
-    "open": false,
-    "reason": "Boltac's Trading Post is not open in Istary's window yet."
+    "open": true,
+    "reason": ""
    },
    {
     "dest": "temple",
@@ -702,8 +702,8 @@
    },
    {
     "dest": "trading",
-    "open": false,
-    "reason": "Boltac's Trading Post is not open in Istary's window yet."
+    "open": true,
+    "reason": ""
    },
    {
     "dest": "temple",

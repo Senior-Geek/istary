@@ -83,6 +83,7 @@ var townMap = map[string][]string{
 	"edge":     {"training", "castle", "settings"},
 	"training": {"castle"},
 	"tavern":   {"castle"},
+	"trading":  {"castle"},
 	"settings": {"castle"},
 }
 
@@ -135,16 +136,23 @@ func TestNavigationWalksTheTown(t *testing.T) {
 				}
 			}
 		}
-		if got := slices.Sorted(maps.Keys(paths)); !slices.Equal(got, []string{"castle", "edge", "settings", "tavern", "training"}) {
+		reached := []string{"castle", "edge", "settings", "tavern", "training"}
+		if party {
+			reached = []string{"castle", "edge", "settings", "tavern", "trading", "training"}
+		}
+		if got := slices.Sorted(maps.Keys(paths)); !slices.Equal(got, reached) {
 			t.Fatalf("party %v: reached %v", party, got)
 		}
 		v := navigate(t, s, dir, "castle")
 		for _, e := range v.Exits[1:4] { // the Inn, Boltac's, the Temple
 			want := "not open in Istary's window"
+			if e.Dest == "trading" {
+				want = ""
+			}
 			if !party {
 				want = "YOU HAVE NO PARTY!"
 			}
-			if e.Open || !strings.Contains(e.Reason, want) {
+			if e.Open != (want == "") || !strings.Contains(e.Reason, want) || (want == "" && e.Reason != "") {
 				t.Errorf("party %v: %+v", party, e)
 			}
 		}
@@ -603,6 +611,97 @@ func TestReturnToCastleLeavesRecoveryAlone(t *testing.T) {
 		walkTo(t, s, place)
 		if v := returnToCastle(t, s, dir); v.Error != "" || v.Location != "castle" || v.Recovery == "" {
 			t.Fatalf("from %s: %q at %q, recovery %q", place, v.Error, v.Location, v.Recovery)
+		}
+	}
+}
+
+// Boltac's opens from the Castle for a party (without one the castle's
+// answer stays), and "← Castle", Escape and its exit leave it from every
+// step, as RETURN does: a question waiting is answered no, the customer
+// leaves. Nothing is bought, undone, saved or drawn on the way out.
+func TestReturnFromEveryStepOfBoltacs(t *testing.T) {
+	s, dir := newTestSession(t)
+	rosterWith(t, s, hero("WALKER", engine.Good, ""))
+	walkTo(t, s, "castle")
+	if v := navigate(t, s, dir, "trading"); v.Error != "YOU HAVE NO PARTY!" || v.Location != "castle" {
+		t.Fatalf("no party: %q at %q", v.Error, v.Location)
+	}
+	s.shutdown()
+
+	rand.Seed(4)
+	s, dir = partySession(t, false)
+	mage := s.ctrl.Game.Town.Party.Members[4]
+	mage.Gold = 500
+	steps := []struct {
+		step string
+		to   func(c *app.Controller) error
+	}{
+		{"who", func(c *app.Controller) error { return nil }},
+		{"main", func(c *app.Controller) error { return c.ShopEnter(4) }},
+		{"buy", func(c *app.Controller) error {
+			c.ShopEnter(4)
+			c.HandleKey(app.Rune('B'))
+			return nil
+		}},
+		{"buy", func(c *app.Controller) error { // the purchase prompt open
+			c.ShopEnter(4)
+			c.HandleKey(app.Rune('B'))
+			c.HandleKey(app.Rune('P'))
+			return nil
+		}},
+		{"confirm", func(c *app.Controller) error {
+			c.ShopEnter(4)
+			c.Buy(1) // a long sword: the mage cannot use it
+			return nil
+		}},
+		{"sell", func(c *app.Controller) error {
+			c.ShopEnter(4)
+			c.Buy(5) // a staff, to have something
+			c.HandleKey(app.Key{Kind: app.KeyEnter})
+			c.HandleKey(app.Rune('S'))
+			return nil
+		}},
+		{"uncurse", func(c *app.Controller) error {
+			c.ShopEnter(4)
+			c.HandleKey(app.Rune('U'))
+			return nil
+		}},
+		{"identify", func(c *app.Controller) error {
+			c.ShopEnter(4)
+			c.HandleKey(app.Rune('I'))
+			return nil
+		}},
+	}
+	for _, way := range []string{"return", "exit"} {
+		for _, st := range steps {
+			walkTo(t, s, "castle")
+			if v := navigate(t, s, dir, "trading"); v.Error != "" || v.Location != "trading" || v.Return == nil || !v.Return.Open {
+				t.Fatalf("into Boltac's: %q at %q, return %+v", v.Error, v.Location, v.Return)
+			}
+			if err := st.to(s.ctrl); err != nil {
+				t.Fatal(err)
+			}
+			c, err := s.ctrl.ShopView()
+			if err != nil || c.Step != st.step {
+				t.Fatalf("at %s: step %q (%v)", st.step, c.Step, err)
+			}
+			if v := s.State(); (v.Return.Note != "") != (st.step == "confirm") {
+				t.Fatalf("at %s: note %q", st.step, v.Return.Note)
+			}
+			gold, items := mage.Gold, mage.ItemCount
+			var v View
+			if way == "return" {
+				v = returnToCastle(t, s, dir)
+			} else {
+				v = navigate(t, s, dir, "castle")
+			}
+			g := s.ctrl.Game
+			if v.Error != "" || v.Location != "castle" || g.Town.InputMode != engine.InputNone || g.Town.ShopChar != nil {
+				t.Fatalf("%s from %s: %q at %q, mode %v", way, st.step, v.Error, v.Location, g.Town.InputMode)
+			}
+			if mage.Gold != gold || mage.ItemCount != items {
+				t.Fatalf("%s from %s: gold %d items %d, were %d %d", way, st.step, mage.Gold, mage.ItemCount, gold, items)
+			}
 		}
 	}
 }

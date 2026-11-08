@@ -13,7 +13,8 @@ package main
 // saves (the town location is not part of the save) and draws no random
 // number. It is refused while an expedition or practice is under way and
 // while a character is being created; an open town prompt is closed first,
-// as the game's own cancel steps would.
+// as the game's own cancel steps would. Boltac's is left by RETURN at
+// every step (app.Controller.LeaveShop), as its keys leave it.
 
 import (
 	"errors"
@@ -91,10 +92,13 @@ func (s *Session) navigate(dest string) error {
 	if e := s.exits()[i]; !e.Open {
 		return errors.New(e.Reason)
 	}
+	c := s.ctrl
+	if c.Game.Town.Location == engine.Trading {
+		return c.LeaveShop() // its one exit, the Castle, from any step
+	}
 	if err := s.settlePrompt(); err != nil {
 		return err
 	}
-	c := s.ctrl
 	switch {
 	case s.inSettings():
 		s.settings = false
@@ -130,6 +134,8 @@ func (s *Session) returnView() *ReturnView {
 		return nil
 	case g.Town.InputMode == engine.InputTavernPassword:
 		return &ReturnView{Open: true, Note: "Returning cancels the join waiting for its password."}
+	case g.Town.Location == engine.Trading && g.Town.ShopStep == engine.ShopBuyConfirm:
+		return &ReturnView{Open: true, Note: "Returning answers no to Boltac's question: the item is not bought."}
 	}
 	return &ReturnView{Open: true}
 }
@@ -166,6 +172,11 @@ func (s *Session) returnToCastle() error {
 	}
 	if c.Game.Phase != engine.PhaseTown {
 		return app.ErrWrongState
+	}
+	if c.Game.Town.Location == engine.Trading {
+		// RETURN at every step, as the keys do: a question waiting is
+		// answered no, the customer leaves, then Boltac's.
+		return c.LeaveShop()
 	}
 	if err := s.settlePrompt(); err != nil {
 		return err
@@ -234,7 +245,7 @@ func (s *Session) exits() []ExitView {
 		name, full := placeOf(e.To)
 		v := ExitView{Dest: name, Open: e.Refusal == "", Reason: e.Refusal}
 		switch e.To {
-		case engine.Inn, engine.Trading, engine.Temple:
+		case engine.Inn, engine.Temple:
 			if v.Open {
 				v.Open, v.Reason = false, notInWindow(full)
 			} else {
