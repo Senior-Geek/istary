@@ -408,9 +408,8 @@ the Castle (Player's Guide pp.22, 36, 38).
   before anything is changed or drawn. An open town prompt at the location
   is closed by the game's cancel steps, as before. Returning an
   unresumable expedition's party stays open on every town screen.
-- **Reachable by walking (C0-3):** the frame below walks between places;
-  until C0-4 each place shows the earlier all-in-one content, whose
-  buttons answer "Go there first" away from their place.
+- **Each place's own screen (C0-4)** offers only the actions accepted
+  there; Go still refuses them anywhere else.
 - **Tests:** `TestActionsOnlyAtTheirLocations` tries every such action at
   every location (refused elsewhere with the view, the saved roster and
   the random numbers unchanged); the bridge tests walk explicitly with
@@ -447,8 +446,31 @@ frame (`LocationFrame.svelte`), in grid areas that never overlap:
   missing file is the defaults; a damaged or newer one is left as it is,
   the defaults are used with a note (`View.Settings.Note`), and the next
   change replaces it.
-- **Until C0-4** every place shows the earlier all-in-one town content
-  inside the frame.
+- **The town screens (C0-4):** `CastleScreen`, `EdgeScreen`,
+  `TrainingScreen`, `TavernScreen` and `SettingsScreen`, each in the
+  frame; `App.svelte` only routes by `View.Location` and keeps the
+  character sheet. In town the page is one window-high shell: the head and
+  the party bar stay in view and the body between them scrolls, so no
+  control is ever drawn over another. The old all-in-one screen and its
+  `PartyPanel` are gone; the party bar is the only party display.
+  - **Castle:** destinations only.
+  - **Edge of Town:** Enter the maze, practice (Istary only) and Leave the
+    game as actions, each closed with Go's reason (`View.Departures`, from
+    the same `realRefusal`/`practiceRefusal` the actions use);
+    `LeaveGame` closes the window (Wails's Quit), refused elsewhere, while
+    out or creating, and while the last save has failed.
+  - **Training Grounds:** the roster and the Create form; the creation
+    steps unchanged.
+  - **Tavern:** Join, Remove, the Tavern's refusals and the password.
+  - **Settings:** the save folder, Reload, Reset and Restore.
+  - **The recovery banner's "Try resuming again"** is `TryResumeAgain`,
+    accepted anywhere in town while an expedition cannot be resumed.
+  - **Checked live** (Wails dev, headless Chrome) at 760x532, 980x692 and
+    1512x945: the Castle, the Training Grounds and a full character
+    creation, roster inspection, Tavern party assembly, the Edge of Town,
+    an expedition out and back by the stairs, Settings and Leave the game;
+    on every screen every control could be brought into view and was not
+    covered, and the page itself never scrolled.
 - **Tests:** `gui/settings_test.go` (kept across restarts, accepted out on
   an expedition, damaged and unwritable files, roster management leaves it
   alone); `frameViews.test.js` over `frame-views.json` recorded from Go.

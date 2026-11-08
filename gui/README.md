@@ -6,17 +6,25 @@ dungeon (M6a): real expeditions (M6b-1), practice expeditions and practice
 encounters played through `app.Controller`, `app.DungeonView` and
 `app.CombatView`.
 
-> **Development branch (Castle-0, until C0-4):** each action is accepted
-> only at its own town location: joining and leaving the party at the
-> Tavern; creating, renaming and deleting characters at the Training
-> Grounds; real and practice expeditions at the Edge of Town; reload, reset
-> and restore in Settings. Since C0-3 the window shows where the player is
-> and walks there (Back and the destinations at the top of each place),
-> but every place still shows the earlier all-in-one town content, so a
-> button used at the wrong place answers "Go there first". C0-4 gives each
-> place its own screen. Nothing moves the player for an action.
+**Getting around (Castle-0).** The window opens at the Castle, the hub, as
+the original does. Each place has its own screen: its name and Back to the
+Castle at the top, its destinations ("Go to") and its actions apart, its
+picture (a themed panel until artwork exists), and the party bar at the
+bottom, shown or hidden with Hide party.
+- **The Castle:** Gilgamesh's Tavern, the Edge of Town; the Adventurer's
+  Inn, Boltac's Trading Post and the Temple of Cant are shown closed (not
+  in the window yet).
+- **Gilgamesh's Tavern:** form the party: Join, Remove, and the password.
+- **The Edge of Town:** Enter the maze; practice (Istary only); Leave the
+  game; the way to the Training Grounds and to Settings.
+- **The Training Grounds:** the roster (click a character for its sheet,
+  where it can be renamed or deleted) and character creation.
+- **Settings:** the save folder, Reload, Reset roster and Restore roster.
 
-**Real expeditions.** "Real expedition" in the Party column takes the party
+Each action is accepted only at its own place; nothing moves the player
+for an action.
+
+**Real expeditions.** "Enter the maze" at the Edge of Town takes the party
 itself into the maze, to Camp at the entrance. It plays like a practice
 expedition (below), but everything is kept: the game is saved after every
 action. It ends in the castle, by the stairs or with the party's defeat
@@ -27,7 +35,7 @@ While the party is out, the roster, Tavern and Training Grounds wait. A
 save that fails is shown until one succeeds. Only one Istary window can use
 a save folder at a time.
 
-**Practice expeditions.** "Practice expedition" in the Party column takes
+**Practice expeditions.** "Practice expedition" at the Edge of Town takes
 copies of the party into the real maze, to Camp at the entrance.
 - **Moving:** the buttons or the terminal's keys (F/W/↑ forward, L/A/←
   left, R/D/→ right, K kick, C camp, I inspect, Enter, Y/N, button letters).
@@ -42,11 +50,11 @@ copies of the party into the real maze, to Camp at the entrance.
   Leave so far.
 
 **Practice encounters.**
-- **What you fight:** "Practice encounter" in the Party column starts a real
+- **What you fight:** "Practice encounter" at the Edge of Town starts a real
   encounter from the maze entrance, with copies of the party.
 - **Nothing is kept:** the results are discarded and the roster is not
   touched.
-- **The chest option:** "with a chest" adds a chest to try the chest screen.
+- **The chest option:** "the encounter guards a chest" adds a chest to try the chest screen.
 - **The screen** (`frontend/src/lib/CombatScreen.svelte`):
   - order entry with the actions each member may take and why not;
   - target choice and the order review;
