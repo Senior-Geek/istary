@@ -1,5 +1,5 @@
-// Command Istary is the Wails desktop front end. This first prototype covers
-// Wizardry I character creation only.
+// Command Istary is the Wails desktop front end: Wizardry I's town,
+// expeditions, Camp and combat, played through app.Controller.
 package main
 
 import (
@@ -39,7 +39,7 @@ func main() {
 	session := unopenedSession(guiSaveDir())
 
 	err := wails.Run(&options.App{
-		Title:     "Istary — Character Creation",
+		Title:     "Istary",
 		Width:     980,
 		Height:    720,
 		MinWidth:  760,

@@ -915,6 +915,7 @@ export namespace main {
 	    name: string;
 	    class: string;
 	    level: number;
+	    ac: number;
 	    hp: number;
 	    maxHp: number;
 	    status: string;
@@ -932,6 +933,7 @@ export namespace main {
 	        this.name = source["name"];
 	        this.class = source["class"];
 	        this.level = source["level"];
+	        this.ac = source["ac"];
 	        this.hp = source["hp"];
 	        this.maxHp = source["maxHp"];
 	        this.status = source["status"];

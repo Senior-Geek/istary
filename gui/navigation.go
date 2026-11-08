@@ -193,6 +193,7 @@ type PartyBarSlot struct {
 	Name     string `json:"name"`
 	Class    string `json:"class"` // alignment and class, e.g. "G-FIG"
 	Level    int    `json:"level"`
+	AC       int    `json:"ac"`
 	HP       int    `json:"hp"`
 	MaxHP    int    `json:"maxHp"`
 	Status   string `json:"status"`
@@ -215,7 +216,7 @@ func (s *Session) partyBar() []PartyBarSlot {
 			continue
 		}
 		m := members[i]
-		out[i].Name, out[i].Class, out[i].Level = m.Name, engine.AlignClass(m.Alignment, m.Class), m.Level
+		out[i].Name, out[i].Class, out[i].Level, out[i].AC = m.Name, engine.AlignClass(m.Alignment, m.Class), m.Level, m.AC
 		out[i].HP, out[i].MaxHP, out[i].Status, out[i].Poisoned = m.HP, m.MaxHP, m.Status.String(), m.PoisonAmt > 0
 		if g == s.ctrl.Game {
 			out[i].Index = rosterIndex(g, m)

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/fs"
 	"maps"
 	"math/rand"
@@ -307,7 +308,7 @@ func TestPartyBarIsThePartyBeingPlayed(t *testing.T) {
 			continue
 		}
 		q := v.Party[i]
-		if p.Name != q.Name || p.Class != q.Short || p.HP != q.HP || p.MaxHP != q.MaxHP || p.Status != q.Status || p.Index != q.Index {
+		if p.Name != q.Name || p.Class != q.Short || p.AC != q.AC || p.HP != q.HP || p.MaxHP != q.MaxHP || p.Status != q.Status || p.Index != q.Index {
 			t.Fatalf("position %d: %+v, the Tavern shows %+v", i, p, q)
 		}
 	}
@@ -331,7 +332,7 @@ func TestPartyBarIsThePartyBeingPlayed(t *testing.T) {
 		v := s.DungeonAction(act, 0)
 		for _, m := range v.Dungeon.Party {
 			p := v.PartyBar[m.Slot-1]
-			if p.Name != m.Name || p.Class != m.Class || p.HP != m.HP || p.MaxHP != m.MaxHP || p.Status != m.Status || p.Poisoned != m.Poisoned {
+			if p.Name != m.Name || p.Class != m.Class || p.AC != m.AC || p.HP != m.HP || p.MaxHP != m.MaxHP || p.Status != m.Status || p.Poisoned != m.Poisoned {
 				t.Fatalf("after %s: bar %+v, dungeon %+v", act, p, m)
 			}
 		}
@@ -389,5 +390,88 @@ func TestActionsOnlyAtTheirLocations(t *testing.T) {
 			}
 			s.shutdown()
 		}
+	}
+}
+
+// barAgrees fails unless the party bar shows the same members, in the same
+// positions, with the same HP, AC and condition, as the screen's own party.
+func barAgrees(t *testing.T, when string, bar []PartyBarSlot, slot int, name, class string, ac, hp, maxHP int, status string, poisoned bool) {
+	t.Helper()
+	p := bar[slot-1]
+	if p.Name != name || p.Class != class || p.AC != ac || p.HP != hp || p.MaxHP != maxHP || p.Status != status || p.Poisoned != poisoned {
+		t.Fatalf("%s: position %d: bar %+v, the screen %s %s AC %d %d/%d %s poisoned %v", when, slot, p, name, class, ac, hp, maxHP, status, poisoned)
+	}
+}
+
+// Through random play the party bar stays exactly the party each screen
+// shows: in Camp (whose member picks go by position, through reorders and
+// trades), in the maze and back in the castle; in combat, the formation.
+func TestPartyBarFollowsPlay(t *testing.T) {
+	for seed := int64(1); seed <= 4; seed++ {
+		rand.Seed(seed)
+		rng := rand.New(rand.NewSource(seed))
+		s, _ := campSession(t, rng, seed%2 == 0)
+		for step := 0; step < 120; step++ {
+			v := s.State()
+			if v.Camp == nil {
+				break
+			}
+			named := 0
+			for _, p := range v.PartyBar {
+				if p.Name != "" {
+					named++
+				}
+			}
+			if named != len(v.Camp.Party) {
+				t.Fatalf("seed %d step %d: %d on the bar, %d in Camp", seed, step, named, len(v.Camp.Party))
+			}
+			for i, m := range v.Camp.Party {
+				barAgrees(t, fmt.Sprintf("seed %d camp step %d", seed, step), v.PartyBar, i+1, m.Name, m.Short, m.AC, m.HP, m.MaxHP, m.Status, m.Poison > 0)
+			}
+			s.CampAction(pickCamp(v.Camp, rng, step > 100))
+		}
+		s.shutdown()
+	}
+
+	check := func(when string, v View) {
+		t.Helper()
+		switch {
+		case v.Combat != nil:
+			// Combat shows the party as of the event being played back; the
+			// bar has the outcome already, which is why the page does not
+			// show it in combat. The formation is the same.
+			for _, m := range v.Combat.Party {
+				if p := v.PartyBar[m.Slot-1]; p.Name != m.Name || p.Class != m.Class || p.MaxHP != m.MaxHP {
+					t.Fatalf("%s combat: position %d: bar %+v, combat %+v", when, m.Slot, p, m)
+				}
+			}
+		case v.Dungeon != nil:
+			for _, m := range v.Dungeon.Party {
+				barAgrees(t, when+" maze", v.PartyBar, m.Slot, m.Name, m.Class, m.AC, m.HP, m.MaxHP, m.Status, m.Poisoned)
+			}
+		}
+	}
+	for seed := int64(1); seed <= 3; seed++ {
+		rand.Seed(seed)
+		rng := rand.New(rand.NewSource(seed))
+		s, _ := partySession(t, false)
+		s.PracticeEncounter(false)
+		_, views := drive(t, s, rng)
+		for i, v := range views {
+			check(fmt.Sprintf("seed %d encounter view %d", seed, i), v)
+		}
+		s.AbandonPractice()
+		walkTo(t, s, "edge")
+		s.RealExpedition()
+		v := explore(t, s, rng, map[string]int{}, func(v View) { check(fmt.Sprintf("seed %d", seed), v) })
+		if !v.Real {
+			saved := s.ctrl.Game.Town.Party.Members
+			for i, p := range v.PartyBar {
+				if (i < len(saved) && saved[i] != nil && (p.Name != saved[i].Name || p.HP != saved[i].HP)) || (i >= len(saved) && p.Name != "") {
+					t.Fatalf("seed %d: back in the castle, position %d: %+v", seed, i+1, p)
+				}
+			}
+		}
+		s.shutdown()
 	}
 }
