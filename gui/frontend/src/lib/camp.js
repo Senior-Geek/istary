@@ -88,6 +88,19 @@ export function partyPick(camp, slot) {
   return { action }
 }
 
+// pickLabel words what clicking the member in slot does, or null.
+export function pickLabel(camp, slot) {
+  const p = partyPick(camp, slot)
+  return p ? labels[p.action] : null
+}
+
+// placeMark is the member's new place while the party is being reordered
+// ("place 2"), or ''.
+export function placeMark(camp, slot) {
+  const at = camp.view.placed?.indexOf(slot) ?? -1
+  return at >= 0 ? `place ${at + 1}` : ''
+}
+
 // back is the action that leaves the open screen (the Escape key), or null.
 const backs = {
   inspect: 'leave', drop: 'end-drop', trade: 'end-trade', tradeGold: 'end-trade', tradeItem: 'end-trade',

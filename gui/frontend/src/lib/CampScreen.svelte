@@ -4,15 +4,21 @@
   // game state. Choosing which spell to cast or which item to use is only a
   // picker here: nothing is sent until the choice is made.
   //
+  // The party is the shared party bar at the bottom of the dungeon screen
+  // (DungeonScreen): a click on a member there, or the keys 1-6 here, picks
+  // the member where Camp asks for one (pick). Camp's own party sheets
+  // (camp.party) are for the inspected member's details.
+  //
   // Props:
-  //   camp   view.camp
+  //   view   the Go View (view.camp is the Camp panel)
   //   busy   a request is running
   //   call   (fn, ...args) => Promise   runs a Session method and stores the new view
   import * as S from '../../wailsjs/go/main/Session.js'
-  import { condition } from './combat.js'
   import { labels, operation, partyPick, back, buttons, menuOrder, inspectOrder, spellBook, slots, whyNot } from './camp.js'
 
-  let { camp, busy = false, call } = $props()
+  let { view, busy = false, call } = $props()
+
+  const camp = $derived(view.camp)
 
   const v = $derived(camp.view)
   const member = $derived(v.member >= 0 ? camp.party[v.member] : null)
@@ -41,7 +47,9 @@
     else act(b.action)
   }
 
-  function pick(slot) {
+  // pick acts on the member in slot (0-based) where Camp asks for one; the
+  // dungeon screen's party bar calls it too.
+  export function pick(slot) {
     const p = partyPick(camp, slot)
     if (p) act(p.action, { slot })
   }
@@ -68,24 +76,9 @@
     {#if v.message}<span class="msg">{v.message}</span>{/if}
   </div>
 
-  <section class="party" aria-label="Party">
-    {#each camp.party as m, i (m.name)}
-      {@const p = partyPick(camp, i)}
-      {@const placed = v.placed?.indexOf(i) ?? -1}
-      <button class="card {condition(m)}" class:current={i === v.member} class:pickable={!!p}
-        disabled={busy || !p} onclick={() => pick(i)} title={p ? `${labels[p.action]} ${m.name}` : ''}>
-        <span class="line1"><b>{i + 1} {m.name}</b><span>{m.status}</span></span>
-        <span class="line2"><span>{m.short}</span><span>AC {m.ac}</span><span>{m.hp}/{m.maxHp}</span></span>
-        <span class="hp"><i style="width:{Math.max(0, (100 * m.hp) / Math.max(1, m.maxHp))}%"></i></span>
-        {#if m.poison}<span class="poison">poisoned</span>{/if}
-        {#if placed >= 0}<span class="placed">place {placed + 1}</span>{/if}
-      </button>
-    {/each}
-  </section>
-
   {#if v.screen === 'menu'}
     <section class="panel">
-      <p class="muted">Inspect a member: click them above, or press 1–{camp.party.length}.</p>
+      <p class="muted">Inspect a member: click them in the party below, or press 1–{camp.party.length}.</p>
       <div class="row">
         {#each buttons(camp, menuOrder) as b (b.action)}
           <button class:primary={b.action === 'leave-camp'} disabled={busy || !b.enabled} onclick={() => act(b.action)}>{b.label}</button>
@@ -97,7 +90,7 @@
     </section>
   {:else if v.screen === 'reorder'}
     <section class="panel">
-      <p class="muted">Click the members in their new order. The last one takes the last place.</p>
+      <p class="muted">Click the members in the party below in their new order (or press 1–6). The last one takes the last place.</p>
     </section>
   {:else if member}
     <section class="panel inspect">
@@ -172,7 +165,7 @@
             <button class="primary" disabled={busy} onclick={() => act(end)}>{labels[end]}</button>
           </div>
         {:else if v.screen === 'trade'}
-          <p class="muted">Click the member who receives, above.</p>
+          <p class="muted">Click the member who receives, in the party below (or press 1–6).</p>
           <button disabled={busy} onclick={() => act('end-trade')}>{labels['end-trade']}</button>
         {:else if v.screen === 'tradeGold'}
           <form class="row" onsubmit={(e) => { e.preventDefault(); act('trade-gold', { gold: Number(gold) || 0 }); gold = 0 }}>
@@ -203,7 +196,7 @@
           {:else}<p class="muted">{member.name} knows no {v.spellBook} spells.</p>{/if}
           <button disabled={busy} onclick={() => act('close-book')}>{labels['close-book']}</button>
         {:else if v.screen === 'spellTarget'}
-          <p class="muted">Click the member to cast {v.spell} on, above. Cancel keeps the spell.</p>
+          <p class="muted">Click the member to cast {v.spell} on, in the party below (or press 1–6). Cancel keeps the spell.</p>
           <button disabled={busy} onclick={() => act('cancel-cast')}>{labels['cancel-cast']}</button>
         {:else if v.screen === 'dumapic' && v.dumapic}
           <!-- The terminal's words (render/town.go renderDumapicScreen). -->
@@ -220,6 +213,10 @@
       </div>
     </section>
   {/if}
+
+  {#if !(view.settings?.partyVisible ?? true)}
+    <p class="muted">The party is hidden: pick members with the keys 1–{camp.party.length}, or Show party.</p>
+  {/if}
 </div>
 
 <style>
@@ -227,20 +224,6 @@
   .op { display: flex; gap: 14px; align-items: baseline; flex-wrap: wrap; padding: 8px 10px; border-radius: 6px;
     background: var(--panel); border: 1px solid var(--line); }
   .msg { font-family: ui-monospace, Menlo, monospace; color: #f2c14e; }
-  .party { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-  @media (max-width: 720px) { .party { grid-template-columns: repeat(2, 1fr); } }
-  .card { position: relative; display: grid; gap: 3px; text-align: left; padding: 6px 8px; border-radius: 6px;
-    background: var(--panel); border: 1px solid var(--line); color: inherit; font: inherit; }
-  .card:disabled { cursor: default; opacity: 1; }
-  .card.pickable { border-color: var(--accent); cursor: pointer; }
-  .card.current { outline: 2px solid var(--accent); }
-  .card .line1, .card .line2 { display: flex; justify-content: space-between; gap: 6px; font-size: 12px; white-space: nowrap; }
-  .card .hp { display: block; height: 3px; background: #333; border-radius: 2px; }
-  .card .hp i { display: block; height: 100%; background: var(--accent); border-radius: 2px; }
-  .card.dead { opacity: 0.5; border-style: dashed; }
-  .card.paralyzed { background: #1d2430; }
-  .poison { position: absolute; bottom: 2px; right: 6px; color: #7bd36a; font-size: 10px; }
-  .placed { position: absolute; bottom: 2px; left: 8px; color: var(--accent); font-size: 10px; }
   .panel { padding: 10px; border-radius: 6px; border: 1px solid var(--line); }
   .inspect { display: grid; grid-template-columns: minmax(220px, 1fr) 2fr; gap: 16px; }
   @media (max-width: 720px) { .inspect { grid-template-columns: 1fr; } }

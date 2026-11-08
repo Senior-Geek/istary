@@ -33,7 +33,8 @@
   call(S.State)
 
   const sel = $derived(view?.roster?.find((ch) => ch.index === selected))
-  const town = $derived(view && !view.fatal && view.screen !== 'combat' && view.screen !== 'dungeon')
+  // Town and the dungeon (with Camp) fill the window, the party bar in view.
+  const shell = $derived(view && !view.fatal && view.screen !== 'combat')
 
   const select = (index) => { selected = selected === index ? -1 : index }
   const open = (index) => { selected = index }
@@ -48,9 +49,9 @@
   }
 </script>
 
-<main class:shell={town}>
+<main class:shell>
   {#if view}
-    {#if !town}<h1>Istary — Wizardry I</h1>{/if}
+    {#if !shell}<h1>Istary — Wizardry I</h1>{/if}
 
     {#if view.fatal}
       <div class="muted">Saves: {view.saveDir}</div>
@@ -82,7 +83,7 @@
       {#if view.screen === 'combat' && view.combat}
         <CombatScreen {view} {busy} {call} />
       {:else if view.screen === 'dungeon' && view.dungeon}
-        <DungeonScreen {view} {busy} {call} />
+        <div class="place"><DungeonScreen {view} {busy} {call} /></div>
       {:else}
         <div class="place">
           {#if view.location === 'castle'}

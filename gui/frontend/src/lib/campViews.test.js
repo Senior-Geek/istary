@@ -4,7 +4,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { labels, operation, partyPick, back, buttons, menuOrder, inspectOrder, spellBook, whyNot } from './camp.js'
+import { labels, operation, partyPick, pickLabel, placeMark, back, buttons, menuOrder, inspectOrder, spellBook, whyNot } from './camp.js'
 
 const panels = JSON.parse(readFileSync(new URL('./testdata/camp-views.json', import.meta.url)))
 
@@ -105,4 +105,18 @@ test('every spell that cannot be cast is listed once, under its reason', () => {
     assert.deepEqual(names.sort(), (p.view.spells ?? []).filter((sp) => !sp.castable).map((sp) => sp.name).sort())
     for (const g of groups) for (const n of g.names) assert.equal(p.view.spells.find((sp) => sp.name === n).reason, g.reason)
   }
+})
+
+test('the party bar’s Camp picks are the cards’ picks, worded with Go’s actions; reordering marks the new places', () => {
+  for (const p of panels) {
+    p.party.forEach((_, slot) => {
+      const pick = partyPick(p, slot)
+      assert.equal(pickLabel(p, slot), pick ? labels[pick.action] : null)
+      assert.equal(placeMark(p, slot), '')
+    })
+  }
+  // Two members placed while reordering: the third, then the first.
+  const r = panels.find((p) => p.view.screen === 'reorder')
+  const placing = { ...r, view: { ...r.view, placed: [2, 0] } }
+  assert.deepEqual(r.party.map((_, slot) => placeMark(placing, slot)).slice(0, 3), ['place 2', '', 'place 1'])
 })

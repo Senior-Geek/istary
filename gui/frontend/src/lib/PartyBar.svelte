@@ -1,17 +1,23 @@
 <script>
   // The party bar (Castle-0): the six positions of the party being played,
   // the front row and the back row, empty positions included, with each
-  // member's class, level, HP and condition. It renders view.partyBar (Go's;
-  // the practice copies during practice) and nothing else, and reports a
-  // click on a member whose character sheet can be opened.
+  // member's class, level, AC, HP and condition. It renders view.partyBar
+  // (Go's; the practice copies during practice) and nothing else, and
+  // reports a click on a member: in Camp, picking the member for what Camp
+  // asks (pick); elsewhere, opening a character sheet (onopen).
   //
   // Props:
   //   slots     view.partyBar
   //   frontRow  view.frontRow
   //   onopen    (rosterIndex) => void   open the character sheet (optional)
+  //   pick      (slot0) => label | null what a click on the member does in
+  //             Camp, or null if nothing (optional; Camp's partyPick)
+  //   onpick    (slot0) => void         pick the member (with pick)
+  //   current   slot0 of the member Camp is working with, or -1
+  //   mark      (slot0) => string       a note on the card, e.g. "place 2"
   import { formation, condition, unwell, hpShare, canOpen } from './party.js'
 
-  let { slots = [], frontRow = 3, onopen } = $props()
+  let { slots = [], frontRow = 3, onopen, pick, onpick, current = -1, mark, busy = false } = $props()
 
   const rows = $derived(formation(slots, frontRow))
 </script>
@@ -23,9 +29,10 @@
     <span class="meta">{p.class} · Lv {p.level}</span>
     <span class="hp" title="HP {p.hp} of {p.maxHp}">
       <span class="value">{p.hp}/{p.maxHp}</span>
+      <span class="ac">AC {p.ac}</span>
       <span class="bar"><span style:width="{hpShare(p) * 100}%"></span></span>
     </span>
-    <span class="cond" class:bad={unwell(p)}>{condition(p)}</span>
+    <span class="cond" class:bad={unwell(p)}>{condition(p)}{#if mark?.(p.slot - 1)}<span class="mark"> · {mark(p.slot - 1)}</span>{/if}</span>
   {:else}
     <span class="muted empty">empty</span>
   {/if}
@@ -37,7 +44,15 @@
       <div class="label">{row.label} <span class="muted">· {row.note}</span></div>
       <div class="slots">
         {#each row.slots as p (p.slot)}
-          {#if onopen && canOpen(p)}
+          {@const what = p.name && pick ? pick(p.slot - 1) : null}
+          {#if pick}
+            {#if what}
+              <button class="slot pickable" class:current={current === p.slot - 1} disabled={busy}
+                onclick={() => onpick?.(p.slot - 1)} aria-label="{what} {p.name}" title="{what} {p.name}">{@render member(p)}</button>
+            {:else}
+              <div class="slot" class:vacant={!p.name} class:current={current === p.slot - 1} title={p.name || null}>{@render member(p)}</div>
+            {/if}
+          {:else if onopen && canOpen(p)}
             <button class="slot" onclick={() => onopen(p.index)} aria-label="{p.name}: open the character sheet">{@render member(p)}</button>
           {:else}
             <div class="slot" class:vacant={!p.name} title={p.name || null}>{@render member(p)}</div>
@@ -64,12 +79,16 @@
   button.slot { cursor: pointer; color: var(--text); }
   button.slot:hover { border-color: var(--accent); }
   .slot.vacant { background: transparent; border-style: dashed; }
+  button.slot.pickable { border-color: var(--accent); }
+  .slot.current { outline: 2px solid var(--accent); outline-offset: -1px; }
+  .mark { color: var(--accent); }
   .num { grid-area: num; color: var(--muted); font-variant-numeric: tabular-nums; align-self: start; }
   .name { grid-area: name; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .meta { grid-area: meta; font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .hp { grid-area: hp; display: flex; gap: 6px; align-items: center; }
-  .hp .value { font-variant-numeric: tabular-nums; min-width: 42px; }
-  .bar { flex: 1; height: 4px; background: #333; border-radius: 2px; overflow: hidden; }
+  .hp .value { font-variant-numeric: tabular-nums; }
+  .hp .ac { font-size: 11px; color: var(--muted); white-space: nowrap; }
+  .bar { flex: 1; min-width: 16px; height: 4px; background: #333; border-radius: 2px; overflow: hidden; }
   .bar span { display: block; height: 100%; background: var(--accent); }
   .cond { grid-area: cond; font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .cond.bad { color: var(--error); }
