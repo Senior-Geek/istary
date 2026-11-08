@@ -303,6 +303,32 @@ A Camp checkpoint records Camp's screen and every Camp field
 (`engine.CampScreen`, by name), and `Resume` restores them exactly. An equip
 or trade interrupted half-way, or an open DUMAPIC, comes back as it was.
 
+**Camp in the GUI (M6b-3B).** `Session.CampAction(CampRequest)` (`gui/camp.go`)
+runs one of the actions `CampView` lists, through its operation above; like
+every dungeon action it is saved with its checkpoint on a real expedition and
+saves nothing on a practice one. `View.Camp` (`CampPanel`) carries the
+`CampView`, each party member's sheet (`CharacterView`, built from the game
+being played, so a practice party's copies too) and, for the menu, why an
+action is unavailable. `CampView` also lists the inspected character's known
+spells (`CampSpellView`): castable, or why not (no effect in Camp, no slots
+left, not the character's book, MALOR). Anti-magic is not shown; only casting
+reveals it.
+
+- **Not offered:** D)ISBAND (finding #26, until M6b-4), MALOR (#25) and
+  spells with no effect in Camp (#33, which the game would waste). The
+  bridge refuses each with its reason before anything is pressed, and the
+  page shows them disabled with that reason. No bound method takes keys.
+- **The page** (`CampScreen.svelte`, helpers in `lib/camp.js`): the party
+  strip (click or 1-6 to pick a member where the screen asks for one), the
+  operation under way, the inspected character's sheet, and each screen's
+  controls; Escape takes the screen's way back. Choosing which spell to cast
+  or item to use is a picker only; nothing is sent until the choice.
+- **Tests:** the bridge against the terminal's keys on a copy of the same
+  save (states, random numbers and panels), restarts on every Camp screen
+  against uninterrupted play, the refusals (the save unchanged), practice
+  isolation, unknown item names, and a recorded fixture for the page's
+  helpers (`testdata/camp-views.json`).
+
 ## Still terminal-only
 
 - Every other phase and prompt goes through `legacyDispatch`: title, castle
@@ -373,8 +399,8 @@ always through the game's own leave/enter steps. See
 - **The screen** (`DungeonScreen.svelte`): a wireframe of the corridor
   (`lib/dungeon.js`), the messages, the party, and the actions with the
   terminal's keys. It is a placeholder, not the Classic renderer.
-- **Not yet:** saved positions and resuming (M6b-2), rescue and recovery
-  (M6b-4); Camp's other screens in the GUI (M6b-3B; the controller has them, M6b-3A).
+- **Not yet:** rescue and recovery (M6b-4). Camp is in the GUI since M6b-3B
+  (below), except Disband and MALOR.
 
 **Real expeditions (M6b-1).** `RealExpedition()` takes the party itself,
 in the saved game, through the same dungeon, combat and chest operations.

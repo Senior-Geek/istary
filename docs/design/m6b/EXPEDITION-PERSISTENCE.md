@@ -333,6 +333,8 @@ R1 to R3 (rescue) remain open for M6b-4.
   single-writer lock (section 13).
 - **M6b-3A:** Camp in the controller; Camp checkpoints keep the open Camp
   screen (section 13).
+- **M6b-3B:** Camp in the GUI (`CampAction`), saved with its checkpoint
+  after every action; Disband and MALOR are not offered.
 
 ## 13. M6b-2 as built
 
