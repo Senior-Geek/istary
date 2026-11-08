@@ -226,18 +226,12 @@ func shopInput(game *engine.GameState, town *engine.TownState, ch rune) {
 				itemIdx := poss.ItemIndex
 				if itemIdx >= 0 && itemIdx < len(items) {
 					item := items[itemIdx]
-					// Check cursed — p-code IC 2926-2962
-					if poss.Cursed {
-						town.Message = "** WE DONT BUY CURSED ITEMS **"
+					sellPrice, refusal := sellQuote(item, poss)
+					if refusal != "" {
+						town.Message = refusal
 						town.ShopStep = engine.ShopMain // XIT back to main
 						return
 					}
-					// Sell price: half price, or 1 GP if unidentified — p-code IC 2731-2768
-					sellPrice := item.Price / 2
-					if !poss.Identified {
-						sellPrice = 1
-					}
-					// Check can afford (always true for sell, but fee check is shared)
 					// Gold transfer: add sell price — p-code IC 3150-3162 (CXP proc=5)
 					c.Gold += sellPrice
 					// Remove item — p-code IC 3211-3308
@@ -261,17 +255,10 @@ func shopInput(game *engine.GameState, town *engine.TownState, ch rune) {
 				itemIdx := poss.ItemIndex
 				if itemIdx >= 0 && itemIdx < len(items) {
 					item := items[itemIdx]
-					// Must be cursed — p-code IC 2966-2990
-					if !poss.Cursed {
-						town.Message = "** THAT IS NOT A CURSED ITEM **"
+					fee, refusal := uncurseQuote(c, item, poss)
+					if refusal != "" {
+						town.Message = refusal
 						town.ShopStep = engine.ShopMain // XIT back to main
-						return
-					}
-					// Fee = half price — p-code IC 3088-3105
-					fee := item.Price / 2
-					if c.Gold < fee {
-						town.Message = "** YOU CANT AFFORD THE FEE **"
-						town.ShopStep = engine.ShopMain
 						return
 					}
 					// Subtract fee — p-code IC 3167-3179 (CXP proc=6)
@@ -297,17 +284,10 @@ func shopInput(game *engine.GameState, town *engine.TownState, ch rune) {
 				itemIdx := poss.ItemIndex
 				if itemIdx >= 0 && itemIdx < len(items) {
 					item := items[itemIdx]
-					// Already identified — p-code IC 3028-3051
-					if poss.Identified {
-						town.Message = "** THAT HAS BEEN IDENTIFIED **"
+					fee, refusal := identifyQuote(c, item, poss)
+					if refusal != "" {
+						town.Message = refusal
 						town.ShopStep = engine.ShopMain // XIT back to main
-						return
-					}
-					// Fee = half price — p-code IC 3088-3105
-					fee := item.Price / 2
-					if c.Gold < fee {
-						town.Message = "** YOU CANT AFFORD THE FEE **"
-						town.ShopStep = engine.ShopMain
 						return
 					}
 					// Subtract fee — p-code IC 3167-3179
@@ -321,30 +301,26 @@ func shopInput(game *engine.GameState, town *engine.TownState, ch rune) {
 	}
 }
 
-// shopBuyItem executes a purchase from the buy catalog.
-// From p-code CLP 15 (IC 1589-2166): validates stock, capacity, gold, class.
+// shopBuyItem executes a purchase from the buy catalog: the item in place
+// pageSlot (0-based) on the page shown.
 func shopBuyItem(game *engine.GameState, town *engine.TownState, pageSlot int) {
+	shopBuy(game, town, town.ShopPage[pageSlot])
+}
+
+// shopBuy buys item for the customer, or refuses.
+// From p-code CLP 15 (IC 1589-2166): validates stock, capacity, gold, class.
+func shopBuy(game *engine.GameState, town *engine.TownState, itemIdx int) {
 	items := game.Scenario.Items
 	c := town.ShopChar
-	itemIdx := town.ShopPage[pageSlot]
 	if itemIdx < 0 || itemIdx >= len(items) {
 		return
 	}
 	item := items[itemIdx]
-	if game.Stock(itemIdx) == 0 {
-		town.Message = "** YOU BOUGHT THE LAST ONE **"
+	refusal, unusable := buyQuote(game, c, itemIdx)
+	if refusal != "" {
+		town.Message = refusal
 		return
 	}
-	if c.ItemCount >= 8 {
-		town.Message = "** YOU CANT CARRY ANYTHING MORE **"
-		return
-	}
-	if c.Gold < item.Price {
-		town.Message = "** YOU CANNOT AFFORD IT **"
-		return
-	}
-	// Class usability check — p-code IC 1863-1880
-	unusable := item.ClassUse != 0 && (item.ClassUse&(1<<uint(c.Class))) == 0
 	if unusable {
 		// "UNUSABLE ITEM - CONFIRM BUY (Y/N) ? >" — p-code IC 1899
 		town.Message = "UNUSABLE ITEM - CONFIRM BUY (Y/N) ? >"
@@ -360,6 +336,71 @@ func shopBuyItem(game *engine.GameState, town *engine.TownState, pageSlot int) {
 		game.SetStock(itemIdx, n-1)
 	}
 	town.Message = "** JUST WHAT YOU NEEDED **"
+}
+
+// Boltac's answers. The checks below are the only place they are decided:
+// the shop's keys and operations act on them, and ShopView reports them.
+
+// buyQuote is Boltac's answer to c buying itemIdx now, in the game's order
+// (stock, room, gold): a refusal, or "" with unusable set when he asks
+// first because c's class cannot use it (p-code IC 1863-1880).
+func buyQuote(game *engine.GameState, c *engine.Character, itemIdx int) (refusal string, unusable bool) {
+	item := game.Scenario.Items[itemIdx]
+	switch {
+	case game.Stock(itemIdx) == 0:
+		return "** YOU BOUGHT THE LAST ONE **", false
+	case c.ItemCount >= 8:
+		return "** YOU CANT CARRY ANYTHING MORE **", false
+	case c.Gold < item.Price:
+		return "** YOU CANNOT AFFORD IT **", false
+	}
+	return "", !usableBy(item, c)
+}
+
+// usableBy reports whether c's class can use item (its class bits).
+func usableBy(item data.Item, c *engine.Character) bool {
+	return item.ClassUse == 0 || item.ClassUse&(1<<uint(c.Class)) != 0
+}
+
+// sellQuote is what Boltac pays for poss: half the price, or 1 GP if it is
+// not identified (p-code IC 2731-2768); he does not buy a cursed item
+// (IC 2926-2962).
+func sellQuote(item data.Item, poss engine.Possession) (price int, refusal string) {
+	price = item.Price / 2
+	if !poss.Identified {
+		price = 1
+	}
+	if poss.Cursed {
+		return price, "** WE DONT BUY CURSED ITEMS **"
+	}
+	return price, ""
+}
+
+// uncurseQuote is Boltac's fee to uncurse poss, half the price (IC
+// 3088-3105), and why he will not: it is not cursed (IC 2966-2990), or c
+// cannot pay.
+func uncurseQuote(c *engine.Character, item data.Item, poss engine.Possession) (fee int, refusal string) {
+	fee = item.Price / 2
+	switch {
+	case !poss.Cursed:
+		return fee, "** THAT IS NOT A CURSED ITEM **"
+	case c.Gold < fee:
+		return fee, "** YOU CANT AFFORD THE FEE **"
+	}
+	return fee, ""
+}
+
+// identifyQuote is Boltac's fee to identify poss, half the price, and why he
+// will not: it is identified already (IC 3028-3051), or c cannot pay.
+func identifyQuote(c *engine.Character, item data.Item, poss engine.Possession) (fee int, refusal string) {
+	fee = item.Price / 2
+	switch {
+	case poss.Identified:
+		return fee, "** THAT HAS BEEN IDENTIFIED **"
+	case c.Gold < fee:
+		return fee, "** YOU CANT AFFORD THE FEE **"
+	}
+	return fee, ""
 }
 
 // shopReturn is RETURN (or Escape) at Boltac's with no prompt open.
