@@ -101,7 +101,7 @@ func shopState(g *engine.GameState) string {
 	}
 	b.WriteString(" | stock")
 	for _, i := range []int{itemLongSword, itemChainMail, itemHelm, itemShortSword1, itemScrollHalito, itemLongSwordM1, itemLeatherM1, itemPlateMail1} {
-		fmt.Fprintf(&b, " %d:%d", i, g.Scenario.Items[i].Stock)
+		fmt.Fprintf(&b, " %d:%d", i, g.Stock(i))
 	}
 	return b.String()
 }
@@ -249,8 +249,8 @@ func TestShopRules(t *testing.T) {
 		if f.Gold != 2000-25 || f.ItemCount != 1 || f.Items[0] != (engine.Possession{ItemIndex: itemLongSword, Identified: true}) {
 			t.Errorf("a long sword: gold %d, items %v", f.Gold, f.Items[:f.ItemCount])
 		}
-		if g.Town.Message != "** JUST WHAT YOU NEEDED **" || g.Scenario.Items[itemLongSword].Stock != -1 {
-			t.Errorf("message %q, unlimited stock %d", g.Town.Message, g.Scenario.Items[itemLongSword].Stock)
+		if g.Town.Message != "** JUST WHAT YOU NEEDED **" || g.Stock(itemLongSword) != -1 {
+			t.Errorf("message %q, unlimited stock %d", g.Town.Message, g.Stock(itemLongSword))
 		}
 		for f.ItemCount < 8 {
 			d.keys("P1")
@@ -282,8 +282,8 @@ func TestShopRules(t *testing.T) {
 				t.Fatal("SHORT SWORD+1 is not in the catalog")
 			}
 			d.keys("P" + fmt.Sprint(slot))
-			if g.Scenario.Items[itemShortSword1].Stock != want {
-				t.Fatalf("stock %d, want %d", g.Scenario.Items[itemShortSword1].Stock, want)
+			if g.Stock(itemShortSword1) != want {
+				t.Fatalf("stock %d, want %d", g.Stock(itemShortSword1), want)
 			}
 		}
 		d.keys("S")
@@ -329,8 +329,8 @@ func TestShopRules(t *testing.T) {
 		if d.keys("S4"); g.Town.Message != "** WE DONT BUY CURSED ITEMS **" || b.ItemCount != 6 || g.Town.ShopStep != engine.ShopMain {
 			t.Errorf("cursed: %q", g.Town.Message)
 		}
-		if d.keys("S3"); b.Gold != 601 || b.ItemCount != 5 || g.Scenario.Items[itemScrollHalito].Stock != 28 {
-			t.Errorf("unidentified: gold %d, stock %d (B6: 1 GP)", b.Gold, g.Scenario.Items[itemScrollHalito].Stock)
+		if d.keys("S3"); b.Gold != 601 || b.ItemCount != 5 || g.Stock(itemScrollHalito) != 28 {
+			t.Errorf("unidentified: gold %d, stock %d (B6: 1 GP)", b.Gold, g.Stock(itemScrollHalito))
 		}
 		if d.keys("S1"); b.Gold != 606 || b.ItemCount != 4 || b.AC != 7 || g.Town.Message != "** ANYTHING ELSE, SIRE? **" {
 			t.Errorf("equipped staff: gold %d, AC %d (B7 no question, #35 AC kept)", b.Gold, b.AC)
@@ -343,8 +343,8 @@ func TestShopRules(t *testing.T) {
 		f.Items[1] = engine.Possession{ItemIndex: itemLongSword, Identified: true}
 		f.ItemCount = 2
 		shopAs(d, 1).keys("S1S1")
-		if g.Scenario.Items[itemPlateMail1].Stock != 1 || g.Scenario.Items[itemLongSword].Stock != -1 || f.Gold != 2000+750+12 {
-			t.Errorf("stock %d / %d, gold %d", g.Scenario.Items[itemPlateMail1].Stock, g.Scenario.Items[itemLongSword].Stock, f.Gold)
+		if g.Stock(itemPlateMail1) != 1 || g.Stock(itemLongSword) != -1 || f.Gold != 2000+750+12 {
+			t.Errorf("stock %d / %d, gold %d", g.Stock(itemPlateMail1), g.Stock(itemLongSword), f.Gold)
 		}
 	})
 	t.Run("uncursing", func(t *testing.T) {
@@ -359,8 +359,8 @@ func TestShopRules(t *testing.T) {
 			t.Errorf("fee: %q", g.Town.Message)
 		}
 		b.Gold = 750
-		if d.keys("U6"); b.Gold != 0 || b.ItemCount != 5 || g.Scenario.Items[itemLeatherM1].Stock != 2 {
-			t.Errorf("uncursed: gold %d, items %d, stock %d", b.Gold, b.ItemCount, g.Scenario.Items[itemLeatherM1].Stock)
+		if d.keys("U6"); b.Gold != 0 || b.ItemCount != 5 || g.Stock(itemLeatherM1) != 2 {
+			t.Errorf("uncursed: gold %d, items %d, stock %d", b.Gold, b.ItemCount, g.Stock(itemLeatherM1))
 		}
 	})
 	t.Run("identifying", func(t *testing.T) {
@@ -404,4 +404,54 @@ func snapshotSave(t *testing.T, g *engine.GameState) string {
 		t.Fatal(err)
 	}
 	return string(raw)
+}
+
+// Stock is the game's own (M8-1): buying a limited item out in one game
+// leaves the scenario, and another game on the same scenario, as they were;
+// that game still lists and sells the item.
+func TestShopStockIsTheGames(t *testing.T) {
+	g, d := shopGame(t)
+	g.Town.Party.Members[0].Gold = 1 << 20
+	other := engine.New(g.Scenario)
+	other.Title, other.Phase = nil, engine.PhaseTown
+	for _, c := range g.Town.Party.Members {
+		cp := *c
+		other.Town.Roster.Add(&cp)
+		other.Town.Party.Members = append(other.Town.Party.Members, &cp)
+	}
+	listed := func(g *engine.GameState, d *driver, item int) bool {
+		d.keys("S")
+		for i := 0; i < 8; i++ {
+			for _, idx := range g.Town.ShopPage {
+				if idx == item {
+					return true
+				}
+			}
+			d.keys("F")
+		}
+		return false
+	}
+	shopAs(d, 1).keys("B")
+	for g.Stock(itemShortSword1) > 0 {
+		if !listed(g, d, itemShortSword1) {
+			t.Fatal("SHORT SWORD+1 not listed")
+		}
+		for slot, idx := range g.Town.ShopPage {
+			if idx == itemShortSword1 {
+				d.keys("P" + fmt.Sprint(slot+1))
+				break
+			}
+		}
+	}
+	if listed(g, d, itemShortSword1) {
+		t.Error("sold out, still listed")
+	}
+	if g.Scenario.Items[itemShortSword1].Stock != 2 {
+		t.Errorf("the scenario's stock changed to %d", g.Scenario.Items[itemShortSword1].Stock)
+	}
+	od := newDriver(t, other)
+	shopAs(od, 1).keys("B")
+	if other.Stock(itemShortSword1) != 2 || !listed(other, od, itemShortSword1) {
+		t.Errorf("the other game: stock %d", other.Stock(itemShortSword1))
+	}
 }

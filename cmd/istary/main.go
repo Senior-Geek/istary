@@ -1200,7 +1200,7 @@ func handleTempleReturn(game *engine.GameState, town *engine.TownState) {
 // fillShopBuyPage populates town.ShopPage with up to 6 item indices starting
 // from town.ShopCatalog, skipping items with stock==0. Wraps around the item
 // table (items 1..N, skipping item 0). From p-code CLP 13 (IC 1100-1306).
-func fillShopBuyPage(town *engine.TownState, items []data.Item, forward bool) {
+func fillShopBuyPage(game *engine.GameState, town *engine.TownState, items []data.Item, forward bool) {
 	total := len(items)
 	if total <= 1 {
 		for i := range town.ShopPage {
@@ -1219,7 +1219,7 @@ func fillShopBuyPage(town *engine.TownState, items []data.Item, forward bool) {
 				if idx >= total {
 					idx = 1 // wrap to item 1 (skip item 0)
 				}
-				if items[idx].Stock != 0 && !items[idx].Cursed {
+				if game.Stock(idx) != 0 && !items[idx].Cursed {
 					town.ShopPage[slot] = idx
 					found = true
 					break
@@ -1239,7 +1239,7 @@ func fillShopBuyPage(town *engine.TownState, items []data.Item, forward bool) {
 				if idx < 1 {
 					idx = total - 1 // wrap to last item
 				}
-				if items[idx].Stock != 0 && !items[idx].Cursed {
+				if game.Stock(idx) != 0 && !items[idx].Cursed {
 					town.ShopPage[slot] = idx
 					found = true
 					break
@@ -1287,7 +1287,7 @@ func handleShopInput(game *engine.GameState, town *engine.TownState, ch rune) {
 		case 'B':
 			town.ShopStep = engine.ShopBuy
 			town.ShopCatalog = 0
-			fillShopBuyPage(town, items, true)
+			fillShopBuyPage(game, town, items, true)
 			town.Message = ""
 		case 'S':
 			if town.ShopChar.ItemCount == 0 {
@@ -1319,14 +1319,14 @@ func handleShopInput(game *engine.GameState, town *engine.TownState, ch rune) {
 		// P=purchase, F=forward, B=back, S=start, L=leave
 		switch ch {
 		case 'F':
-			fillShopBuyPage(town, items, true)
+			fillShopBuyPage(game, town, items, true)
 			town.Message = ""
 		case 'B':
-			fillShopBuyPage(town, items, false)
+			fillShopBuyPage(game, town, items, false)
 			town.Message = ""
 		case 'S':
 			town.ShopCatalog = 0
-			fillShopBuyPage(town, items, true)
+			fillShopBuyPage(game, town, items, true)
 			town.Message = ""
 		case 'P':
 			town.InputMode = engine.InputShopPurchase
@@ -1347,8 +1347,8 @@ func handleShopInput(game *engine.GameState, town *engine.TownState, ch rune) {
 				item := items[itemIdx]
 				c.Gold -= item.Price
 				c.AddItem(itemIdx, true)
-				if item.Stock > 0 {
-					game.Scenario.Items[itemIdx].Stock--
+				if n := game.Stock(itemIdx); n > 0 {
+					game.SetStock(itemIdx, n-1)
 				}
 				town.Message = "** ITS YOUR MONEY **"
 			}
@@ -1385,8 +1385,8 @@ func handleShopInput(game *engine.GameState, town *engine.TownState, ch rune) {
 					// Remove item — p-code IC 3211-3308
 					c.DropItem(idx)
 					// Increment stock — p-code IC 3337-3357
-					if item.Stock > -1 {
-						game.Scenario.Items[itemIdx].Stock++
+					if n := game.Stock(itemIdx); n > -1 {
+						game.SetStock(itemIdx, n+1)
 					}
 					town.Message = "** ANYTHING ELSE, SIRE? **"
 				}
@@ -1421,8 +1421,8 @@ func handleShopInput(game *engine.GameState, town *engine.TownState, ch rune) {
 					// Remove item — p-code IC 3211-3308
 					c.DropItem(idx)
 					// Increment stock — p-code IC 3337-3357
-					if item.Stock > -1 {
-						game.Scenario.Items[itemIdx].Stock++
+					if n := game.Stock(itemIdx); n > -1 {
+						game.SetStock(itemIdx, n+1)
 					}
 					town.Message = "** ANYTHING ELSE, SIRE? **"
 				}
@@ -1473,7 +1473,7 @@ func shopBuyItem(game *engine.GameState, town *engine.TownState, pageSlot int) {
 		return
 	}
 	item := items[itemIdx]
-	if item.Stock == 0 {
+	if game.Stock(itemIdx) == 0 {
 		town.Message = "** YOU BOUGHT THE LAST ONE **"
 		return
 	}
@@ -1498,8 +1498,8 @@ func shopBuyItem(game *engine.GameState, town *engine.TownState, pageSlot int) {
 	c.Gold -= item.Price
 	c.AddItem(itemIdx, true) // purchased items are identified — you know what you bought
 	// Decrement stock — p-code IC 2072-2084
-	if item.Stock > 0 {
-		game.Scenario.Items[itemIdx].Stock--
+	if n := game.Stock(itemIdx); n > 0 {
+		game.SetStock(itemIdx, n-1)
 	}
 	town.Message = "** JUST WHAT YOU NEEDED **"
 }

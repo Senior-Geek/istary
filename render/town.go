@@ -397,7 +397,7 @@ func (s *Screen) renderTradingMenu(x, y int, game *engine.GameState) {
 				}
 				item := items[itemIdx]
 				// Skip items with 0 stock
-				if item.Stock == 0 {
+				if game.Stock(itemIdx) == 0 {
 					continue
 				}
 				line := fmt.Sprintf("%d)%15s %d", i+1, item.Name, item.Price)
