@@ -92,6 +92,13 @@ func writeFileAtomic(path string, data []byte, perm fs.FileMode) error {
 	return nil
 }
 
+// WriteFileAtomic is writeFileAtomic for files a front end keeps beside
+// the save, such as the desktop GUI's own settings: the same replacement
+// and durability, and the same errors.
+func WriteFileAtomic(path string, data []byte, perm fs.FileMode) error {
+	return writeFileAtomic(path, data, perm)
+}
+
 // NotDurableError is a save that replaced the old file but could not sync
 // the folder afterwards: the new contents are in place and are read back,
 // but may not survive a crash or power loss. Any other save error means the
