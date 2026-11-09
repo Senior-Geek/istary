@@ -73,6 +73,9 @@ func (c *Controller) townKey(k Key) bool {
 		case engine.Inn:
 			c.innKey(k)
 			return true
+		case engine.Temple:
+			c.templeKey(k)
+			return true
 		case engine.Castle:
 			if k.Kind == KeyRune && upper(k.Rune) == 'B' {
 				c.castleShopKey()
@@ -82,9 +85,16 @@ func (c *Controller) townKey(k Key) bool {
 				c.castleInnKey()
 				return true
 			}
+			if k.Kind == KeyRune && upper(k.Rune) == 'C' {
+				c.castleTempleKey()
+				return true
+			}
 		}
 	case engine.InputShopPurchase:
 		c.shopPurchaseKey(k)
+		return true
+	case engine.InputTempleHelp:
+		c.templeNameKey(k)
 		return true
 	case engine.InputTrainingName, engine.InputRoster, engine.InputConfirmCreate,
 		engine.InputPassword, engine.InputConfirmDelete:

@@ -618,10 +618,6 @@ func handleTownInput(game *engine.GameState, ev *tcell.EventKey) bool {
 
 	// [RETURN] = leave (context-dependent)
 	if ev.Key() == tcell.KeyEnter || ev.Key() == tcell.KeyEscape {
-		if town.Location == engine.Temple {
-			handleTempleReturn(game, town)
-			return false
-		}
 		if town.Location != engine.Castle {
 			app.GoToCastle(town)
 			return false
@@ -645,20 +641,8 @@ func handleTownInput(game *engine.GameState, ev *tcell.EventKey) bool {
 		switch ch {
 		case 'G':
 			town.Location = engine.Tavern
-		// A (the Inn) and B (Boltac's) are handled by app.Controller
-		// (app/inn.go, app/shop.go).
-		case 'C':
-			if town.Party.Size() == 0 {
-				town.Message = "YOU HAVE NO PARTY!"
-			} else {
-				town.Location = engine.Temple
-				town.TempleStep = engine.TempleWho
-				town.TempleChar = nil
-				town.TempleCost = 0
-				town.TempleMessages = nil
-				town.InputMode = engine.InputTempleHelp
-				town.InputBuf = ""
-			}
+		// A (the Inn), B (Boltac's) and C (the Temple) are handled by
+		// app.Controller (app/inn.go, app/shop.go, app/temple.go).
 		case 'E':
 			town.Location = engine.EdgeOfTown
 		case 'Q':
@@ -669,8 +653,7 @@ func handleTownInput(game *engine.GameState, ev *tcell.EventKey) bool {
 
 	// Boltac's Trading Post is handled by app.Controller (app/shop.go).
 
-	case engine.Temple:
-		handleTempleInput(game, town, ch)
+	// The Temple is handled by app.Controller (app/temple.go).
 
 	case engine.EdgeOfTown:
 		// From p-code: M/T/C/L when party exists, T/C/L when no party
@@ -691,11 +674,6 @@ func handleTownInput(game *engine.GameState, ev *tcell.EventKey) bool {
 // handleTownPrompt handles text input at a "WHO WILL JOIN ? >" style prompt.
 func handleTownPrompt(game *engine.GameState, ev *tcell.EventKey) bool {
 	town := game.Town
-
-	// Temple name input — "WHO ARE YOU HELPING ? >"
-	if town.InputMode == engine.InputTempleHelp {
-		return handleTempleNameInput(game, ev)
-	}
 
 
 	// Set new password — from ROLLER proc 3 (IC 4480-4816)
@@ -827,177 +805,6 @@ func handleTownPrompt(game *engine.GameState, ev *tcell.EventKey) bool {
 	return false
 }
 
-// handleTempleNameInput handles text input at "WHO ARE YOU HELPING ? >".
-// From SHOPS segment p-code proc 28 (IC 76-436):
-//   Read name, search roster, check status, display result.
-func handleTempleNameInput(game *engine.GameState, ev *tcell.EventKey) bool {
-	town := game.Town
-
-	switch ev.Key() {
-	case tcell.KeyEscape:
-		// ESC exits temple
-		town.InputMode = engine.InputNone
-		town.InputBuf = ""
-		app.GoToCastle(town)
-		return false
-	case tcell.KeyBackspace, tcell.KeyBackspace2:
-		if len(town.InputBuf) > 0 {
-			town.InputBuf = town.InputBuf[:len(town.InputBuf)-1]
-		}
-	case tcell.KeyEnter:
-		name := strings.TrimSpace(town.InputBuf)
-		if name == "" {
-			// Empty name = exit temple (from p-code: empty string → EXIT)
-			town.InputMode = engine.InputNone
-			town.InputBuf = ""
-			app.GoToCastle(town)
-			return false
-		}
-
-		// Search roster for character by name (case-insensitive)
-		// From p-code proc 28 (IC 205-299): loop through roster comparing names
-		var found *engine.Character
-		for _, c := range town.Roster.Characters {
-			if c == nil {
-				continue
-			}
-			if strings.EqualFold(c.Name, name) {
-				found = c
-				break
-			}
-		}
-
-		if found == nil {
-			// Character not found — silent return to name prompt
-			// (p-code just loops back to "WHO ARE YOU HELPING")
-			town.InputBuf = ""
-			town.Message = ""
-			return false
-		}
-
-		// Check if character is lost — from p-code proc 28 (IC 374-396)
-		if found.Status == engine.Lost {
-			town.Message = found.Name + " IS LOST"
-			town.InputBuf = ""
-			return false
-		}
-
-		// Check if character is OK — from p-code proc 28 (IC 397-416)
-		if found.Status == engine.OK {
-			town.Message = found.Name + " IS OK"
-			town.InputBuf = ""
-			return false
-		}
-
-		// Character needs healing — check if they need temple services
-		// Statuses that temple can handle: Paralyzed, Stoned, Dead, Ashed
-		cost := engine.TempleDonation(found.Status, found.Level)
-		if cost == 0 {
-			// Asleep/Afraid — not handled by temple (will be OK after resting)
-			town.Message = found.Name + " IS OK"
-			town.InputBuf = ""
-			return false
-		}
-
-		// Set up donation display
-		town.TempleChar = found
-		town.TempleCost = cost
-		town.TempleStep = engine.TempleTithe
-		town.InputMode = engine.InputNone
-		town.InputBuf = ""
-		town.Message = ""
-	case tcell.KeyRune:
-		ch := ev.Rune()
-		if len(town.InputBuf) < 15 {
-			town.InputBuf += string(ch)
-		}
-	}
-	return false
-}
-
-// handleTempleInput handles key presses at the temple based on current TempleStep.
-// From SHOPS segment p-code procs 27/23/25.
-func handleTempleInput(game *engine.GameState, town *engine.TownState, ch rune) {
-	switch town.TempleStep {
-	case engine.TempleWho:
-		// Text input mode — handled by handleTempleNameInput via InputTempleHelp
-		// If we get here, the user pressed a key while in TempleWho without InputMode set
-		town.InputMode = engine.InputTempleHelp
-		town.InputBuf = string(ch)
-
-	case engine.TempleTithe:
-		// "WHO WILL TITHE" — select party member (1-6)
-		// From p-code proc 27 (IC 561-597): WIZARDRY.proc15 reads party member selection
-		if ch >= '1' && ch <= '6' {
-			idx := int(ch-'0') - 1
-			if idx < len(town.Party.Members) && town.Party.Members[idx] != nil {
-				payer := town.Party.Members[idx]
-				// Check if payer can afford the donation
-				// From p-code proc 27 (IC 599-647): WIZARDRY.proc11 subtracts gold,
-				// if result > 0 (not enough): "CHEAP APOSTATES! OUT!"
-				if payer.Gold < town.TempleCost {
-					town.TempleStep = engine.TempleResult
-					town.TempleMessages = []string{"CHEAP APOSTATES! OUT!"}
-					town.Message = ""
-					return
-				}
-
-				// Deduct gold from payer
-				payer.Gold -= town.TempleCost
-
-				// Advance to ritual display
-				// From p-code proc 23 (IC 796-1052): MURMUR-CHANT-PRAY-INVOKE
-				town.TempleStep = engine.TempleRitual
-				town.Message = ""
-			}
-		}
-
-	case engine.TempleRitual:
-		// During ritual display, any keypress performs the heal and shows result
-		templePerformHeal(game, town)
-	}
-}
-
-// templePerformHeal executes the healing attempt and transitions to result.
-func templePerformHeal(game *engine.GameState, town *engine.TownState) {
-	msgs, _ := engine.TempleHeal(town.TempleChar)
-	town.TempleMessages = msgs
-	town.TempleStep = engine.TempleResult
-	town.Message = ""
-	// Auto-save after healing (original writes character back to disk)
-	if game != nil {
-		_ = game.Save()
-	}
-}
-
-// handleTempleReturn handles RETURN/ESC at the temple.
-func handleTempleReturn(game *engine.GameState, town *engine.TownState) {
-	switch town.TempleStep {
-	case engine.TempleWho:
-		// RETURN at name prompt without InputMode — exit temple
-		app.GoToCastle(town)
-	case engine.TempleTithe:
-		// RETURN at tithe selection — back to name prompt
-		town.TempleStep = engine.TempleWho
-		town.TempleChar = nil
-		town.TempleCost = 0
-		town.InputMode = engine.InputTempleHelp
-		town.InputBuf = ""
-		town.Message = ""
-	case engine.TempleRitual:
-		// RETURN during ritual — perform heal and show result
-		templePerformHeal(game, town)
-	case engine.TempleResult:
-		// RETURN at result — back to name prompt
-		town.TempleStep = engine.TempleWho
-		town.TempleChar = nil
-		town.TempleCost = 0
-		town.TempleMessages = nil
-		town.InputMode = engine.InputTempleHelp
-		town.InputBuf = ""
-		town.Message = ""
-	}
-}
 
 // handleSetPassword handles the two-step password change at Training Grounds.
 // From p-code ROLLER proc 3 (IC 4480-4816):
