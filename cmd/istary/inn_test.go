@@ -75,7 +75,7 @@ func innPress(d *driver, keys string) {
 	for _, r := range keys {
 		switch r {
 		case '~':
-			innHealTick(d.game)
+			d.ctrl.InnTick()
 		case '\r':
 			d.enter()
 		default:
@@ -190,7 +190,7 @@ func stay(t *testing.T, d *driver, slot int, room string) {
 		c := town.InnChar
 		hp, gold := c.HP, c.Gold
 		seed(7)
-		if innHealTick(d.game); town.InnStep == engine.InnHealing {
+		if d.ctrl.InnTick(); town.InnStep == engine.InnHealing {
 			next := rand.Int63()
 			seed(7)
 			if next != rand.Int63() {

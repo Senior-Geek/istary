@@ -70,9 +70,16 @@ func (c *Controller) townKey(k Key) bool {
 		case engine.Trading:
 			c.shopKey(k)
 			return true
+		case engine.Inn:
+			c.innKey(k)
+			return true
 		case engine.Castle:
 			if k.Kind == KeyRune && upper(k.Rune) == 'B' {
 				c.castleShopKey()
+				return true
+			}
+			if k.Kind == KeyRune && upper(k.Rune) == 'A' {
+				c.castleInnKey()
 				return true
 			}
 		}
