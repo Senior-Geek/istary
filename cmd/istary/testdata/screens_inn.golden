@@ -1,0 +1,175 @@
+=== who will stay
++--------------------------------------+
+! CASTLE                           INN !
++----------- CURRENT PARTY: -----------+
+
+ # CHARACTER NAME  CLASS AC HITS STATUS
+ 1 ARNE            G-FIG 10   3   20
+ 2 MAGE            G-MAG 10   2    8
+ 3 PRIEST          G-PRI 10   0 DEAD
+ 4 OLD             G-FIG 10  10   10
+ 5 RICH            G-FIG 10   1   40
+
++--------------------------------------+
+
+WHO WILL STAY ([RETURN] EXITS) >
+
+
+
+
+
+
+
+
+
+
+=== a guest who is not OK
++--------------------------------------+
+! CASTLE                           INN !
++----------- CURRENT PARTY: -----------+
+
+ # CHARACTER NAME  CLASS AC HITS STATUS
+ 1 ARNE            G-FIG 10   3   20
+ 2 MAGE            G-MAG 10   2    8
+ 3 PRIEST          G-PRI 10   0 DEAD
+ 4 OLD             G-FIG 10  10   10
+ 5 RICH            G-FIG 10   1   40
+
++--------------------------------------+
+
+WHO WILL STAY ([RETURN] EXITS) >
+
+PRIEST IS NOT OK
+
+
+
+
+
+
+
+
+=== the rooms
++--------------------------------------+
+! CASTLE                           INN !
++----------- CURRENT PARTY: -----------+
+
+ # CHARACTER NAME  CLASS AC HITS STATUS
+ 1 ARNE            G-FIG 10   3   20
+ 2 MAGE            G-MAG 10   2    8
+ 3 PRIEST          G-PRI 10   0 DEAD
+ 4 OLD             G-FIG 10  10   10
+ 5 RICH            G-FIG 10   1   40
+
++--------------------------------------+
+
+   WELCOME MAGE. WE HAVE:
+
+[A] THE STABLES (FREE!)
+[B] COTS. 10 GP/WEEK.
+[C] ECONOMY ROOMS. 50 GP/WEEK.
+[D] MERCHANT SUITES. 200 GP/WEEK.
+[E] ROYAL SUITES. 500 GP/WEEK.
+    OR [RETURN] TO LEAVE
+
+
+
+=== napping in the stables
++--------------------------------------+
+! CASTLE                           INN !
++----------- CURRENT PARTY: -----------+
+
+ # CHARACTER NAME  CLASS AC HITS STATUS
+ 1 ARNE            G-FIG 10   3   20
+ 2 MAGE            G-MAG 10   2    8
+ 3 PRIEST          G-PRI 10   0 DEAD
+ 4 OLD             G-FIG 10  10   10
+ 5 RICH            G-FIG 10   1   40
+
++--------------------------------------+
+
+MAGE IS NAPPING
+
+
+
+
+
+
+
+
+
+
+=== not enough experience
++--------------------------------------+
+! CASTLE                           INN !
++----------- CURRENT PARTY: -----------+
+
+ # CHARACTER NAME  CLASS AC HITS STATUS
+ 1 ARNE            G-FIG 10   3   20
+ 2 MAGE            G-MAG 10   2    8
+ 3 PRIEST          G-PRI 10   0 DEAD
+ 4 OLD             G-FIG 10  10   10
+ 5 RICH            G-FIG 10   1   40
+
++--------------------------------------+
+
+
+YOU NEED 1100 MORE
+EXPERIENCE POINTS TO MAKE LEVEL
+
+
+
+
+
+
+
+PRESS [RETURN] TO LEAVE
+=== healing in a cot
++--------------------------------------+
+! CASTLE                           INN !
++----------- CURRENT PARTY: -----------+
+
+ # CHARACTER NAME  CLASS AC HITS STATUS
+ 1 ARNE            G-FIG 10   3   20
+ 2 MAGE            G-MAG 10   3    8
+ 3 PRIEST          G-PRI 10   0 DEAD
+ 4 OLD             G-FIG 10  10   10
+ 5 RICH            G-FIG 10   1   40
+
++--------------------------------------+
+
+MAGE IS HEALING UP
+
+
+         HIT POINTS (3/8)
+
+               GOLD  20
+
+
+
+
+
+=== made a level
++--------------------------------------+
+! CASTLE                           INN !
++----------- CURRENT PARTY: -----------+
+
+ # CHARACTER NAME  CLASS AC HITS STATUS
+ 1 ARNE            G-FIG 10  20   21
+ 2 MAGE            G-MAG 10   5    8
+ 3 PRIEST          G-PRI 10   0 DEAD
+ 4 OLD             G-FIG 10  10   10
+ 5 RICH            G-FIG 10   1   40
+
++--------------------------------------+
+
+YOU MADE A LEVEL!
+
+YOU GAINED STRENGTH
+YOU GAINED I.Q.
+YOU GAINED PIETY
+YOU LOST VITALITY
+
+
+
+
+PRESS [RETURN] TO LEAVE

@@ -208,33 +208,39 @@ func main() {
 			}
 
 		case <-innTicker.C:
-			// Inn healing animation — Pascal HEALHP loop (CASTLE2.TEXT lines 423-448)
-			// Each tick: heal HPADD HP, deduct gold, redraw. When done → level-up screen.
-			// Pascal delay: FOR PAUSEX := 1 TO 500 DO ; (~0.5-1s on Apple II)
-			if game.Phase == engine.PhaseTown && game.Town.Location == engine.Inn &&
-				game.Town.InnStep == engine.InnHealing && game.Town.InnChar != nil {
-				c := game.Town.InnChar
-				town := game.Town
-				if town.InnHealAmt == 0 {
-					// Stables: no healing animation, go straight to level-up
-					innTransitionToLevelUp(game)
-					redraw(screen, game)
-				} else if c.HP < c.MaxHP && c.Gold >= town.InnHealCost {
-					// One heal step per tick
-					c.HP += town.InnHealAmt
-					if c.HP > c.MaxHP {
-						c.HP = c.MaxHP
-					}
-					c.Gold -= town.InnHealCost
-					redraw(screen, game)
-				} else {
-					// Healing done — transition to level-up
-					innTransitionToLevelUp(game)
-					redraw(screen, game)
-				}
+			if innHealTick(game) {
+				redraw(screen, game)
 			}
 		}
 	}
+}
+
+// innHealTick is one tick of the Inn's healing animation — Pascal HEALHP
+// loop (CASTLE2.TEXT lines 423-448). Each tick: heal HPADD HP, deduct gold.
+// When done → level-up screen. Pascal delay: FOR PAUSEX := 1 TO 500 DO ;
+// (~0.5-1s on Apple II). It reports whether anything changed.
+func innHealTick(game *engine.GameState) bool {
+	if game.Phase != engine.PhaseTown || game.Town.Location != engine.Inn ||
+		game.Town.InnStep != engine.InnHealing || game.Town.InnChar == nil {
+		return false
+	}
+	c := game.Town.InnChar
+	town := game.Town
+	if town.InnHealAmt == 0 {
+		// Stables: no healing animation, go straight to level-up
+		innTransitionToLevelUp(game)
+	} else if c.HP < c.MaxHP && c.Gold >= town.InnHealCost {
+		// One heal step per tick
+		c.HP += town.InnHealAmt
+		if c.HP > c.MaxHP {
+			c.HP = c.MaxHP
+		}
+		c.Gold -= town.InnHealCost
+	} else {
+		// Healing done — transition to level-up
+		innTransitionToLevelUp(game)
+	}
+	return true
 }
 
 // combatTimerTick runs one poll of the combat auto-advance timer. sinceLast is

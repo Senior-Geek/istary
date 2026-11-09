@@ -1,0 +1,76 @@
+start CASTLE/who input=0 msg="" ARNE:1000 MAGE:30 PRIEST:500 OLD:5 RICH:10000
+A     ADVENTURER'S INN/who input=0 msg="" ARNE:1000 MAGE:30 PRIEST:500 OLD:5 RICH:10000
+      # enter: who will stay
+9     ADVENTURER'S INN/who input=0 msg="" ARNE:1000 MAGE:30 PRIEST:500 OLD:5 RICH:10000
+      # no such member: nothing
+3     ADVENTURER'S INN/who input=0 msg="PRIEST IS NOT OK" ARNE:1000 MAGE:30 PRIEST:500 OLD:5 RICH:10000
+      # the dead priest: IS NOT OK
+2     ADVENTURER'S INN/rooms input=0 msg="" ARNE:1000 MAGE:30 PRIEST:500 OLD:5 RICH:10000 | MAGE OK L1 XP0 HP2/8 age988 stats[15 10 10 12 10 10] mage[0 0 0 0 0 0 0]/[2 1 0 0 0 0 0] priest[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0]
+      # the mage: the rooms
+A     ADVENTURER'S INN/healing input=0 msg="" ARNE:1000 MAGE:30 PRIEST:500 OLD:5 RICH:10000 | MAGE OK L1 XP0 HP2/8 age988 stats[15 10 10 12 10 10] mage[2 1 0 0 0 0 0]/[2 1 0 0 0 0 0] priest[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] | heal 0 per 0 GP
+      # the stables: spells already back, no healing
+Z     ADVENTURER'S INN/healing input=0 msg="" ARNE:1000 MAGE:30 PRIEST:500 OLD:5 RICH:10000 | MAGE OK L1 XP0 HP2/8 age988 stats[15 10 10 12 10 10] mage[2 1 0 0 0 0 0]/[2 1 0 0 0 0 0] priest[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] | heal 0 per 0 GP
+      # a key while napping: nothing
+~     ADVENTURER'S INN/levelUp input=0 msg="" ARNE:1000 MAGE:30 PRIEST:500 OLD:5 RICH:10000 | MAGE OK L1 XP0 HP2/8 age988 stats[15 10 10 12 10 10] mage[2 1 0 0 0 0 0]/[2 1 0 0 0 0 0] priest[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] | ["" "YOU NEED 1100 MORE" "EXPERIENCE POINTS TO MAKE LEVEL"]
+      # the tick: the level check, not enough experience
+Z     ADVENTURER'S INN/levelUp input=0 msg="" ARNE:1000 MAGE:30 PRIEST:500 OLD:5 RICH:10000 | MAGE OK L1 XP0 HP2/8 age988 stats[15 10 10 12 10 10] mage[2 1 0 0 0 0 0]/[2 1 0 0 0 0 0] priest[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] | ["" "YOU NEED 1100 MORE" "EXPERIENCE POINTS TO MAKE LEVEL"]
+      # a key at the result: nothing
+RET   ADVENTURER'S INN/rooms input=0 msg="" ARNE:1000 MAGE:30 PRIEST:500 OLD:5 RICH:10000 | MAGE OK L1 XP0 HP2/8 age988 stats[15 10 10 12 10 10] mage[2 1 0 0 0 0 0]/[2 1 0 0 0 0 0] priest[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0]
+      # RETURN: the rooms again, same guest
+B     ADVENTURER'S INN/healing input=0 msg="" ARNE:1000 MAGE:30 PRIEST:500 OLD:5 RICH:10000 | MAGE OK L1 XP0 HP2/8 age988 stats[15 10 10 12 10 10] mage[2 1 0 0 0 0 0]/[2 1 0 0 0 0 0] priest[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] | heal 1 per 10 GP
+      # a cot, 10 GP a week, with 30 GP
+RET   ADVENTURER'S INN/healing input=0 msg="" ARNE:1000 MAGE:30 PRIEST:500 OLD:5 RICH:10000 | MAGE OK L1 XP0 HP2/8 age988 stats[15 10 10 12 10 10] mage[2 1 0 0 0 0 0]/[2 1 0 0 0 0 0] priest[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] | heal 1 per 10 GP
+      # RETURN while healing: nothing
+~     ADVENTURER'S INN/healing input=0 msg="" ARNE:1000 MAGE:20 PRIEST:500 OLD:5 RICH:10000 | MAGE OK L1 XP0 HP3/8 age988 stats[15 10 10 12 10 10] mage[2 1 0 0 0 0 0]/[2 1 0 0 0 0 0] priest[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] | heal 1 per 10 GP
+      # week 1
+~     ADVENTURER'S INN/healing input=0 msg="" ARNE:1000 MAGE:10 PRIEST:500 OLD:5 RICH:10000 | MAGE OK L1 XP0 HP4/8 age988 stats[15 10 10 12 10 10] mage[2 1 0 0 0 0 0]/[2 1 0 0 0 0 0] priest[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] | heal 1 per 10 GP
+      # week 2
+~     ADVENTURER'S INN/healing input=0 msg="" ARNE:1000 MAGE:0 PRIEST:500 OLD:5 RICH:10000 | MAGE OK L1 XP0 HP5/8 age988 stats[15 10 10 12 10 10] mage[2 1 0 0 0 0 0]/[2 1 0 0 0 0 0] priest[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] | heal 1 per 10 GP
+      # week 3: the gold is gone
+~     ADVENTURER'S INN/levelUp input=0 msg="" ARNE:1000 MAGE:0 PRIEST:500 OLD:5 RICH:10000 | MAGE OK L1 XP0 HP5/8 age988 stats[15 10 10 12 10 10] mage[2 1 0 0 0 0 0]/[2 1 0 0 0 0 0] priest[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] | ["" "YOU NEED 1100 MORE" "EXPERIENCE POINTS TO MAKE LEVEL"]
+      # out of gold: the level check
+RET   ADVENTURER'S INN/rooms input=0 msg="" ARNE:1000 MAGE:0 PRIEST:500 OLD:5 RICH:10000 | MAGE OK L1 XP0 HP5/8 age988 stats[15 10 10 12 10 10] mage[2 1 0 0 0 0 0]/[2 1 0 0 0 0 0] priest[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0]
+RET   ADVENTURER'S INN/who input=0 msg="" ARNE:1000 MAGE:0 PRIEST:500 OLD:5 RICH:10000
+      # RETURN at the rooms: who will stay
+1     ADVENTURER'S INN/rooms input=0 msg="" ARNE:1000 MAGE:0 PRIEST:500 OLD:5 RICH:10000 | ARNE OK L1 XP1000 HP3/20 age1040 stats[15 10 10 12 10 10] mage[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] priest[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0]
+      # the fighter, 3/20 HP, 1000 GP, experience for level 2
+C     ADVENTURER'S INN/healing input=0 msg="" ARNE:1000 MAGE:0 PRIEST:500 OLD:5 RICH:10000 | ARNE OK L1 XP1000 HP3/20 age1040 stats[15 10 10 12 10 10] mage[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] priest[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] | heal 3 per 50 GP
+      # economy, 3 HP for 50 GP a week
+~~~~~ ADVENTURER'S INN/healing input=0 msg="" ARNE:750 MAGE:0 PRIEST:500 OLD:5 RICH:10000 | ARNE OK L1 XP1000 HP18/20 age1040 stats[15 10 10 12 10 10] mage[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] priest[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] | heal 3 per 50 GP
+      # five weeks
+~     ADVENTURER'S INN/healing input=0 msg="" ARNE:700 MAGE:0 PRIEST:500 OLD:5 RICH:10000 | ARNE OK L1 XP1000 HP20/20 age1040 stats[15 10 10 12 10 10] mage[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] priest[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] | heal 3 per 50 GP
+      # week 6 heals the last 2 HP and charges a full week
+~     ADVENTURER'S INN/levelUp input=0 msg="" ARNE:700 MAGE:0 PRIEST:500 OLD:5 RICH:10000 | ARNE OK L2 XP1000 HP20/21 age1040 stats[16 11 11 11 10 10] mage[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] priest[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] | ["YOU MADE A LEVEL!" "" "YOU GAINED STRENGTH" "YOU GAINED I.Q." "YOU GAINED PIETY" "YOU LOST VITALITY"]
+      # healed: the level check makes level 2 (random)
+RET   ADVENTURER'S INN/rooms input=0 msg="" ARNE:700 MAGE:0 PRIEST:500 OLD:5 RICH:10000 | ARNE OK L2 XP1000 HP20/21 age1040 stats[16 11 11 11 10 10] mage[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] priest[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0]
+A     ADVENTURER'S INN/healing input=0 msg="" ARNE:700 MAGE:0 PRIEST:500 OLD:5 RICH:10000 | ARNE OK L2 XP1000 HP20/21 age1040 stats[16 11 11 11 10 10] mage[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] priest[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] | heal 0 per 0 GP
+      # the stables: another level check; not enough for level 3
+~     ADVENTURER'S INN/levelUp input=0 msg="" ARNE:700 MAGE:0 PRIEST:500 OLD:5 RICH:10000 | ARNE OK L2 XP1000 HP20/21 age1040 stats[16 11 11 11 10 10] mage[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] priest[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] | ["" "YOU NEED 724 MORE" "EXPERIENCE POINTS TO MAKE LEVEL"]
+RET   ADVENTURER'S INN/rooms input=0 msg="" ARNE:700 MAGE:0 PRIEST:500 OLD:5 RICH:10000 | ARNE OK L2 XP1000 HP20/21 age1040 stats[16 11 11 11 10 10] mage[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] priest[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0]
+RET   ADVENTURER'S INN/who input=0 msg="" ARNE:700 MAGE:0 PRIEST:500 OLD:5 RICH:10000
+5     ADVENTURER'S INN/rooms input=0 msg="" ARNE:700 MAGE:0 PRIEST:500 OLD:5 RICH:10000 | RICH OK L1 XP0 HP1/40 age1300 stats[15 10 10 12 10 10] mage[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] priest[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0]
+      # the rich fighter, 1/40 HP
+E     ADVENTURER'S INN/healing input=0 msg="" ARNE:700 MAGE:0 PRIEST:500 OLD:5 RICH:10000 | RICH OK L1 XP0 HP1/40 age1300 stats[15 10 10 12 10 10] mage[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] priest[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] | heal 10 per 500 GP
+      # the royal suite, 10 HP for 500 GP a week
+~~~   ADVENTURER'S INN/healing input=0 msg="" ARNE:700 MAGE:0 PRIEST:500 OLD:5 RICH:8500 | RICH OK L1 XP0 HP31/40 age1300 stats[15 10 10 12 10 10] mage[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] priest[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] | heal 10 per 500 GP
+~     ADVENTURER'S INN/healing input=0 msg="" ARNE:700 MAGE:0 PRIEST:500 OLD:5 RICH:8000 | RICH OK L1 XP0 HP40/40 age1300 stats[15 10 10 12 10 10] mage[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] priest[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] | heal 10 per 500 GP
+      # week 4: healed
+~     ADVENTURER'S INN/levelUp input=0 msg="" ARNE:700 MAGE:0 PRIEST:500 OLD:5 RICH:8000 | RICH OK L1 XP0 HP40/40 age1300 stats[15 10 10 12 10 10] mage[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] priest[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] | ["" "YOU NEED 1000 MORE" "EXPERIENCE POINTS TO MAKE LEVEL"]
+      # the level check
+RET   ADVENTURER'S INN/rooms input=0 msg="" ARNE:700 MAGE:0 PRIEST:500 OLD:5 RICH:8000 | RICH OK L1 XP0 HP40/40 age1300 stats[15 10 10 12 10 10] mage[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] priest[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0]
+D     ADVENTURER'S INN/healing input=0 msg="" ARNE:700 MAGE:0 PRIEST:500 OLD:5 RICH:8000 | RICH OK L1 XP0 HP40/40 age1300 stats[15 10 10 12 10 10] mage[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] priest[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] | heal 7 per 200 GP
+      # a merchant suite when already healed: no charge
+~     ADVENTURER'S INN/levelUp input=0 msg="" ARNE:700 MAGE:0 PRIEST:500 OLD:5 RICH:8000 | RICH OK L1 XP0 HP40/40 age1300 stats[15 10 10 12 10 10] mage[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] priest[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] | ["" "YOU NEED 1000 MORE" "EXPERIENCE POINTS TO MAKE LEVEL"]
+RET   ADVENTURER'S INN/rooms input=0 msg="" ARNE:700 MAGE:0 PRIEST:500 OLD:5 RICH:8000 | RICH OK L1 XP0 HP40/40 age1300 stats[15 10 10 12 10 10] mage[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] priest[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0]
+RET   ADVENTURER'S INN/who input=0 msg="" ARNE:700 MAGE:0 PRIEST:500 OLD:5 RICH:8000
+4     ADVENTURER'S INN/rooms input=0 msg="" ARNE:700 MAGE:0 PRIEST:500 OLD:5 RICH:8000 | OLD OK L1 XP1724 HP10/10 age10400 stats[15 10 10 3 10 10] mage[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] priest[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0]
+      # the old fighter, 200 years, vitality 3, experience for level 3
+A     ADVENTURER'S INN/healing input=0 msg="" ARNE:700 MAGE:0 PRIEST:500 OLD:5 RICH:8000 | OLD OK L1 XP1724 HP10/10 age10400 stats[15 10 10 3 10 10] mage[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] priest[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] | heal 0 per 0 GP
+      # the stables
+~     ADVENTURER'S INN/levelUp input=0 msg="" ARNE:700 MAGE:0 PRIEST:500 OLD:5 RICH:8000 | OLD LOST L2 XP1724 HP0/13 age10400 stats[14 10 9 2 10 10] mage[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] priest[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] | ["YOU MADE A LEVEL!" "" "YOU LOST STRENGTH" "YOU LOST PIETY" "YOU LOST VITALITY" "** YOU HAVE DIED OF OLD AGE **"]
+      # level 2 only, and he dies of old age: LOST
+RET   ADVENTURER'S INN/rooms input=0 msg="" ARNE:700 MAGE:0 PRIEST:500 OLD:5 RICH:8000 | OLD LOST L2 XP1724 HP0/13 age10400 stats[14 10 9 2 10 10] mage[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0] priest[0 0 0 0 0 0 0]/[0 0 0 0 0 0 0]
+      # RETURN: the rooms again for a LOST guest
+RET   ADVENTURER'S INN/who input=0 msg="" ARNE:700 MAGE:0 PRIEST:500 OLD:5 RICH:8000
+RET   CASTLE/who input=0 msg="" ARNE:700 MAGE:0 PRIEST:500 OLD:5 RICH:8000
+      # RETURN at who will stay: the castle
