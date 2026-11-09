@@ -15,9 +15,15 @@ bottom, shown or hidden with Hide party.
 - **The Castle:** Gilgamesh's Tavern, Boltac's Trading Post (for a party),
   the Edge of Town; the Adventurer's Inn and the Temple of Cant are shown
   closed (not in the window yet).
-- **Boltac's Trading Post (M8-3):** reachable, but its own screen comes in
-  M8-4; until then it shows the place's frame only. Its Go bridge is in
-  place: `Session.ShopAction` and `View.Shop` (docs/ARCHITECTURE.md).
+- **Boltac's Trading Post (M8-4):** click a party member in the party bar
+  to bring them to the counter (another click on someone else switches);
+  Buy, Sell, Identify and Uncurse list Boltac's catalog and the customer's
+  items with prices, fees, stock, who can use what and equipped, cursed and
+  unidentified marks. A greyed button says Boltac's reason. Buying
+  equipment the customer cannot use asks first. Each purchase, sale,
+  identification or uncursing is saved at once, and the receipt says
+  Saved, saved but perhaps not durably, or NOT saved. Pool Gold is not
+  offered (deferred).
 - **Gilgamesh's Tavern:** form the party: Join, Remove, and the password.
 - **The Edge of Town:** Enter the maze; practice (Istary only); Leave the
   game; the way to the Training Grounds and to Settings.

@@ -441,7 +441,7 @@ the Castle (Player's Guide pp.22, 36, 38).
   `walkTo` before each action.
 
 **Boltac's Trading Post in the window (M8-3).** `gui/shop.go` is the bridge
-to the controller's Boltac's operations (M8-2); the screen is M8-4.
+to the controller's Boltac's operations (M8-2); the screen is M8-4 (below).
 - **Going there and back:** the Castle's Boltac's exit is open for a party
   (the castle's `YOU HAVE NO PARTY!` without one). Its one exit, "← Castle"
   and Escape leave it with `LeaveShop` from any step, as RETURN does: the
@@ -482,6 +482,41 @@ to the controller's Boltac's operations (M8-2); the screen is M8-4.
   controller operations (equal after every request; a write exactly when a
   character changed; the save then equal to the game). The return from every
   step is `TestReturnFromEveryStepOfBoltacs`. None draws a random number.
+
+**The Trading Post screen (M8-4).** `TradingScreen.svelte` in the location
+frame, from `View.Shop` only; `lib/shop.js` reshapes it and decides nothing.
+- **Customer:** chosen from the shared party bar (the frame passes
+  PartyBar's `pick`/`onpick`/`current` through; the same 3x2 bar), marked
+  there as current; with the party hidden, from a list in the actions
+  column. Choosing someone else while a customer is at the counter switches
+  in one request (`enter` lets the customer leave first, by RETURN; refused
+  while Boltac asks). The actions column shows name, class, gold, items
+  carried and room, the character sheet, and Leave the counter.
+- **Tabs** Buy, Sell, Identify, Uncurse are the page's own state: switching
+  calls nothing, writes nothing, draws nothing (checked live by counting
+  calls into Go and the save file's time). Each line shows Go's price or
+  fee, stock (unlimited or left), usability ("MAGE cannot use it; Boltac
+  will ask first", `Buy…`), and marks from Go's equipped/cursed/identified
+  flags. A button is enabled exactly when Go gives no refusal; the refusal
+  is shown beside it in Boltac's words.
+- **The counter** sticks above the list while it scrolls: the tabs, a
+  customer line (gold, room), Boltac's words or his question about
+  unusable equipment (Buy anyway / No), and the receipt with its outcome:
+  Saved, saved but perhaps not durably, or NOT saved. The notice banner is
+  not repeated while the receipt shows; the error and Unsaved banners are.
+- **← Castle / Escape** leave from any tab and step; with the question open
+  the frame's note says it is answered no.
+- **Tests:** `TestShopViewFixture` records real views
+  (`testdata/shop-views.json`: every step, every refusal, the three save
+  outcomes); `shopViews.test.js` holds the helpers to them. Live
+  (`wails dev` + headless Chrome) at 760x532, 980x692 and 1512x945: entering
+  and switching customers by the bar and the list, tabs and scrolling with
+  no calls or writes, a purchase, the question from far down the list (in
+  view), Escape from it (nothing bought, nothing written), No and Buy anyway,
+  an equipped sale, the cursed refusal, identify and uncurse, a failed save
+  (NOT saved, file unchanged) then the next save matching the window, no
+  sideways scrolling, the party bar 3x2 and in view, item names whole.
+  Stills in `docs/design/m2-exploration/stills/gui-trading-m8-4/`.
 
 **The location frame (Castle-0 C0-3).** Every town place is drawn in one
 frame (`LocationFrame.svelte`), in grid areas that never overlap:
