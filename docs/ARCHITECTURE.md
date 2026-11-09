@@ -113,13 +113,35 @@ game's own (`GameState.Stock`, M8-1). Nothing here draws a random number.
 | `ShopLeaveCustomer()`, `LeaveShop()` | Back to WHO WILL ENTER; out to the castle (RETURN steps) |
 | `Buy(item)` | P and the item's place: refused (`*Refusal`: last one, can't carry, can't afford) or bought; an item the customer's class cannot use is asked about first. Takes the item itself: the terminal's page and catalog cursor are left as they are, except that an unusable item becomes the cursor, as with the keys |
 | `ConfirmUnusable(yes)` | Answer UNUSABLE ITEM - CONFIRM BUY |
-| `Sell(n)`, `Uncurse(n)`, `ShopIdentify(n)` | S, U or I and the item's number; refusals as `*Refusal` |
-| `ShopView()` | Read-only: the step, Boltac's words, the customer (slot, name, class, gold, room), the item he asks about, the catalog (price, stock, usable, his answer now) and the customer's items (name as known, equipped, cursed, price or why not, fee or why not) |
+| `Sell(n)`, `Uncurse(n)`, `ShopIdentify(n)` | S, U or I and the item's number; refusals as `*Refusal`. Selling an equipped item asks first (B7, Player's Guide p.31): step `confirmSell` |
+| `ConfirmSale(yes)` | Answer EQUIPPED ITEM - CONFIRM SELL: Y sells it (taking it off; AC worked out again), N keeps it worn |
+| `ShopView()` | Read-only: the step, Boltac's words, the customer (slot, name, class, gold, room), the item he asks about (`Confirm`, `SellConfirm`), the catalog (price, stock, usable, his answer now) and the customer's items (name as known, equipped, cursed as far as the player knows, price or why not, whether selling asks, fee or why not) |
 
 Tests: operations against the terminal's keys on a twin (random, 300
 seeds), Buy on the page shown exactly P and its place, `ShopView`'s answers
 against what the operations then do, leaving from every step, and the M8-0
 characterization (`cmd/istary/shop_test.go`, goldens unchanged).
+
+**Curses and armour class** (`engine/curse.go`, `engine/ac.go`, M8,
+findings #34 and #35). A possession's `cursed` flag means *stuck*: equipping
+a cursed type, or an item of another alignment, sets it (Player's Guide
+pp.4-5); a stuck item holds its category and cannot be taken off, dropped,
+traded or sold; Boltac's U)NCURSE removes it, ending the curse.
+`engine.KnownCursed` is what a front end may show (identified or worn).
+`Character.RecalcAC` is the one place AC is worked out (10 less each worn
+item's modifier); it runs at each step of the equip walk, after a sale, an
+uncursing and a drop, and on every load, so the stored AC is never stale.
+Tests: `app/curse_test.go`, `app/ac_test.go`.
+
+**Equipping in town** (`app/equip.go`, M8). `Equipment(index)`,
+`TownEquip(index, n)` (reports whether the item stuck) and
+`TownUnequip(index, n)` equip a roster character's items one at a time, by
+the equip walk's rules (one per category, the class's usable items, special
+items carried not equipped, stuck items holding their place, curses on
+wearing, AC worked out); each item's view carries the answer to equipping
+and taking it off. Refused outside town and for a member of a saved
+expedition. `TestTownEquippingIsTheWalk` holds 150 random characters'
+item-by-item equipping to a copy doing the same through Camp's walk.
 
 **Town navigation** (`app/navigation.go`, Castle-0). The terminal still reads
 the castle menu and the Edge of Town's T and C itself; these make the same
@@ -518,6 +540,34 @@ frame, from `View.Shop` only; `lib/shop.js` reshapes it and decides nothing.
   sideways scrolling, the party bar 3x2 and in view, item names whole.
   Stills in `docs/design/m2-exploration/stills/gui-trading-m8-4/`.
 
+**M8 completion: Boltac's question, equipping, saving again.**
+- **Selling a worn item** (B7): `ShopRequest` `confirm-sale`; anything else
+  waits for the answer; ← Castle notes the item is not sold. The screen
+  marks worn items `Sell…` ("equipped: Boltac will ask first") and draws the
+  question (the item, that it is worn and will be taken off, the price;
+  Sell it / No, keep it).
+- **Equipping in town** (`gui/equip.go`): `Session.EquipAction(EquipRequest
+  {index, n, equip})` from the character sheet, anywhere in town; each
+  `ItemView` carries `n`, `kind`, `equipRefusal` and `unequipRefusal`, and
+  `CharacterView.EquipNote` why equipping is closed now (an expedition,
+  practice, a character being created). `lib/equip.js` makes the Equip /
+  Take off buttons from them. A change is saved at once; a refusal writes
+  nothing; a stuck item's notice says so.
+- **Save failures:** a failed save never undoes the change (the window has
+  it, once; the file keeps the previous save whole, one atomic write);
+  `Session.SaveNow` writes the window's game as it is, so retrying never
+  repeats a purchase, sale, equip or step (on an expedition the place is
+  recorded first). The banner says closing now would lose what is unsaved
+  and offers Try saving again; Boltac's NOT saved receipt offers it too and
+  becomes Saved when it works.
+- **Tests:** `gui/equip_test.go` (with `equip-views.json` and
+  `equipViews.test.js`), `TestShopSellingAWornItemAsks`,
+  `TestSaveNowAfterAFailedSave`, `TestSaveNowOnAnExpedition`; the shop
+  fixture gains Boltac's sell question. Live at 760x532, 980x692 and
+  1512x945: the sell question (No, Escape and Sell it), a failed save
+  retried, and the sheet equipping chain mail and an evil shield that
+  sticks. Stills in `docs/design/m2-exploration/stills/gui-m8-completion/`.
+
 **The location frame (Castle-0 C0-3).** Every town place is drawn in one
 frame (`LocationFrame.svelte`), in grid areas that never overlap:
 - **head:** the place's title, "← Castle" (`ReturnToCastle`, also
@@ -754,4 +804,7 @@ produced with the old writer). Limits:
 - The terminal ignores save errors as before. The GUI reports them and tells
   a failed save (`View.Unsaved`: nothing replaced) from one that replaced
   the file but could not sync the folder (`engine.NotDurableError`,
-  `View.Warning`).
+  `View.Warning`). A failed save does not undo what was done; the next
+  change, or `Session.SaveNow`, writes it (M8).
+- Every load works out each character's AC from what is worn (#35): an old
+  save's stale AC is replaced, and the next save writes the worn one.

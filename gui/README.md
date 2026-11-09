@@ -20,10 +20,15 @@ bottom, shown or hidden with Hide party.
   Buy, Sell, Identify and Uncurse list Boltac's catalog and the customer's
   items with prices, fees, stock, who can use what and equipped, cursed and
   unidentified marks. A greyed button says Boltac's reason. Buying
-  equipment the customer cannot use asks first. Each purchase, sale,
-  identification or uncursing is saved at once, and the receipt says
-  Saved, saved but perhaps not durably, or NOT saved. Pool Gold is not
-  offered (deferred).
+  equipment the customer cannot use asks first, and so does selling
+  something they wear. Each purchase, sale, identification or uncursing is
+  saved at once, and the receipt says Saved, saved but perhaps not durably,
+  or NOT saved (with Try saving again). Pool Gold is not offered (deferred).
+- **Character sheets** (click a party member or a roster character):
+  Equip and Take off for each item, anywhere in town; a greyed button says
+  why (the class cannot use it, a cursed item is stuck in its place...).
+  The armour class changes at once. Cursed items, and items of another
+  alignment, stick once worn: only Boltac can remove them.
 - **Gilgamesh's Tavern:** form the party: Join, Remove, and the password.
 - **The Edge of Town:** Enter the maze; practice (Istary only); Leave the
   game; the way to the Training Grounds and to Settings.
@@ -42,7 +47,8 @@ action. It ends in the castle, by the stairs or with the party's defeat
 Istary closes or crashes during an expedition, it resumes where it was last
 saved; an encounter it was in is over and its unclaimed rewards are lost.
 While the party is out, the roster, Tavern and Training Grounds wait. A
-save that fails is shown until one succeeds. Only one Istary window can use
+save that fails is shown until one succeeds; what failed to be saved stays in
+the window, and Try saving again writes it without doing anything twice. Only one Istary window can use
 a save folder at a time.
 
 **Practice expeditions.** "Practice expedition" at the Edge of Town takes
