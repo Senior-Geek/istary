@@ -16,6 +16,7 @@
   import SettingsScreen from './lib/SettingsScreen.svelte'
   import TradingScreen from './lib/TradingScreen.svelte'
   import InnScreen from './lib/InnScreen.svelte'
+  import TempleScreen from './lib/TempleScreen.svelte'
 
   let view = $state(null)
   let busy = $state(false)
@@ -98,7 +99,7 @@
         {/if}
         <!-- At Boltac's and the Inn the receipt says it, saved or not, and at
              the Tavern the gold's. -->
-        {#if view.notice && !view.shop?.last && !view.inn?.last && !view.gold}<div class="banner notice">{view.notice}</div>{/if}
+        {#if view.notice && !view.shop?.last && !view.inn?.last && !view.gold && !view.temple?.last}<div class="banner notice">{view.notice}</div>{/if}
         {#if view.settings?.note}<div class="banner error">{view.settings.note}</div>{/if}
       </div>
 
@@ -120,6 +121,8 @@
             <TradingScreen {view} {busy} {call} onopen={open} />
           {:else if view.location === 'inn'}
             <InnScreen {view} {busy} {call} onopen={open} />
+          {:else if view.location === 'temple'}
+            <TempleScreen {view} {busy} {call} onopen={open} />
           {:else if view.location === 'settings'}
             <SettingsScreen {view} {busy} {call} onopen={open} onroster={() => { selected = -1 }} />
           {:else}
