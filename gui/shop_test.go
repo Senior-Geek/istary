@@ -624,6 +624,8 @@ func TestShopViewFixture(t *testing.T) {
 	}
 	add("bought, not durable", s.ShopAction(ShopRequest{Action: ShopActBuy, Item: itemStaff}))
 	saveGame = (*app.Controller).Save
+	s.ShopAction(ShopRequest{Action: ShopActEnter, Slot: 3})
+	add("priest: pooled", s.ShopAction(ShopRequest{Action: ShopActPool}))
 	s.shutdown()
 
 	got, _ := json.MarshalIndent(cases, "", " ")
@@ -752,5 +754,59 @@ func TestSaveNowAfterAFailedSave(t *testing.T) {
 	before = folder(t, dir)
 	if v := s.SaveNow(); v.Notice != "Everything is saved." || !maps.Equal(before, folder(t, dir)) {
 		t.Fatalf("nothing more to save: %q", v.Notice)
+	}
+}
+
+// Pool Gold at Boltac's (P)OOL GOLD, p.32): the shared operation, as at the
+// Inn. Refused with nobody at the counter or while Boltac asks; one save;
+// the receipt every member before and after; a failed save retried with
+// nothing moved twice; nothing to pool writes nothing.
+func TestShopPoolGold(t *testing.T) {
+	s, dir := shopSession(t)
+	members := s.ctrl.Game.Town.Party.Members
+	before := folder(t, dir)
+	if v := s.ShopAction(ShopRequest{Action: ShopActPool}); v.Error != errNoCustomer.Error() || !maps.Equal(before, folder(t, dir)) {
+		t.Errorf("no customer: %q", v.Error)
+	}
+	s.ShopAction(ShopRequest{Action: ShopActEnter, Slot: mageSlot})
+	s.ShopAction(ShopRequest{Action: ShopActBuy, Item: itemLongSword}) // Boltac asks: unusable
+	before = folder(t, dir)
+	if v := s.ShopAction(ShopRequest{Action: ShopActPool}); v.Error != errAnswerBoltac.Error() || !maps.Equal(before, folder(t, dir)) {
+		t.Errorf("while Boltac asks: %q", v.Error)
+	}
+	s.ShopAction(ShopRequest{Action: ShopActConfirm, Yes: false})
+	total := 0
+	for _, m := range members {
+		total += m.Gold
+	}
+	if os.Geteuid() != 0 {
+		os.Chmod(dir, 0o555)
+		v := s.ShopAction(ShopRequest{Action: ShopActPool})
+		os.Chmod(dir, 0o755)
+		if v.Unsaved == "" || v.Shop.Last == nil || v.Shop.Last.Saved || members[mageSlot].Gold != total || !strings.Contains(v.Notice, "NOT saved") {
+			t.Fatalf("a failed save: %q %+v", v.Unsaved, v.Shop.Last)
+		}
+		rand.Seed(4)
+		v = s.SaveNow()
+		next := rand.Int63()
+		rand.Seed(4)
+		if v.Unsaved != "" || !v.Shop.Last.Saved || members[mageSlot].Gold != total || next != rand.Int63() {
+			t.Fatalf("saved again: %q %+v", v.Unsaved, v.Shop.Last)
+		}
+	} else {
+		s.ShopAction(ShopRequest{Action: ShopActPool})
+	}
+	mustMatchDisk(t, s, dir, "after pooling")
+	last := s.State().Shop.Last
+	if last.Action != ShopActPool || last.Move == nil || last.Move.Total != total || last.Move.After[mageSlot] != total || last.Gold != total-1000 {
+		t.Errorf("the receipt: %+v %+v", last, last.Move)
+	}
+	before = folder(t, dir)
+	if v := s.ShopAction(ShopRequest{Action: ShopActPool}); v.Error != "" || v.Notice != "Nobody else in the party has gold to pool." || !maps.Equal(before, folder(t, dir)) {
+		t.Errorf("nothing to pool: %q %q", v.Error, v.Notice)
+	}
+	r := reopened(t, s, dir)
+	if g := r.ctrl.Game.Town.Party.Members[mageSlot].Gold; g != total {
+		t.Errorf("a restart finds %d GP, want %d", g, total)
 	}
 }

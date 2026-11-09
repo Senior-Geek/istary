@@ -751,6 +751,7 @@ export namespace app {
 	    message: string;
 	    messages: string[];
 	    guests: InnGuestView[];
+	    guestRefusal: string;
 	    rooms: InnRoomView[];
 	
 	    static createFrom(source: any = {}) {
@@ -765,6 +766,7 @@ export namespace app {
 	        this.message = source["message"];
 	        this.messages = source["messages"];
 	        this.guests = this.convertValues(source["guests"], InnGuestView);
+	        this.guestRefusal = source["guestRefusal"];
 	        this.rooms = this.convertValues(source["rooms"], InnRoomView);
 	    }
 	
@@ -1482,6 +1484,7 @@ export namespace main {
 	    customer: string;
 	    item: string;
 	    gold: number;
+	    move?: app.GoldMove;
 	    saved: boolean;
 	    durable: boolean;
 	
@@ -1495,9 +1498,28 @@ export namespace main {
 	        this.customer = source["customer"];
 	        this.item = source["item"];
 	        this.gold = source["gold"];
+	        this.move = this.convertValues(source["move"], app.GoldMove);
 	        this.saved = source["saved"];
 	        this.durable = source["durable"];
 	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	export class ShopPanel {
 	    view: app.ShopView;

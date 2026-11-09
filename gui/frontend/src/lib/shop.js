@@ -143,8 +143,11 @@ export function receipt(shop) {
     sell: `${r.customer} sold ${item} for ${gp} GP`,
     uncurse: `Boltac uncursed ${r.customer}'s ${item} and kept it, for ${gp} GP`,
     identify: `Boltac identified ${r.customer}'s item for ${gp} GP: it is ${item}`,
+    pool: `Pooled the party's ${r.move?.total ?? 0} GP to ${r.customer}`,
   }[r.action] ?? r.action
-  if (!r.saved) return { tone: 'unsaved', did, status: 'NOT saved: it exists only in this window until a save succeeds' }
-  if (!r.durable) return { tone: 'notDurable', did, status: 'Saved, but perhaps not durably (see the warning above)' }
-  return { tone: 'saved', did, status: 'Saved' }
+  // A pooling lists every member's gold before and after (Go's GoldMove).
+  const lines = r.move ? r.move.names.map((n, i) => `${n}: ${r.move.before[i]} → ${r.move.after[i]} GP`) : []
+  if (!r.saved) return { tone: 'unsaved', did, lines, status: 'NOT saved: it exists only in this window until a save succeeds' }
+  if (!r.durable) return { tone: 'notDurable', did, lines, status: 'Saved, but perhaps not durably (see the warning above)' }
+  return { tone: 'saved', did, lines, status: 'Saved' }
 }

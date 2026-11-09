@@ -6,6 +6,10 @@ package main
 // terminal's keys. View.Shop is the controller's ShopView: every price,
 // fee, limit and refusal comes from it, so the screen decides nothing.
 //
+// Pool Gold (P)OOL GOLD, Player's Guide p.32) is the shared town operation
+// (app/gold.go), as at the Inn: one action, one save, its receipt the
+// members' gold before and after.
+//
 // Saving follows the town's convention (the terminal saves after every
 // key), narrowed to what changes the save: a completed transaction (a
 // purchase, a sale, an uncursing, an identification) is saved at once, in
@@ -42,6 +46,7 @@ const (
 	ShopActSell          = "sell"           // N: a ShopOwned's N
 	ShopActUncurse       = "uncurse"        // N
 	ShopActIdentify      = "identify"       // N
+	ShopActPool          = "pool"           // the party's gold to the customer (Pool Gold, app/gold.go)
 )
 
 // ShopRequest is a Boltac's action chosen in the front end.
@@ -68,6 +73,8 @@ type ShopReceipt struct {
 	Customer string `json:"customer"` // the customer's name
 	Item     string `json:"item"`     // as the customer knows it (identify: its true name)
 	Gold     int    `json:"gold"`     // the customer's gold change: negative paid, positive received
+	// Move is a pooling's every member before and after (action "pool").
+	Move *app.GoldMove `json:"move"`
 	// Saved says the save folder holds the transaction; false, it exists
 	// only in this window until a save succeeds (View.Unsaved says why).
 	// Durable says the folder was synced too (View.Warning when not).
@@ -97,12 +104,22 @@ func (s *Session) ShopAction(r ShopRequest) View {
 	c := s.ctrl
 	before, _ := c.ShopView()
 	roster := rosterBytes(c.Game)
-	err := shopOp(c, before, r)
+	var move *app.GoldMove
+	var err error
+	if r.Action == ShopActPool {
+		move, err = shopPool(c, before)
+	} else {
+		err = shopOp(c, before, r)
+	}
 	if bytes.Equal(roster, rosterBytes(c.Game)) {
+		if move != nil {
+			s.notice = "Nobody else in the party has gold to pool."
+		}
 		return s.view(err) // nothing to save
 	}
 	saveErr := s.save()
 	s.receipt = receipt(c, before, r)
+	s.receipt.Move = move
 	s.receipt.Saved = saveErr == nil
 	s.receipt.Durable = saveErr == nil && s.uncertain == ""
 	s.notice = receiptNotice(s.receipt)
@@ -185,6 +202,18 @@ func shopOp(c *app.Controller, v app.ShopView, r ShopRequest) error {
 	return err
 }
 
+// shopPool pools the party's gold to the customer (v is the ShopView now):
+// the controller's Pool Gold, the same as at the Inn.
+func shopPool(c *app.Controller, v app.ShopView) (*app.GoldMove, error) {
+	switch {
+	case v.Step == "who":
+		return nil, errNoCustomer
+	case asking(v):
+		return nil, errAnswerBoltac
+	}
+	return c.PoolGold(v.Customer)
+}
+
 // asking reports whether Boltac waits for an answer: about an unusable
 // item, or before buying an equipped one.
 func asking(v app.ShopView) bool {
@@ -252,6 +281,8 @@ func receiptNotice(r *ShopReceipt) string {
 		did = fmt.Sprintf("Boltac uncursed %s's %s and kept it, for %d GP.", r.Customer, r.Item, -r.Gold)
 	case ShopActIdentify:
 		did = fmt.Sprintf("Boltac identified %s's item, for %d GP: it is %s.", r.Customer, -r.Gold, r.Item)
+	case ShopActPool:
+		did = poolWords(r.Move)
 	}
 	return did + savedWords(r.Saved, r.Durable)
 }

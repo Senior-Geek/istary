@@ -174,3 +174,15 @@ test('selling an equipped item asks first (B7): Sell… says so, and the questio
   assert.equal(views.find((v) => v.case === 'sold').shop.last.action, 'sell')
   assert.equal(question(views.find((v) => v.case === 'Boltac asks: unusable').shop).kind, 'buy')
 })
+
+test('Pool Gold’s receipt is Go’s: every member before and after, the total kept', () => {
+  const v = at('priest: pooled')
+  const r = receipt(v.shop)
+  const m = v.shop.last.move
+  assert.equal(v.shop.last.action, 'pool')
+  assert.equal(r.tone, 'saved')
+  assert.equal(r.did, `Pooled the party's ${m.total} GP to ${v.shop.last.customer}`)
+  assert.equal(r.lines.length, m.names.length)
+  assert.equal(m.after.reduce((a, b) => a + b), m.before.reduce((a, b) => a + b))
+  assert.deepEqual(receipt(at('bought, saved').shop).lines, [], 'a purchase lists no moves')
+})

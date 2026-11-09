@@ -47,6 +47,8 @@
         </dl>
         <div class="row">
           {#if sheet >= 0}<button class="small" disabled={busy} onclick={() => onopen?.(sheet)}>Character sheet</button>{/if}
+          <button class="small" disabled={busy || !!asks} onclick={() => act({ action: 'pool' })}
+            title={asks ? 'Answer Boltac first' : `Give ${who.name} every other party member's gold (Pool Gold)`}>Pool party gold</button>
           <button class="small" disabled={busy || !!asks} onclick={() => act({ action: 'leave-customer' })}
             title={asks ? 'Answer Boltac first' : 'Back to WHO WILL ENTER'}>Leave the counter</button>
         </div>
@@ -106,8 +108,9 @@
           <div class="status">{last.status}</div>
           {#if last.tone === 'unsaved'}
             <button class="small" disabled={busy} onclick={() => call(S.SaveNow)}
-              title="Writes the game as this window has it; nothing is bought or sold again">Try saving again</button>
+              title="Writes the game as this window has it; nothing is bought, sold or moved again">Try saving again</button>
           {/if}
+          {#if last.lines.length}<ul class="moves">{#each last.lines as l, i (i)}<li>{l}</li>{/each}</ul>{/if}
         </div>
       {/if}
     </div>
@@ -168,6 +171,7 @@
   .receipt { padding: 6px 10px; border-radius: 4px; font-size: 13px; border-left: 3px solid; }
   .receipt { display: flex; flex-wrap: wrap; gap: 2px 10px; align-items: baseline; }
   .receipt .status { font-weight: 600; font-size: 12px; }
+  .receipt ul.moves { flex-basis: 100%; margin: 2px 0 0; padding-left: 18px; columns: 2 160px; }
   .receipt.saved { background: #1e2a1e; border-color: var(--accent); }
   .receipt.saved .status { color: var(--accent); }
   .receipt.notDurable { background: #2e2a1a; border-color: var(--gold); }
