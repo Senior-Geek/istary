@@ -104,6 +104,10 @@
         <div class="receipt {last.tone}" aria-label="Last transaction">
           <div>{last.did}.</div>
           <div class="status">{last.status}</div>
+          {#if last.tone === 'unsaved'}
+            <button class="small" disabled={busy} onclick={() => call(S.SaveNow)}
+              title="Writes the game as this window has it; nothing is bought or sold again">Try saving again</button>
+          {/if}
         </div>
       {/if}
     </div>

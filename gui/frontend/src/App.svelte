@@ -74,8 +74,14 @@
     {:else}
       <div class="banners">
         {#if view.error}<div class="banner error">{view.error}</div>{/if}
-        {#if view.unsaved && !view.error}
-          <div class="banner error">Not saved: {view.unsaved}. Play goes on in this window; every action tries to save again.</div>
+        {#if view.unsaved}
+          <!-- What failed to be saved has happened in this window, once; trying
+               again writes it as it is (SaveNow), it does not repeat it. -->
+          <div class="banner error">
+            {#if !view.error}Not saved: {view.unsaved}.{' '}{/if}What this window shows is not saved yet: closing
+            Istary now would lose it. The next change saves everything, or
+            <button class="small" disabled={busy} onclick={() => call(S.SaveNow)}>Try saving again</button>
+          </div>
         {/if}
         {#if view.warning}<div class="banner error">{view.warning}</div>{/if}
         {#if view.recovery}

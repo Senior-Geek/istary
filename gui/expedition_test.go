@@ -658,3 +658,31 @@ func TestTryResumeAgain(t *testing.T) {
 		t.Fatalf("with nothing to resume: %q", v.Error)
 	}
 }
+
+// On a real expedition, SaveNow after a failed save records where the
+// party now stands and saves it: a restart resumes there, not at the
+// previous checkpoint, and the step is not taken twice.
+func TestSaveNowOnAnExpedition(t *testing.T) {
+	if os.Geteuid() == 0 {
+		t.Skip("root ignores directory permissions")
+	}
+	rand.Seed(9)
+	s, dir := partySession(t, false)
+	s.RealExpedition()
+	s.DungeonAction(app.ActLeaveCamp, 0)
+	s.DungeonAction(app.ActNo, 0)
+	os.Chmod(dir, 0o555)
+	v := s.DungeonAction(app.ActRight, 0)
+	os.Chmod(dir, 0o755)
+	if v.Unsaved == "" {
+		t.Fatal("the failed save is not reported")
+	}
+	turned := s.ctrl.Game.Facing
+	if v = s.SaveNow(); v.Error != "" || v.Unsaved != "" || s.ctrl.Game.Facing != turned {
+		t.Fatalf("saving again: %q %q, facing %v (was %v)", v.Error, v.Unsaved, s.ctrl.Game.Facing, turned)
+	}
+	mustMatchDisk(t, s, dir, "saved again")
+	if r := reopened(t, s, dir); r.ctrl.Game.Facing != turned || !r.real {
+		t.Fatalf("a restart resumes facing %v (real %v), want %v", r.ctrl.Game.Facing, r.real, turned)
+	}
+}

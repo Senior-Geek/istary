@@ -88,6 +88,8 @@ export function ReturnExpeditionToCastle():Promise<main.View>;
 
 export function ReturnToCastle():Promise<main.View>;
 
+export function SaveNow():Promise<main.View>;
+
 export function SetName(arg1:string):Promise<main.View>;
 
 export function SetPartyVisible(arg1:boolean):Promise<main.View>;

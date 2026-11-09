@@ -174,6 +174,10 @@ export function ReturnToCastle() {
   return window['go']['main']['Session']['ReturnToCastle']();
 }
 
+export function SaveNow() {
+  return window['go']['main']['Session']['SaveNow']();
+}
+
 export function SetName(arg1) {
   return window['go']['main']['Session']['SetName'](arg1);
 }

@@ -226,6 +226,37 @@ func (s *Session) save() error {
 	return fmt.Errorf("Could not save: %w", err)
 }
 
+// SaveNow tries again to save the game as this window has it, after a
+// save failed (View.Unsaved). Nothing is done again: what failed to be
+// saved has already happened in the window, once, and this writes it, so
+// nothing is bought, sold or moved twice. With nothing unsaved it writes
+// nothing. On a real expedition the party's place is recorded first, as
+// after any action there.
+func (s *Session) SaveNow() View {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.startErr != nil {
+		return s.view(nil)
+	}
+	s.notice = ""
+	if s.unsaved == "" {
+		s.notice = "Everything is saved."
+		return s.view(nil)
+	}
+	var err error
+	if s.real {
+		err = s.checkpoint()
+	}
+	err = errors.Join(err, s.save())
+	if err == nil {
+		s.notice = "Saved."
+		if s.receipt != nil {
+			s.receipt.Saved, s.receipt.Durable = true, s.uncertain == ""
+		}
+	}
+	return s.view(err)
+}
+
 // State returns the current view without changing anything.
 func (s *Session) State() View {
 	s.mu.Lock()

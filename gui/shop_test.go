@@ -710,3 +710,47 @@ func TestShopSellingAWornItemAsks(t *testing.T) {
 		t.Fatalf("after yes: %d items, AC %d", fighter.ItemCount, fighter.AC)
 	}
 }
+
+// After a failed save, SaveNow writes the window's game as it is: the
+// purchase is saved once (no second item, no second payment), the receipt
+// then says saved, and with nothing unsaved SaveNow writes nothing.
+func TestSaveNowAfterAFailedSave(t *testing.T) {
+	if os.Geteuid() == 0 {
+		t.Skip("root ignores directory permissions")
+	}
+	s, dir := shopSession(t)
+	mage := s.ctrl.Game.Town.Party.Members[mageSlot]
+	if v := s.SaveNow(); v.Notice != "Everything is saved." || v.Error != "" {
+		t.Fatalf("nothing to save: %q %q", v.Notice, v.Error)
+	}
+	s.ShopAction(ShopRequest{Action: ShopActEnter, Slot: mageSlot})
+	os.Chmod(dir, 0o555)
+	s.ShopAction(ShopRequest{Action: ShopActBuy, Item: itemStaff})
+	if v := s.SaveNow(); v.Unsaved == "" || !strings.Contains(v.Error, "Could not save") || v.Shop.Last.Saved {
+		t.Fatalf("still read-only: %q %q %+v", v.Error, v.Unsaved, v.Shop.Last)
+	}
+	os.Chmod(dir, 0o755)
+	before := folder(t, dir)
+	rand.Seed(3)
+	v := s.SaveNow()
+	next := rand.Int63()
+	rand.Seed(3)
+	if next != rand.Int63() {
+		t.Fatal("SaveNow drew a random number")
+	}
+	if v.Error != "" || v.Unsaved != "" || v.Notice != "Saved." || !v.Shop.Last.Saved || !v.Shop.Last.Durable || maps.Equal(before, folder(t, dir)) {
+		t.Fatalf("saving again: %q %q %q %+v", v.Error, v.Unsaved, v.Notice, v.Shop.Last)
+	}
+	mustMatchDisk(t, s, dir, "saved again")
+	if mage.Gold != 990 || mage.ItemCount != 1 {
+		t.Fatalf("in the window: %d GP, %d items", mage.Gold, mage.ItemCount)
+	}
+	r := reopened(t, s, dir)
+	if m := r.ctrl.Game.Town.Party.Members[mageSlot]; m.Gold != 990 || m.ItemCount != 1 {
+		t.Fatalf("a restart finds %d GP and %d items, want 990 and 1", m.Gold, m.ItemCount)
+	}
+	before = folder(t, dir)
+	if v := s.SaveNow(); v.Notice != "Everything is saved." || !maps.Equal(before, folder(t, dir)) {
+		t.Fatalf("nothing more to save: %q", v.Notice)
+	}
+}
