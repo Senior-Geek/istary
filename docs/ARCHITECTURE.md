@@ -478,9 +478,9 @@ number; the level check does. Inn stays age no one (finding #11).
 |---|---|
 | `InnEnter(slot)` | Choose the guest (WHO WILL STAY); only an OK guest (`*Refusal` "NAME IS NOT OK") |
 | `InnLeaveGuest()`, `LeaveInn()` | Back to WHO WILL STAY; out to the castle (RETURN steps) |
-| `Stay(room, weeks)` | The room's letter, its weeks and the level check, in one call. `weeks` 0: until healed or out of gold (the original's stay); more: that many weeks of healing, then checking out early (PG p.34), refused (`*Refusal`, nothing changed) unless needed and paid for, and never in the stables (one free night). Returns `InnStay`: room, weeks, gold charged, and the guest before and after (HP, maximum, gold, spells, level, attributes, age, learned spells, the level check's words, death) |
+| `Stay(room, weeks)` | The room's letter, its weeks and the level check, in one call. Stricter than the keys in two cases (I-4 acceptance): a paid room for a hurt guest who cannot pay one week is refused, naming the free stables, and a guest no longer OK (LOST of old age) may not stay again; the keys keep the original (the room taken, nothing healed; a LOST guest staying on). `weeks` 0: until healed or out of gold (the original's stay); more: that many weeks of healing, then checking out early (PG p.34), refused (`*Refusal`, nothing changed) unless needed and paid for, and never in the stables (one free night). Returns `InnStay`: room, weeks, gold charged, and the guest before and after (HP, maximum, gold, spells, level, attributes, age, learned spells, the level check's words, death) |
 | `Quote(room, weeks)` | Read-only: weeks, cost, HP after, healed, weeks needed and affordable, refusal |
-| `InnView()` | Read-only: the step, the guests (refusals), the guest, and each room's rate, quote until healed and most weeks |
+| `InnView()` | Read-only: the step, the guests (refusals), the guest, and, for a guest who may stay, each room's rate, quote until healed and most weeks; otherwise `GuestRefusal` and no room |
 | `PoolGold(slot)`, `DivvyGold()` (`app/gold.go`, I-3) | Pool every other member's gold to one (the Tavern, Boltac's, the Inn); share it evenly (the Tavern). `GoldMove`: everyone before and after; the total kept; every member takes part; a remainder one piece each in party order |
 
 Tests: the I-0 characterization (`cmd/istary/inn_test.go`: a transcript and
@@ -624,7 +624,8 @@ it and decides nothing.
   Pooling and sharing are one write each. Choosing or switching the guest,
   checking out, a refusal, quoting and looking write nothing; a stay that
   changes nothing (a night in the stables short of a level) writes nothing
-  but keeps its receipt. A failed save keeps the stay in the window, the
+  but keeps its receipt. A refusal keeps the last receipt (a death of old
+  age stays in view); a change of guest clears it. A failed save keeps the stay in the window, the
   receipt NOT saved; Try saving again (`SaveNow`) marks it saved and repeats
   nothing (no healing, charge or roll); closing the window asks first.
 - **The screen:** the guest from the party bar (marked there) or, with the
@@ -637,12 +638,18 @@ it and decides nothing.
   Go's refusal); the stables are one free night in either. The receipt
   lists room and weeks, gold, HP, maximum HP, spell points restored, age,
   level, attribute changes, learned spells and death of old age, with the
-  level check's words. A note says spell points come back with every stay
+  level check's words. A paid room the guest cannot pay a week of is
+  disabled with Go's refusal, naming the free stables; a guest LOST of old
+  age is shown why, in place of the rooms, and cannot be checked in again. A note says spell points come back with every stay
   and that Istary does not yet age characters for Inn stays. At the
   Tavern, Divvy gold and its receipt (everyone before and after).
+- **Pool Gold at Boltac's:** `ShopRequest` `pool`: the same operation,
+  through Boltac's save and receipt (`ShopReceipt.Move`); refused with
+  nobody at the counter or while Boltac asks (`TestShopPoolGold`).
 - **Tests:** `gui/inn_test.go` (one save per stay or pooling and none
   otherwise, a failed save retried with nothing repeated and found after a
-  restart, Divvy at the Tavern only) and `TestInnViewFixture`
+  restart, a guest LOST of old age refused from then on with the receipt
+  kept, Divvy at the Tavern only) and `TestInnViewFixture`
   (`testdata/inn-views.json`, held by `innViews.test.js`). Live (`wails dev`
   + headless Chrome) at 760x532, 980x692 and 1512x945. Stills in
   `docs/design/m2-exploration/stills/gui-inn-i4/`.

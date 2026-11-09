@@ -22,7 +22,9 @@ bottom, shown or hidden with Hide party.
   The stables are a free night that heals nothing. Every stay restores
   spell points and ends with a level check; the receipt shows gold, HP,
   spells, level and attribute changes, and whether it is saved (Try saving
-  again if not). Pool party gold gives the guest everyone's gold. Istary
+  again if not). A room the guest cannot pay a week of is refused (the
+  stables are free), and a guest who dies of old age cannot stay again.
+  Pool party gold gives the guest everyone's gold. Istary
   does not yet age characters for Inn stays (the original's rate is not
   established).
 - **Boltac's Trading Post (M8-4):** click a party member in the party bar
@@ -33,8 +35,8 @@ bottom, shown or hidden with Hide party.
   equipment the customer cannot use asks first, and so does selling
   something they wear. Each purchase, sale, identification or uncursing is
   saved at once, and the receipt says Saved, saved but perhaps not durably,
-  or NOT saved (with Try saving again). Pool Gold is offered at the Inn,
-  not yet here.
+  or NOT saved (with Try saving again). Pool party gold gives the customer
+  everyone's gold.
 - **Character sheets** (click a party member or a roster character):
   Equip and Take off for each item, anywhere in town; a greyed button says
   why (the class cannot use it, a cursed item is stuck in its place...).

@@ -362,3 +362,25 @@ M0 ─► M1 ─► M1b ─┬─► M3 ─┬───────────�
                  └─► M2 Part B ───────────────┘
 M2 Part A can start after M1 · M10 overlaps M6–M9 · M11 deferred
 ```
+
+## Backlog (not scheduled)
+
+Known limitations kept on purpose, each to be proposed and approved on its
+own before any work.
+
+- **Terminal Inn, early checkout.** The guide's SPACE checks out early
+  (PG p.34); the terminal's stay always runs until healed or out of gold.
+  The GUI has Choose weeks (row N2).
+- **Terminal Pool Gold and Divvy Gold.** The controller has both
+  (`app/gold.go`); the terminal's menus offer neither (finding #4).
+- **Terminal saving at the Inn and on Ctrl-C.** The terminal saves after
+  each key; a stay and its level check run on its timer, so they are saved
+  at the next key, and Ctrl-C quits without saving. Quitting in between
+  loses the stay and allows its level check to be rolled again. The GUI
+  saves a stay and its level check as one action.
+- **Terminal Inn quirks.** The terminal still lets a guest who died of old
+  age stay on, and takes a paid room for a hurt guest who cannot pay a
+  week, healing nothing (as the original); the GUI refuses both.
+- **Pool Gold elsewhere.** Pool Gold from a character's inspect screen
+  (PG p.28) is in the controller but on no GUI screen.
+- **Inn aging.** No source establishes the rate (finding #11).
