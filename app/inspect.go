@@ -310,9 +310,9 @@ func buildEquipChoices(game *engine.GameState, town *engine.TownState) {
 		if item.TypeID != cat {
 			continue
 		}
-		// Class usability check — from p-code byte 5779: IXP 16,1 on ClassUse field
-		// Each bit in ClassUse corresponds to a class (bit 0=Fighter, bit 1=Mage, etc.)
-		if item.ClassUse != 0 && (item.ClassUse&(1<<uint(c.Class))) == 0 {
+		// Class usability check — from p-code byte 5779: IXP 16,1 on ClassUse
+		// field (canEquip, shared with equipping in town)
+		if canEquip(item, c) != "" {
 			continue
 		}
 		town.EquipChoices = append(town.EquipChoices, i)
