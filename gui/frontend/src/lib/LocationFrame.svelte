@@ -116,7 +116,11 @@
     padding-right: 2px;
   }
   .frame.with-aside .body { grid-template-areas: "scene nav" "scene aside" "content content"; }
-  .scene-area { grid-area: scene; width: 100%; aspect-ratio: 16 / 9; max-height: 46vh; min-height: 120px; min-width: 0; }
+  /* The scene's height is definite (about 16:9 of its column, between 120px
+     and 46vh), not worked out from its width: in a body that scrolls, a
+     height from aspect-ratio was left out of the row's size, and the
+     content below was drawn over the scene. */
+  .scene-area { grid-area: scene; width: 100%; height: clamp(120px, calc((100vw - 380px) * 0.5625), 46vh); min-width: 0; }
   .nav-area { grid-area: nav; display: grid; gap: 12px; min-width: 0; }
   .aside-area { grid-area: aside; min-width: 0; }
   .content-area { grid-area: content; min-width: 0; }
@@ -134,6 +138,6 @@
       grid-template-columns: minmax(0, 1fr);
       grid-template-areas: "scene" "nav" "aside" "content";
     }
-    .scene-area { aspect-ratio: 21 / 9; max-height: 30vh; }
+    .scene-area { height: auto; aspect-ratio: 21 / 9; max-height: 30vh; }
   }
 </style>
