@@ -60,7 +60,6 @@ func TestGoToIsTheTerminalKey(t *testing.T) {
 	for _, party := range []bool{false, true} {
 		for _, m := range terminalMoves {
 			byKey, byOp := navGame(t, party, m.from), navGame(t, party, m.from)
-			untouched := *byOp.Town
 
 			seed(7)
 			newDriver(t, byKey).dispatch(m.key)
@@ -75,13 +74,6 @@ func TestGoToIsTheTerminalKey(t *testing.T) {
 
 			var r *app.Refusal
 			switch {
-			case errors.Is(err, app.ErrLocationNotMigrated):
-				// The Inn, Boltac's and the Temple with a party: the terminal
-				// opens them; the controller does not, and changes nothing.
-				if !party || byKey.Town.Location != m.to || !reflect.DeepEqual(*byOp.Town, untouched) {
-					t.Errorf("party %v %v to %v: not migrated, but the key went to %v", party, m.from, m.to, byKey.Town.Location)
-				}
-				continue
 			case errors.As(err, &r):
 				if byKey.Town.Location != m.from || byKey.Town.Message != r.Message {
 					t.Errorf("party %v %v to %v: refused %q, the key went to %v with %q", party, m.from, m.to, r.Message, byKey.Town.Location, byKey.Town.Message)

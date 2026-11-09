@@ -1,7 +1,6 @@
 package app
 
 import (
-	"errors"
 	"slices"
 
 	"github.com/Senior-Geek/istary/engine"
@@ -19,7 +18,7 @@ import (
 // townExits lists where each location leads, in menu order: the castle
 // menu, the Edge of Town (Player's Guide p.36), and L)EAVE back to the
 // castle from the Training Grounds (p.22) and the Tavern, and RETURN back
-// from Boltac's and the Inn.
+// from Boltac's, the Inn and the Temple.
 var townExits = map[engine.TownLocation][]engine.TownLocation{
 	engine.Castle:     {engine.Tavern, engine.Inn, engine.Trading, engine.Temple, engine.EdgeOfTown},
 	engine.EdgeOfTown: {engine.Training, engine.Castle},
@@ -27,15 +26,12 @@ var townExits = map[engine.TownLocation][]engine.TownLocation{
 	engine.Tavern:     {engine.Castle},
 	engine.Trading:    {engine.Castle},
 	engine.Inn:        {engine.Castle},
+	engine.Temple:     {engine.Castle},
 }
 
 // noParty is the castle's answer when the Inn, Boltac's or the Temple is
 // chosen with no party.
 const noParty = "YOU HAVE NO PARTY!"
-
-// ErrLocationNotMigrated refuses entering a location whose screens are
-// still the terminal's own (the Inn and the Temple).
-var ErrLocationNotMigrated = errors.New("that location is still played in the terminal only")
 
 // Exit is one way out of the current town location.
 type Exit struct {
@@ -44,8 +40,7 @@ type Exit struct {
 }
 
 // Exits lists the ways out of the current town location, in menu order.
-// A location whose screens the controller does not handle (the Temple) is
-// listed too: GoTo refuses it with ErrLocationNotMigrated.
+// Every location's screens are the controller's now.
 func (c *Controller) Exits() []Exit {
 	town := c.Game.Town
 	var out []Exit
@@ -68,11 +63,15 @@ func entryRefusal(town *engine.TownState, loc engine.TownLocation) string {
 
 // GoTo moves to one of Exits, as its key on the terminal's menu does (for
 // Boltac's, B; out of it, RETURN at "WHO WILL ENTER"; the Inn's are A and
-// RETURN at "WHO WILL STAY"). A
+// RETURN at "WHO WILL STAY"; the Temple's are C and RETURN with nothing
+// typed). A
 // refused move leaves the refusal in Town.Message, as the key does, and
 // returns it as a *Refusal.
 func (c *Controller) GoTo(to engine.TownLocation) error {
 	g := c.Game
+	if g.Phase == engine.PhaseTown && g.Town.Location == engine.Temple && to == engine.Castle {
+		return c.LeaveTemple() // its name prompt is always open
+	}
 	if g.Phase != engine.PhaseTown || g.Town.InputMode != engine.InputNone {
 		return ErrWrongState
 	}
@@ -99,9 +98,6 @@ func (c *Controller) GoTo(to engine.TownLocation) error {
 		return nil
 	}
 	msg := entryRefusal(town, to)
-	if msg == "" && to == engine.Temple {
-		return ErrLocationNotMigrated
-	}
 	// The castle and the Edge of Town clear the message on every key.
 	town.Message = ""
 	if msg != "" {
@@ -114,6 +110,9 @@ func (c *Controller) GoTo(to engine.TownLocation) error {
 		return nil
 	case engine.Inn:
 		c.castleInnKey()
+		return nil
+	case engine.Temple:
+		c.castleTempleKey()
 		return nil
 	case engine.Tavern:
 		return c.EnterTavern()

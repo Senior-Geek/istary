@@ -30,14 +30,19 @@ type GoldMove struct {
 }
 
 // poolPlaces are where the guide offers pooling: the Tavern (by inspecting
-// a member), Boltac's and the Inn. Sharing is offered at the Tavern.
-var poolPlaces = map[engine.TownLocation]bool{engine.Tavern: true, engine.Trading: true, engine.Inn: true}
+// a member), Boltac's and the Inn, and the Temple, where "the entire
+// party's gold will be kicked into the fund" when the payer is short
+// (p.33): Istary offers that as an explicit Pool Gold to the payer, not a
+// silent one (finding #5). Sharing is offered at the Tavern.
+var poolPlaces = map[engine.TownLocation]bool{engine.Tavern: true, engine.Trading: true, engine.Inn: true, engine.Temple: true}
 
-// goldReady reports that the party is in town at loc with no prompt open.
+// goldReady reports that the party is in town at one of places with no
+// prompt open (the Temple's own name prompt, always open there, aside).
 func (c *Controller) goldReady(places map[engine.TownLocation]bool) bool {
 	g := c.Game
-	return g.Phase == engine.PhaseTown && places[g.Town.Location] && g.Town.InputMode == engine.InputNone &&
-		g.Town.Party.Size() > 0
+	prompt := g.Town.InputMode == engine.InputNone ||
+		g.Town.Location == engine.Temple && g.Town.InputMode == engine.InputTempleHelp
+	return g.Phase == engine.PhaseTown && places[g.Town.Location] && prompt && g.Town.Party.Size() > 0
 }
 
 func (c *Controller) goldMove(to int) *GoldMove {

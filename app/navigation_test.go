@@ -122,8 +122,17 @@ func TestGoToShopsAndServices(t *testing.T) {
 			if err := c.GoTo(engine.Castle); err != nil || c.Game.Town.Location != engine.Castle {
 				t.Errorf("back from the Inn: %v", err)
 			}
-		} else if err := c.GoTo(loc); !errors.Is(err, ErrLocationNotMigrated) || !reflect.DeepEqual(*c.Game.Town, before) {
-			t.Errorf("%v with a party: %v", loc, err)
+		} else if loc == engine.Temple { // the Temple is the controller's (T-1)
+			if err := c.GoTo(loc); err != nil || c.Game.Town.Location != engine.Temple || c.Game.Town.TempleStep != engine.TempleWho ||
+				c.Game.Town.InputMode != engine.InputTempleHelp || c.Game.Town.Message != "" {
+				t.Errorf("the Temple with a party: %v", err)
+			}
+			if err := c.GoTo(engine.Castle); err != nil || c.Game.Town.Location != engine.Castle || c.Game.Town.InputMode != engine.InputNone {
+				t.Errorf("back from the Temple: %v", err)
+			}
+		} else {
+			t.Errorf("%v: an exit not tested", loc)
+			_ = before
 		}
 	}
 }
