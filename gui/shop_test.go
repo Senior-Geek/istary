@@ -170,7 +170,7 @@ func TestShopTransactions(t *testing.T) {
 	if v = unchanged(t, s, dir, ShopRequest{Action: ShopActConfirm, Yes: false}); v.Shop.View.Step != "buy" {
 		t.Fatalf("after no: %q", v.Shop.View.Step)
 	}
-	refused(t, s, dir, ShopRequest{Action: ShopActConfirm, Yes: true}, "Boltac is not asking anything.")
+	refused(t, s, dir, ShopRequest{Action: ShopActConfirm, Yes: true}, errNotAsked.Error())
 	unchanged(t, s, dir, ShopRequest{Action: ShopActBuy, Item: itemLongSword})
 	v = done(t, s, dir, ShopRequest{Action: ShopActConfirm, Yes: true}, "buy", "LONG SWORD", -25)
 	if v.Shop.View.Message != "** ITS YOUR MONEY **" || mage.ItemCount != 2 || mage.Gold != 965 {
@@ -415,6 +415,7 @@ func TestShopRestartAndReload(t *testing.T) {
 // to the terminal's keys). A request writes the save exactly when it
 // changes a character, and the save then holds the game.
 func TestShopActionsAreTheControllers(t *testing.T) {
+	asked := 0 // requests that left Boltac asking before buying a worn item
 	for seed := int64(1); seed <= 40; seed++ {
 		s, dir := shopSession(t)
 		rng := rand.New(rand.NewSource(seed))
@@ -423,7 +424,9 @@ func TestShopActionsAreTheControllers(t *testing.T) {
 			for n := rng.Intn(4); n > 0; n-- {
 				m.AddItem(1+rng.Intn(30), rng.Intn(2) == 0)
 				m.Items[m.ItemCount-1].Cursed = rng.Intn(4) == 0
+				m.Items[m.ItemCount-1].Equipped = rng.Intn(3) == 0
 			}
+			m.RecalcAC(s.scenario.Items)
 		}
 		if err := s.ctrl.Save(); err != nil {
 			t.Fatal(err)
@@ -462,7 +465,7 @@ func TestShopActionsAreTheControllers(t *testing.T) {
 			}{roster, stock, town.ShopStep, app.PartySlot(town, town.ShopChar), town.Message, town.InputMode, town.Location})
 			return string(raw)
 		}
-		actions := []string{ShopActEnter, ShopActLeaveCustomer, ShopActBuy, ShopActBuy, ShopActBuy, ShopActConfirm, ShopActSell, ShopActUncurse, ShopActIdentify}
+		actions := []string{ShopActEnter, ShopActLeaveCustomer, ShopActBuy, ShopActBuy, ShopActBuy, ShopActConfirm, ShopActConfirmSale, ShopActSell, ShopActSell, ShopActUncurse, ShopActIdentify}
 		for step := 0; step < 120; step++ {
 			r := ShopRequest{Action: actions[rng.Intn(len(actions))], Slot: rng.Intn(7), N: rng.Intn(10), Yes: rng.Intn(2) == 0, Item: rng.Intn(40)}
 			if v := s.State(); r.Action == ShopActBuy && len(v.Shop.View.Catalog) > 0 && rng.Intn(4) > 0 {
@@ -475,10 +478,11 @@ func TestShopActionsAreTheControllers(t *testing.T) {
 				tv, _ := twin.ShopView()
 				members := tg.Town.Party.Members
 				valid := r.Slot < len(members) && members[r.Slot] != nil
-				if tv.Step != "who" && tv.Step != "confirm" && r.Slot != tv.Customer && valid {
+				asking := tv.Step == "confirm" || tv.Step == "confirmSell"
+				if tv.Step != "who" && !asking && r.Slot != tv.Customer && valid {
 					twin.ShopLeaveCustomer()
 				}
-				if r.Slot != tv.Customer {
+				if r.Slot != tv.Customer && !asking {
 					twin.ShopEnter(r.Slot)
 				}
 			case ShopActLeaveCustomer:
@@ -487,6 +491,8 @@ func TestShopActionsAreTheControllers(t *testing.T) {
 				twin.Buy(r.Item)
 			case ShopActConfirm:
 				twin.ConfirmUnusable(r.Yes)
+			case ShopActConfirmSale:
+				twin.ConfirmSale(r.Yes)
 			case ShopActSell:
 				twin.Sell(r.N)
 			case ShopActUncurse:
@@ -502,8 +508,14 @@ func TestShopActionsAreTheControllers(t *testing.T) {
 				t.Fatalf("seed %d step %d %+v: changed %v, wrote %v, receipt %+v", seed, step, r, changed, wrote, v.Shop.Last)
 			}
 			mustMatchDisk(t, s, dir, r.Action)
+			if v.Shop.View.Step == "confirmSell" {
+				asked++
+			}
 		}
 		s.shutdown()
+	}
+	if asked == 0 {
+		t.Fatal("never asked about selling a worn item")
 	}
 }
 
@@ -578,9 +590,12 @@ func TestShopViewFixture(t *testing.T) {
 	add("bought anyway", s.ShopAction(ShopRequest{Action: ShopActConfirm, Yes: true}))
 	add("identified", s.ShopAction(ShopRequest{Action: ShopActIdentify, N: 2}))
 	add("uncursed", s.ShopAction(ShopRequest{Action: ShopActUncurse, N: 3}))
-	add("sold", s.ShopAction(ShopRequest{Action: ShopActSell, N: 1}))
+	add("Boltac asks: equipped", s.ShopAction(ShopRequest{Action: ShopActSell, N: 1}))
+	add("sold", s.ShopAction(ShopRequest{Action: ShopActConfirmSale, Yes: true}))
 	for mage.ItemCount < 8 {
-		s.ShopAction(ShopRequest{Action: ShopActBuy, Item: itemStaff})
+		if v := s.ShopAction(ShopRequest{Action: ShopActBuy, Item: itemStaff}); v.Error != "" {
+			t.Fatal(v.Error)
+		}
 	}
 	add("no room", s.State())
 	add("thief: little gold, nothing to sell", s.ShopAction(ShopRequest{Action: ShopActEnter, Slot: 2}))
@@ -641,7 +656,10 @@ func TestShopSaleUpdatesAC(t *testing.T) {
 	worn := fighter.AC
 	s.ctrl.Save()
 	s.ShopAction(ShopRequest{Action: ShopActEnter, Slot: 0})
-	v := done(t, s, dir, ShopRequest{Action: ShopActSell, N: 1}, "sell", "CHAIN MAIL", 45)
+	if v := unchanged(t, s, dir, ShopRequest{Action: ShopActSell, N: 1}); v.Shop.View.Step != "confirmSell" {
+		t.Fatalf("a worn item sold without a question: %q", v.Shop.View.Step)
+	}
+	v := done(t, s, dir, ShopRequest{Action: ShopActConfirmSale, Yes: true}, "sell", "CHAIN MAIL", 45)
 	if v.PartyBar[0].AC != 10 || worn == 10 {
 		t.Fatalf("after selling worn chain mail: party bar AC %d (was %d)", v.PartyBar[0].AC, worn)
 	}
@@ -655,5 +673,40 @@ func TestShopSaleUpdatesAC(t *testing.T) {
 	walkTo(t, s, "settings")
 	if v := s.ReloadRoster(); v.Error != "" || v.PartyBar[0].AC != 10 {
 		t.Fatalf("reloaded with a stale AC: %q, AC %d", v.Error, v.PartyBar[0].AC)
+	}
+}
+
+// Selling a worn item asks first (B7): the question writes nothing, no
+// writes nothing, the other actions wait for the answer, and yes is a
+// sale, saved, with the AC worked out again.
+func TestShopSellingAWornItemAsks(t *testing.T) {
+	s, dir := shopSession(t)
+	g := s.ctrl.Game
+	fighter := g.Town.Party.Members[0]
+	fighter.AddItem(chainMail, true)
+	fighter.AddItem(itemStaff, true)
+	fighter.Items[0].Equipped = true
+	fighter.RecalcAC(g.Scenario.Items)
+	s.ctrl.Save()
+	v := unchanged(t, s, dir, ShopRequest{Action: ShopActEnter, Slot: 0})
+	if !v.Shop.View.Items[0].SellAsks || v.Shop.View.Items[1].SellAsks {
+		t.Fatalf("asks: %+v", v.Shop.View.Items)
+	}
+	refused(t, s, dir, ShopRequest{Action: ShopActConfirmSale, Yes: true}, errNotAsked.Error())
+	v = unchanged(t, s, dir, ShopRequest{Action: ShopActSell, N: 1})
+	if v.Shop.View.Step != "confirmSell" || v.Shop.View.SellConfirm != 1 || v.Return.Note == "" {
+		t.Fatalf("Boltac asks: %+v, return %+v", v.Shop.View, v.Return)
+	}
+	for _, r := range []ShopRequest{{Action: ShopActSell, N: 2}, {Action: ShopActBuy, Item: itemStaff}, {Action: ShopActEnter, Slot: 1}, {Action: ShopActIdentify, N: 1}} {
+		refused(t, s, dir, r, errAnswerBoltac.Error())
+	}
+	refused(t, s, dir, ShopRequest{Action: ShopActConfirm, Yes: true}, errNotAsked.Error())
+	if v = unchanged(t, s, dir, ShopRequest{Action: ShopActConfirmSale, Yes: false}); v.Shop.View.Step != "sell" || !fighter.Items[0].Equipped {
+		t.Fatalf("after no: %q", v.Shop.View.Step)
+	}
+	unchanged(t, s, dir, ShopRequest{Action: ShopActSell, N: 1})
+	v = done(t, s, dir, ShopRequest{Action: ShopActConfirmSale, Yes: true}, "sell", "CHAIN MAIL", 45)
+	if fighter.ItemCount != 1 || fighter.AC != 10 || v.PartyBar[0].AC != 10 {
+		t.Fatalf("after yes: %d items, AC %d", fighter.ItemCount, fighter.AC)
 	}
 }

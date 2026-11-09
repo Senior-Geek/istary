@@ -607,6 +607,7 @@ export namespace app {
 	    cursed: boolean;
 	    price: number;
 	    sellRefusal: string;
+	    sellAsks: boolean;
 	    fee: number;
 	    uncurseRefusal: string;
 	    identifyRefusal: string;
@@ -625,6 +626,7 @@ export namespace app {
 	        this.cursed = source["cursed"];
 	        this.price = source["price"];
 	        this.sellRefusal = source["sellRefusal"];
+	        this.sellAsks = source["sellAsks"];
 	        this.fee = source["fee"];
 	        this.uncurseRefusal = source["uncurseRefusal"];
 	        this.identifyRefusal = source["identifyRefusal"];
@@ -639,6 +641,7 @@ export namespace app {
 	    class: string;
 	    gold: number;
 	    confirm: number;
+	    sellConfirm: number;
 	    catalog: ShopOffer[];
 	    items: ShopOwned[];
 	    room: number;
@@ -657,6 +660,7 @@ export namespace app {
 	        this.class = source["class"];
 	        this.gold = source["gold"];
 	        this.confirm = source["confirm"];
+	        this.sellConfirm = source["sellConfirm"];
 	        this.catalog = this.convertValues(source["catalog"], ShopOffer);
 	        this.items = this.convertValues(source["items"], ShopOwned);
 	        this.room = source["room"];

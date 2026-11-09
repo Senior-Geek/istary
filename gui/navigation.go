@@ -138,6 +138,8 @@ func (s *Session) returnView() *ReturnView {
 		return &ReturnView{Open: true, Note: "Returning cancels the join waiting for its password."}
 	case g.Town.Location == engine.Trading && g.Town.ShopStep == engine.ShopBuyConfirm:
 		return &ReturnView{Open: true, Note: "Returning answers no to Boltac's question: the item is not bought."}
+	case g.Town.Location == engine.Trading && g.Town.ShopStep == engine.ShopSellConfirm:
+		return &ReturnView{Open: true, Note: "Returning answers no to Boltac's question: the item is not sold."}
 	}
 	return &ReturnView{Open: true}
 }

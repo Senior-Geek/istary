@@ -226,24 +226,35 @@ func shopInput(game *engine.GameState, town *engine.TownState, ch rune) {
 				itemIdx := poss.ItemIndex
 				if itemIdx >= 0 && itemIdx < len(items) {
 					item := items[itemIdx]
-					sellPrice, refusal := sellQuote(item, poss)
+					_, refusal := sellQuote(item, poss)
 					if refusal != "" {
 						town.Message = refusal
 						town.ShopStep = engine.ShopMain // XIT back to main
 						return
 					}
-					// Gold transfer: add sell price — p-code IC 3150-3162 (CXP proc=5)
-					c.Gold += sellPrice
-					// Remove item — p-code IC 3211-3308
-					c.DropItem(idx)
-					c.RecalcAC(items) // it may have been worn (#35)
-					// Increment stock — p-code IC 3337-3357
-					if n := game.Stock(itemIdx); n > -1 {
-						game.SetStock(itemIdx, n+1)
+					if poss.Equipped {
+						// "If you attempt to sell an item that is equipped,
+						// you will be asked if that's what you really want
+						// to do" (Player's Guide p.31; decision B7).
+						town.ShopSellItem = idx
+						town.ShopStep = engine.ShopSellConfirm
+						town.Message = sellEquippedQuestion
+						return
 					}
-					town.Message = "** ANYTHING ELSE, SIRE? **"
+					shopSell(game, town, idx)
 				}
 			}
+		}
+
+	case engine.ShopSellConfirm:
+		// Y sells the equipped item; N does not.
+		switch ch {
+		case 'Y':
+			town.ShopStep = engine.ShopSell
+			shopSell(game, town, town.ShopSellItem)
+		case 'N':
+			town.ShopStep = engine.ShopSell
+			town.Message = ""
 		}
 
 	case engine.ShopUncurse:
@@ -304,6 +315,37 @@ func shopInput(game *engine.GameState, town *engine.TownState, ch rune) {
 			}
 		}
 	}
+}
+
+// sellEquippedQuestion is Boltac's question before buying an equipped
+// item. The guide gives no words; these follow his question about an
+// unusable item.
+const sellEquippedQuestion = "EQUIPPED ITEM - CONFIRM SELL (Y/N) ? >"
+
+// shopSell sells the customer's item idx (0-based): its price to the
+// customer, the item to Boltac's stock, and the AC worked out again.
+func shopSell(game *engine.GameState, town *engine.TownState, idx int) {
+	c := town.ShopChar
+	items := game.Scenario.Items
+	if idx < 0 || idx >= c.ItemCount {
+		return
+	}
+	poss := c.Items[idx]
+	itemIdx := poss.ItemIndex
+	if itemIdx < 0 || itemIdx >= len(items) {
+		return
+	}
+	sellPrice, _ := sellQuote(items[itemIdx], poss)
+	// Gold transfer: add sell price — p-code IC 3150-3162 (CXP proc=5)
+	c.Gold += sellPrice
+	// Remove item — p-code IC 3211-3308
+	c.DropItem(idx)
+	c.RecalcAC(items) // it may have been worn (#35)
+	// Increment stock — p-code IC 3337-3357
+	if n := game.Stock(itemIdx); n > -1 {
+		game.SetStock(itemIdx, n+1)
+	}
+	town.Message = "** ANYTHING ELSE, SIRE? **"
 }
 
 // shopBuyItem executes a purchase from the buy catalog: the item in place
@@ -424,6 +466,10 @@ func shopReturn(town *engine.TownState) {
 	case engine.ShopBuyConfirm:
 		// RETURN at confirm prompt = cancel (treat as 'N')
 		town.ShopStep = engine.ShopBuy
+		town.Message = ""
+	case engine.ShopSellConfirm:
+		// RETURN = no: the item is kept, the sell list stays.
+		town.ShopStep = engine.ShopSell
 		town.Message = ""
 	case engine.ShopBuy:
 		if town.InputMode == engine.InputShopPurchase {

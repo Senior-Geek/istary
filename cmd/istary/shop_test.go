@@ -68,6 +68,7 @@ func shopAs(d *driver, slot int) *driver {
 var shopSteps = map[engine.ShopStep]string{
 	engine.ShopWho: "who", engine.ShopMain: "main", engine.ShopBuy: "buy", engine.ShopBuyConfirm: "confirm",
 	engine.ShopSell: "sell", engine.ShopUncurse: "uncurse", engine.ShopIdentify: "identify",
+	engine.ShopSellConfirm: "confirmSell",
 }
 
 // shopState is one line of what the shop holds: where it is, Boltac's
@@ -98,6 +99,9 @@ func shopState(g *engine.GameState) string {
 	}
 	if town.ShopStep == engine.ShopBuy || town.ShopStep == engine.ShopBuyConfirm {
 		fmt.Fprintf(&b, " | cursor %d page %v", town.ShopCatalog, town.ShopPage)
+	}
+	if town.ShopStep == engine.ShopSellConfirm {
+		fmt.Fprintf(&b, " | selling %d", town.ShopSellItem+1)
 	}
 	b.WriteString(" | stock")
 	for _, i := range []int{itemLongSword, itemChainMail, itemHelm, itemShortSword1, itemScrollHalito, itemLongSwordM1, itemLeatherM1, itemPlateMail1} {
@@ -153,7 +157,12 @@ var shopScript = []struct{ keys, why string }{
 	{"4", "the cursed long sword: refused, back to the main menu"},
 	{"S", ""},
 	{"3", "the unidentified scroll: 1 GP (B6)"},
-	{"1", "the equipped staff: sold, no question (B7), AC unchanged (#35)"},
+	{"1", "the equipped staff: Boltac asks first (B7)"},
+	{"N", "no: kept, still worn"},
+	{"1", ""},
+	{"\r", "RETURN at the question: no"},
+	{"1", ""},
+	{"Y", "yes: sold; the AC is what is still worn, the chain mail (#35)"},
 	{"\r", ""},
 	{"U", "uncurse"},
 	{"1", "the chain mail is not cursed: back to the main menu"},
@@ -237,6 +246,8 @@ func TestShopScreenSnapshots(t *testing.T) {
 	snap("uncurse list")
 	pressAll(d, "\rI")
 	snap("identify list")
+	pressAll(d, "\rS1")
+	snap("equipped item: Boltac asks (B7)")
 	checkGolden(t, "screens_shop.golden", []byte(out.String()))
 }
 
@@ -332,8 +343,17 @@ func TestShopRules(t *testing.T) {
 		if d.keys("S3"); b.Gold != 601 || b.ItemCount != 5 || g.Stock(itemScrollHalito) != 28 {
 			t.Errorf("unidentified: gold %d, stock %d (B6: 1 GP)", b.Gold, g.Stock(itemScrollHalito))
 		}
-		if d.keys("S1"); b.Gold != 606 || b.ItemCount != 4 || b.AC != 7 || g.Town.Message != "** ANYTHING ELSE, SIRE? **" {
-			t.Errorf("equipped staff: gold %d, AC %d (B7 no question, #35 AC kept)", b.Gold, b.AC)
+		if d.keys("S1"); g.Town.ShopStep != engine.ShopSellConfirm || b.Gold != 601 || b.ItemCount != 5 {
+			t.Errorf("equipped staff: no question (B7): %v, gold %d", g.Town.ShopStep, b.Gold)
+		}
+		if d.keys("N"); g.Town.ShopStep != engine.ShopSell || b.ItemCount != 5 || !b.Items[0].Equipped || g.Town.Message != "" {
+			t.Errorf("no: %v, %d items", g.Town.ShopStep, b.ItemCount)
+		}
+		if d.keys("1Y"); b.Gold != 606 || b.ItemCount != 4 || b.AC != 7 || g.Town.Message != "** ANYTHING ELSE, SIRE? **" {
+			t.Errorf("yes: gold %d, AC %d", b.Gold, b.AC)
+		}
+		if d.keys("1Y"); b.ItemCount != 3 || b.AC != 10 {
+			t.Errorf("the chain mail: %d items, AC %d (#35: nothing worn but a sword)", b.ItemCount, b.AC)
 		}
 	})
 	t.Run("selling raises stock", func(t *testing.T) {

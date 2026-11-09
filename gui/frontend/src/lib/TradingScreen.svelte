@@ -79,12 +79,21 @@
             <b>{who.gold}</b> GP · room for <b>{who.room}</b></span>
         {/if}
       </div>
-      {#if asks}
+      {#if asks?.kind === 'buy'}
         <div class="banner message ask" role="alertdialog" aria-label="Boltac asks">
           <p><b>Unusable item.</b> A {asks.class} cannot use the {asks.item}. Buy it anyway for {asks.price} GP?</p>
           <div class="row">
             <button class="primary" disabled={busy} onclick={() => act({ action: 'confirm', yes: true })}>Buy anyway</button>
             <button disabled={busy} onclick={() => act({ action: 'confirm', yes: false })}>No</button>
+          </div>
+        </div>
+      {:else if asks?.kind === 'sell'}
+        <div class="banner message ask" role="alertdialog" aria-label="Boltac asks">
+          <p><b>Equipped item.</b> {asks.name} is wearing the {asks.item}. Selling it takes it off and away, for
+            {asks.price} GP. Sell it?</p>
+          <div class="row">
+            <button class="primary" disabled={busy} onclick={() => act({ action: 'confirm-sale', yes: true })}>Sell it</button>
+            <button disabled={busy} onclick={() => act({ action: 'confirm-sale', yes: false })}>No, keep it</button>
           </div>
         </div>
       {:else if said}

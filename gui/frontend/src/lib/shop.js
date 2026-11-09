@@ -24,9 +24,14 @@ export function words(msg = '') {
 // (question), so it is not repeated here.
 export function boltac(shop) {
   const v = shop?.view
-  if (!v || v.step === 'confirm') return ''
+  if (!v || asking(v)) return ''
   return words(v.message)
 }
+
+// asking says Boltac waits for an answer: about an unusable item, or
+// before buying an equipped one.
+const asking = (v) => v.step === 'confirm' || v.step === 'confirmSell'
+
 
 // customer is the customer at the counter, or null at "who".
 export function customer(shop) {
@@ -69,7 +74,7 @@ export function rows(shop, tab) {
     }))
   }
   const of = {
-    sell: { amount: (it) => it.price, reason: (it) => it.sellRefusal, label: 'Sell' },
+    sell: { amount: (it) => it.price, reason: (it) => it.sellRefusal, label: 'Sell', asks: (it) => it.sellAsks },
     identify: { amount: (it) => it.fee, reason: (it) => it.identifyRefusal, label: 'Identify' },
     uncurse: { amount: (it) => it.fee, reason: (it) => it.uncurseRefusal, label: 'Uncurse' },
   }[tab]
@@ -80,8 +85,8 @@ export function rows(shop, tab) {
     name: it.name,
     amount: of.amount(it),
     marks: marks(it),
-    note: '',
-    label: of.label,
+    note: of.asks?.(it) ? 'equipped: Boltac will ask first' : '',
+    label: of.asks?.(it) ? `${of.label}…` : of.label,
     request: { action: tab, n: it.n },
     reason: words(of.reason(it)),
   }))
@@ -100,12 +105,20 @@ export function empty(shop, tab) {
   return `${c.name} carries nothing.`
 }
 
-// question is Boltac's question about an unusable item, or null.
+// question is what Boltac asks, or null: kind 'buy' (an item the
+// customer's class cannot use) or 'sell' (an item the customer wears).
 export function question(shop) {
   const v = shop?.view
-  if (!v || v.step !== 'confirm') return null
-  const offer = (v.catalog ?? []).find((o) => o.item === v.confirm)
-  return { item: offer?.name ?? `item ${v.confirm}`, price: offer?.price ?? 0, class: v.class }
+  if (!v) return null
+  if (v.step === 'confirm') {
+    const offer = (v.catalog ?? []).find((o) => o.item === v.confirm)
+    return { kind: 'buy', item: offer?.name ?? `item ${v.confirm}`, price: offer?.price ?? 0, class: v.class }
+  }
+  if (v.step === 'confirmSell') {
+    const it = (v.items ?? []).find((it) => it.n === v.sellConfirm)
+    return { kind: 'sell', item: it?.name ?? `item ${v.sellConfirm}`, price: it?.price ?? 0, name: v.name }
+  }
+  return null
 }
 
 // pickLabel is what a click on a party member does here, for the party
@@ -114,7 +127,7 @@ export function question(shop) {
 // counter is marked instead.
 export function pickLabel(shop, slot) {
   const v = shop?.view
-  if (!v || v.step === 'confirm' || slot === v.customer) return null
+  if (!v || asking(v) || slot === v.customer) return null
   return v.customer < 0 ? 'Enter' : 'Serve instead'
 }
 

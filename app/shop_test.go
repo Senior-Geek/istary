@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/rand"
 	"slices"
+	"strings"
 	"testing"
 
 	"github.com/Senior-Geek/istary/engine"
@@ -127,6 +128,10 @@ func TestShopOperationsAreTheKeys(t *testing.T) {
 				yes := rng.Intn(2) == 0
 				what, err = fmt.Sprintf("ConfirmUnusable(%v)", yes), op.ConfirmUnusable(yes)
 				key.HandleKey(Rune(map[bool]rune{true: 'Y', false: 'N'}[yes]))
+			case town.ShopStep == engine.ShopSellConfirm:
+				yes := rng.Intn(2) == 0
+				what, err = fmt.Sprintf("ConfirmSale(%v)", yes), op.ConfirmSale(yes)
+				key.HandleKey(Rune(map[bool]rune{true: 'Y', false: 'N'}[yes]))
 			default:
 				switch r := rng.Intn(20); {
 				case r < 8:
@@ -182,6 +187,9 @@ func TestShopOperationsAreTheKeys(t *testing.T) {
 				seen["error: "+err.Error()]++
 			default:
 				seen[what[:min(len(what), 4)]]++
+				if strings.HasPrefix(what, "ConfirmSale") {
+					seen[what]++
+				}
 			}
 			check(what, err)
 		}
@@ -189,7 +197,8 @@ func TestShopOperationsAreTheKeys(t *testing.T) {
 	for _, want := range []string{"refused: ** YOU CANNOT AFFORD IT **", "refused: ** YOU CANT CARRY ANYTHING MORE **",
 		"refused: ** WE DONT BUY CURSED ITEMS **", "refused: ** THAT IS NOT A CURSED ITEM **",
 		"refused: ** YOU CANT AFFORD THE FEE **", "refused: ** THAT HAS BEEN IDENTIFIED **",
-		"error: invalid choice", "error: no party member in that slot", "Buy(", "Sell", "Uncu", "Shop", "Conf", "Leav", "GoTo"} {
+		"error: invalid choice", "error: no party member in that slot", "Buy(", "Sell", "Uncu", "Shop", "Conf", "Leav", "GoTo",
+		"ConfirmSale(true)", "ConfirmSale(false)"} {
 		if seen[want] == 0 {
 			t.Errorf("never reached: %q (seen %v)", want, seen)
 		}
@@ -248,6 +257,20 @@ func TestShopViewPredictsTheOperations(t *testing.T) {
 				c.ConfirmUnusable(rng.Intn(2) == 0)
 				continue
 			}
+			if v.Step == "confirmSell" {
+				o := v.Items[v.SellConfirm-1]
+				gold, count := ch.Gold, ch.ItemCount
+				yes := rng.Intn(2) == 0
+				must(t, c.ConfirmSale(yes))
+				switch {
+				case yes && (ch.Gold != gold+o.Price || ch.ItemCount != count-1):
+					t.Fatalf("seed %d: ConfirmSale(yes) for %d: gold %d -> %d", seedN, o.Price, gold, ch.Gold)
+				case !yes && (ch.Gold != gold || ch.ItemCount != count || !ch.Items[v.SellConfirm-1].Equipped):
+					t.Fatalf("seed %d: ConfirmSale(no) changed something", seedN)
+				}
+				checked[fmt.Sprint("sale confirmed ", yes)]++
+				continue
+			}
 			gold := ch.Gold
 			if rng.Intn(2) == 0 && len(v.Catalog) > 0 {
 				o := v.Catalog[rng.Intn(len(v.Catalog))]
@@ -287,6 +310,13 @@ func TestShopViewPredictsTheOperations(t *testing.T) {
 			switch rng.Intn(3) {
 			case 0:
 				err := c.Sell(o.N)
+				if o.SellAsks {
+					if err != nil || c.Game.Town.ShopStep != engine.ShopSellConfirm || ch.Gold != gold {
+						t.Fatalf("seed %d: Sell(%d) of an equipped item: %v", seedN, o.N, err)
+					}
+					checked["sell asks"]++
+					continue
+				}
 				if (o.SellRefusal != "") != (err != nil) || (err == nil && ch.Gold != gold+o.Price) {
 					t.Fatalf("seed %d: Sell(%d) predicted %d %q, got %v, gold %d -> %d", seedN, o.N, o.Price, o.SellRefusal, err, gold, ch.Gold)
 				}
@@ -420,5 +450,66 @@ func TestLeavingTheShop(t *testing.T) {
 		if err := f(); !errors.Is(err, ErrWrongState) {
 			t.Errorf("at the castle: %v", err)
 		}
+	}
+}
+
+// Selling an equipped item asks first (Player's Guide p.31, B7). No, RETURN
+// and leaving change nothing at all; yes sells it, takes it off and works
+// out the AC again. The view says beforehand that Boltac will ask.
+func TestSellingAWornItemAsks(t *testing.T) {
+	ch := engine.NewCharacter("WORN", engine.Human, engine.Fighter, engine.Good)
+	c := wearer(t, ch, []int{itemChainMail, itemLongSword})
+	equipWalk(t, c, 0, 0)
+	toBoltac(t, c)
+	v, _ := c.ShopView()
+	if !v.Items[0].SellAsks || v.Items[1].SellAsks {
+		t.Fatalf("asks: worn %v, spare %v", v.Items[0].SellAsks, v.Items[1].SellAsks)
+	}
+	before := shopStateOf(t, c, true)
+	ask := func() {
+		t.Helper()
+		must(t, c.Sell(1))
+		v, _ := c.ShopView()
+		if v.Step != "confirmSell" || v.SellConfirm != 1 || c.Game.Town.Message != sellEquippedQuestion {
+			t.Fatalf("no question: %q %d %q", v.Step, v.SellConfirm, c.Game.Town.Message)
+		}
+		if err := c.Sell(2); !errors.Is(err, ErrWrongState) {
+			t.Fatalf("another sale while Boltac asks: %v", err)
+		}
+	}
+	unchanged := func(how string) {
+		t.Helper()
+		if ch.ItemCount != 2 || !ch.Items[0].Equipped || ch.AC != wornAC(c, ch) || ch.AC == 10 {
+			t.Fatalf("%s: %d items, worn %v, AC %d", how, ch.ItemCount, ch.Items[0].Equipped, ch.AC)
+		}
+	}
+
+	ask()
+	must(t, c.ConfirmSale(false))
+	unchanged("no")
+	ask()
+	c.HandleKey(Key{Kind: KeyEnter})
+	unchanged("RETURN")
+	if after := shopStateOf(t, c, true); after != before {
+		// The sell list is open now; otherwise nothing differs.
+		c.HandleKey(Key{Kind: KeyEnter})
+		if after = shopStateOf(t, c, true); after != before {
+			t.Fatalf("declining changed the game:\n%s", around(after, before))
+		}
+	}
+	ask()
+	must(t, c.LeaveShop())
+	unchanged("leaving")
+	must(t, c.GoTo(engine.Trading))
+	must(t, c.ShopEnter(0))
+
+	gold := ch.Gold
+	ask()
+	must(t, c.ConfirmSale(true))
+	if ch.ItemCount != 1 || ch.Items[0].ItemIndex != itemLongSword || ch.Gold != gold+v.Items[0].Price || ch.AC != 10 {
+		t.Fatalf("yes: %d items, gold %d -> %d, AC %d", ch.ItemCount, gold, ch.Gold, ch.AC)
+	}
+	if err := c.ConfirmSale(true); !errors.Is(err, ErrWrongState) {
+		t.Fatalf("answering again: %v", err)
 	}
 }

@@ -12,6 +12,7 @@
     "class": "",
     "gold": 0,
     "confirm": -1,
+    "sellConfirm": 0,
     "catalog": null,
     "items": null,
     "room": 0
@@ -121,6 +122,7 @@
     "class": "MAGE",
     "gold": 1000,
     "confirm": -1,
+    "sellConfirm": 0,
     "catalog": [
      {
       "item": 1,
@@ -381,6 +383,7 @@
       "cursed": false,
       "price": 12,
       "sellRefusal": "",
+      "sellAsks": true,
       "fee": 12,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -394,6 +397,7 @@
       "cursed": false,
       "price": 1,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 50,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": ""
@@ -407,6 +411,7 @@
       "cursed": true,
       "price": 5,
       "sellRefusal": "** WE DONT BUY CURSED ITEMS **",
+      "sellAsks": false,
       "fee": 5,
       "uncurseRefusal": "",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -420,6 +425,7 @@
       "cursed": false,
       "price": 1,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 250,
       "uncurseRefusal": "",
       "identifyRefusal": ""
@@ -532,6 +538,7 @@
     "class": "MAGE",
     "gold": 990,
     "confirm": -1,
+    "sellConfirm": 0,
     "catalog": [
      {
       "item": 1,
@@ -792,6 +799,7 @@
       "cursed": false,
       "price": 12,
       "sellRefusal": "",
+      "sellAsks": true,
       "fee": 12,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -805,6 +813,7 @@
       "cursed": false,
       "price": 1,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 50,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": ""
@@ -818,6 +827,7 @@
       "cursed": true,
       "price": 5,
       "sellRefusal": "** WE DONT BUY CURSED ITEMS **",
+      "sellAsks": false,
       "fee": 5,
       "uncurseRefusal": "",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -831,6 +841,7 @@
       "cursed": false,
       "price": 1,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 250,
       "uncurseRefusal": "",
       "identifyRefusal": ""
@@ -844,6 +855,7 @@
       "cursed": false,
       "price": 5,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 5,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -963,6 +975,7 @@
     "class": "MAGE",
     "gold": 990,
     "confirm": -1,
+    "sellConfirm": 0,
     "catalog": [
      {
       "item": 1,
@@ -1223,6 +1236,7 @@
       "cursed": false,
       "price": 12,
       "sellRefusal": "",
+      "sellAsks": true,
       "fee": 12,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -1236,6 +1250,7 @@
       "cursed": false,
       "price": 1,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 50,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": ""
@@ -1249,6 +1264,7 @@
       "cursed": true,
       "price": 5,
       "sellRefusal": "** WE DONT BUY CURSED ITEMS **",
+      "sellAsks": false,
       "fee": 5,
       "uncurseRefusal": "",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -1262,6 +1278,7 @@
       "cursed": false,
       "price": 1,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 250,
       "uncurseRefusal": "",
       "identifyRefusal": ""
@@ -1275,6 +1292,7 @@
       "cursed": false,
       "price": 5,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 5,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -1387,6 +1405,7 @@
     "class": "MAGE",
     "gold": 990,
     "confirm": 1,
+    "sellConfirm": 0,
     "catalog": [
      {
       "item": 1,
@@ -1647,6 +1666,7 @@
       "cursed": false,
       "price": 12,
       "sellRefusal": "",
+      "sellAsks": true,
       "fee": 12,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -1660,6 +1680,7 @@
       "cursed": false,
       "price": 1,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 50,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": ""
@@ -1673,6 +1694,7 @@
       "cursed": true,
       "price": 5,
       "sellRefusal": "** WE DONT BUY CURSED ITEMS **",
+      "sellAsks": false,
       "fee": 5,
       "uncurseRefusal": "",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -1686,6 +1708,7 @@
       "cursed": false,
       "price": 1,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 250,
       "uncurseRefusal": "",
       "identifyRefusal": ""
@@ -1699,6 +1722,7 @@
       "cursed": false,
       "price": 5,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 5,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -1811,6 +1835,7 @@
     "class": "MAGE",
     "gold": 965,
     "confirm": -1,
+    "sellConfirm": 0,
     "catalog": [
      {
       "item": 1,
@@ -2071,6 +2096,7 @@
       "cursed": false,
       "price": 12,
       "sellRefusal": "",
+      "sellAsks": true,
       "fee": 12,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -2084,6 +2110,7 @@
       "cursed": false,
       "price": 1,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 50,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": ""
@@ -2097,6 +2124,7 @@
       "cursed": true,
       "price": 5,
       "sellRefusal": "** WE DONT BUY CURSED ITEMS **",
+      "sellAsks": false,
       "fee": 5,
       "uncurseRefusal": "",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -2110,6 +2138,7 @@
       "cursed": false,
       "price": 1,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 250,
       "uncurseRefusal": "",
       "identifyRefusal": ""
@@ -2123,6 +2152,7 @@
       "cursed": false,
       "price": 5,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 5,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -2136,6 +2166,7 @@
       "cursed": false,
       "price": 12,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 12,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -2255,6 +2286,7 @@
     "class": "MAGE",
     "gold": 915,
     "confirm": -1,
+    "sellConfirm": 0,
     "catalog": [
      {
       "item": 1,
@@ -2515,6 +2547,7 @@
       "cursed": false,
       "price": 12,
       "sellRefusal": "",
+      "sellAsks": true,
       "fee": 12,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -2528,6 +2561,7 @@
       "cursed": false,
       "price": 50,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 50,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -2541,6 +2575,7 @@
       "cursed": true,
       "price": 5,
       "sellRefusal": "** WE DONT BUY CURSED ITEMS **",
+      "sellAsks": false,
       "fee": 5,
       "uncurseRefusal": "",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -2554,6 +2589,7 @@
       "cursed": false,
       "price": 1,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 250,
       "uncurseRefusal": "",
       "identifyRefusal": ""
@@ -2567,6 +2603,7 @@
       "cursed": false,
       "price": 5,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 5,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -2580,6 +2617,7 @@
       "cursed": false,
       "price": 12,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 12,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -2699,6 +2737,7 @@
     "class": "MAGE",
     "gold": 910,
     "confirm": -1,
+    "sellConfirm": 0,
     "catalog": [
      {
       "item": 1,
@@ -2959,6 +2998,7 @@
       "cursed": false,
       "price": 12,
       "sellRefusal": "",
+      "sellAsks": true,
       "fee": 12,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -2972,6 +3012,7 @@
       "cursed": false,
       "price": 50,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 50,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -2985,6 +3026,7 @@
       "cursed": false,
       "price": 1,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 250,
       "uncurseRefusal": "",
       "identifyRefusal": ""
@@ -2998,6 +3040,7 @@
       "cursed": false,
       "price": 5,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 5,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -3011,6 +3054,7 @@
       "cursed": false,
       "price": 12,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 12,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -3118,6 +3162,436 @@
   "warning": ""
  },
  {
+  "case": "Boltac asks: equipped",
+  "location": "trading",
+  "shop": {
+   "view": {
+    "step": "confirmSell",
+    "prompt": false,
+    "message": "EQUIPPED ITEM - CONFIRM SELL (Y/N) ? \u003e",
+    "customer": 4,
+    "name": "EGUI",
+    "class": "MAGE",
+    "gold": 910,
+    "confirm": -1,
+    "sellConfirm": 1,
+    "catalog": [
+     {
+      "item": 1,
+      "name": "LONG SWORD",
+      "price": 25,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 2,
+      "name": "SHORT SWORD",
+      "price": 15,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 3,
+      "name": "ANOINTED MACE",
+      "price": 30,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 4,
+      "name": "ANOINTED FLAIL",
+      "price": 150,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 5,
+      "name": "STAFF",
+      "price": 10,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 6,
+      "name": "DAGGER",
+      "price": 5,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 7,
+      "name": "SMALL SHIELD",
+      "price": 20,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 8,
+      "name": "LARGE SHIELD",
+      "price": 40,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 9,
+      "name": "ROBES",
+      "price": 15,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 10,
+      "name": "LEATHER ARMOR",
+      "price": 50,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 11,
+      "name": "CHAIN MAIL",
+      "price": 90,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 12,
+      "name": "BREAST PLATE",
+      "price": 200,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 13,
+      "name": "PLATE MAIL",
+      "price": 750,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 14,
+      "name": "HELM",
+      "price": 100,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 15,
+      "name": "DIOS POTION",
+      "price": 500,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 16,
+      "name": "LATUMOFIS POT.",
+      "price": 300,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 18,
+      "name": "SHORT SWORD+1",
+      "price": 70536,
+      "stock": 2,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 19,
+      "name": "MACE+1",
+      "price": 68036,
+      "stock": 1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 20,
+      "name": "STAFF OF MOGREF",
+      "price": 3000,
+      "stock": 3,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 21,
+      "name": "SCROLL/KANTINO",
+      "price": 500,
+      "stock": 4,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 22,
+      "name": "LEATHER + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 23,
+      "name": "CHAIN MAIL + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 25,
+      "name": "SHIELD + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 26,
+      "name": "BREAST PLATE +1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 27,
+      "name": "SCROLL/BADIOS",
+      "price": 500,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 28,
+      "name": "SCROLL/HALITO",
+      "price": 500,
+      "stock": 27,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 32,
+      "name": "STAFF +2",
+      "price": 2500,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 39,
+      "name": "JEWELED AMULET",
+      "price": 5000,
+      "stock": 2,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 41,
+      "name": "POTION OF SOPIC",
+      "price": 1500,
+      "stock": 1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 47,
+      "name": "COPPER GLOVES",
+      "price": 6000,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 62,
+      "name": "EVIL CHAIN + 2",
+      "price": 8000,
+      "stock": 2,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     }
+    ],
+    "items": [
+     {
+      "n": 1,
+      "item": 1,
+      "name": "LONG SWORD",
+      "identified": true,
+      "equipped": true,
+      "cursed": false,
+      "price": 12,
+      "sellRefusal": "",
+      "sellAsks": true,
+      "fee": 12,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     },
+     {
+      "n": 2,
+      "item": 14,
+      "name": "HELM",
+      "identified": true,
+      "equipped": false,
+      "cursed": false,
+      "price": 50,
+      "sellRefusal": "",
+      "sellAsks": false,
+      "fee": 50,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     },
+     {
+      "n": 3,
+      "item": 28,
+      "name": "SCROLL",
+      "identified": false,
+      "equipped": false,
+      "cursed": false,
+      "price": 1,
+      "sellRefusal": "",
+      "sellAsks": false,
+      "fee": 250,
+      "uncurseRefusal": "",
+      "identifyRefusal": ""
+     },
+     {
+      "n": 4,
+      "item": 5,
+      "name": "STAFF",
+      "identified": true,
+      "equipped": false,
+      "cursed": false,
+      "price": 5,
+      "sellRefusal": "",
+      "sellAsks": false,
+      "fee": 5,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     },
+     {
+      "n": 5,
+      "item": 1,
+      "name": "LONG SWORD",
+      "identified": true,
+      "equipped": false,
+      "cursed": false,
+      "price": 12,
+      "sellRefusal": "",
+      "sellAsks": false,
+      "fee": 12,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     }
+    ],
+    "room": 3
+   },
+   "last": null
+  },
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "frontRow": 3,
+  "return": {
+   "open": true,
+   "note": "Returning answers no to Boltac's question: the item is not sold."
+  },
+  "error": "",
+  "notice": "",
+  "unsaved": "",
+  "warning": ""
+ },
+ {
   "case": "sold",
   "location": "trading",
   "shop": {
@@ -3130,6 +3604,7 @@
     "class": "MAGE",
     "gold": 922,
     "confirm": -1,
+    "sellConfirm": 0,
     "catalog": [
      {
       "item": 1,
@@ -3390,6 +3865,7 @@
       "cursed": false,
       "price": 50,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 50,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -3403,6 +3879,7 @@
       "cursed": false,
       "price": 1,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 250,
       "uncurseRefusal": "",
       "identifyRefusal": ""
@@ -3416,6 +3893,7 @@
       "cursed": false,
       "price": 5,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 5,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -3429,6 +3907,7 @@
       "cursed": false,
       "price": 12,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 12,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -3548,6 +4027,7 @@
     "class": "MAGE",
     "gold": 882,
     "confirm": -1,
+    "sellConfirm": 0,
     "catalog": [
      {
       "item": 1,
@@ -3808,6 +4288,7 @@
       "cursed": false,
       "price": 50,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 50,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -3821,6 +4302,7 @@
       "cursed": false,
       "price": 1,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 250,
       "uncurseRefusal": "",
       "identifyRefusal": ""
@@ -3834,6 +4316,7 @@
       "cursed": false,
       "price": 5,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 5,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -3847,6 +4330,7 @@
       "cursed": false,
       "price": 12,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 12,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -3860,6 +4344,7 @@
       "cursed": false,
       "price": 5,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 5,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -3873,6 +4358,7 @@
       "cursed": false,
       "price": 5,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 5,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -3886,6 +4372,7 @@
       "cursed": false,
       "price": 5,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 5,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -3899,6 +4386,7 @@
       "cursed": false,
       "price": 5,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 5,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -4018,6 +4506,7 @@
     "class": "THIEF",
     "gold": 5,
     "confirm": -1,
+    "sellConfirm": 0,
     "catalog": [
      {
       "item": 1,
@@ -4376,6 +4865,7 @@
     "class": "PRIEST",
     "gold": 0,
     "confirm": -1,
+    "sellConfirm": 0,
     "catalog": [
      {
       "item": 1,
@@ -4636,6 +5126,7 @@
       "cursed": false,
       "price": 1,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 50,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": "** YOU CANT AFFORD THE FEE **"
@@ -4748,6 +5239,7 @@
     "class": "FIGHTER",
     "gold": 990,
     "confirm": -1,
+    "sellConfirm": 0,
     "catalog": [
      {
       "item": 1,
@@ -5008,6 +5500,7 @@
       "cursed": false,
       "price": 5,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 5,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -5127,6 +5620,7 @@
     "class": "FIGHTER",
     "gold": 980,
     "confirm": -1,
+    "sellConfirm": 0,
     "catalog": [
      {
       "item": 1,
@@ -5387,6 +5881,7 @@
       "cursed": false,
       "price": 5,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 5,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
@@ -5400,6 +5895,7 @@
       "cursed": false,
       "price": 5,
       "sellRefusal": "",
+      "sellAsks": false,
       "fee": 5,
       "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
       "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"

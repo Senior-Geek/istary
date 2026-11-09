@@ -72,6 +72,7 @@ func TestACAfterEquipmentLeaves(t *testing.T) {
 		worn := ch.AC
 		toBoltac(t, c)
 		must(t, c.Sell(1))
+		must(t, c.ConfirmSale(true)) // it is worn: Boltac asks first (B7)
 		if ch.AC != wornAC(c, ch) || ch.AC == worn {
 			t.Fatalf("after selling the chain mail: AC %d (was %d), worn %d", ch.AC, worn, wornAC(c, ch))
 		}

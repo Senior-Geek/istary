@@ -8,8 +8,9 @@ import "github.com/Senior-Geek/istary/engine"
 // refusal is returned as *Refusal with Boltac's words, which are also in
 // Town.Message, as the keys leave them. Buying an item the customer's
 // class cannot use is not a refusal: Boltac asks first (ShopView.Step
-// "confirm"), and ConfirmUnusable answers. Nothing here draws a random
-// number.
+// "confirm"), and ConfirmUnusable answers; selling an equipped item is
+// asked about too ("confirmSell", ConfirmSale). Nothing here draws a
+// random number.
 //
 // The one place an operation is not a key: Buy takes the item itself,
 // where the terminal pages through the catalog to it; the page shown and
@@ -45,7 +46,8 @@ func (c *Controller) atShop() bool {
 // answer: the main menu, the catalog, or a list.
 func (c *Controller) shopping() bool {
 	town := c.Game.Town
-	return c.atShop() && town.ShopChar != nil && town.ShopStep != engine.ShopWho && town.ShopStep != engine.ShopBuyConfirm
+	return c.atShop() && town.ShopChar != nil && town.ShopStep != engine.ShopWho &&
+		town.ShopStep != engine.ShopBuyConfirm && town.ShopStep != engine.ShopSellConfirm
 }
 
 // toShopStep opens Boltac's menu on screen for step (ShopBuy, ShopSell,
@@ -137,7 +139,24 @@ func (c *Controller) ConfirmUnusable(yes bool) error {
 	return nil
 }
 
-// Sell sells the customer's item n (1-based): S and n.
+// ConfirmSale answers Boltac's "EQUIPPED ITEM - CONFIRM SELL": Y sells the
+// equipped item, N keeps it (and it stays worn).
+func (c *Controller) ConfirmSale(yes bool) error {
+	town := c.Game.Town
+	if !c.atShop() || town.ShopStep != engine.ShopSellConfirm {
+		return ErrWrongState
+	}
+	if yes {
+		c.press(Rune('Y'))
+	} else {
+		c.press(Rune('N'))
+	}
+	return nil
+}
+
+// Sell sells the customer's item n (1-based): S and n. An equipped item is
+// not sold at once: Boltac asks first (ShopView.Step "confirmSell"), and
+// ConfirmSale answers.
 func (c *Controller) Sell(n int) error {
 	return c.shopItem(engine.ShopSell, 'S', n)
 }

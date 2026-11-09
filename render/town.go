@@ -424,7 +424,7 @@ func (s *Screen) renderTradingMenu(x, y int, game *engine.GameState) {
 			}
 		}
 
-	case engine.ShopSell, engine.ShopUncurse, engine.ShopIdentify:
+	case engine.ShopSell, engine.ShopUncurse, engine.ShopIdentify, engine.ShopSellConfirm:
 		// p-code CLP 18 (IC 2558-2792): shared item list for sell/uncurse/identify
 		// GOTOXY(0,13): item list starts at row 13
 		// Per item: WRITEINT(N,1) + WRITECH(')') + WRITESTR(name,15) + ' ' + price
@@ -447,7 +447,7 @@ func (s *Screen) renderTradingMenu(x, y int, game *engine.GameState) {
 				// Price/fee calculation: CXP seg=1 proc=10 (halves the price)
 				// For sell mode with unidentified items: price = 1 GP
 				price := item.Price / 2
-				if town.ShopStep == engine.ShopSell && !poss.Identified {
+				if (town.ShopStep == engine.ShopSell || town.ShopStep == engine.ShopSellConfirm) && !poss.Identified {
 					price = 1
 				}
 				s.DrawString(x, y, styleNormal,

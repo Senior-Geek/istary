@@ -38,6 +38,7 @@ const (
 	ShopActLeaveCustomer = "leave-customer" // back to "WHO WILL ENTER"
 	ShopActBuy           = "buy"            // Item: a ShopOffer's Item
 	ShopActConfirm       = "confirm"        // Yes: buy the unusable item anyway
+	ShopActConfirmSale   = "confirm-sale"   // Yes: sell the equipped item (B7)
 	ShopActSell          = "sell"           // N: a ShopOwned's N
 	ShopActUncurse       = "uncurse"        // N
 	ShopActIdentify      = "identify"       // N
@@ -79,6 +80,7 @@ var (
 	errAnswerBoltac = errors.New("Answer Boltac's question first.")
 	errNoSuchOffer  = errors.New("Boltac does not sell that item now.")
 	errNoSuchItem   = errors.New("The customer has no such item.")
+	errNotAsked     = errors.New("Boltac is not asking that.")
 )
 
 // ShopAction performs one of Boltac's actions.
@@ -125,7 +127,7 @@ func shopOp(c *app.Controller, v app.ShopView, r ShopRequest) error {
 		// Another customer: the one at the counter leaves first, as RETURN
 		// does, unless Boltac is asking something.
 		switch {
-		case v.Step == "confirm":
+		case asking(v):
 			return errAnswerBoltac
 		case v.Step == "who":
 		case r.Slot == v.Customer:
@@ -145,17 +147,22 @@ func shopOp(c *app.Controller, v app.ShopView, r ShopRequest) error {
 		return c.ShopLeaveCustomer()
 	case ShopActConfirm:
 		if v.Step != "confirm" {
-			return errors.New("Boltac is not asking anything.")
+			return errNotAsked
 		}
 		return c.ConfirmUnusable(r.Yes)
+	case ShopActConfirmSale:
+		if v.Step != "confirmSell" {
+			return errNotAsked
+		}
+		return c.ConfirmSale(r.Yes)
 	case ShopActBuy, ShopActSell, ShopActUncurse, ShopActIdentify:
 	default:
 		return app.ErrInvalidChoice
 	}
-	switch v.Step {
-	case "who":
+	switch {
+	case v.Step == "who":
 		return errNoCustomer
-	case "confirm":
+	case asking(v):
 		return errAnswerBoltac
 	}
 	var err error
@@ -176,6 +183,12 @@ func shopOp(c *app.Controller, v app.ShopView, r ShopRequest) error {
 		return errNoSuchItem
 	}
 	return err
+}
+
+// asking reports whether Boltac waits for an answer: about an unusable
+// item, or before buying an equipped one.
+func asking(v app.ShopView) bool {
+	return v.Step == "confirm" || v.Step == "confirmSell"
 }
 
 // isMember reports whether slot (0-based) holds a party member.
@@ -213,6 +226,11 @@ func receipt(c *app.Controller, v app.ShopView, r ShopRequest) *ShopReceipt {
 	case ShopActSell, ShopActUncurse:
 		if r.N >= 1 && r.N <= len(v.Items) {
 			out.Item = v.Items[r.N-1].Name
+		}
+	case ShopActConfirmSale:
+		out.Action = ShopActSell
+		if n := v.SellConfirm; n >= 1 && n <= len(v.Items) {
+			out.Item = v.Items[n-1].Name
 		}
 	case ShopActIdentify:
 		if r.N >= 1 && r.N <= len(v.Items) {

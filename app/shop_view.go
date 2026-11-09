@@ -13,7 +13,8 @@ import "github.com/Senior-Geek/istary/engine"
 type ShopView struct {
 	// Step is "who" (choosing the customer), "main", "buy" (the catalog),
 	// "confirm" (Boltac asks about an unusable item), "sell", "uncurse"
-	// or "identify" (the customer's items).
+	// or "identify" (the customer's items), "confirmSell" (Boltac asks
+	// before buying an equipped item).
 	Step    string `json:"step"`
 	Prompt  bool   `json:"prompt"`  // the terminal's PURCHASE WHICH ITEM prompt is open
 	Message string `json:"message"` // Boltac's last words
@@ -24,6 +25,9 @@ type ShopView struct {
 	Gold     int    `json:"gold"`
 	// Confirm is the item Boltac asks about at "confirm", or -1.
 	Confirm int `json:"confirm"`
+	// SellConfirm is the customer's item (1-based, as Sell takes) Boltac
+	// asks about at "confirmSell": it is equipped. 0 otherwise.
+	SellConfirm int `json:"sellConfirm"`
 	// Catalog is every item Boltac sells now, in his order; Items the
 	// customer's possessions, by number. Both are empty at "who".
 	Catalog []ShopOffer `json:"catalog"`
@@ -57,9 +61,11 @@ type ShopOwned struct {
 	// (engine.KnownCursed): never before it is identified or equipped.
 	Cursed bool `json:"cursed"`
 	// Price is what Boltac pays (1 GP if not identified); SellRefusal why
-	// he will not buy it, or "".
+	// he will not buy it, or ""; SellAsks that he asks first (it is
+	// equipped; selling takes it off).
 	Price       int    `json:"price"`
 	SellRefusal string `json:"sellRefusal"`
+	SellAsks    bool   `json:"sellAsks"`
 	// Fee is Boltac's fee to uncurse or identify it; UncurseRefusal and
 	// IdentifyRefusal why he will not, or "".
 	Fee             int    `json:"fee"`
@@ -70,6 +76,7 @@ type ShopOwned struct {
 var shopStepNames = map[engine.ShopStep]string{
 	engine.ShopWho: "who", engine.ShopMain: "main", engine.ShopBuy: "buy", engine.ShopBuyConfirm: "confirm",
 	engine.ShopSell: "sell", engine.ShopUncurse: "uncurse", engine.ShopIdentify: "identify",
+	engine.ShopSellConfirm: "confirmSell",
 }
 
 // ShopView describes Boltac's now; ErrWrongState away from it.
@@ -97,6 +104,9 @@ func (c *Controller) ShopView() (ShopView, error) {
 	if town.ShopStep == engine.ShopBuyConfirm {
 		v.Confirm = town.ShopCatalog
 	}
+	if town.ShopStep == engine.ShopSellConfirm {
+		v.SellConfirm = town.ShopSellItem + 1
+	}
 	for i := 1; i < len(items); i++ {
 		if !inCatalog(g, i) {
 			continue
@@ -118,6 +128,7 @@ func (c *Controller) ShopView() (ShopView, error) {
 			o.Name = item.NameUnknown
 		}
 		o.Price, o.SellRefusal = sellQuote(item, p)
+		o.SellAsks = o.SellRefusal == "" && p.Equipped
 		o.Fee, o.UncurseRefusal = uncurseQuote(ch, item, p)
 		_, o.IdentifyRefusal = identifyQuote(ch, item, p)
 		if p.Cursed && !o.Cursed {

@@ -178,7 +178,7 @@ numbers.
 | B4 | Buying an unusable item asks for confirmation (p.31) | `UNUSABLE ITEM - CONFIRM BUY` | Match |
 | B5 | Boltac pays half (p.54) | Half price | Match |
 | B6 | Cursed or unidentified items can't be sold (p.31) | Cursed refused; unidentified sells for 1 GP | **Difference** (unidentified) |
-| B7 | Selling an equipped item asks for confirmation (p.31) | No prompt found in the sell handler | Unclear; kept for M8, the original rules to be investigated (decision 2026-11-08) |
+| B7 | Selling an equipped item asks for confirmation (p.31) | No prompt found in the sell handler | **Implemented in M8** (decision 2026-11-08, completed with the overnight assignment): the guide is explicit ("If you attempt to sell an item that is equipped, you will be asked if that's what you really want to do"), so Boltac asks "EQUIPPED ITEM - CONFIRM SELL (Y/N) ? >" (the guide gives no words; these follow his unusable-item question). Y sells it (taking it off; the AC is worked out again, #35); N, RETURN or leaving keeps it, worn, and changes nothing. A cursed item is refused before any question. In the controller (`app/shop.go`, `ConfirmSale`), so the terminal and the GUI ask alike |
 | B8 | Identify and uncurse cost a fee (p.31–32) | Fee is half the price (`docs/RULES.md`) | Match (the guide gives no amount) |
 | B9 | No prices for magic items | Suspicious values (finding #13) | Unclear |
 
@@ -325,7 +325,7 @@ matching row above is updated to say which behaviour Istary Classic follows.
 | #32 | Not a historical rules question | M6b-3A report | **Approved as a defect for correction**, not within M6b-3B. A backward-compatible migration and its regression tests are to be proposed first | None yet | 2026-11-08 |
 | #12, B3 | Unclear | M8 review | **Keep resetting stock at start for M8** (it is not saved) | None in M8 | 2026-11-08 |
 | B6 | Engine cites the original game's code (1 GP); guide says cannot sell | M8 review | **Keep 1-GP sales of unidentified items** | None | 2026-11-08 |
-| B7 | Unclear | M8 review | **Keep selling equipped items without a question initially;** investigate the original rules | None yet | 2026-11-08 |
+| B7 | Unclear, then the guide (p.31) | M8 review; overnight assignment | **Keep selling equipped items without a question initially;** investigate the original rules. Then: **ask before selling an equipped item** | `app/shop.go` (ShopSellConfirm), `ConfirmSale`, GUI `confirm-sale` | 2026-11-08 |
 | #4, B1 | Guide p.24–34 | M8 review | **Pool Gold deferred,** and no disabled control for it in the GUI for now | None | 2026-11-08 |
 | #34, #35 | Not historical rules questions (engine defects) | M8 review; pinned by `cmd/istary/shop_test.go` (M8-0) | **Approved for correction during M8,** with regression tests, before the Trading Post's final GUI acceptance | None yet | 2026-11-08 |
 | — | — | — | *No other discrepancy decided yet. The current engine remains the provisional executable baseline.* | — | 2026-11-06 |

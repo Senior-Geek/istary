@@ -66,6 +66,9 @@ const (
 	ShopSell                      // selecting item to sell
 	ShopUncurse                   // selecting item to uncurse
 	ShopIdentify                  // selecting item to identify
+	// ShopSellConfirm: selling an equipped item asks first (Player's Guide
+	// p.31, decision B7); ShopSellItem is the item.
+	ShopSellConfirm
 )
 
 // TempleStep tracks the sub-state within the Temple of Cant.
@@ -165,6 +168,7 @@ type TownState struct {
 	ShopChar    *Character // character who entered the shop
 	ShopCatalog int        // current position in buy catalog (item index)
 	ShopPage    [6]int     // item indices displayed on current buy page (p-code pageArray)
+	ShopSellItem int       // at ShopSellConfirm: the item (0-based) waiting to be sold
 
 	// Temple of Cant state — from SHOPS segment p-code procs 28/27/23/25
 	TempleStep     TempleStep   // which phase of the temple

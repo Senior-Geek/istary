@@ -70,7 +70,7 @@ test('unusable equipment can still be bought: Buy… stays open, and Boltac’s 
   assert.equal(sword.label, 'Buy…')
   assert.match(sword.note, /MAGE cannot use it/)
   const ask = at('Boltac asks: unusable')
-  assert.deepEqual(question(ask.shop), { item: 'LONG SWORD', price: 25, class: 'MAGE' })
+  assert.deepEqual(question(ask.shop), { kind: 'buy', item: 'LONG SWORD', price: 25, class: 'MAGE' })
   assert.equal(boltac(ask.shop), '') // the question is drawn, not repeated
   assert.match(ask.return.note, /answers no/)
   assert.equal(question(at('bought anyway').shop), null)
@@ -153,4 +153,24 @@ test('a curse the player has not seen is never shown (#34): not before it is ide
   const mage = views.find((v) => v.case === 'mage at the counter')
   const scroll = rows(mage.shop, 'sell').find((r) => r.name === 'SCROLL')
   assert.deepEqual([scroll.reason, scroll.marks.map((m) => m.key)], ['', ['unidentified']])
+})
+
+test('selling an equipped item asks first (B7): Sell… says so, and the question names the item', () => {
+  const mage = views.find((v) => v.case === 'mage at the counter')
+  for (const r of rows(mage.shop, 'sell')) {
+    const it = mage.shop.view.items.find((it) => it.n === r.n)
+    assert.equal(r.label === 'Sell…', it.sellAsks, r.name)
+    assert.equal(r.note !== '', it.sellAsks, r.name)
+  }
+  assert.ok(rows(mage.shop, 'sell').some((r) => r.label === 'Sell…'))
+  const ask = views.find((v) => v.case === 'Boltac asks: equipped')
+  const q = question(ask.shop)
+  assert.equal(q.kind, 'sell')
+  assert.equal(q.item, 'LONG SWORD')
+  assert.equal(q.name, 'EGUI')
+  assert.equal(boltac(ask.shop), '')
+  assert.match(ask.return.note, /not sold/)
+  for (const p of ask.partyBar) assert.equal(pickLabel(ask.shop, p.slot - 1), null)
+  assert.equal(views.find((v) => v.case === 'sold').shop.last.action, 'sell')
+  assert.equal(question(views.find((v) => v.case === 'Boltac asks: unusable').shop).kind, 'buy')
 })

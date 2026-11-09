@@ -248,3 +248,28 @@ WHICH DO YOU WISH UNCURSED ? >
 
 WHICH DO YOU WISH IDENTIFIED ? >
 
+=== equipped item: Boltac asks (B7)
++--------------------------------------+
+! CASTLE                          SHOP !
++----------- CURRENT PARTY: -----------+
+
+ # CHARACTER NAME  CLASS AC HITS STATUS
+ 1 FIGHTER         G-FIG 10  10   10
+ 2 MAGE            G-MAG 10  10   10
+ 3 BISHOP          G-BIS  7  10   10
+
+
+
++--------------------------------------+
+
+1)          STAFF 5
+2)     CHAIN MAIL 45
+3)         SCROLL 1
+4)  LONG SWORD -1 500
+5)           HELM 1
+6)          ARMOR 1
+
+
+
+
+ EQUIPPED ITEM - CONFIRM SELL (Y/N) ? >

@@ -75,8 +75,16 @@ S    BOLTAC'S TRADING POST/sell input=0 msg="" FIGHTER:1975 MAGE:27 BISHOP:600 |
 S    BOLTAC'S TRADING POST/sell input=0 msg="" FIGHTER:1975 MAGE:27 BISHOP:600 | BISHOP AC7 [ 5ie 11ie 28 29iec 14 35c ] | stock 1:-1 11:-1 14:-1 18:2 28:27 29:1 35:1 24:0
 3    BOLTAC'S TRADING POST/sell input=0 msg="** ANYTHING ELSE, SIRE? **" FIGHTER:1975 MAGE:27 BISHOP:601 | BISHOP AC7 [ 5ie 11ie 29iec 14 35c ] | stock 1:-1 11:-1 14:-1 18:2 28:28 29:1 35:1 24:0
      # the unidentified scroll: 1 GP (B6)
-1    BOLTAC'S TRADING POST/sell input=0 msg="** ANYTHING ELSE, SIRE? **" FIGHTER:1975 MAGE:27 BISHOP:606 | BISHOP AC7 [ 11ie 29iec 14 35c ] | stock 1:-1 11:-1 14:-1 18:2 28:28 29:1 35:1 24:0
-     # the equipped staff: sold, no question (B7), AC unchanged (#35)
+1    BOLTAC'S TRADING POST/confirmSell input=0 msg="EQUIPPED ITEM - CONFIRM SELL (Y/N) ? >" FIGHTER:1975 MAGE:27 BISHOP:601 | BISHOP AC7 [ 5ie 11ie 29iec 14 35c ] | selling 1 | stock 1:-1 11:-1 14:-1 18:2 28:28 29:1 35:1 24:0
+     # the equipped staff: Boltac asks first (B7)
+N    BOLTAC'S TRADING POST/sell input=0 msg="" FIGHTER:1975 MAGE:27 BISHOP:601 | BISHOP AC7 [ 5ie 11ie 29iec 14 35c ] | stock 1:-1 11:-1 14:-1 18:2 28:28 29:1 35:1 24:0
+     # no: kept, still worn
+1    BOLTAC'S TRADING POST/confirmSell input=0 msg="EQUIPPED ITEM - CONFIRM SELL (Y/N) ? >" FIGHTER:1975 MAGE:27 BISHOP:601 | BISHOP AC7 [ 5ie 11ie 29iec 14 35c ] | selling 1 | stock 1:-1 11:-1 14:-1 18:2 28:28 29:1 35:1 24:0
+RET  BOLTAC'S TRADING POST/sell input=0 msg="" FIGHTER:1975 MAGE:27 BISHOP:601 | BISHOP AC7 [ 5ie 11ie 29iec 14 35c ] | stock 1:-1 11:-1 14:-1 18:2 28:28 29:1 35:1 24:0
+     # RETURN at the question: no
+1    BOLTAC'S TRADING POST/confirmSell input=0 msg="EQUIPPED ITEM - CONFIRM SELL (Y/N) ? >" FIGHTER:1975 MAGE:27 BISHOP:601 | BISHOP AC7 [ 5ie 11ie 29iec 14 35c ] | selling 1 | stock 1:-1 11:-1 14:-1 18:2 28:28 29:1 35:1 24:0
+Y    BOLTAC'S TRADING POST/sell input=0 msg="** ANYTHING ELSE, SIRE? **" FIGHTER:1975 MAGE:27 BISHOP:606 | BISHOP AC7 [ 11ie 29iec 14 35c ] | stock 1:-1 11:-1 14:-1 18:2 28:28 29:1 35:1 24:0
+     # yes: sold; the AC is what is still worn, the chain mail (#35)
 RET  BOLTAC'S TRADING POST/main input=0 msg="" FIGHTER:1975 MAGE:27 BISHOP:606 | BISHOP AC7 [ 11ie 29iec 14 35c ] | stock 1:-1 11:-1 14:-1 18:2 28:28 29:1 35:1 24:0
 U    BOLTAC'S TRADING POST/uncurse input=0 msg="" FIGHTER:1975 MAGE:27 BISHOP:606 | BISHOP AC7 [ 11ie 29iec 14 35c ] | stock 1:-1 11:-1 14:-1 18:2 28:28 29:1 35:1 24:0
      # uncurse
