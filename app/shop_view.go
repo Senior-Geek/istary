@@ -6,7 +6,9 @@ import "github.com/Senior-Geek/istary/engine"
 // visit is, Boltac's last words, the customer, the catalog and the
 // customer's items, each with what Boltac would answer now. Every price,
 // fee and refusal comes from the checks the operations act on (buyQuote,
-// sellQuote, uncurseQuote, identifyQuote), so a front end decides nothing.
+// sellQuote, uncurseQuote, identifyQuote), so a front end decides nothing,
+// except that a curse the player has not learned of is not told in advance
+// (ShopOwned.Cursed).
 // It changes nothing and draws no random number.
 type ShopView struct {
 	// Step is "who" (choosing the customer), "main", "buy" (the catalog),
@@ -51,7 +53,9 @@ type ShopOwned struct {
 	Name       string `json:"name"` // its unknown name until identified
 	Identified bool   `json:"identified"`
 	Equipped   bool   `json:"equipped"`
-	Cursed     bool   `json:"cursed"`
+	// Cursed: stuck to the customer, as far as the player knows
+	// (engine.KnownCursed): never before it is identified or equipped.
+	Cursed bool `json:"cursed"`
 	// Price is what Boltac pays (1 GP if not identified); SellRefusal why
 	// he will not buy it, or "".
 	Price       int    `json:"price"`
@@ -109,13 +113,19 @@ func (c *Controller) ShopView() (ShopView, error) {
 			continue
 		}
 		item := items[p.ItemIndex]
-		o := ShopOwned{N: i + 1, Item: p.ItemIndex, Name: item.Name, Identified: p.Identified, Equipped: p.Equipped, Cursed: p.Cursed}
+		o := ShopOwned{N: i + 1, Item: p.ItemIndex, Name: item.Name, Identified: p.Identified, Equipped: p.Equipped, Cursed: engine.KnownCursed(p)}
 		if !p.Identified && item.NameUnknown != "" {
 			o.Name = item.NameUnknown
 		}
 		o.Price, o.SellRefusal = sellQuote(item, p)
 		o.Fee, o.UncurseRefusal = uncurseQuote(ch, item, p)
 		_, o.IdentifyRefusal = identifyQuote(ch, item, p)
+		if p.Cursed && !o.Cursed {
+			// A curse the player has not learned of (only an imported item
+			// can carry one unseen) is not told in advance: Boltac's answer
+			// to trying says it, as in the game.
+			o.SellRefusal, o.UncurseRefusal = "", ""
+		}
 		v.Items = append(v.Items, o)
 	}
 	return v, nil

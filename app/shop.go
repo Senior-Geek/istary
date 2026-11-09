@@ -263,7 +263,10 @@ func shopInput(game *engine.GameState, town *engine.TownState, ch rune) {
 					}
 					// Subtract fee — p-code IC 3167-3179 (CXP proc=6)
 					c.Gold -= fee
-					// Remove item — p-code IC 3211-3308
+					// Remove item — p-code IC 3211-3308. Boltac takes it
+					// even from the hand it is stuck to: the curse ends
+					// (DropItem keeps a stuck item; finding #34).
+					c.Items[idx].Equipped, c.Items[idx].Cursed = false, false
 					c.DropItem(idx)
 					// Increment stock — p-code IC 3337-3357
 					if n := game.Stock(itemIdx); n > -1 {

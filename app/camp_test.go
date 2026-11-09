@@ -138,8 +138,28 @@ func partyGoods(g *engine.GameState) (int, []string) {
 	return gold, items
 }
 
+// newlyCursed reports whether after holds the items before does, with some
+// cursed now that were not, and none freed.
+func newlyCursed(before, after []string) bool {
+	strip := func(items []string) ([]string, int) {
+		out, cursed := make([]string, len(items)), 0
+		for i, it := range items {
+			if strings.HasSuffix(it, "/true") {
+				cursed++
+			}
+			out[i] = strings.Split(it, "/")[0]
+		}
+		sort.Strings(out)
+		return out, cursed
+	}
+	b, nb := strip(before)
+	a, na := strip(after)
+	return slices.Equal(a, b) && na > nb
+}
+
 // Camp never creates or loses gold or items: across random play, gold is
-// constant and items go only by D)ROP, one at a time.
+// constant and items go only by D)ROP, one at a time; equipping may curse
+// an item (finding #34), never uncurse one.
 func TestCampKeepsGoldAndItems(t *testing.T) {
 	traded, dropped := 0, 0
 	for s := int64(1); s <= 80; s++ {
@@ -164,6 +184,9 @@ func TestCampKeepsGoldAndItems(t *testing.T) {
 				}
 			case mode == engine.InputDrop && len(items2) == len(items)-1:
 				dropped++
+			case mode == engine.InputEquip && newlyCursed(items, items2):
+				// Equipping a cursed or another alignment's item sticks it
+				// (finding #34): the same items, some now cursed.
 			default:
 				t.Fatalf("seed %d: items %v became %v (mode %v)", s, items, items2, mode)
 			}
@@ -256,7 +279,7 @@ var allCampActs = []string{ActCampInspect, ActReorder, ActReorderPick, ActEquipP
 // (ErrInvalidChoice, ErrNoSuchPartyMember, MALOR) change nothing either.
 func TestCampViewActionsAreTheOperations(t *testing.T) {
 	used := map[string]int{}
-	for s := int64(1); s <= 60; s++ {
+	for s := int64(1); s <= 100; s++ {
 		seed(s)
 		rng := rand.New(rand.NewSource(s))
 		c := campers(t, rng)

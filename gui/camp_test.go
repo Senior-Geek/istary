@@ -356,7 +356,7 @@ func TestCampRestartFollowsUninterruptedPlay(t *testing.T) {
 		standing []standing
 	}
 	restartedAt := map[string]bool{}
-	for seed := int64(1); seed <= 8; seed++ {
+	for seed := int64(1); seed <= 12; seed++ { // 12: stuck items (#34) changed the walks
 		rand.Seed(seed)
 		rng := rand.New(rand.NewSource(seed))
 		s, dir := campSession(t, rng, true)
@@ -532,7 +532,7 @@ func TestCampPanelShowsWhatTheGameShows(t *testing.T) {
 			if p.Identified {
 				want = items[p.ItemIndex].Name
 			}
-			if it.Name != want || it.Identified != p.Identified || it.Cursed && !p.Identified {
+			if it.Name != want || it.Identified != p.Identified || it.Cursed != engine.KnownCursed(p) {
 				t.Fatalf("slot %d item %d shown as %+v", slot, i, it)
 			}
 			out = append(out, it.Name)
@@ -588,7 +588,7 @@ func TestCampPanelShowsWhatTheGameShows(t *testing.T) {
 func TestCampPanelFixture(t *testing.T) {
 	var panels []*CampPanel
 	have := map[string]bool{}
-	for seed := int64(1); seed <= 6; seed++ {
+	for seed := int64(1); seed <= 8; seed++ { // 8: stuck items (#34) changed the walk; DUMAPIC needs the 8th
 		rand.Seed(seed)
 		rng := rand.New(rand.NewSource(seed))
 		s, _ := campSession(t, rng, false)

@@ -292,6 +292,14 @@ func buildEquipChoices(game *engine.GameState, town *engine.TownState) {
 	cat := engine.EquipCategories[catIdx]
 	town.EquipChoices = nil
 
+	// A cursed item holds its category: it stays equipped, and nothing
+	// else of its kind can be (finding #34).
+	if cursedIn(c, items, cat) {
+		town.EquipCategory++
+		buildEquipChoices(game, town)
+		return
+	}
+
 	for i := 0; i < c.ItemCount; i++ {
 		poss := c.Items[i]
 		if poss.ItemIndex < 0 || poss.ItemIndex >= len(items) {
@@ -324,13 +332,27 @@ func handleEquipSelection(game *engine.GameState, town *engine.TownState, sel in
 	pos := town.EquipChoices[sel-1]
 	c := town.EditChar
 
-	if c.Items[pos].Cursed {
-		town.Message = "** CURSED **"
-	}
-
-	// Equip the selected item
+	// Equip the selected item; a cursed type, or another alignment's item,
+	// sticks (finding #34).
 	c.Items[pos].Equipped = true
+	if engine.CursesOnEquip(game.Scenario.Items[c.Items[pos].ItemIndex], c) {
+		c.Items[pos].Cursed = true
+	}
 	advanceEquipCategory(game, town)
+	if c.Items[pos].Cursed {
+		town.Message = "** CURSED **" // after the next category's prompt clears it
+	}
+}
+
+// cursedIn reports whether c wears a cursed item of category cat.
+func cursedIn(c *engine.Character, items []data.Item, cat int) bool {
+	for i := 0; i < c.ItemCount; i++ {
+		p := c.Items[i]
+		if p.Equipped && p.Cursed && p.ItemIndex >= 0 && p.ItemIndex < len(items) && items[p.ItemIndex].TypeID == cat {
+			return true
+		}
+	}
+	return false
 }
 
 // advanceEquipCategory moves to the next equipment category.

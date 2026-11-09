@@ -276,6 +276,14 @@ func TestShopViewPredictsTheOperations(t *testing.T) {
 				continue
 			}
 			o := v.Items[rng.Intn(len(v.Items))]
+			// A curse the player has not seen (an imported item) is not
+			// told in advance (#34): Boltac's answer is the game's own.
+			if p := ch.Items[o.N-1]; p.Cursed && !engine.KnownCursed(p) {
+				item := c.Game.Scenario.Items[p.ItemIndex]
+				_, o.SellRefusal = sellQuote(item, p)
+				_, o.UncurseRefusal = uncurseQuote(ch, item, p)
+				checked["unseen curse"]++
+			}
 			switch rng.Intn(3) {
 			case 0:
 				err := c.Sell(o.N)

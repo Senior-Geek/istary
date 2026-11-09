@@ -137,3 +137,20 @@ test('the receipt says saved, not durable, or NOT saved, as Go reports it', () =
   assert.match(receipt(at('identified').shop).did, /identified EGUI's item for 50 GP: it is HELM/)
   assert.match(receipt(at('uncursed').shop).did, /uncursed EGUI's STAFF/)
 })
+
+test('a curse the player has not seen is never shown (#34): not before it is identified or worn', () => {
+  let unseen = 0
+  for (const v of views) {
+    for (const it of v.shop.view.items ?? []) {
+      if (it.identified || it.equipped) continue
+      assert.equal(it.cursed, false, `${v.case}: ${it.name}`)
+      assert.equal(it.sellRefusal === '** WE DONT BUY CURSED ITEMS **', false, `${v.case}: ${it.name}`)
+      unseen++
+    }
+  }
+  assert.ok(unseen > 0)
+  // The recording's unidentified scroll does carry a curse: trying to sell it would say so.
+  const mage = views.find((v) => v.case === 'mage at the counter')
+  const scroll = rows(mage.shop, 'sell').find((r) => r.name === 'SCROLL')
+  assert.deepEqual([scroll.reason, scroll.marks.map((m) => m.key)], ['', ['unidentified']])
+})

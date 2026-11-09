@@ -251,7 +251,7 @@ func itemViews(ch *engine.Character, items []data.Item) []ItemView {
 				name = items[p.ItemIndex].NameUnknown
 			}
 		}
-		out = append(out, ItemView{Name: name, Equipped: p.Equipped, Cursed: p.Cursed && p.Identified, Identified: p.Identified})
+		out = append(out, ItemView{Name: name, Equipped: p.Equipped, Cursed: engine.KnownCursed(p), Identified: p.Identified})
 	}
 	return out
 }
