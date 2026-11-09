@@ -384,3 +384,12 @@ own before any work.
 - **Pool Gold elsewhere.** Pool Gold from a character's inspect screen
   (PG p.28) is in the controller but on no GUI screen.
 - **Inn aging.** No source establishes the rate (finding #11).
+- **Terminal Temple.** The terminal keeps the original: the patient found
+  anywhere on the roster, even out in the maze; any party member tithes,
+  dead or not; paying and the treatment are two keys, each saved after
+  it. The GUI treats only characters at the castle, takes an OK payer, and
+  makes the donation and the treatment one action and one save.
+- **Temple pooling (finding #5).** The guide pools the party's gold when
+  the payer is short (p.33); the engine refuses, citing the p-code. The
+  GUI offers an explicit Pool party gold; which the original did is
+  unsettled.

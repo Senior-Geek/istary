@@ -493,6 +493,33 @@ healed; refusals changing nothing; pooling and sharing on random parties
 (`app/inn_test.go`, `app/gold_test.go`). `engine.RestAtInn`, unused and at
 odds with the terminal (its stables restored no spells), was removed.
 
+**The Temple of Cant** (`app/temple.go`, `app/temple_ops.go`,
+`app/temple_view.go`, T-1, T-2). The terminal's Temple moved here intact
+(the castle's C, WHO ARE YOU HELPING, the donation, WHO WILL TITHE, the
+ritual, RETURN); the terminal reaches it through `HandleKey`. The
+treatment is `engine.TempleHeal` (paralysis and stone always cured; dead
+fails above 50+3×VIT into ashes, ashes above 40+3×VIT into LOST; 1 HP from
+the dead, full HP from ashes; a success ages 1-52 weeks) and the donation
+`engine.TempleDonation` (100, 200, 250, 500 × level), taken before the
+treatment and kept when it fails. The treatment no longer saves the game
+itself (the terminal's main loop saves after every key, as before).
+
+| Operation | Effect |
+|---|---|
+| `Treat(index, slot)` | One action: the patient's name, RETURN, the payer's number and a key at the ritual, pressed for the player; returns `TempleReceipt` (conditions, donation, the payer's gold, HP and age before and after, the Temple's words). Stricter than the keys, on purpose: the patient must be at the castle (not on a saved expedition; not OUT in the maze by the Tavern's rule: INMAZE or a maze level, for anyone outside the party, whose members are INMAZE by joining), the payer must be OK, and a payer short of the donation is refused before anything happens. Refusals change nothing and draw nothing |
+| `TempleView()` | Read-only: the patients (treatable conditions and the LOST) with kind (cure, raise, ashes), donation, refusal and funding (a payer, only the party together, short), the payers (refusal when not OK) and the party's gold. No chance of success |
+| `LeaveTemple()` | Out to the castle by RETURN from any step but the ritual |
+| `PoolGold(slot)` | Open at the Temple too (PG p.33), as an explicit action |
+
+Tests: `engine/temple_test.go` (TempleHeal replayed from the numbers it
+draws for every condition and vitality: outcomes, boundaries, HP, age,
+consumption; the donation table), `cmd/istary/temple_test.go` (the
+terminal's transcript and screens as goldens, and its rules), and
+`app/temple_test.go` (Treat against the keys on 1,500 random rosters, two
+treatments each, identical with the same random numbers and every
+outcome met; the view; each refusal; the keys' original where Treat is
+stricter; the receipts; pooling then treating).
+
 **Boltac's Trading Post in the window (M8-3).** `gui/shop.go` is the bridge
 to the controller's Boltac's operations (M8-2); the screen is M8-4 (below).
 - **Going there and back:** the Castle's Boltac's exit is open for a party
@@ -654,11 +681,45 @@ it and decides nothing.
   + headless Chrome) at 760x532, 980x692 and 1512x945. Stills in
   `docs/design/m2-exploration/stills/gui-inn-i4/`.
 
+**The Temple of Cant in the window (T-3).** `gui/temple.go` is the bridge;
+`TempleScreen.svelte` the screen, from `View.Temple` only; `lib/temple.js`
+reshapes it and decides nothing.
+- **View and actions:** `View.Temple` (nil elsewhere) is `{view, last}`:
+  `app.TempleView` unchanged and the receipt of the last treatment or
+  pooling (`treat` or `gold`, `saved`, `durable`).
+  `TempleAction(TempleRequest{action, patient, payer})`: `treat` (a roster
+  index and a party slot) and `pool` (the party's gold to the payer).
+- **Saving:** a treatment, donation and roll together, is one action and
+  one atomic write of the roster: never half saved, never rolled again by
+  closing the window. Pooling is one write. A refusal and looking write
+  nothing; a refusal keeps the last receipt. A failed save keeps the
+  treatment, the receipt NOT saved; Try saving again marks it saved,
+  charging and rolling nothing again; closing the window asks first.
+- **The screen:** the patients (name, class and level, condition,
+  donation, whether the gold is there, Go's reason when not treatable; the
+  LOST as beyond mortal help), the payer from the party bar or a list
+  (only those Go allows; the choice stays), Pool party gold. Treat…
+  opens the screen's own confirmation (patient, condition, donation,
+  payer and gold, outcomes, the risk in words: assured; uncertain, ashes
+  on failure; the final chance, LOST on failure, with a permanent-loss
+  warning; the donation charged either way). It calls nothing: Cancel and
+  Escape change nothing. The receipt: well again, now ashes, or lost
+  forever; conditions, donation and the payer's gold, hit points, age,
+  saved or not.
+- **Tests:** `gui/temple_test.go` (one save per treatment or pooling, none
+  for refusals; a failed save retried, nothing charged or rolled twice,
+  found after a restart) and `TestTempleViewFixture`
+  (`testdata/temple-views.json`, every outcome), held by
+  `templeViews.test.js`. Live at 760x532, 980x692 and 1512x945. Stills in
+  `docs/design/m2-exploration/stills/gui-temple-t3/`.
+
 **The location frame (Castle-0 C0-3).** Every town place is drawn in one
 frame (`LocationFrame.svelte`), in grid areas that never overlap:
 - **head:** the place's title, "← Castle" (`ReturnToCastle`, also
   Escape; since C0-6) and the Show/Hide party toggle;
-- **scene:** the place's artwork (`LocationScene.svelte`, `lib/scenes.js`):
+- **scene:** (a definite height, about 16:9 of its column between 120px
+  and 46vh, since a height from aspect-ratio was left out of the row in a
+  scrolling body) the place's artwork (`LocationScene.svelte`, `lib/scenes.js`):
   a picture cropped around its focus, or, while there is none (all places
   for now) or it fails to load, a themed panel with the place's emblem;
 - **nav:** the other destinations from `View.Exits` (closed ones with Go's

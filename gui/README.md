@@ -12,9 +12,17 @@ at the top (or press Esc; it abandons only what is unfinished, such as a
 character being created), its destinations ("Go to") and its actions apart, its
 picture (a themed panel until artwork exists), and the party bar at the
 bottom, shown or hidden with Hide party.
-- **The Castle:** Gilgamesh's Tavern, the Adventurer's Inn and Boltac's
-  Trading Post (for a party), the Edge of Town; the Temple of Cant is shown
-  closed (not in the window yet).
+- **The Castle:** Gilgamesh's Tavern, the Adventurer's Inn, Boltac's
+  Trading Post and the Temple of Cant (for a party), the Edge of Town.
+- **The Temple of Cant (T-3):** every character the priests can help,
+  in the party or not, with their condition and the donation; the LOST
+  are listed, beyond help. Choose who tithes from the party bar (only a
+  member who is well), Pool party gold if needed, then Treat…: the
+  screen says what may happen and asks first (no chance is shown). A
+  raise from the dead may fail into ashes; from ashes, failure is LOST
+  for good; the donation is charged either way. Only characters at the
+  castle can be treated. The receipt says what happened and whether it is
+  saved.
 - **The Adventurer's Inn (I-4):** click a party member to check them in
   (only a character who is OK may stay). Each room shows its rate and, for
   the guest, what a stay there does: Rest until healed (the original's
