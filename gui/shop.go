@@ -253,13 +253,7 @@ func receiptNotice(r *ShopReceipt) string {
 	case ShopActIdentify:
 		did = fmt.Sprintf("Boltac identified %s's item, for %d GP: it is %s.", r.Customer, -r.Gold, r.Item)
 	}
-	switch {
-	case !r.Saved:
-		return did + " It is NOT saved: it exists only in this window until a save succeeds."
-	case !r.Durable:
-		return did + " Saved, but perhaps not durably."
-	}
-	return did + " Saved."
+	return did + savedWords(r.Saved, r.Durable)
 }
 
 // shopPanel is Boltac's for the View, or nil away from it.

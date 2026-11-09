@@ -1,0 +1,449 @@
+[
+ {
+  "case": "fighter, nothing worn",
+  "sheet": {
+   "index": 0,
+   "name": "AGUI",
+   "race": "HUMAN",
+   "alignment": "NEUTRAL",
+   "class": "FIGHTER",
+   "short": "N-FIG",
+   "level": 2,
+   "hp": 14,
+   "maxHp": 14,
+   "ac": 10,
+   "status": "OK",
+   "gold": 0,
+   "age": 0,
+   "stats": [
+    16,
+    0,
+    0,
+    0,
+    12,
+    0
+   ],
+   "xp": 0,
+   "nextXp": 1724,
+   "hasPassword": false,
+   "mageSpells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxMage": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "priestSpells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxPriest": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "spells": null,
+   "items": [
+    {
+     "name": "CHAIN MAIL",
+     "equipped": false,
+     "cursed": false,
+     "identified": true,
+     "n": 1,
+     "kind": "armour",
+     "equipRefusal": "",
+     "unequipRefusal": "It is not equipped."
+    },
+    {
+     "name": "SMALL SHIELD",
+     "equipped": false,
+     "cursed": false,
+     "identified": true,
+     "n": 2,
+     "kind": "shield",
+     "equipRefusal": "",
+     "unequipRefusal": "It is not equipped."
+    },
+    {
+     "name": "EVIL SHIELD +3",
+     "equipped": false,
+     "cursed": false,
+     "identified": true,
+     "n": 3,
+     "kind": "shield",
+     "equipRefusal": "",
+     "unequipRefusal": "It is not equipped."
+    },
+    {
+     "name": "SCROLL/HALITO",
+     "equipped": false,
+     "cursed": false,
+     "identified": true,
+     "n": 4,
+     "kind": "",
+     "equipRefusal": "It is not something to equip.",
+     "unequipRefusal": "It is not equipped."
+    }
+   ],
+   "poison": 0,
+   "inMaze": true,
+   "mazeLevel": 0,
+   "legacy": false,
+   "equipNote": "",
+   "inParty": true,
+   "partySlot": 1,
+   "joinRefusal": "** PARTY IS FULL **"
+  }
+ },
+ {
+  "case": "mage: armour refused, an unknown staff",
+  "sheet": {
+   "index": 4,
+   "name": "EGUI",
+   "race": "HUMAN",
+   "alignment": "NEUTRAL",
+   "class": "MAGE",
+   "short": "N-MAG",
+   "level": 2,
+   "hp": 14,
+   "maxHp": 14,
+   "ac": 10,
+   "status": "OK",
+   "gold": 0,
+   "age": 0,
+   "stats": [
+    16,
+    0,
+    0,
+    0,
+    12,
+    0
+   ],
+   "xp": 0,
+   "nextXp": 1896,
+   "hasPassword": false,
+   "mageSpells": [
+    2,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxMage": [
+    2,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "priestSpells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxPriest": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "spells": [
+    "HALITO",
+    "KATINO"
+   ],
+   "items": [
+    {
+     "name": "CHAIN MAIL",
+     "equipped": false,
+     "cursed": false,
+     "identified": true,
+     "n": 1,
+     "kind": "armour",
+     "equipRefusal": "A MAGE cannot use it.",
+     "unequipRefusal": "It is not equipped."
+    },
+    {
+     "name": "STICK",
+     "equipped": false,
+     "cursed": false,
+     "identified": false,
+     "n": 2,
+     "kind": "weapon",
+     "equipRefusal": "",
+     "unequipRefusal": "It is not equipped."
+    }
+   ],
+   "poison": 0,
+   "inMaze": true,
+   "mazeLevel": 0,
+   "legacy": false,
+   "equipNote": "",
+   "inParty": true,
+   "partySlot": 5,
+   "joinRefusal": "** PARTY IS FULL **"
+  }
+ },
+ {
+  "case": "fighter: chain mail worn, evil shield stuck",
+  "sheet": {
+   "index": 0,
+   "name": "AGUI",
+   "race": "HUMAN",
+   "alignment": "NEUTRAL",
+   "class": "FIGHTER",
+   "short": "N-FIG",
+   "level": 2,
+   "hp": 14,
+   "maxHp": 14,
+   "ac": 2,
+   "status": "OK",
+   "gold": 0,
+   "age": 0,
+   "stats": [
+    16,
+    0,
+    0,
+    0,
+    12,
+    0
+   ],
+   "xp": 0,
+   "nextXp": 1724,
+   "hasPassword": false,
+   "mageSpells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxMage": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "priestSpells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxPriest": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "spells": null,
+   "items": [
+    {
+     "name": "CHAIN MAIL",
+     "equipped": true,
+     "cursed": false,
+     "identified": true,
+     "n": 1,
+     "kind": "armour",
+     "equipRefusal": "It is equipped.",
+     "unequipRefusal": ""
+    },
+    {
+     "name": "SMALL SHIELD",
+     "equipped": false,
+     "cursed": false,
+     "identified": true,
+     "n": 2,
+     "kind": "shield",
+     "equipRefusal": "A cursed shield is stuck in its place: only Boltac can remove it.",
+     "unequipRefusal": "It is not equipped."
+    },
+    {
+     "name": "EVIL SHIELD +3",
+     "equipped": true,
+     "cursed": true,
+     "identified": true,
+     "n": 3,
+     "kind": "shield",
+     "equipRefusal": "It is equipped.",
+     "unequipRefusal": "It is cursed: only Boltac can remove it."
+    },
+    {
+     "name": "SCROLL/HALITO",
+     "equipped": false,
+     "cursed": false,
+     "identified": true,
+     "n": 4,
+     "kind": "",
+     "equipRefusal": "It is not something to equip.",
+     "unequipRefusal": "It is not equipped."
+    }
+   ],
+   "poison": 0,
+   "inMaze": true,
+   "mazeLevel": 0,
+   "legacy": false,
+   "equipNote": "",
+   "inParty": true,
+   "partySlot": 1,
+   "joinRefusal": "** PARTY IS FULL **"
+  }
+ },
+ {
+  "case": "during practice",
+  "sheet": {
+   "index": 0,
+   "name": "AGUI",
+   "race": "HUMAN",
+   "alignment": "NEUTRAL",
+   "class": "FIGHTER",
+   "short": "N-FIG",
+   "level": 2,
+   "hp": 14,
+   "maxHp": 14,
+   "ac": 2,
+   "status": "OK",
+   "gold": 0,
+   "age": 0,
+   "stats": [
+    16,
+    0,
+    0,
+    0,
+    12,
+    0
+   ],
+   "xp": 0,
+   "nextXp": 1724,
+   "hasPassword": false,
+   "mageSpells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxMage": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "priestSpells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxPriest": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "spells": null,
+   "items": [
+    {
+     "name": "CHAIN MAIL",
+     "equipped": true,
+     "cursed": false,
+     "identified": true,
+     "n": 0,
+     "kind": "",
+     "equipRefusal": "",
+     "unequipRefusal": ""
+    },
+    {
+     "name": "SMALL SHIELD",
+     "equipped": false,
+     "cursed": false,
+     "identified": true,
+     "n": 0,
+     "kind": "",
+     "equipRefusal": "",
+     "unequipRefusal": ""
+    },
+    {
+     "name": "EVIL SHIELD +3",
+     "equipped": true,
+     "cursed": true,
+     "identified": true,
+     "n": 0,
+     "kind": "",
+     "equipRefusal": "",
+     "unequipRefusal": ""
+    },
+    {
+     "name": "SCROLL/HALITO",
+     "equipped": false,
+     "cursed": false,
+     "identified": true,
+     "n": 0,
+     "kind": "",
+     "equipRefusal": "",
+     "unequipRefusal": ""
+    }
+   ],
+   "poison": 0,
+   "inMaze": true,
+   "mazeLevel": 0,
+   "legacy": false,
+   "equipNote": "A practice is under way. Finish or abandon it first.",
+   "inParty": true,
+   "partySlot": 1,
+   "joinRefusal": "** PARTY IS FULL **"
+  }
+ }
+]

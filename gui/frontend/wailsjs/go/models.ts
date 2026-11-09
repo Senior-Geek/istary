@@ -730,6 +730,10 @@ export namespace main {
 	    equipped: boolean;
 	    cursed: boolean;
 	    identified: boolean;
+	    n: number;
+	    kind: string;
+	    equipRefusal: string;
+	    unequipRefusal: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new ItemView(source);
@@ -741,6 +745,10 @@ export namespace main {
 	        this.equipped = source["equipped"];
 	        this.cursed = source["cursed"];
 	        this.identified = source["identified"];
+	        this.n = source["n"];
+	        this.kind = source["kind"];
+	        this.equipRefusal = source["equipRefusal"];
+	        this.unequipRefusal = source["unequipRefusal"];
 	    }
 	}
 	export class CharacterView {
@@ -771,6 +779,7 @@ export namespace main {
 	    inMaze: boolean;
 	    mazeLevel: number;
 	    legacy: boolean;
+	    equipNote: string;
 	    inParty: boolean;
 	    partySlot: number;
 	    joinRefusal: string;
@@ -808,6 +817,7 @@ export namespace main {
 	        this.inMaze = source["inMaze"];
 	        this.mazeLevel = source["mazeLevel"];
 	        this.legacy = source["legacy"];
+	        this.equipNote = source["equipNote"];
 	        this.inParty = source["inParty"];
 	        this.partySlot = source["partySlot"];
 	        this.joinRefusal = source["joinRefusal"];
@@ -976,6 +986,22 @@ export namespace main {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.real = source["real"];
 	        this.practice = source["practice"];
+	    }
+	}
+	export class EquipRequest {
+	    index: number;
+	    n: number;
+	    equip: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new EquipRequest(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.index = source["index"];
+	        this.n = source["n"];
+	        this.equip = source["equip"];
 	    }
 	}
 	export class ExitView {

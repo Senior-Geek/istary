@@ -486,7 +486,7 @@ func TestPracticeCampKeepsNothing(t *testing.T) {
 		s, dir := campSession(t, rng, false)
 		path := filepath.Join(dir, "roster1.json")
 		before, _ := os.ReadFile(path)
-		roster := s.State().Roster
+		roster := rosterBytes(s.ctrl.Game) // the characters, not the view: equipping is closed during practice
 		for step := 0; step < 80; step++ {
 			p := s.State().Camp
 			if p == nil {
@@ -500,7 +500,7 @@ func TestPracticeCampKeepsNothing(t *testing.T) {
 			t.Fatalf("seed %d: practice Camp wrote the save", seed)
 		}
 		v := s.AbandonPractice()
-		if !reflect.DeepEqual(v.Roster, roster) || v.Camp != nil {
+		if !bytes.Equal(rosterBytes(s.ctrl.Game), roster) || v.Camp != nil {
 			t.Fatalf("seed %d: the roster changed", seed)
 		}
 	}

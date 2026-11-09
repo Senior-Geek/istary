@@ -127,6 +127,10 @@ type CharacterView struct {
 	// Party membership comes from the party list (app.InParty), never from
 	// InMaze. JoinRefusal is the Tavern's answer if this character tried to
 	// join now ("" = may join, password still required).
+	// EquipNote is why this character's items cannot be equipped or taken
+	// off from the sheet now ("" when they can, item by item).
+	EquipNote string `json:"equipNote"`
+
 	InParty     bool   `json:"inParty"`
 	PartySlot   int    `json:"partySlot"` // 1-based, 0 if not in the party
 	JoinRefusal string `json:"joinRefusal"`
@@ -139,6 +143,15 @@ type ItemView struct {
 	Equipped   bool   `json:"equipped"`
 	Cursed     bool   `json:"cursed"`
 	Identified bool   `json:"identified"`
+
+	// Equipping in town (equip.go), for a roster character while it is
+	// open (CharacterView.EquipNote ""): N is the item's number for
+	// EquipAction, Kind its category ("" for items not equipped), and the
+	// controller's answers to equipping it and taking it off ("" = yes).
+	N              int    `json:"n"`
+	Kind           string `json:"kind"`
+	EquipRefusal   string `json:"equipRefusal"`
+	UnequipRefusal string `json:"unequipRefusal"`
 }
 
 type CreationView struct {
@@ -327,6 +340,7 @@ func (s *Session) view(err error) View {
 		}
 		cv := characterView(g, ch)
 		cv.Index, cv.JoinRefusal = i, s.ctrl.JoinRefusal(ch)
+		s.withEquipment(&cv, i)
 		v.Roster = append(v.Roster, cv)
 	}
 

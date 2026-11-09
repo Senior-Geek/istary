@@ -127,7 +127,8 @@
                 onrename={view.location === 'training' ? renameSelected : undefined}
                 ondelete={view.location === 'training' ? deleteSelected : undefined}
                 onjoin={view.location === 'tavern' ? () => call(S.JoinParty, sel.index) : undefined}
-                onleave={view.location === 'tavern' ? () => call(S.LeaveParty, sel.partySlot - 1) : undefined} />
+                onleave={view.location === 'tavern' ? () => call(S.LeaveParty, sel.partySlot - 1) : undefined}
+                onequip={(n, equip) => call(S.EquipAction, { index: sel.index, n, equip })} />
             </FloatingPanel>
           {/key}
         {/if}

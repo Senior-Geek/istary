@@ -54,6 +54,8 @@ export function DeleteCharacter(arg1:string,arg2:string):Promise<main.View>;
 
 export function DungeonAction(arg1:string,arg2:number):Promise<main.View>;
 
+export function EquipAction(arg1:main.EquipRequest):Promise<main.View>;
+
 export function FinishStats():Promise<main.View>;
 
 export function JoinParty(arg1:number):Promise<main.View>;

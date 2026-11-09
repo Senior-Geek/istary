@@ -106,6 +106,10 @@ export function DungeonAction(arg1, arg2) {
   return window['go']['main']['Session']['DungeonAction'](arg1, arg2);
 }
 
+export function EquipAction(arg1) {
+  return window['go']['main']['Session']['EquipAction'](arg1);
+}
+
 export function FinishStats() {
   return window['go']['main']['Session']['FinishStats']();
 }

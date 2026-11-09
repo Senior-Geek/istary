@@ -14,7 +14,11 @@
   //   ondelete   (password) => Promise  delete (optional: where deleting is allowed)
   //   onjoin     () => Promise   ask to join the party (optional)
   //   onleave    () => Promise   leave the party (optional)
-  let { character: ch, statNames, nameMax, busy = false, error = '', onrename, ondelete, onjoin, onleave } = $props()
+  //   onequip    (n, equip) => Promise  equip or take off item n (optional: in town;
+  //              what may be equipped, and why not, is Go's, on each item)
+  import { itemActions, kindLabel } from './equip.js'
+
+  let { character: ch, statNames, nameMax, busy = false, error = '', onrename, ondelete, onjoin, onleave, onequip } = $props()
 
   let renaming = $state(false)
   let newName = $state('')
@@ -100,15 +104,29 @@
   <section>
     <h3>Inventory ({ch.items?.length ?? 0} / 8)</h3>
     {#if ch.items?.length}
-      <ul>
+      <ul class="items">
         {#each ch.items as it}
-          <li>{it.name}
-            {#if it.equipped}{' '}<span class="tag">equipped</span>{/if}
-            {#if !it.identified}{' '}<span class="tag">unidentified</span>{/if}
-            {#if it.cursed}{' '}<span class="tag bad">cursed</span>{/if}
+          {@const a = onequip ? itemActions(it, ch.equipNote) : null}
+          <li>
+            <span class="what">{it.name}
+              {#if onequip}{' '}<span class="kind">{kindLabel(it)}</span>{/if}
+              {#if it.equipped}{' '}<span class="tag">equipped</span>{/if}
+              {#if !it.identified}{' '}<span class="tag">unidentified</span>{/if}
+              {#if it.cursed}{' '}<span class="tag bad">cursed</span>{/if}
+            </span>
+            {#if a}
+              <span class="equip">
+                <button class="small" class:primary={a.enabled && a.equip} disabled={busy || !a.enabled}
+                  onclick={() => onequip(it.n, a.equip)}>{a.label}</button>
+                {#if a.reason && !(a.equip && it.equipped)}<span class="why">{a.reason}</span>{/if}
+              </span>
+            {/if}
           </li>
         {/each}
       </ul>
+      {#if onequip && ch.equipNote}<p class="muted">Equipment cannot be changed now: {ch.equipNote}</p>{/if}
+      {#if onequip && !ch.equipNote}<p class="muted">Equipping changes the armour class at once; an item that is cursed,
+        or of another alignment, sticks once worn.</p>{/if}
     {:else}<p class="muted">Carrying nothing.</p>{/if}
   </section>
 
@@ -173,6 +191,12 @@
   .attrs th { font-size: 11px; color: var(--muted); font-weight: 500; text-align: center; }
   .attrs td { text-align: center; font-weight: 600; font-size: 15px; }
   ul { margin: 0; padding-left: 18px; }
+  ul.items { list-style: none; padding: 0; display: grid; gap: 3px; }
+  ul.items li { display: flex; flex-wrap: wrap; gap: 2px 10px; align-items: baseline; justify-content: space-between;
+    border-bottom: 1px solid var(--line); padding: 2px 0 3px; }
+  .kind { font-size: 11px; color: var(--muted); }
+  .equip { display: flex; gap: 8px; align-items: baseline; }
+  .why { font-size: 11px; color: var(--muted); }
   .tag { font-size: 11px; color: var(--muted); border: 1px solid #444; border-radius: 3px; padding: 0 4px; }
   .tag.bad { color: var(--error); border-color: var(--error); }
   button.small { font-size: 12px; padding: 2px 8px; }
