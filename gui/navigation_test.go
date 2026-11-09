@@ -85,6 +85,7 @@ var townMap = map[string][]string{
 	"tavern":   {"castle"},
 	"trading":  {"castle"},
 	"inn":      {"castle"},
+	"temple":   {"castle"},
 	"settings": {"castle"},
 }
 
@@ -139,17 +140,14 @@ func TestNavigationWalksTheTown(t *testing.T) {
 		}
 		reached := []string{"castle", "edge", "settings", "tavern", "training"}
 		if party {
-			reached = []string{"castle", "edge", "inn", "settings", "tavern", "trading", "training"}
+			reached = []string{"castle", "edge", "inn", "settings", "tavern", "temple", "trading", "training"}
 		}
 		if got := slices.Sorted(maps.Keys(paths)); !slices.Equal(got, reached) {
 			t.Fatalf("party %v: reached %v", party, got)
 		}
 		v := navigate(t, s, dir, "castle")
 		for _, e := range v.Exits[1:4] { // the Inn, Boltac's, the Temple
-			want := "not open in Istary's window"
-			if e.Dest == "trading" || e.Dest == "inn" {
-				want = ""
-			}
+			want := "" // every place is open for a party
 			if !party {
 				want = "YOU HAVE NO PARTY!"
 			}

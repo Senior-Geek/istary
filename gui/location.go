@@ -52,6 +52,8 @@ func notAt(loc engine.TownLocation) error {
 		return errors.New("Items are bought, sold, uncursed and identified at Boltac's Trading Post, in the Castle. Go there first.")
 	case engine.Inn:
 		return errors.New("Characters rest and make their levels at the Adventurer's Inn, in the Castle. Go there first.")
+	case engine.Temple:
+		return errors.New("The priests heal and raise characters at the Temple of Cant, in the Castle. Go there first.")
 	}
 	return fmt.Errorf("That is done at %v. Go there first.", loc)
 }

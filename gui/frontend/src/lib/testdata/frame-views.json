@@ -22,7 +22,7 @@
    {
     "dest": "temple",
     "open": false,
-    "reason": "YOU HAVE NO PARTY! The Temple of Cant is not open in Istary's window yet."
+    "reason": "YOU HAVE NO PARTY!"
    },
    {
     "dest": "edge",
@@ -145,8 +145,8 @@
    },
    {
     "dest": "temple",
-    "open": false,
-    "reason": "The Temple of Cant is not open in Istary's window yet."
+    "open": true,
+    "reason": ""
    },
    {
     "dest": "edge",
@@ -707,8 +707,8 @@
    },
    {
     "dest": "temple",
-    "open": false,
-    "reason": "The Temple of Cant is not open in Istary's window yet."
+    "open": true,
+    "reason": ""
    },
    {
     "dest": "edge",

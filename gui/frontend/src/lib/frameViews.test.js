@@ -60,7 +60,7 @@ test('the destinations are the other exits, in Go’s order, closed ones with Go
   assert.deepEqual(destinations(at('castle')).map((x) => x.dest), ['tavern', 'inn', 'trading', 'temple', 'edge'])
   assert.deepEqual(destinations(at('edge')).map((x) => x.dest), ['training', 'settings'])
   assert.match(destinations(at('castle, no party')).find((x) => x.dest === 'inn').reason, /NO PARTY/)
-  assert.match(destinations(at('castle')).find((x) => x.dest === 'temple').reason, /not open/)
+  assert.equal(destinations(at('castle')).find((x) => x.dest === 'temple').open, true)
 })
 
 test('while a character is being created, Back says it discards the character', () => {
@@ -113,13 +113,11 @@ test('no artwork yet: every place shows its themed panel and emblem', () => {
   assert.equal(sceneFor(undefined), fallback)
 })
 
-test('the Temple is always closed, and says why', () => {
-  for (const v of views.filter((v) => v.location === 'castle')) {
-    const d = destinations(v).find((x) => x.dest === 'temple')
-    assert.equal(d.open, false, `${v.case}: temple`)
-    assert.match(d.reason, /not open in Istary's window/, `${v.case}: temple`)
-  }
-  assert.match(destinations(at('castle, no party')).find((x) => x.dest === 'temple').reason, /^YOU HAVE NO PARTY!/)
+test('the Temple opens for a party, and gives the castle’s answer without one', () => {
+  const closed = destinations(at('castle, no party')).find((x) => x.dest === 'temple')
+  assert.deepEqual([closed.open, closed.reason], [false, 'YOU HAVE NO PARTY!'])
+  assert.equal(destinations(at('castle')).find((x) => x.dest === 'temple').open, true)
+  for (const v of views) for (const d of destinations(v)) assert.doesNotMatch(d.reason ?? '', /not open in Istary/)
 })
 
 test('the Inn opens for a party, and gives the castle’s answer without one', () => {

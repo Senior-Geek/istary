@@ -218,6 +218,10 @@ export function SubmitJoinPassword(arg1) {
   return window['go']['main']['Session']['SubmitJoinPassword'](arg1);
 }
 
+export function TempleAction(arg1) {
+  return window['go']['main']['Session']['TempleAction'](arg1);
+}
+
 export function TryAgain() {
   return window['go']['main']['Session']['TryAgain']();
 }

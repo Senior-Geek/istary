@@ -896,6 +896,134 @@ export namespace app {
 		    return a;
 		}
 	}
+	export class TemplePatient {
+	    index: number;
+	    name: string;
+	    class: string;
+	    level: number;
+	    status: string;
+	    inParty: boolean;
+	    kind: string;
+	    donation: number;
+	    refusal: string;
+	    funding: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new TemplePatient(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.index = source["index"];
+	        this.name = source["name"];
+	        this.class = source["class"];
+	        this.level = source["level"];
+	        this.status = source["status"];
+	        this.inParty = source["inParty"];
+	        this.kind = source["kind"];
+	        this.donation = source["donation"];
+	        this.refusal = source["refusal"];
+	        this.funding = source["funding"];
+	    }
+	}
+	export class TemplePayer {
+	    slot: number;
+	    name: string;
+	    gold: number;
+	    refusal: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new TemplePayer(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.slot = source["slot"];
+	        this.name = source["name"];
+	        this.gold = source["gold"];
+	        this.refusal = source["refusal"];
+	    }
+	}
+	export class TempleReceipt {
+	    patient: string;
+	    index: number;
+	    kind: string;
+	    statusBefore: string;
+	    statusAfter: string;
+	    healed: boolean;
+	    donation: number;
+	    payer: string;
+	    payerBefore: number;
+	    payerAfter: number;
+	    hpBefore: number;
+	    hpAfter: number;
+	    maxHp: number;
+	    ageBefore: number;
+	    ageAfter: number;
+	    messages: string[];
+	
+	    static createFrom(source: any = {}) {
+	        return new TempleReceipt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.patient = source["patient"];
+	        this.index = source["index"];
+	        this.kind = source["kind"];
+	        this.statusBefore = source["statusBefore"];
+	        this.statusAfter = source["statusAfter"];
+	        this.healed = source["healed"];
+	        this.donation = source["donation"];
+	        this.payer = source["payer"];
+	        this.payerBefore = source["payerBefore"];
+	        this.payerAfter = source["payerAfter"];
+	        this.hpBefore = source["hpBefore"];
+	        this.hpAfter = source["hpAfter"];
+	        this.maxHp = source["maxHp"];
+	        this.ageBefore = source["ageBefore"];
+	        this.ageAfter = source["ageAfter"];
+	        this.messages = source["messages"];
+	    }
+	}
+	export class TempleView {
+	    step: string;
+	    message: string;
+	    patients: TemplePatient[];
+	    payers: TemplePayer[];
+	    partyGold: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new TempleView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.step = source["step"];
+	        this.message = source["message"];
+	        this.patients = this.convertValues(source["patients"], TemplePatient);
+	        this.payers = this.convertValues(source["payers"], TemplePayer);
+	        this.partyGold = source["partyGold"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 
 }
 
@@ -1574,6 +1702,90 @@ export namespace main {
 	        this.yes = source["yes"];
 	    }
 	}
+	export class TempleLast {
+	    treat?: app.TempleReceipt;
+	    gold?: app.GoldMove;
+	    saved: boolean;
+	    durable: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new TempleLast(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.treat = this.convertValues(source["treat"], app.TempleReceipt);
+	        this.gold = this.convertValues(source["gold"], app.GoldMove);
+	        this.saved = source["saved"];
+	        this.durable = source["durable"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class TemplePanel {
+	    view: app.TempleView;
+	    last?: TempleLast;
+	
+	    static createFrom(source: any = {}) {
+	        return new TemplePanel(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.view = this.convertValues(source["view"], app.TempleView);
+	        this.last = this.convertValues(source["last"], TempleLast);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class TempleRequest {
+	    action: string;
+	    patient: number;
+	    payer: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new TempleRequest(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.action = source["action"];
+	        this.patient = source["patient"];
+	        this.payer = source["payer"];
+	    }
+	}
 	
 	export class View {
 	    saveDir: string;
@@ -1609,6 +1821,7 @@ export namespace main {
 	    shop?: ShopPanel;
 	    inn?: InnPanel;
 	    gold?: GoldReceipt;
+	    temple?: TemplePanel;
 	    unsaved: string;
 	    warning: string;
 	    recovery: string;
@@ -1653,6 +1866,7 @@ export namespace main {
 	        this.shop = this.convertValues(source["shop"], ShopPanel);
 	        this.inn = this.convertValues(source["inn"], InnPanel);
 	        this.gold = this.convertValues(source["gold"], GoldReceipt);
+	        this.temple = this.convertValues(source["temple"], TemplePanel);
 	        this.unsaved = source["unsaved"];
 	        this.warning = source["warning"];
 	        this.recovery = source["recovery"];

@@ -57,6 +57,8 @@ type Session struct {
 	// until the next one or the next visit.
 	innLast  *InnReceipt
 	goldLast *GoldReceipt
+	// templeLast is the last treatment or pooling at the Temple (temple.go).
+	templeLast *TempleLast
 
 	// settings is set while the player is in Settings (navigation.go),
 	// which the window opens at the Edge of Town; it is not part of the game.
@@ -267,6 +269,9 @@ func (s *Session) SaveNow() View {
 		}
 		if s.goldLast != nil {
 			s.goldLast.Saved, s.goldLast.Durable = true, durable
+		}
+		if s.templeLast != nil {
+			s.templeLast.Saved, s.templeLast.Durable = true, durable
 		}
 	}
 	return s.view(err)

@@ -13,9 +13,9 @@ package main
 // saves (the town location is not part of the save) and draws no random
 // number. It is refused while an expedition or practice is under way and
 // while a character is being created; an open town prompt is closed first,
-// as the game's own cancel steps would. Boltac's and the Inn are left by
-// RETURN at every step (app.Controller.LeaveShop, LeaveInn), as their keys
-// leave them.
+// as the game's own cancel steps would. Boltac's, the Inn and the Temple
+// are left by RETURN at every step (app.Controller.LeaveShop, LeaveInn,
+// LeaveTemple), as their keys leave them.
 
 import (
 	"errors"
@@ -66,11 +66,6 @@ var (
 	errPracticeOut = errors.New("A practice is under way. Finish or abandon it first.")
 )
 
-// notInWindow is why a location the game would open is not open here yet.
-func notInWindow(full string) string {
-	return full + " is not open in Istary's window yet."
-}
-
 // Navigate goes to dest, one of the current location's exits (View.Exits).
 func (s *Session) Navigate(dest string) View {
 	s.mu.Lock()
@@ -100,6 +95,9 @@ func (s *Session) navigate(dest string) error {
 	if c.Game.Town.Location == engine.Inn {
 		return c.LeaveInn() // likewise
 	}
+	if c.Game.Town.Location == engine.Temple {
+		return c.LeaveTemple() // likewise
+	}
 	if err := s.settlePrompt(); err != nil {
 		return err
 	}
@@ -114,6 +112,8 @@ func (s *Session) navigate(dest string) error {
 		s.receipt = nil // a new visit
 	case dest == "inn":
 		s.innLast = nil
+	case dest == "temple":
+		s.templeLast = nil
 	case dest == "tavern":
 		s.goldLast = nil
 	}
@@ -193,6 +193,9 @@ func (s *Session) returnToCastle() error {
 	if c.Game.Town.Location == engine.Inn {
 		return c.LeaveInn() // the guest leaves, then the Inn
 	}
+	if c.Game.Town.Location == engine.Temple {
+		return c.LeaveTemple() // the name prompt closes, then the Temple
+	}
 	if err := s.settlePrompt(); err != nil {
 		return err
 	}
@@ -257,17 +260,8 @@ func (s *Session) exits() []ExitView {
 	}
 	var out []ExitView
 	for _, e := range s.ctrl.Exits() {
-		name, full := placeOf(e.To)
-		v := ExitView{Dest: name, Open: e.Refusal == "", Reason: e.Refusal}
-		switch e.To {
-		case engine.Temple:
-			if v.Open {
-				v.Open, v.Reason = false, notInWindow(full)
-			} else {
-				v.Reason += " " + notInWindow(full) // and the game's own answer first
-			}
-		}
-		out = append(out, v)
+		name, _ := placeOf(e.To)
+		out = append(out, ExitView{Dest: name, Open: e.Refusal == "", Reason: e.Refusal})
 	}
 	if s.ctrl.Game.Town.Location == engine.EdgeOfTown {
 		out = append(out, ExitView{Dest: settingsPlace, Open: true})

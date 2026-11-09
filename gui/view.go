@@ -71,6 +71,9 @@ type View struct {
 	// Gold is the last pooling or sharing of the party's gold at the
 	// Tavern (gold.go); nil elsewhere or when there was none.
 	Gold *GoldReceipt `json:"gold"`
+	// Temple (at the Temple of Cant, temple.go): the controller's
+	// TempleView and the last treatment or pooling; nil elsewhere.
+	Temple *TemplePanel `json:"temple"`
 
 	// Unsaved is the error of the last save that failed; it stays until a
 	// save succeeds. Everything since the last successful save exists only
@@ -340,6 +343,7 @@ func (s *Session) view(err error) View {
 	v.Shop = s.shopPanel()
 	v.Inn = s.innPanel()
 	v.Gold = s.goldPanel()
+	v.Temple = s.templePanel()
 
 	g := s.ctrl.Game
 	for i, ch := range g.Town.Roster.Characters {

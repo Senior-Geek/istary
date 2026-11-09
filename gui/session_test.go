@@ -59,6 +59,7 @@ var routes = map[string][]string{
 	"training": {"edge", "training"},
 	"settings": {"edge", "settings"},
 	"inn":      {"inn"},
+	"temple":   {"temple"},
 }
 
 // walkTo walks the player to place by Navigate, from wherever in town the
