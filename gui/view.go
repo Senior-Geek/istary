@@ -65,6 +65,12 @@ type View struct {
 	// Shop (at Boltac's Trading Post, shop.go): the controller's ShopView
 	// and the last transaction; nil elsewhere.
 	Shop *ShopPanel `json:"shop"`
+	// Inn (at the Adventurer's Inn, inn.go): the controller's InnView and
+	// the last stay or pooling; nil elsewhere.
+	Inn *InnPanel `json:"inn"`
+	// Gold is the last pooling or sharing of the party's gold at the
+	// Tavern (gold.go); nil elsewhere or when there was none.
+	Gold *GoldReceipt `json:"gold"`
 
 	// Unsaved is the error of the last save that failed; it stays until a
 	// save succeeds. Everything since the last successful save exists only
@@ -332,6 +338,8 @@ func (s *Session) view(err error) View {
 	v.Settings = s.settingsView()
 	v.Departures = s.departures()
 	v.Shop = s.shopPanel()
+	v.Inn = s.innPanel()
+	v.Gold = s.goldPanel()
 
 	g := s.ctrl.Game
 	for i, ch := range g.Town.Roster.Characters {

@@ -1,0 +1,5642 @@
+[
+ {
+  "case": "who",
+  "location": "inn",
+  "inn": {
+   "view": {
+    "step": "who",
+    "guest": -1,
+    "name": "",
+    "message": "",
+    "messages": null,
+    "guests": [
+     {
+      "slot": 0,
+      "name": "AGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 1,
+      "name": "BGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 2,
+      "name": "CGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 3,
+      "name": "DGUI",
+      "refusal": "DGUI IS NOT OK"
+     },
+     {
+      "slot": 4,
+      "name": "EGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 5,
+      "name": "FGUI",
+      "refusal": ""
+     }
+    ],
+    "rooms": null
+   },
+   "last": null
+  },
+  "guest": null,
+  "quotes": null,
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 3,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "ac": 10,
+    "hp": 0,
+    "maxHp": 14,
+    "status": "DEAD",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "ac": 10,
+    "hp": 2,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "error": "",
+  "notice": "",
+  "unsaved": "",
+  "warning": ""
+ },
+ {
+  "case": "refused: not OK",
+  "location": "inn",
+  "inn": {
+   "view": {
+    "step": "who",
+    "guest": -1,
+    "name": "",
+    "message": "DGUI IS NOT OK",
+    "messages": null,
+    "guests": [
+     {
+      "slot": 0,
+      "name": "AGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 1,
+      "name": "BGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 2,
+      "name": "CGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 3,
+      "name": "DGUI",
+      "refusal": "DGUI IS NOT OK"
+     },
+     {
+      "slot": 4,
+      "name": "EGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 5,
+      "name": "FGUI",
+      "refusal": ""
+     }
+    ],
+    "rooms": null
+   },
+   "last": null
+  },
+  "guest": null,
+  "quotes": null,
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 3,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "ac": 10,
+    "hp": 0,
+    "maxHp": 14,
+    "status": "DEAD",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "ac": 10,
+    "hp": 2,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "error": "DGUI IS NOT OK",
+  "notice": "",
+  "unsaved": "",
+  "warning": ""
+ },
+ {
+  "case": "mage: little gold",
+  "location": "inn",
+  "inn": {
+   "view": {
+    "step": "rooms",
+    "guest": 4,
+    "name": "EGUI",
+    "message": "",
+    "messages": null,
+    "guests": [
+     {
+      "slot": 0,
+      "name": "AGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 1,
+      "name": "BGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 2,
+      "name": "CGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 3,
+      "name": "DGUI",
+      "refusal": "DGUI IS NOT OK"
+     },
+     {
+      "slot": 4,
+      "name": "EGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 5,
+      "name": "FGUI",
+      "refusal": ""
+     }
+    ],
+    "rooms": [
+     {
+      "room": 0,
+      "key": "A",
+      "name": "THE STABLES",
+      "hpPerWeek": 0,
+      "feePerWeek": 0,
+      "free": true,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 2,
+       "healed": false,
+       "needed": 0,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     },
+     {
+      "room": 1,
+      "key": "B",
+      "name": "COTS",
+      "hpPerWeek": 1,
+      "feePerWeek": 10,
+      "free": false,
+      "untilHealed": {
+       "weeks": 2,
+       "cost": 20,
+       "hp": 4,
+       "healed": false,
+       "needed": 12,
+       "affordable": 2,
+       "refusal": ""
+      },
+      "maxWeeks": 2
+     },
+     {
+      "room": 2,
+      "key": "C",
+      "name": "ECONOMY ROOMS",
+      "hpPerWeek": 3,
+      "feePerWeek": 50,
+      "free": false,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 2,
+       "healed": false,
+       "needed": 4,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     },
+     {
+      "room": 3,
+      "key": "D",
+      "name": "MERCHANT SUITES",
+      "hpPerWeek": 7,
+      "feePerWeek": 200,
+      "free": false,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 2,
+       "healed": false,
+       "needed": 2,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     },
+     {
+      "room": 4,
+      "key": "E",
+      "name": "ROYAL SUITES",
+      "hpPerWeek": 10,
+      "feePerWeek": 500,
+      "free": false,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 2,
+       "healed": false,
+       "needed": 2,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     }
+    ]
+   },
+   "last": null
+  },
+  "guest": {
+   "index": 4,
+   "name": "EGUI",
+   "race": "HUMAN",
+   "alignment": "NEUTRAL",
+   "class": "MAGE",
+   "short": "N-MAG",
+   "level": 2,
+   "hp": 2,
+   "maxHp": 14,
+   "ac": 10,
+   "status": "OK",
+   "gold": 25,
+   "age": 32,
+   "stats": [
+    16,
+    0,
+    0,
+    0,
+    12,
+    0
+   ],
+   "xp": 0,
+   "nextXp": 1896,
+   "hasPassword": false,
+   "mageSpells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxMage": [
+    2,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "priestSpells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxPriest": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "spells": [
+    "HALITO",
+    "KATINO"
+   ],
+   "items": null,
+   "poison": 0,
+   "inMaze": true,
+   "mazeLevel": 0,
+   "legacy": false,
+   "equipNote": "",
+   "inParty": true,
+   "partySlot": 5,
+   "joinRefusal": "** PARTY IS FULL **"
+  },
+  "quotes": [
+   {
+    "room": 0,
+    "weeks": 1,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 2,
+     "healed": false,
+     "needed": 0,
+     "affordable": 0,
+     "refusal": "The stables heal nothing: a stay there is one free night."
+    }
+   },
+   {
+    "room": 1,
+    "weeks": 1,
+    "quote": {
+     "weeks": 1,
+     "cost": 10,
+     "hp": 3,
+     "healed": false,
+     "needed": 12,
+     "affordable": 2,
+     "refusal": ""
+    }
+   },
+   {
+    "room": 1,
+    "weeks": 3,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 2,
+     "healed": false,
+     "needed": 12,
+     "affordable": 2,
+     "refusal": "EGUI can pay for 2 weeks (10 GP a week, 25 GP held)."
+    }
+   },
+   {
+    "room": 2,
+    "weeks": 2,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 2,
+     "healed": false,
+     "needed": 4,
+     "affordable": 0,
+     "refusal": "EGUI can pay for 0 weeks (50 GP a week, 25 GP held)."
+    }
+   },
+   {
+    "room": 2,
+    "weeks": 40,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 2,
+     "healed": false,
+     "needed": 4,
+     "affordable": 0,
+     "refusal": "EGUI needs only 4 weeks to heal fully."
+    }
+   },
+   {
+    "room": 4,
+    "weeks": 1,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 2,
+     "healed": false,
+     "needed": 2,
+     "affordable": 0,
+     "refusal": "EGUI can pay for 0 weeks (500 GP a week, 25 GP held)."
+    }
+   }
+  ],
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 3,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "ac": 10,
+    "hp": 0,
+    "maxHp": 14,
+    "status": "DEAD",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "ac": 10,
+    "hp": 2,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "error": "",
+  "notice": "",
+  "unsaved": "",
+  "warning": ""
+ },
+ {
+  "case": "mage: stables",
+  "location": "inn",
+  "inn": {
+   "view": {
+    "step": "levelUp",
+    "guest": 4,
+    "name": "EGUI",
+    "message": "",
+    "messages": [
+     "",
+     "YOU NEED 1896 MORE",
+     "EXPERIENCE POINTS TO MAKE LEVEL"
+    ],
+    "guests": [
+     {
+      "slot": 0,
+      "name": "AGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 1,
+      "name": "BGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 2,
+      "name": "CGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 3,
+      "name": "DGUI",
+      "refusal": "DGUI IS NOT OK"
+     },
+     {
+      "slot": 4,
+      "name": "EGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 5,
+      "name": "FGUI",
+      "refusal": ""
+     }
+    ],
+    "rooms": [
+     {
+      "room": 0,
+      "key": "A",
+      "name": "THE STABLES",
+      "hpPerWeek": 0,
+      "feePerWeek": 0,
+      "free": true,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 2,
+       "healed": false,
+       "needed": 0,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     },
+     {
+      "room": 1,
+      "key": "B",
+      "name": "COTS",
+      "hpPerWeek": 1,
+      "feePerWeek": 10,
+      "free": false,
+      "untilHealed": {
+       "weeks": 2,
+       "cost": 20,
+       "hp": 4,
+       "healed": false,
+       "needed": 12,
+       "affordable": 2,
+       "refusal": ""
+      },
+      "maxWeeks": 2
+     },
+     {
+      "room": 2,
+      "key": "C",
+      "name": "ECONOMY ROOMS",
+      "hpPerWeek": 3,
+      "feePerWeek": 50,
+      "free": false,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 2,
+       "healed": false,
+       "needed": 4,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     },
+     {
+      "room": 3,
+      "key": "D",
+      "name": "MERCHANT SUITES",
+      "hpPerWeek": 7,
+      "feePerWeek": 200,
+      "free": false,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 2,
+       "healed": false,
+       "needed": 2,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     },
+     {
+      "room": 4,
+      "key": "E",
+      "name": "ROYAL SUITES",
+      "hpPerWeek": 10,
+      "feePerWeek": 500,
+      "free": false,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 2,
+       "healed": false,
+       "needed": 2,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     }
+    ]
+   },
+   "last": {
+    "stay": {
+     "guest": "EGUI",
+     "room": 0,
+     "roomName": "THE STABLES",
+     "weeks": 0,
+     "charged": 0,
+     "hpBefore": 2,
+     "hpAfter": 2,
+     "maxHpBefore": 14,
+     "maxHpAfter": 14,
+     "goldBefore": 25,
+     "goldAfter": 25,
+     "spells": true,
+     "mageBefore": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "mageAfter": [
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "priestBefore": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "priestAfter": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "levelBefore": 2,
+     "levelAfter": 2,
+     "statsBefore": [
+      16,
+      0,
+      0,
+      0,
+      12,
+      0
+     ],
+     "statsAfter": [
+      16,
+      0,
+      0,
+      0,
+      12,
+      0
+     ],
+     "ageBefore": 1664,
+     "ageAfter": 1664,
+     "learned": null,
+     "status": "OK",
+     "died": false,
+     "messages": [
+      "",
+      "YOU NEED 1896 MORE",
+      "EXPERIENCE POINTS TO MAKE LEVEL"
+     ],
+     "xpNeeded": 1896
+    },
+    "gold": null,
+    "saved": true,
+    "durable": true
+   }
+  },
+  "guest": {
+   "index": 4,
+   "name": "EGUI",
+   "race": "HUMAN",
+   "alignment": "NEUTRAL",
+   "class": "MAGE",
+   "short": "N-MAG",
+   "level": 2,
+   "hp": 2,
+   "maxHp": 14,
+   "ac": 10,
+   "status": "OK",
+   "gold": 25,
+   "age": 32,
+   "stats": [
+    16,
+    0,
+    0,
+    0,
+    12,
+    0
+   ],
+   "xp": 0,
+   "nextXp": 1896,
+   "hasPassword": false,
+   "mageSpells": [
+    2,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxMage": [
+    2,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "priestSpells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxPriest": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "spells": [
+    "HALITO",
+    "KATINO"
+   ],
+   "items": null,
+   "poison": 0,
+   "inMaze": true,
+   "mazeLevel": 0,
+   "legacy": false,
+   "equipNote": "",
+   "inParty": true,
+   "partySlot": 5,
+   "joinRefusal": "** PARTY IS FULL **"
+  },
+  "quotes": [
+   {
+    "room": 0,
+    "weeks": 1,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 2,
+     "healed": false,
+     "needed": 0,
+     "affordable": 0,
+     "refusal": "The stables heal nothing: a stay there is one free night."
+    }
+   },
+   {
+    "room": 1,
+    "weeks": 1,
+    "quote": {
+     "weeks": 1,
+     "cost": 10,
+     "hp": 3,
+     "healed": false,
+     "needed": 12,
+     "affordable": 2,
+     "refusal": ""
+    }
+   },
+   {
+    "room": 1,
+    "weeks": 3,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 2,
+     "healed": false,
+     "needed": 12,
+     "affordable": 2,
+     "refusal": "EGUI can pay for 2 weeks (10 GP a week, 25 GP held)."
+    }
+   },
+   {
+    "room": 2,
+    "weeks": 2,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 2,
+     "healed": false,
+     "needed": 4,
+     "affordable": 0,
+     "refusal": "EGUI can pay for 0 weeks (50 GP a week, 25 GP held)."
+    }
+   },
+   {
+    "room": 2,
+    "weeks": 40,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 2,
+     "healed": false,
+     "needed": 4,
+     "affordable": 0,
+     "refusal": "EGUI needs only 4 weeks to heal fully."
+    }
+   },
+   {
+    "room": 4,
+    "weeks": 1,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 2,
+     "healed": false,
+     "needed": 2,
+     "affordable": 0,
+     "refusal": "EGUI can pay for 0 weeks (500 GP a week, 25 GP held)."
+    }
+   }
+  ],
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 3,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "ac": 10,
+    "hp": 0,
+    "maxHp": 14,
+    "status": "DEAD",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "ac": 10,
+    "hp": 2,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "error": "",
+  "notice": "EGUI spent a night in the stables. Saved.",
+  "unsaved": "",
+  "warning": ""
+ },
+ {
+  "case": "mage: a cot until out of gold",
+  "location": "inn",
+  "inn": {
+   "view": {
+    "step": "levelUp",
+    "guest": 4,
+    "name": "EGUI",
+    "message": "",
+    "messages": [
+     "",
+     "YOU NEED 1896 MORE",
+     "EXPERIENCE POINTS TO MAKE LEVEL"
+    ],
+    "guests": [
+     {
+      "slot": 0,
+      "name": "AGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 1,
+      "name": "BGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 2,
+      "name": "CGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 3,
+      "name": "DGUI",
+      "refusal": "DGUI IS NOT OK"
+     },
+     {
+      "slot": 4,
+      "name": "EGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 5,
+      "name": "FGUI",
+      "refusal": ""
+     }
+    ],
+    "rooms": [
+     {
+      "room": 0,
+      "key": "A",
+      "name": "THE STABLES",
+      "hpPerWeek": 0,
+      "feePerWeek": 0,
+      "free": true,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 4,
+       "healed": false,
+       "needed": 0,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     },
+     {
+      "room": 1,
+      "key": "B",
+      "name": "COTS",
+      "hpPerWeek": 1,
+      "feePerWeek": 10,
+      "free": false,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 4,
+       "healed": false,
+       "needed": 10,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     },
+     {
+      "room": 2,
+      "key": "C",
+      "name": "ECONOMY ROOMS",
+      "hpPerWeek": 3,
+      "feePerWeek": 50,
+      "free": false,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 4,
+       "healed": false,
+       "needed": 4,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     },
+     {
+      "room": 3,
+      "key": "D",
+      "name": "MERCHANT SUITES",
+      "hpPerWeek": 7,
+      "feePerWeek": 200,
+      "free": false,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 4,
+       "healed": false,
+       "needed": 2,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     },
+     {
+      "room": 4,
+      "key": "E",
+      "name": "ROYAL SUITES",
+      "hpPerWeek": 10,
+      "feePerWeek": 500,
+      "free": false,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 4,
+       "healed": false,
+       "needed": 1,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     }
+    ]
+   },
+   "last": {
+    "stay": {
+     "guest": "EGUI",
+     "room": 1,
+     "roomName": "COTS",
+     "weeks": 2,
+     "charged": 20,
+     "hpBefore": 2,
+     "hpAfter": 4,
+     "maxHpBefore": 14,
+     "maxHpAfter": 14,
+     "goldBefore": 25,
+     "goldAfter": 5,
+     "spells": false,
+     "mageBefore": [
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "mageAfter": [
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "priestBefore": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "priestAfter": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "levelBefore": 2,
+     "levelAfter": 2,
+     "statsBefore": [
+      16,
+      0,
+      0,
+      0,
+      12,
+      0
+     ],
+     "statsAfter": [
+      16,
+      0,
+      0,
+      0,
+      12,
+      0
+     ],
+     "ageBefore": 1664,
+     "ageAfter": 1664,
+     "learned": null,
+     "status": "OK",
+     "died": false,
+     "messages": [
+      "",
+      "YOU NEED 1896 MORE",
+      "EXPERIENCE POINTS TO MAKE LEVEL"
+     ],
+     "xpNeeded": 1896
+    },
+    "gold": null,
+    "saved": true,
+    "durable": true
+   }
+  },
+  "guest": {
+   "index": 4,
+   "name": "EGUI",
+   "race": "HUMAN",
+   "alignment": "NEUTRAL",
+   "class": "MAGE",
+   "short": "N-MAG",
+   "level": 2,
+   "hp": 4,
+   "maxHp": 14,
+   "ac": 10,
+   "status": "OK",
+   "gold": 5,
+   "age": 32,
+   "stats": [
+    16,
+    0,
+    0,
+    0,
+    12,
+    0
+   ],
+   "xp": 0,
+   "nextXp": 1896,
+   "hasPassword": false,
+   "mageSpells": [
+    2,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxMage": [
+    2,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "priestSpells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxPriest": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "spells": [
+    "HALITO",
+    "KATINO"
+   ],
+   "items": null,
+   "poison": 0,
+   "inMaze": true,
+   "mazeLevel": 0,
+   "legacy": false,
+   "equipNote": "",
+   "inParty": true,
+   "partySlot": 5,
+   "joinRefusal": "** PARTY IS FULL **"
+  },
+  "quotes": [
+   {
+    "room": 0,
+    "weeks": 1,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 4,
+     "healed": false,
+     "needed": 0,
+     "affordable": 0,
+     "refusal": "The stables heal nothing: a stay there is one free night."
+    }
+   },
+   {
+    "room": 1,
+    "weeks": 1,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 4,
+     "healed": false,
+     "needed": 10,
+     "affordable": 0,
+     "refusal": "EGUI can pay for 0 weeks (10 GP a week, 5 GP held)."
+    }
+   },
+   {
+    "room": 1,
+    "weeks": 3,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 4,
+     "healed": false,
+     "needed": 10,
+     "affordable": 0,
+     "refusal": "EGUI can pay for 0 weeks (10 GP a week, 5 GP held)."
+    }
+   },
+   {
+    "room": 2,
+    "weeks": 2,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 4,
+     "healed": false,
+     "needed": 4,
+     "affordable": 0,
+     "refusal": "EGUI can pay for 0 weeks (50 GP a week, 5 GP held)."
+    }
+   },
+   {
+    "room": 2,
+    "weeks": 40,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 4,
+     "healed": false,
+     "needed": 4,
+     "affordable": 0,
+     "refusal": "EGUI needs only 4 weeks to heal fully."
+    }
+   },
+   {
+    "room": 4,
+    "weeks": 1,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 4,
+     "healed": false,
+     "needed": 1,
+     "affordable": 0,
+     "refusal": "EGUI can pay for 0 weeks (500 GP a week, 5 GP held)."
+    }
+   }
+  ],
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 3,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "ac": 10,
+    "hp": 0,
+    "maxHp": 14,
+    "status": "DEAD",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "ac": 10,
+    "hp": 4,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "error": "",
+  "notice": "EGUI stayed 2 weeks in cots for 20 GP: HP 2 → 4. Saved.",
+  "unsaved": "",
+  "warning": ""
+ },
+ {
+  "case": "fighter checks in",
+  "location": "inn",
+  "inn": {
+   "view": {
+    "step": "rooms",
+    "guest": 0,
+    "name": "AGUI",
+    "message": "",
+    "messages": null,
+    "guests": [
+     {
+      "slot": 0,
+      "name": "AGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 1,
+      "name": "BGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 2,
+      "name": "CGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 3,
+      "name": "DGUI",
+      "refusal": "DGUI IS NOT OK"
+     },
+     {
+      "slot": 4,
+      "name": "EGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 5,
+      "name": "FGUI",
+      "refusal": ""
+     }
+    ],
+    "rooms": [
+     {
+      "room": 0,
+      "key": "A",
+      "name": "THE STABLES",
+      "hpPerWeek": 0,
+      "feePerWeek": 0,
+      "free": true,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 3,
+       "healed": false,
+       "needed": 0,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     },
+     {
+      "room": 1,
+      "key": "B",
+      "name": "COTS",
+      "hpPerWeek": 1,
+      "feePerWeek": 10,
+      "free": false,
+      "untilHealed": {
+       "weeks": 11,
+       "cost": 110,
+       "hp": 14,
+       "healed": true,
+       "needed": 11,
+       "affordable": 100,
+       "refusal": ""
+      },
+      "maxWeeks": 11
+     },
+     {
+      "room": 2,
+      "key": "C",
+      "name": "ECONOMY ROOMS",
+      "hpPerWeek": 3,
+      "feePerWeek": 50,
+      "free": false,
+      "untilHealed": {
+       "weeks": 4,
+       "cost": 200,
+       "hp": 14,
+       "healed": true,
+       "needed": 4,
+       "affordable": 20,
+       "refusal": ""
+      },
+      "maxWeeks": 4
+     },
+     {
+      "room": 3,
+      "key": "D",
+      "name": "MERCHANT SUITES",
+      "hpPerWeek": 7,
+      "feePerWeek": 200,
+      "free": false,
+      "untilHealed": {
+       "weeks": 2,
+       "cost": 400,
+       "hp": 14,
+       "healed": true,
+       "needed": 2,
+       "affordable": 5,
+       "refusal": ""
+      },
+      "maxWeeks": 2
+     },
+     {
+      "room": 4,
+      "key": "E",
+      "name": "ROYAL SUITES",
+      "hpPerWeek": 10,
+      "feePerWeek": 500,
+      "free": false,
+      "untilHealed": {
+       "weeks": 2,
+       "cost": 1000,
+       "hp": 14,
+       "healed": true,
+       "needed": 2,
+       "affordable": 2,
+       "refusal": ""
+      },
+      "maxWeeks": 2
+     }
+    ]
+   },
+   "last": null
+  },
+  "guest": {
+   "index": 0,
+   "name": "AGUI",
+   "race": "HUMAN",
+   "alignment": "NEUTRAL",
+   "class": "FIGHTER",
+   "short": "N-FIG",
+   "level": 2,
+   "hp": 3,
+   "maxHp": 14,
+   "ac": 10,
+   "status": "OK",
+   "gold": 1000,
+   "age": 20,
+   "stats": [
+    16,
+    0,
+    0,
+    0,
+    12,
+    0
+   ],
+   "xp": 1724,
+   "nextXp": 1724,
+   "hasPassword": false,
+   "mageSpells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxMage": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "priestSpells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxPriest": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "spells": null,
+   "items": null,
+   "poison": 0,
+   "inMaze": true,
+   "mazeLevel": 0,
+   "legacy": false,
+   "equipNote": "",
+   "inParty": true,
+   "partySlot": 1,
+   "joinRefusal": "** PARTY IS FULL **"
+  },
+  "quotes": [
+   {
+    "room": 0,
+    "weeks": 1,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 3,
+     "healed": false,
+     "needed": 0,
+     "affordable": 0,
+     "refusal": "The stables heal nothing: a stay there is one free night."
+    }
+   },
+   {
+    "room": 1,
+    "weeks": 1,
+    "quote": {
+     "weeks": 1,
+     "cost": 10,
+     "hp": 4,
+     "healed": false,
+     "needed": 11,
+     "affordable": 100,
+     "refusal": ""
+    }
+   },
+   {
+    "room": 1,
+    "weeks": 3,
+    "quote": {
+     "weeks": 3,
+     "cost": 30,
+     "hp": 6,
+     "healed": false,
+     "needed": 11,
+     "affordable": 100,
+     "refusal": ""
+    }
+   },
+   {
+    "room": 2,
+    "weeks": 2,
+    "quote": {
+     "weeks": 2,
+     "cost": 100,
+     "hp": 9,
+     "healed": false,
+     "needed": 4,
+     "affordable": 20,
+     "refusal": ""
+    }
+   },
+   {
+    "room": 2,
+    "weeks": 40,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 3,
+     "healed": false,
+     "needed": 4,
+     "affordable": 20,
+     "refusal": "AGUI needs only 4 weeks to heal fully."
+    }
+   },
+   {
+    "room": 4,
+    "weeks": 1,
+    "quote": {
+     "weeks": 1,
+     "cost": 500,
+     "hp": 13,
+     "healed": false,
+     "needed": 2,
+     "affordable": 2,
+     "refusal": ""
+    }
+   }
+  ],
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 3,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "ac": 10,
+    "hp": 0,
+    "maxHp": 14,
+    "status": "DEAD",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "ac": 10,
+    "hp": 4,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "error": "",
+  "notice": "",
+  "unsaved": "",
+  "warning": ""
+ },
+ {
+  "case": "fighter: two weeks, a level",
+  "location": "inn",
+  "inn": {
+   "view": {
+    "step": "levelUp",
+    "guest": 0,
+    "name": "AGUI",
+    "message": "",
+    "messages": [
+     "YOU MADE A LEVEL!",
+     "",
+     "YOU GAINED I.Q.",
+     "YOU GAINED PIETY",
+     "YOU GAINED AGILITY"
+    ],
+    "guests": [
+     {
+      "slot": 0,
+      "name": "AGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 1,
+      "name": "BGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 2,
+      "name": "CGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 3,
+      "name": "DGUI",
+      "refusal": "DGUI IS NOT OK"
+     },
+     {
+      "slot": 4,
+      "name": "EGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 5,
+      "name": "FGUI",
+      "refusal": ""
+     }
+    ],
+    "rooms": [
+     {
+      "room": 0,
+      "key": "A",
+      "name": "THE STABLES",
+      "hpPerWeek": 0,
+      "feePerWeek": 0,
+      "free": true,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 9,
+       "healed": false,
+       "needed": 0,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     },
+     {
+      "room": 1,
+      "key": "B",
+      "name": "COTS",
+      "hpPerWeek": 1,
+      "feePerWeek": 10,
+      "free": false,
+      "untilHealed": {
+       "weeks": 12,
+       "cost": 120,
+       "hp": 21,
+       "healed": true,
+       "needed": 12,
+       "affordable": 90,
+       "refusal": ""
+      },
+      "maxWeeks": 12
+     },
+     {
+      "room": 2,
+      "key": "C",
+      "name": "ECONOMY ROOMS",
+      "hpPerWeek": 3,
+      "feePerWeek": 50,
+      "free": false,
+      "untilHealed": {
+       "weeks": 4,
+       "cost": 200,
+       "hp": 21,
+       "healed": true,
+       "needed": 4,
+       "affordable": 18,
+       "refusal": ""
+      },
+      "maxWeeks": 4
+     },
+     {
+      "room": 3,
+      "key": "D",
+      "name": "MERCHANT SUITES",
+      "hpPerWeek": 7,
+      "feePerWeek": 200,
+      "free": false,
+      "untilHealed": {
+       "weeks": 2,
+       "cost": 400,
+       "hp": 21,
+       "healed": true,
+       "needed": 2,
+       "affordable": 4,
+       "refusal": ""
+      },
+      "maxWeeks": 2
+     },
+     {
+      "room": 4,
+      "key": "E",
+      "name": "ROYAL SUITES",
+      "hpPerWeek": 10,
+      "feePerWeek": 500,
+      "free": false,
+      "untilHealed": {
+       "weeks": 1,
+       "cost": 500,
+       "hp": 19,
+       "healed": false,
+       "needed": 2,
+       "affordable": 1,
+       "refusal": ""
+      },
+      "maxWeeks": 1
+     }
+    ]
+   },
+   "last": {
+    "stay": {
+     "guest": "AGUI",
+     "room": 2,
+     "roomName": "ECONOMY ROOMS",
+     "weeks": 2,
+     "charged": 100,
+     "hpBefore": 3,
+     "hpAfter": 9,
+     "maxHpBefore": 14,
+     "maxHpAfter": 21,
+     "goldBefore": 1000,
+     "goldAfter": 900,
+     "spells": false,
+     "mageBefore": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "mageAfter": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "priestBefore": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "priestAfter": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "levelBefore": 2,
+     "levelAfter": 3,
+     "statsBefore": [
+      16,
+      0,
+      0,
+      0,
+      12,
+      0
+     ],
+     "statsAfter": [
+      16,
+      1,
+      1,
+      0,
+      13,
+      0
+     ],
+     "ageBefore": 1040,
+     "ageAfter": 1040,
+     "learned": null,
+     "status": "OK",
+     "died": false,
+     "messages": [
+      "YOU MADE A LEVEL!",
+      "",
+      "YOU GAINED I.Q.",
+      "YOU GAINED PIETY",
+      "YOU GAINED AGILITY"
+     ],
+     "xpNeeded": 0
+    },
+    "gold": null,
+    "saved": true,
+    "durable": true
+   }
+  },
+  "guest": {
+   "index": 0,
+   "name": "AGUI",
+   "race": "HUMAN",
+   "alignment": "NEUTRAL",
+   "class": "FIGHTER",
+   "short": "N-FIG",
+   "level": 3,
+   "hp": 9,
+   "maxHp": 21,
+   "ac": 10,
+   "status": "OK",
+   "gold": 900,
+   "age": 20,
+   "stats": [
+    16,
+    1,
+    1,
+    0,
+    13,
+    0
+   ],
+   "xp": 1724,
+   "nextXp": 2972,
+   "hasPassword": false,
+   "mageSpells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxMage": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "priestSpells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxPriest": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "spells": null,
+   "items": null,
+   "poison": 0,
+   "inMaze": true,
+   "mazeLevel": 0,
+   "legacy": false,
+   "equipNote": "",
+   "inParty": true,
+   "partySlot": 1,
+   "joinRefusal": "** PARTY IS FULL **"
+  },
+  "quotes": [
+   {
+    "room": 0,
+    "weeks": 1,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 9,
+     "healed": false,
+     "needed": 0,
+     "affordable": 0,
+     "refusal": "The stables heal nothing: a stay there is one free night."
+    }
+   },
+   {
+    "room": 1,
+    "weeks": 1,
+    "quote": {
+     "weeks": 1,
+     "cost": 10,
+     "hp": 10,
+     "healed": false,
+     "needed": 12,
+     "affordable": 90,
+     "refusal": ""
+    }
+   },
+   {
+    "room": 1,
+    "weeks": 3,
+    "quote": {
+     "weeks": 3,
+     "cost": 30,
+     "hp": 12,
+     "healed": false,
+     "needed": 12,
+     "affordable": 90,
+     "refusal": ""
+    }
+   },
+   {
+    "room": 2,
+    "weeks": 2,
+    "quote": {
+     "weeks": 2,
+     "cost": 100,
+     "hp": 15,
+     "healed": false,
+     "needed": 4,
+     "affordable": 18,
+     "refusal": ""
+    }
+   },
+   {
+    "room": 2,
+    "weeks": 40,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 9,
+     "healed": false,
+     "needed": 4,
+     "affordable": 18,
+     "refusal": "AGUI needs only 4 weeks to heal fully."
+    }
+   },
+   {
+    "room": 4,
+    "weeks": 1,
+    "quote": {
+     "weeks": 1,
+     "cost": 500,
+     "hp": 19,
+     "healed": false,
+     "needed": 2,
+     "affordable": 1,
+     "refusal": ""
+    }
+   }
+  ],
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 3,
+    "ac": 10,
+    "hp": 9,
+    "maxHp": 21,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "ac": 10,
+    "hp": 0,
+    "maxHp": 14,
+    "status": "DEAD",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "ac": 10,
+    "hp": 4,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "error": "",
+  "notice": "AGUI stayed 2 weeks in economy rooms for 100 GP: HP 3 → 9, and made level 3. Saved.",
+  "unsaved": "",
+  "warning": ""
+ },
+ {
+  "case": "fighter: refused weeks",
+  "location": "inn",
+  "inn": {
+   "view": {
+    "step": "levelUp",
+    "guest": 0,
+    "name": "AGUI",
+    "message": "",
+    "messages": [
+     "YOU MADE A LEVEL!",
+     "",
+     "YOU GAINED I.Q.",
+     "YOU GAINED PIETY",
+     "YOU GAINED AGILITY"
+    ],
+    "guests": [
+     {
+      "slot": 0,
+      "name": "AGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 1,
+      "name": "BGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 2,
+      "name": "CGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 3,
+      "name": "DGUI",
+      "refusal": "DGUI IS NOT OK"
+     },
+     {
+      "slot": 4,
+      "name": "EGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 5,
+      "name": "FGUI",
+      "refusal": ""
+     }
+    ],
+    "rooms": [
+     {
+      "room": 0,
+      "key": "A",
+      "name": "THE STABLES",
+      "hpPerWeek": 0,
+      "feePerWeek": 0,
+      "free": true,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 9,
+       "healed": false,
+       "needed": 0,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     },
+     {
+      "room": 1,
+      "key": "B",
+      "name": "COTS",
+      "hpPerWeek": 1,
+      "feePerWeek": 10,
+      "free": false,
+      "untilHealed": {
+       "weeks": 12,
+       "cost": 120,
+       "hp": 21,
+       "healed": true,
+       "needed": 12,
+       "affordable": 90,
+       "refusal": ""
+      },
+      "maxWeeks": 12
+     },
+     {
+      "room": 2,
+      "key": "C",
+      "name": "ECONOMY ROOMS",
+      "hpPerWeek": 3,
+      "feePerWeek": 50,
+      "free": false,
+      "untilHealed": {
+       "weeks": 4,
+       "cost": 200,
+       "hp": 21,
+       "healed": true,
+       "needed": 4,
+       "affordable": 18,
+       "refusal": ""
+      },
+      "maxWeeks": 4
+     },
+     {
+      "room": 3,
+      "key": "D",
+      "name": "MERCHANT SUITES",
+      "hpPerWeek": 7,
+      "feePerWeek": 200,
+      "free": false,
+      "untilHealed": {
+       "weeks": 2,
+       "cost": 400,
+       "hp": 21,
+       "healed": true,
+       "needed": 2,
+       "affordable": 4,
+       "refusal": ""
+      },
+      "maxWeeks": 2
+     },
+     {
+      "room": 4,
+      "key": "E",
+      "name": "ROYAL SUITES",
+      "hpPerWeek": 10,
+      "feePerWeek": 500,
+      "free": false,
+      "untilHealed": {
+       "weeks": 1,
+       "cost": 500,
+       "hp": 19,
+       "healed": false,
+       "needed": 2,
+       "affordable": 1,
+       "refusal": ""
+      },
+      "maxWeeks": 1
+     }
+    ]
+   },
+   "last": null
+  },
+  "guest": {
+   "index": 0,
+   "name": "AGUI",
+   "race": "HUMAN",
+   "alignment": "NEUTRAL",
+   "class": "FIGHTER",
+   "short": "N-FIG",
+   "level": 3,
+   "hp": 9,
+   "maxHp": 21,
+   "ac": 10,
+   "status": "OK",
+   "gold": 900,
+   "age": 20,
+   "stats": [
+    16,
+    1,
+    1,
+    0,
+    13,
+    0
+   ],
+   "xp": 1724,
+   "nextXp": 2972,
+   "hasPassword": false,
+   "mageSpells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxMage": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "priestSpells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxPriest": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "spells": null,
+   "items": null,
+   "poison": 0,
+   "inMaze": true,
+   "mazeLevel": 0,
+   "legacy": false,
+   "equipNote": "",
+   "inParty": true,
+   "partySlot": 1,
+   "joinRefusal": "** PARTY IS FULL **"
+  },
+  "quotes": [
+   {
+    "room": 0,
+    "weeks": 1,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 9,
+     "healed": false,
+     "needed": 0,
+     "affordable": 0,
+     "refusal": "The stables heal nothing: a stay there is one free night."
+    }
+   },
+   {
+    "room": 1,
+    "weeks": 1,
+    "quote": {
+     "weeks": 1,
+     "cost": 10,
+     "hp": 10,
+     "healed": false,
+     "needed": 12,
+     "affordable": 90,
+     "refusal": ""
+    }
+   },
+   {
+    "room": 1,
+    "weeks": 3,
+    "quote": {
+     "weeks": 3,
+     "cost": 30,
+     "hp": 12,
+     "healed": false,
+     "needed": 12,
+     "affordable": 90,
+     "refusal": ""
+    }
+   },
+   {
+    "room": 2,
+    "weeks": 2,
+    "quote": {
+     "weeks": 2,
+     "cost": 100,
+     "hp": 15,
+     "healed": false,
+     "needed": 4,
+     "affordable": 18,
+     "refusal": ""
+    }
+   },
+   {
+    "room": 2,
+    "weeks": 40,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 9,
+     "healed": false,
+     "needed": 4,
+     "affordable": 18,
+     "refusal": "AGUI needs only 4 weeks to heal fully."
+    }
+   },
+   {
+    "room": 4,
+    "weeks": 1,
+    "quote": {
+     "weeks": 1,
+     "cost": 500,
+     "hp": 19,
+     "healed": false,
+     "needed": 2,
+     "affordable": 1,
+     "refusal": ""
+    }
+   }
+  ],
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 3,
+    "ac": 10,
+    "hp": 9,
+    "maxHp": 21,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "ac": 10,
+    "hp": 0,
+    "maxHp": 14,
+    "status": "DEAD",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "ac": 10,
+    "hp": 4,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "error": "AGUI needs only 4 weeks to heal fully.",
+  "notice": "",
+  "unsaved": "",
+  "warning": ""
+ },
+ {
+  "case": "fighter: pooled",
+  "location": "inn",
+  "inn": {
+   "view": {
+    "step": "levelUp",
+    "guest": 0,
+    "name": "AGUI",
+    "message": "",
+    "messages": [
+     "YOU MADE A LEVEL!",
+     "",
+     "YOU GAINED I.Q.",
+     "YOU GAINED PIETY",
+     "YOU GAINED AGILITY"
+    ],
+    "guests": [
+     {
+      "slot": 0,
+      "name": "AGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 1,
+      "name": "BGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 2,
+      "name": "CGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 3,
+      "name": "DGUI",
+      "refusal": "DGUI IS NOT OK"
+     },
+     {
+      "slot": 4,
+      "name": "EGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 5,
+      "name": "FGUI",
+      "refusal": ""
+     }
+    ],
+    "rooms": [
+     {
+      "room": 0,
+      "key": "A",
+      "name": "THE STABLES",
+      "hpPerWeek": 0,
+      "feePerWeek": 0,
+      "free": true,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 9,
+       "healed": false,
+       "needed": 0,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     },
+     {
+      "room": 1,
+      "key": "B",
+      "name": "COTS",
+      "hpPerWeek": 1,
+      "feePerWeek": 10,
+      "free": false,
+      "untilHealed": {
+       "weeks": 12,
+       "cost": 120,
+       "hp": 21,
+       "healed": true,
+       "needed": 12,
+       "affordable": 104,
+       "refusal": ""
+      },
+      "maxWeeks": 12
+     },
+     {
+      "room": 2,
+      "key": "C",
+      "name": "ECONOMY ROOMS",
+      "hpPerWeek": 3,
+      "feePerWeek": 50,
+      "free": false,
+      "untilHealed": {
+       "weeks": 4,
+       "cost": 200,
+       "hp": 21,
+       "healed": true,
+       "needed": 4,
+       "affordable": 20,
+       "refusal": ""
+      },
+      "maxWeeks": 4
+     },
+     {
+      "room": 3,
+      "key": "D",
+      "name": "MERCHANT SUITES",
+      "hpPerWeek": 7,
+      "feePerWeek": 200,
+      "free": false,
+      "untilHealed": {
+       "weeks": 2,
+       "cost": 400,
+       "hp": 21,
+       "healed": true,
+       "needed": 2,
+       "affordable": 5,
+       "refusal": ""
+      },
+      "maxWeeks": 2
+     },
+     {
+      "room": 4,
+      "key": "E",
+      "name": "ROYAL SUITES",
+      "hpPerWeek": 10,
+      "feePerWeek": 500,
+      "free": false,
+      "untilHealed": {
+       "weeks": 2,
+       "cost": 1000,
+       "hp": 21,
+       "healed": true,
+       "needed": 2,
+       "affordable": 2,
+       "refusal": ""
+      },
+      "maxWeeks": 2
+     }
+    ]
+   },
+   "last": {
+    "stay": null,
+    "gold": {
+     "names": [
+      "AGUI",
+      "BGUI",
+      "CGUI",
+      "DGUI",
+      "EGUI",
+      "FGUI"
+     ],
+     "before": [
+      900,
+      0,
+      140,
+      0,
+      5,
+      0
+     ],
+     "after": [
+      1045,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "total": 1045,
+     "to": 0
+    },
+    "saved": true,
+    "durable": true
+   }
+  },
+  "guest": {
+   "index": 0,
+   "name": "AGUI",
+   "race": "HUMAN",
+   "alignment": "NEUTRAL",
+   "class": "FIGHTER",
+   "short": "N-FIG",
+   "level": 3,
+   "hp": 9,
+   "maxHp": 21,
+   "ac": 10,
+   "status": "OK",
+   "gold": 1045,
+   "age": 20,
+   "stats": [
+    16,
+    1,
+    1,
+    0,
+    13,
+    0
+   ],
+   "xp": 1724,
+   "nextXp": 2972,
+   "hasPassword": false,
+   "mageSpells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxMage": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "priestSpells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxPriest": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "spells": null,
+   "items": null,
+   "poison": 0,
+   "inMaze": true,
+   "mazeLevel": 0,
+   "legacy": false,
+   "equipNote": "",
+   "inParty": true,
+   "partySlot": 1,
+   "joinRefusal": "** PARTY IS FULL **"
+  },
+  "quotes": [
+   {
+    "room": 0,
+    "weeks": 1,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 9,
+     "healed": false,
+     "needed": 0,
+     "affordable": 0,
+     "refusal": "The stables heal nothing: a stay there is one free night."
+    }
+   },
+   {
+    "room": 1,
+    "weeks": 1,
+    "quote": {
+     "weeks": 1,
+     "cost": 10,
+     "hp": 10,
+     "healed": false,
+     "needed": 12,
+     "affordable": 104,
+     "refusal": ""
+    }
+   },
+   {
+    "room": 1,
+    "weeks": 3,
+    "quote": {
+     "weeks": 3,
+     "cost": 30,
+     "hp": 12,
+     "healed": false,
+     "needed": 12,
+     "affordable": 104,
+     "refusal": ""
+    }
+   },
+   {
+    "room": 2,
+    "weeks": 2,
+    "quote": {
+     "weeks": 2,
+     "cost": 100,
+     "hp": 15,
+     "healed": false,
+     "needed": 4,
+     "affordable": 20,
+     "refusal": ""
+    }
+   },
+   {
+    "room": 2,
+    "weeks": 40,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 9,
+     "healed": false,
+     "needed": 4,
+     "affordable": 20,
+     "refusal": "AGUI needs only 4 weeks to heal fully."
+    }
+   },
+   {
+    "room": 4,
+    "weeks": 1,
+    "quote": {
+     "weeks": 1,
+     "cost": 500,
+     "hp": 19,
+     "healed": false,
+     "needed": 2,
+     "affordable": 2,
+     "refusal": ""
+    }
+   }
+  ],
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 3,
+    "ac": 10,
+    "hp": 9,
+    "maxHp": 21,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "ac": 10,
+    "hp": 0,
+    "maxHp": 14,
+    "status": "DEAD",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "ac": 10,
+    "hp": 4,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "error": "",
+  "notice": "The party's gold was pooled to AGUI: 1045 GP. Saved.",
+  "unsaved": "",
+  "warning": ""
+ },
+ {
+  "case": "fighter: until healed",
+  "location": "inn",
+  "inn": {
+   "view": {
+    "step": "levelUp",
+    "guest": 0,
+    "name": "AGUI",
+    "message": "",
+    "messages": [
+     "",
+     "YOU NEED 1248 MORE",
+     "EXPERIENCE POINTS TO MAKE LEVEL"
+    ],
+    "guests": [
+     {
+      "slot": 0,
+      "name": "AGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 1,
+      "name": "BGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 2,
+      "name": "CGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 3,
+      "name": "DGUI",
+      "refusal": "DGUI IS NOT OK"
+     },
+     {
+      "slot": 4,
+      "name": "EGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 5,
+      "name": "FGUI",
+      "refusal": ""
+     }
+    ],
+    "rooms": [
+     {
+      "room": 0,
+      "key": "A",
+      "name": "THE STABLES",
+      "hpPerWeek": 0,
+      "feePerWeek": 0,
+      "free": true,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 21,
+       "healed": true,
+       "needed": 0,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     },
+     {
+      "room": 1,
+      "key": "B",
+      "name": "COTS",
+      "hpPerWeek": 1,
+      "feePerWeek": 10,
+      "free": false,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 21,
+       "healed": true,
+       "needed": 0,
+       "affordable": 4,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     },
+     {
+      "room": 2,
+      "key": "C",
+      "name": "ECONOMY ROOMS",
+      "hpPerWeek": 3,
+      "feePerWeek": 50,
+      "free": false,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 21,
+       "healed": true,
+       "needed": 0,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     },
+     {
+      "room": 3,
+      "key": "D",
+      "name": "MERCHANT SUITES",
+      "hpPerWeek": 7,
+      "feePerWeek": 200,
+      "free": false,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 21,
+       "healed": true,
+       "needed": 0,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     },
+     {
+      "room": 4,
+      "key": "E",
+      "name": "ROYAL SUITES",
+      "hpPerWeek": 10,
+      "feePerWeek": 500,
+      "free": false,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 21,
+       "healed": true,
+       "needed": 0,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     }
+    ]
+   },
+   "last": {
+    "stay": {
+     "guest": "AGUI",
+     "room": 4,
+     "roomName": "ROYAL SUITES",
+     "weeks": 2,
+     "charged": 1000,
+     "hpBefore": 9,
+     "hpAfter": 21,
+     "maxHpBefore": 21,
+     "maxHpAfter": 21,
+     "goldBefore": 1045,
+     "goldAfter": 45,
+     "spells": false,
+     "mageBefore": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "mageAfter": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "priestBefore": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "priestAfter": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "levelBefore": 3,
+     "levelAfter": 3,
+     "statsBefore": [
+      16,
+      1,
+      1,
+      0,
+      13,
+      0
+     ],
+     "statsAfter": [
+      16,
+      1,
+      1,
+      0,
+      13,
+      0
+     ],
+     "ageBefore": 1040,
+     "ageAfter": 1040,
+     "learned": null,
+     "status": "OK",
+     "died": false,
+     "messages": [
+      "",
+      "YOU NEED 1248 MORE",
+      "EXPERIENCE POINTS TO MAKE LEVEL"
+     ],
+     "xpNeeded": 1248
+    },
+    "gold": null,
+    "saved": true,
+    "durable": true
+   }
+  },
+  "guest": {
+   "index": 0,
+   "name": "AGUI",
+   "race": "HUMAN",
+   "alignment": "NEUTRAL",
+   "class": "FIGHTER",
+   "short": "N-FIG",
+   "level": 3,
+   "hp": 21,
+   "maxHp": 21,
+   "ac": 10,
+   "status": "OK",
+   "gold": 45,
+   "age": 20,
+   "stats": [
+    16,
+    1,
+    1,
+    0,
+    13,
+    0
+   ],
+   "xp": 1724,
+   "nextXp": 2972,
+   "hasPassword": false,
+   "mageSpells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxMage": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "priestSpells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxPriest": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "spells": null,
+   "items": null,
+   "poison": 0,
+   "inMaze": true,
+   "mazeLevel": 0,
+   "legacy": false,
+   "equipNote": "",
+   "inParty": true,
+   "partySlot": 1,
+   "joinRefusal": "** PARTY IS FULL **"
+  },
+  "quotes": [
+   {
+    "room": 0,
+    "weeks": 1,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 21,
+     "healed": false,
+     "needed": 0,
+     "affordable": 0,
+     "refusal": "The stables heal nothing: a stay there is one free night."
+    }
+   },
+   {
+    "room": 1,
+    "weeks": 1,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 21,
+     "healed": false,
+     "needed": 0,
+     "affordable": 4,
+     "refusal": "AGUI is not hurt: there is nothing to heal."
+    }
+   },
+   {
+    "room": 1,
+    "weeks": 3,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 21,
+     "healed": false,
+     "needed": 0,
+     "affordable": 4,
+     "refusal": "AGUI is not hurt: there is nothing to heal."
+    }
+   },
+   {
+    "room": 2,
+    "weeks": 2,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 21,
+     "healed": false,
+     "needed": 0,
+     "affordable": 0,
+     "refusal": "AGUI is not hurt: there is nothing to heal."
+    }
+   },
+   {
+    "room": 2,
+    "weeks": 40,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 21,
+     "healed": false,
+     "needed": 0,
+     "affordable": 0,
+     "refusal": "AGUI is not hurt: there is nothing to heal."
+    }
+   },
+   {
+    "room": 4,
+    "weeks": 1,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 21,
+     "healed": false,
+     "needed": 0,
+     "affordable": 0,
+     "refusal": "AGUI is not hurt: there is nothing to heal."
+    }
+   }
+  ],
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 3,
+    "ac": 10,
+    "hp": 21,
+    "maxHp": 21,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "ac": 10,
+    "hp": 0,
+    "maxHp": 14,
+    "status": "DEAD",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "ac": 10,
+    "hp": 4,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "error": "",
+  "notice": "AGUI stayed 2 weeks in royal suites for 1000 GP: HP 9 → 21. Saved.",
+  "unsaved": "",
+  "warning": ""
+ },
+ {
+  "case": "fighter: stables, nothing to save",
+  "location": "inn",
+  "inn": {
+   "view": {
+    "step": "levelUp",
+    "guest": 0,
+    "name": "AGUI",
+    "message": "",
+    "messages": [
+     "",
+     "YOU NEED 1248 MORE",
+     "EXPERIENCE POINTS TO MAKE LEVEL"
+    ],
+    "guests": [
+     {
+      "slot": 0,
+      "name": "AGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 1,
+      "name": "BGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 2,
+      "name": "CGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 3,
+      "name": "DGUI",
+      "refusal": "DGUI IS NOT OK"
+     },
+     {
+      "slot": 4,
+      "name": "EGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 5,
+      "name": "FGUI",
+      "refusal": ""
+     }
+    ],
+    "rooms": [
+     {
+      "room": 0,
+      "key": "A",
+      "name": "THE STABLES",
+      "hpPerWeek": 0,
+      "feePerWeek": 0,
+      "free": true,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 21,
+       "healed": true,
+       "needed": 0,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     },
+     {
+      "room": 1,
+      "key": "B",
+      "name": "COTS",
+      "hpPerWeek": 1,
+      "feePerWeek": 10,
+      "free": false,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 21,
+       "healed": true,
+       "needed": 0,
+       "affordable": 4,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     },
+     {
+      "room": 2,
+      "key": "C",
+      "name": "ECONOMY ROOMS",
+      "hpPerWeek": 3,
+      "feePerWeek": 50,
+      "free": false,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 21,
+       "healed": true,
+       "needed": 0,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     },
+     {
+      "room": 3,
+      "key": "D",
+      "name": "MERCHANT SUITES",
+      "hpPerWeek": 7,
+      "feePerWeek": 200,
+      "free": false,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 21,
+       "healed": true,
+       "needed": 0,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     },
+     {
+      "room": 4,
+      "key": "E",
+      "name": "ROYAL SUITES",
+      "hpPerWeek": 10,
+      "feePerWeek": 500,
+      "free": false,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 21,
+       "healed": true,
+       "needed": 0,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     }
+    ]
+   },
+   "last": {
+    "stay": {
+     "guest": "AGUI",
+     "room": 0,
+     "roomName": "THE STABLES",
+     "weeks": 0,
+     "charged": 0,
+     "hpBefore": 21,
+     "hpAfter": 21,
+     "maxHpBefore": 21,
+     "maxHpAfter": 21,
+     "goldBefore": 45,
+     "goldAfter": 45,
+     "spells": false,
+     "mageBefore": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "mageAfter": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "priestBefore": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "priestAfter": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "levelBefore": 3,
+     "levelAfter": 3,
+     "statsBefore": [
+      16,
+      1,
+      1,
+      0,
+      13,
+      0
+     ],
+     "statsAfter": [
+      16,
+      1,
+      1,
+      0,
+      13,
+      0
+     ],
+     "ageBefore": 1040,
+     "ageAfter": 1040,
+     "learned": null,
+     "status": "OK",
+     "died": false,
+     "messages": [
+      "",
+      "YOU NEED 1248 MORE",
+      "EXPERIENCE POINTS TO MAKE LEVEL"
+     ],
+     "xpNeeded": 1248
+    },
+    "gold": null,
+    "saved": true,
+    "durable": true
+   }
+  },
+  "guest": {
+   "index": 0,
+   "name": "AGUI",
+   "race": "HUMAN",
+   "alignment": "NEUTRAL",
+   "class": "FIGHTER",
+   "short": "N-FIG",
+   "level": 3,
+   "hp": 21,
+   "maxHp": 21,
+   "ac": 10,
+   "status": "OK",
+   "gold": 45,
+   "age": 20,
+   "stats": [
+    16,
+    1,
+    1,
+    0,
+    13,
+    0
+   ],
+   "xp": 1724,
+   "nextXp": 2972,
+   "hasPassword": false,
+   "mageSpells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxMage": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "priestSpells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxPriest": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "spells": null,
+   "items": null,
+   "poison": 0,
+   "inMaze": true,
+   "mazeLevel": 0,
+   "legacy": false,
+   "equipNote": "",
+   "inParty": true,
+   "partySlot": 1,
+   "joinRefusal": "** PARTY IS FULL **"
+  },
+  "quotes": [
+   {
+    "room": 0,
+    "weeks": 1,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 21,
+     "healed": false,
+     "needed": 0,
+     "affordable": 0,
+     "refusal": "The stables heal nothing: a stay there is one free night."
+    }
+   },
+   {
+    "room": 1,
+    "weeks": 1,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 21,
+     "healed": false,
+     "needed": 0,
+     "affordable": 4,
+     "refusal": "AGUI is not hurt: there is nothing to heal."
+    }
+   },
+   {
+    "room": 1,
+    "weeks": 3,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 21,
+     "healed": false,
+     "needed": 0,
+     "affordable": 4,
+     "refusal": "AGUI is not hurt: there is nothing to heal."
+    }
+   },
+   {
+    "room": 2,
+    "weeks": 2,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 21,
+     "healed": false,
+     "needed": 0,
+     "affordable": 0,
+     "refusal": "AGUI is not hurt: there is nothing to heal."
+    }
+   },
+   {
+    "room": 2,
+    "weeks": 40,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 21,
+     "healed": false,
+     "needed": 0,
+     "affordable": 0,
+     "refusal": "AGUI is not hurt: there is nothing to heal."
+    }
+   },
+   {
+    "room": 4,
+    "weeks": 1,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 21,
+     "healed": false,
+     "needed": 0,
+     "affordable": 0,
+     "refusal": "AGUI is not hurt: there is nothing to heal."
+    }
+   }
+  ],
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 3,
+    "ac": 10,
+    "hp": 21,
+    "maxHp": 21,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "ac": 10,
+    "hp": 0,
+    "maxHp": 14,
+    "status": "DEAD",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "ac": 10,
+    "hp": 4,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "error": "",
+  "notice": "AGUI spent a night in the stables. Saved.",
+  "unsaved": "",
+  "warning": ""
+ },
+ {
+  "case": "a cot, NOT saved",
+  "location": "inn",
+  "inn": {
+   "view": {
+    "step": "levelUp",
+    "guest": 0,
+    "name": "AGUI",
+    "message": "",
+    "messages": [
+     "",
+     "YOU NEED 1248 MORE",
+     "EXPERIENCE POINTS TO MAKE LEVEL"
+    ],
+    "guests": [
+     {
+      "slot": 0,
+      "name": "AGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 1,
+      "name": "BGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 2,
+      "name": "CGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 3,
+      "name": "DGUI",
+      "refusal": "DGUI IS NOT OK"
+     },
+     {
+      "slot": 4,
+      "name": "EGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 5,
+      "name": "FGUI",
+      "refusal": ""
+     }
+    ],
+    "rooms": [
+     {
+      "room": 0,
+      "key": "A",
+      "name": "THE STABLES",
+      "hpPerWeek": 0,
+      "feePerWeek": 0,
+      "free": true,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 3,
+       "healed": false,
+       "needed": 0,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     },
+     {
+      "room": 1,
+      "key": "B",
+      "name": "COTS",
+      "hpPerWeek": 1,
+      "feePerWeek": 10,
+      "free": false,
+      "untilHealed": {
+       "weeks": 2,
+       "cost": 20,
+       "hp": 5,
+       "healed": false,
+       "needed": 18,
+       "affordable": 2,
+       "refusal": ""
+      },
+      "maxWeeks": 2
+     },
+     {
+      "room": 2,
+      "key": "C",
+      "name": "ECONOMY ROOMS",
+      "hpPerWeek": 3,
+      "feePerWeek": 50,
+      "free": false,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 3,
+       "healed": false,
+       "needed": 6,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     },
+     {
+      "room": 3,
+      "key": "D",
+      "name": "MERCHANT SUITES",
+      "hpPerWeek": 7,
+      "feePerWeek": 200,
+      "free": false,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 3,
+       "healed": false,
+       "needed": 3,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     },
+     {
+      "room": 4,
+      "key": "E",
+      "name": "ROYAL SUITES",
+      "hpPerWeek": 10,
+      "feePerWeek": 500,
+      "free": false,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 3,
+       "healed": false,
+       "needed": 2,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     }
+    ]
+   },
+   "last": {
+    "stay": {
+     "guest": "AGUI",
+     "room": 1,
+     "roomName": "COTS",
+     "weeks": 2,
+     "charged": 20,
+     "hpBefore": 1,
+     "hpAfter": 3,
+     "maxHpBefore": 21,
+     "maxHpAfter": 21,
+     "goldBefore": 45,
+     "goldAfter": 25,
+     "spells": false,
+     "mageBefore": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "mageAfter": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "priestBefore": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "priestAfter": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "levelBefore": 3,
+     "levelAfter": 3,
+     "statsBefore": [
+      16,
+      1,
+      1,
+      0,
+      13,
+      0
+     ],
+     "statsAfter": [
+      16,
+      1,
+      1,
+      0,
+      13,
+      0
+     ],
+     "ageBefore": 1040,
+     "ageAfter": 1040,
+     "learned": null,
+     "status": "OK",
+     "died": false,
+     "messages": [
+      "",
+      "YOU NEED 1248 MORE",
+      "EXPERIENCE POINTS TO MAKE LEVEL"
+     ],
+     "xpNeeded": 1248
+    },
+    "gold": null,
+    "saved": false,
+    "durable": false
+   }
+  },
+  "guest": {
+   "index": 0,
+   "name": "AGUI",
+   "race": "HUMAN",
+   "alignment": "NEUTRAL",
+   "class": "FIGHTER",
+   "short": "N-FIG",
+   "level": 3,
+   "hp": 3,
+   "maxHp": 21,
+   "ac": 10,
+   "status": "OK",
+   "gold": 25,
+   "age": 20,
+   "stats": [
+    16,
+    1,
+    1,
+    0,
+    13,
+    0
+   ],
+   "xp": 1724,
+   "nextXp": 2972,
+   "hasPassword": false,
+   "mageSpells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxMage": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "priestSpells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxPriest": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "spells": null,
+   "items": null,
+   "poison": 0,
+   "inMaze": true,
+   "mazeLevel": 0,
+   "legacy": false,
+   "equipNote": "",
+   "inParty": true,
+   "partySlot": 1,
+   "joinRefusal": "** PARTY IS FULL **"
+  },
+  "quotes": [
+   {
+    "room": 0,
+    "weeks": 1,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 3,
+     "healed": false,
+     "needed": 0,
+     "affordable": 0,
+     "refusal": "The stables heal nothing: a stay there is one free night."
+    }
+   },
+   {
+    "room": 1,
+    "weeks": 1,
+    "quote": {
+     "weeks": 1,
+     "cost": 10,
+     "hp": 4,
+     "healed": false,
+     "needed": 18,
+     "affordable": 2,
+     "refusal": ""
+    }
+   },
+   {
+    "room": 1,
+    "weeks": 3,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 3,
+     "healed": false,
+     "needed": 18,
+     "affordable": 2,
+     "refusal": "AGUI can pay for 2 weeks (10 GP a week, 25 GP held)."
+    }
+   },
+   {
+    "room": 2,
+    "weeks": 2,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 3,
+     "healed": false,
+     "needed": 6,
+     "affordable": 0,
+     "refusal": "AGUI can pay for 0 weeks (50 GP a week, 25 GP held)."
+    }
+   },
+   {
+    "room": 2,
+    "weeks": 40,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 3,
+     "healed": false,
+     "needed": 6,
+     "affordable": 0,
+     "refusal": "AGUI needs only 6 weeks to heal fully."
+    }
+   },
+   {
+    "room": 4,
+    "weeks": 1,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 3,
+     "healed": false,
+     "needed": 2,
+     "affordable": 0,
+     "refusal": "AGUI can pay for 0 weeks (500 GP a week, 25 GP held)."
+    }
+   }
+  ],
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 3,
+    "ac": 10,
+    "hp": 3,
+    "maxHp": 21,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "ac": 10,
+    "hp": 0,
+    "maxHp": 14,
+    "status": "DEAD",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "ac": 10,
+    "hp": 4,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "error": "Could not save: write \u003csaves\u003e/roster1.json: open \u003csaves\u003e/.roster1.json.tmp-\u003crandom\u003e: permission denied",
+  "notice": "AGUI stayed 2 weeks in cots for 20 GP: HP 1 → 3. It is NOT saved: it exists only in this window until a save succeeds.",
+  "unsaved": "write \u003csaves\u003e/roster1.json: open \u003csaves\u003e/.roster1.json.tmp-\u003crandom\u003e: permission denied",
+  "warning": ""
+ },
+ {
+  "case": "saved again",
+  "location": "inn",
+  "inn": {
+   "view": {
+    "step": "levelUp",
+    "guest": 0,
+    "name": "AGUI",
+    "message": "",
+    "messages": [
+     "",
+     "YOU NEED 1248 MORE",
+     "EXPERIENCE POINTS TO MAKE LEVEL"
+    ],
+    "guests": [
+     {
+      "slot": 0,
+      "name": "AGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 1,
+      "name": "BGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 2,
+      "name": "CGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 3,
+      "name": "DGUI",
+      "refusal": "DGUI IS NOT OK"
+     },
+     {
+      "slot": 4,
+      "name": "EGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 5,
+      "name": "FGUI",
+      "refusal": ""
+     }
+    ],
+    "rooms": [
+     {
+      "room": 0,
+      "key": "A",
+      "name": "THE STABLES",
+      "hpPerWeek": 0,
+      "feePerWeek": 0,
+      "free": true,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 3,
+       "healed": false,
+       "needed": 0,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     },
+     {
+      "room": 1,
+      "key": "B",
+      "name": "COTS",
+      "hpPerWeek": 1,
+      "feePerWeek": 10,
+      "free": false,
+      "untilHealed": {
+       "weeks": 2,
+       "cost": 20,
+       "hp": 5,
+       "healed": false,
+       "needed": 18,
+       "affordable": 2,
+       "refusal": ""
+      },
+      "maxWeeks": 2
+     },
+     {
+      "room": 2,
+      "key": "C",
+      "name": "ECONOMY ROOMS",
+      "hpPerWeek": 3,
+      "feePerWeek": 50,
+      "free": false,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 3,
+       "healed": false,
+       "needed": 6,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     },
+     {
+      "room": 3,
+      "key": "D",
+      "name": "MERCHANT SUITES",
+      "hpPerWeek": 7,
+      "feePerWeek": 200,
+      "free": false,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 3,
+       "healed": false,
+       "needed": 3,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     },
+     {
+      "room": 4,
+      "key": "E",
+      "name": "ROYAL SUITES",
+      "hpPerWeek": 10,
+      "feePerWeek": 500,
+      "free": false,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 3,
+       "healed": false,
+       "needed": 2,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     }
+    ]
+   },
+   "last": {
+    "stay": {
+     "guest": "AGUI",
+     "room": 1,
+     "roomName": "COTS",
+     "weeks": 2,
+     "charged": 20,
+     "hpBefore": 1,
+     "hpAfter": 3,
+     "maxHpBefore": 21,
+     "maxHpAfter": 21,
+     "goldBefore": 45,
+     "goldAfter": 25,
+     "spells": false,
+     "mageBefore": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "mageAfter": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "priestBefore": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "priestAfter": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "levelBefore": 3,
+     "levelAfter": 3,
+     "statsBefore": [
+      16,
+      1,
+      1,
+      0,
+      13,
+      0
+     ],
+     "statsAfter": [
+      16,
+      1,
+      1,
+      0,
+      13,
+      0
+     ],
+     "ageBefore": 1040,
+     "ageAfter": 1040,
+     "learned": null,
+     "status": "OK",
+     "died": false,
+     "messages": [
+      "",
+      "YOU NEED 1248 MORE",
+      "EXPERIENCE POINTS TO MAKE LEVEL"
+     ],
+     "xpNeeded": 1248
+    },
+    "gold": null,
+    "saved": true,
+    "durable": true
+   }
+  },
+  "guest": {
+   "index": 0,
+   "name": "AGUI",
+   "race": "HUMAN",
+   "alignment": "NEUTRAL",
+   "class": "FIGHTER",
+   "short": "N-FIG",
+   "level": 3,
+   "hp": 3,
+   "maxHp": 21,
+   "ac": 10,
+   "status": "OK",
+   "gold": 25,
+   "age": 20,
+   "stats": [
+    16,
+    1,
+    1,
+    0,
+    13,
+    0
+   ],
+   "xp": 1724,
+   "nextXp": 2972,
+   "hasPassword": false,
+   "mageSpells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxMage": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "priestSpells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxPriest": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "spells": null,
+   "items": null,
+   "poison": 0,
+   "inMaze": true,
+   "mazeLevel": 0,
+   "legacy": false,
+   "equipNote": "",
+   "inParty": true,
+   "partySlot": 1,
+   "joinRefusal": "** PARTY IS FULL **"
+  },
+  "quotes": [
+   {
+    "room": 0,
+    "weeks": 1,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 3,
+     "healed": false,
+     "needed": 0,
+     "affordable": 0,
+     "refusal": "The stables heal nothing: a stay there is one free night."
+    }
+   },
+   {
+    "room": 1,
+    "weeks": 1,
+    "quote": {
+     "weeks": 1,
+     "cost": 10,
+     "hp": 4,
+     "healed": false,
+     "needed": 18,
+     "affordable": 2,
+     "refusal": ""
+    }
+   },
+   {
+    "room": 1,
+    "weeks": 3,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 3,
+     "healed": false,
+     "needed": 18,
+     "affordable": 2,
+     "refusal": "AGUI can pay for 2 weeks (10 GP a week, 25 GP held)."
+    }
+   },
+   {
+    "room": 2,
+    "weeks": 2,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 3,
+     "healed": false,
+     "needed": 6,
+     "affordable": 0,
+     "refusal": "AGUI can pay for 0 weeks (50 GP a week, 25 GP held)."
+    }
+   },
+   {
+    "room": 2,
+    "weeks": 40,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 3,
+     "healed": false,
+     "needed": 6,
+     "affordable": 0,
+     "refusal": "AGUI needs only 6 weeks to heal fully."
+    }
+   },
+   {
+    "room": 4,
+    "weeks": 1,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 3,
+     "healed": false,
+     "needed": 2,
+     "affordable": 0,
+     "refusal": "AGUI can pay for 0 weeks (500 GP a week, 25 GP held)."
+    }
+   }
+  ],
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 3,
+    "ac": 10,
+    "hp": 3,
+    "maxHp": 21,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "ac": 10,
+    "hp": 0,
+    "maxHp": 14,
+    "status": "DEAD",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "ac": 10,
+    "hp": 4,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "error": "",
+  "notice": "Saved.",
+  "unsaved": "",
+  "warning": ""
+ },
+ {
+  "case": "not durable",
+  "location": "inn",
+  "inn": {
+   "view": {
+    "step": "levelUp",
+    "guest": 0,
+    "name": "AGUI",
+    "message": "",
+    "messages": [
+     "",
+     "YOU NEED 1248 MORE",
+     "EXPERIENCE POINTS TO MAKE LEVEL"
+    ],
+    "guests": [
+     {
+      "slot": 0,
+      "name": "AGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 1,
+      "name": "BGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 2,
+      "name": "CGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 3,
+      "name": "DGUI",
+      "refusal": "DGUI IS NOT OK"
+     },
+     {
+      "slot": 4,
+      "name": "EGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 5,
+      "name": "FGUI",
+      "refusal": ""
+     }
+    ],
+    "rooms": [
+     {
+      "room": 0,
+      "key": "A",
+      "name": "THE STABLES",
+      "hpPerWeek": 0,
+      "feePerWeek": 0,
+      "free": true,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 2,
+       "healed": false,
+       "needed": 0,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     },
+     {
+      "room": 1,
+      "key": "B",
+      "name": "COTS",
+      "hpPerWeek": 1,
+      "feePerWeek": 10,
+      "free": false,
+      "untilHealed": {
+       "weeks": 1,
+       "cost": 10,
+       "hp": 3,
+       "healed": false,
+       "needed": 19,
+       "affordable": 1,
+       "refusal": ""
+      },
+      "maxWeeks": 1
+     },
+     {
+      "room": 2,
+      "key": "C",
+      "name": "ECONOMY ROOMS",
+      "hpPerWeek": 3,
+      "feePerWeek": 50,
+      "free": false,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 2,
+       "healed": false,
+       "needed": 7,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     },
+     {
+      "room": 3,
+      "key": "D",
+      "name": "MERCHANT SUITES",
+      "hpPerWeek": 7,
+      "feePerWeek": 200,
+      "free": false,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 2,
+       "healed": false,
+       "needed": 3,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     },
+     {
+      "room": 4,
+      "key": "E",
+      "name": "ROYAL SUITES",
+      "hpPerWeek": 10,
+      "feePerWeek": 500,
+      "free": false,
+      "untilHealed": {
+       "weeks": 0,
+       "cost": 0,
+       "hp": 2,
+       "healed": false,
+       "needed": 2,
+       "affordable": 0,
+       "refusal": ""
+      },
+      "maxWeeks": 0
+     }
+    ]
+   },
+   "last": {
+    "stay": {
+     "guest": "AGUI",
+     "room": 1,
+     "roomName": "COTS",
+     "weeks": 1,
+     "charged": 10,
+     "hpBefore": 1,
+     "hpAfter": 2,
+     "maxHpBefore": 21,
+     "maxHpAfter": 21,
+     "goldBefore": 25,
+     "goldAfter": 15,
+     "spells": false,
+     "mageBefore": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "mageAfter": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "priestBefore": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "priestAfter": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "levelBefore": 3,
+     "levelAfter": 3,
+     "statsBefore": [
+      16,
+      1,
+      1,
+      0,
+      13,
+      0
+     ],
+     "statsAfter": [
+      16,
+      1,
+      1,
+      0,
+      13,
+      0
+     ],
+     "ageBefore": 1040,
+     "ageAfter": 1040,
+     "learned": null,
+     "status": "OK",
+     "died": false,
+     "messages": [
+      "",
+      "YOU NEED 1248 MORE",
+      "EXPERIENCE POINTS TO MAKE LEVEL"
+     ],
+     "xpNeeded": 1248
+    },
+    "gold": null,
+    "saved": true,
+    "durable": false
+   }
+  },
+  "guest": {
+   "index": 0,
+   "name": "AGUI",
+   "race": "HUMAN",
+   "alignment": "NEUTRAL",
+   "class": "FIGHTER",
+   "short": "N-FIG",
+   "level": 3,
+   "hp": 2,
+   "maxHp": 21,
+   "ac": 10,
+   "status": "OK",
+   "gold": 15,
+   "age": 20,
+   "stats": [
+    16,
+    1,
+    1,
+    0,
+    13,
+    0
+   ],
+   "xp": 1724,
+   "nextXp": 2972,
+   "hasPassword": false,
+   "mageSpells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxMage": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "priestSpells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxPriest": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "spells": null,
+   "items": null,
+   "poison": 0,
+   "inMaze": true,
+   "mazeLevel": 0,
+   "legacy": false,
+   "equipNote": "",
+   "inParty": true,
+   "partySlot": 1,
+   "joinRefusal": "** PARTY IS FULL **"
+  },
+  "quotes": [
+   {
+    "room": 0,
+    "weeks": 1,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 2,
+     "healed": false,
+     "needed": 0,
+     "affordable": 0,
+     "refusal": "The stables heal nothing: a stay there is one free night."
+    }
+   },
+   {
+    "room": 1,
+    "weeks": 1,
+    "quote": {
+     "weeks": 1,
+     "cost": 10,
+     "hp": 3,
+     "healed": false,
+     "needed": 19,
+     "affordable": 1,
+     "refusal": ""
+    }
+   },
+   {
+    "room": 1,
+    "weeks": 3,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 2,
+     "healed": false,
+     "needed": 19,
+     "affordable": 1,
+     "refusal": "AGUI can pay for 1 week (10 GP a week, 15 GP held)."
+    }
+   },
+   {
+    "room": 2,
+    "weeks": 2,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 2,
+     "healed": false,
+     "needed": 7,
+     "affordable": 0,
+     "refusal": "AGUI can pay for 0 weeks (50 GP a week, 15 GP held)."
+    }
+   },
+   {
+    "room": 2,
+    "weeks": 40,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 2,
+     "healed": false,
+     "needed": 7,
+     "affordable": 0,
+     "refusal": "AGUI needs only 7 weeks to heal fully."
+    }
+   },
+   {
+    "room": 4,
+    "weeks": 1,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 2,
+     "healed": false,
+     "needed": 2,
+     "affordable": 0,
+     "refusal": "AGUI can pay for 0 weeks (500 GP a week, 15 GP held)."
+    }
+   }
+  ],
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 3,
+    "ac": 10,
+    "hp": 2,
+    "maxHp": 21,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "ac": 10,
+    "hp": 0,
+    "maxHp": 14,
+    "status": "DEAD",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "ac": 10,
+    "hp": 4,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "error": "",
+  "notice": "AGUI stayed 1 week in cots for 10 GP: HP 1 → 2. Saved, but perhaps not durably.",
+  "unsaved": "",
+  "warning": "Saved, but the save folder could not be synced (no sync); the last save may not survive a crash or power loss."
+ },
+ {
+  "case": "guest left",
+  "location": "inn",
+  "inn": {
+   "view": {
+    "step": "who",
+    "guest": -1,
+    "name": "",
+    "message": "",
+    "messages": null,
+    "guests": [
+     {
+      "slot": 0,
+      "name": "AGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 1,
+      "name": "BGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 2,
+      "name": "CGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 3,
+      "name": "DGUI",
+      "refusal": "DGUI IS NOT OK"
+     },
+     {
+      "slot": 4,
+      "name": "EGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 5,
+      "name": "FGUI",
+      "refusal": ""
+     }
+    ],
+    "rooms": null
+   },
+   "last": null
+  },
+  "guest": null,
+  "quotes": null,
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 3,
+    "ac": 10,
+    "hp": 2,
+    "maxHp": 21,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "ac": 10,
+    "hp": 0,
+    "maxHp": 14,
+    "status": "DEAD",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "ac": 10,
+    "hp": 4,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "error": "",
+  "notice": "",
+  "unsaved": "",
+  "warning": "Saved, but the save folder could not be synced (no sync); the last save may not survive a crash or power loss."
+ }
+]

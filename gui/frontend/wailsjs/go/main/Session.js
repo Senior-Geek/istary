@@ -114,6 +114,18 @@ export function FinishStats() {
   return window['go']['main']['Session']['FinishStats']();
 }
 
+export function GoldAction(arg1) {
+  return window['go']['main']['Session']['GoldAction'](arg1);
+}
+
+export function InnAction(arg1) {
+  return window['go']['main']['Session']['InnAction'](arg1);
+}
+
+export function InnQuote(arg1, arg2) {
+  return window['go']['main']['Session']['InnQuote'](arg1, arg2);
+}
+
 export function JoinParty(arg1) {
   return window['go']['main']['Session']['JoinParty'](arg1);
 }

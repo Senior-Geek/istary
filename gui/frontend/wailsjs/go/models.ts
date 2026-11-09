@@ -576,6 +576,216 @@ export namespace app {
 		}
 	}
 	
+	export class GoldMove {
+	    names: string[];
+	    before: number[];
+	    after: number[];
+	    total: number;
+	    to: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new GoldMove(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.names = source["names"];
+	        this.before = source["before"];
+	        this.after = source["after"];
+	        this.total = source["total"];
+	        this.to = source["to"];
+	    }
+	}
+	export class InnGuestView {
+	    slot: number;
+	    name: string;
+	    refusal: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new InnGuestView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.slot = source["slot"];
+	        this.name = source["name"];
+	        this.refusal = source["refusal"];
+	    }
+	}
+	export class InnQuote {
+	    weeks: number;
+	    cost: number;
+	    hp: number;
+	    healed: boolean;
+	    needed: number;
+	    affordable: number;
+	    refusal: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new InnQuote(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.weeks = source["weeks"];
+	        this.cost = source["cost"];
+	        this.hp = source["hp"];
+	        this.healed = source["healed"];
+	        this.needed = source["needed"];
+	        this.affordable = source["affordable"];
+	        this.refusal = source["refusal"];
+	    }
+	}
+	export class InnRoomView {
+	    room: number;
+	    key: string;
+	    name: string;
+	    hpPerWeek: number;
+	    feePerWeek: number;
+	    free: boolean;
+	    untilHealed: InnQuote;
+	    maxWeeks: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new InnRoomView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.room = source["room"];
+	        this.key = source["key"];
+	        this.name = source["name"];
+	        this.hpPerWeek = source["hpPerWeek"];
+	        this.feePerWeek = source["feePerWeek"];
+	        this.free = source["free"];
+	        this.untilHealed = this.convertValues(source["untilHealed"], InnQuote);
+	        this.maxWeeks = source["maxWeeks"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class InnStay {
+	    guest: string;
+	    room: number;
+	    roomName: string;
+	    weeks: number;
+	    charged: number;
+	    hpBefore: number;
+	    hpAfter: number;
+	    maxHpBefore: number;
+	    maxHpAfter: number;
+	    goldBefore: number;
+	    goldAfter: number;
+	    spells: boolean;
+	    mageBefore: number[];
+	    mageAfter: number[];
+	    priestBefore: number[];
+	    priestAfter: number[];
+	    levelBefore: number;
+	    levelAfter: number;
+	    statsBefore: number[];
+	    statsAfter: number[];
+	    ageBefore: number;
+	    ageAfter: number;
+	    learned: string[];
+	    status: string;
+	    died: boolean;
+	    messages: string[];
+	    xpNeeded: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new InnStay(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.guest = source["guest"];
+	        this.room = source["room"];
+	        this.roomName = source["roomName"];
+	        this.weeks = source["weeks"];
+	        this.charged = source["charged"];
+	        this.hpBefore = source["hpBefore"];
+	        this.hpAfter = source["hpAfter"];
+	        this.maxHpBefore = source["maxHpBefore"];
+	        this.maxHpAfter = source["maxHpAfter"];
+	        this.goldBefore = source["goldBefore"];
+	        this.goldAfter = source["goldAfter"];
+	        this.spells = source["spells"];
+	        this.mageBefore = source["mageBefore"];
+	        this.mageAfter = source["mageAfter"];
+	        this.priestBefore = source["priestBefore"];
+	        this.priestAfter = source["priestAfter"];
+	        this.levelBefore = source["levelBefore"];
+	        this.levelAfter = source["levelAfter"];
+	        this.statsBefore = source["statsBefore"];
+	        this.statsAfter = source["statsAfter"];
+	        this.ageBefore = source["ageBefore"];
+	        this.ageAfter = source["ageAfter"];
+	        this.learned = source["learned"];
+	        this.status = source["status"];
+	        this.died = source["died"];
+	        this.messages = source["messages"];
+	        this.xpNeeded = source["xpNeeded"];
+	    }
+	}
+	export class InnView {
+	    step: string;
+	    guest: number;
+	    name: string;
+	    message: string;
+	    messages: string[];
+	    guests: InnGuestView[];
+	    rooms: InnRoomView[];
+	
+	    static createFrom(source: any = {}) {
+	        return new InnView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.step = source["step"];
+	        this.guest = source["guest"];
+	        this.name = source["name"];
+	        this.message = source["message"];
+	        this.messages = source["messages"];
+	        this.guests = this.convertValues(source["guests"], InnGuestView);
+	        this.rooms = this.convertValues(source["rooms"], InnRoomView);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 	export class ShopOffer {
 	    item: number;
 	    name: string;
@@ -1020,7 +1230,142 @@ export namespace main {
 	        this.reason = source["reason"];
 	    }
 	}
+	export class GoldReceipt {
+	    move?: app.GoldMove;
+	    saved: boolean;
+	    durable: boolean;
 	
+	    static createFrom(source: any = {}) {
+	        return new GoldReceipt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.move = this.convertValues(source["move"], app.GoldMove);
+	        this.saved = source["saved"];
+	        this.durable = source["durable"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class GoldRequest {
+	    action: string;
+	    slot: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new GoldRequest(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.action = source["action"];
+	        this.slot = source["slot"];
+	    }
+	}
+	
+	export class InnReceipt {
+	    stay?: app.InnStay;
+	    gold?: app.GoldMove;
+	    saved: boolean;
+	    durable: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new InnReceipt(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.stay = this.convertValues(source["stay"], app.InnStay);
+	        this.gold = this.convertValues(source["gold"], app.GoldMove);
+	        this.saved = source["saved"];
+	        this.durable = source["durable"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class InnPanel {
+	    view: app.InnView;
+	    last?: InnReceipt;
+	
+	    static createFrom(source: any = {}) {
+	        return new InnPanel(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.view = this.convertValues(source["view"], app.InnView);
+	        this.last = this.convertValues(source["last"], InnReceipt);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	
+	export class InnRequest {
+	    action: string;
+	    slot: number;
+	    room: number;
+	    weeks: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new InnRequest(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.action = source["action"];
+	        this.slot = source["slot"];
+	        this.room = source["room"];
+	        this.weeks = source["weeks"];
+	    }
+	}
 	
 	export class OrderRequest {
 	    slot: number;
@@ -1240,6 +1585,8 @@ export namespace main {
 	    expedition: boolean;
 	    real: boolean;
 	    shop?: ShopPanel;
+	    inn?: InnPanel;
+	    gold?: GoldReceipt;
 	    unsaved: string;
 	    warning: string;
 	    recovery: string;
@@ -1282,6 +1629,8 @@ export namespace main {
 	        this.expedition = source["expedition"];
 	        this.real = source["real"];
 	        this.shop = this.convertValues(source["shop"], ShopPanel);
+	        this.inn = this.convertValues(source["inn"], InnPanel);
+	        this.gold = this.convertValues(source["gold"], GoldReceipt);
 	        this.unsaved = source["unsaved"];
 	        this.warning = source["warning"];
 	        this.recovery = source["recovery"];

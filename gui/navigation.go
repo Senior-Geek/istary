@@ -13,8 +13,9 @@ package main
 // saves (the town location is not part of the save) and draws no random
 // number. It is refused while an expedition or practice is under way and
 // while a character is being created; an open town prompt is closed first,
-// as the game's own cancel steps would. Boltac's is left by RETURN at
-// every step (app.Controller.LeaveShop), as its keys leave it.
+// as the game's own cancel steps would. Boltac's and the Inn are left by
+// RETURN at every step (app.Controller.LeaveShop, LeaveInn), as their keys
+// leave them.
 
 import (
 	"errors"
@@ -96,6 +97,9 @@ func (s *Session) navigate(dest string) error {
 	if c.Game.Town.Location == engine.Trading {
 		return c.LeaveShop() // its one exit, the Castle, from any step
 	}
+	if c.Game.Town.Location == engine.Inn {
+		return c.LeaveInn() // likewise
+	}
 	if err := s.settlePrompt(); err != nil {
 		return err
 	}
@@ -108,6 +112,10 @@ func (s *Session) navigate(dest string) error {
 		return nil
 	case dest == "trading":
 		s.receipt = nil // a new visit
+	case dest == "inn":
+		s.innLast = nil
+	case dest == "tavern":
+		s.goldLast = nil
 	}
 	for _, p := range places {
 		if p.name == dest {
@@ -182,6 +190,9 @@ func (s *Session) returnToCastle() error {
 		// answered no, the customer leaves, then Boltac's.
 		return c.LeaveShop()
 	}
+	if c.Game.Town.Location == engine.Inn {
+		return c.LeaveInn() // the guest leaves, then the Inn
+	}
 	if err := s.settlePrompt(); err != nil {
 		return err
 	}
@@ -249,7 +260,7 @@ func (s *Session) exits() []ExitView {
 		name, full := placeOf(e.To)
 		v := ExitView{Dest: name, Open: e.Refusal == "", Reason: e.Refusal}
 		switch e.To {
-		case engine.Inn, engine.Temple:
+		case engine.Temple:
 			if v.Open {
 				v.Open, v.Reason = false, notInWindow(full)
 			} else {

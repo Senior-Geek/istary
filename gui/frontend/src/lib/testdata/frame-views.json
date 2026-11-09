@@ -12,7 +12,7 @@
    {
     "dest": "inn",
     "open": false,
-    "reason": "YOU HAVE NO PARTY! The Adventurer's Inn is not open in Istary's window yet."
+    "reason": "YOU HAVE NO PARTY!"
    },
    {
     "dest": "trading",
@@ -135,8 +135,8 @@
    },
    {
     "dest": "inn",
-    "open": false,
-    "reason": "The Adventurer's Inn is not open in Istary's window yet."
+    "open": true,
+    "reason": ""
    },
    {
     "dest": "trading",
@@ -697,8 +697,8 @@
    },
    {
     "dest": "inn",
-    "open": false,
-    "reason": "The Adventurer's Inn is not open in Istary's window yet."
+    "open": true,
+    "reason": ""
    },
    {
     "dest": "trading",

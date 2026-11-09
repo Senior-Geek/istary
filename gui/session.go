@@ -52,6 +52,11 @@ type Session struct {
 	// receipt is the transaction the last shop action completed (shop.go),
 	// shown at Boltac's until the next shop action or the next visit.
 	receipt *ShopReceipt
+	// innLast is what the last Inn action completed (inn.go), and goldLast
+	// the last pooling or sharing at the Tavern (gold.go), shown there
+	// until the next one or the next visit.
+	innLast  *InnReceipt
+	goldLast *GoldReceipt
 
 	// settings is set while the player is in Settings (navigation.go),
 	// which the window opens at the Edge of Town; it is not part of the game.
@@ -253,8 +258,15 @@ func (s *Session) SaveNow() View {
 	err = errors.Join(err, s.save())
 	if err == nil {
 		s.notice = "Saved."
+		durable := s.uncertain == ""
 		if s.receipt != nil {
-			s.receipt.Saved, s.receipt.Durable = true, s.uncertain == ""
+			s.receipt.Saved, s.receipt.Durable = true, durable
+		}
+		if s.innLast != nil {
+			s.innLast.Saved, s.innLast.Durable = true, durable
+		}
+		if s.goldLast != nil {
+			s.goldLast.Saved, s.goldLast.Durable = true, durable
 		}
 	}
 	return s.view(err)
