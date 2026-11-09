@@ -100,7 +100,7 @@ func TestInnStayIsTheKeys(t *testing.T) {
 		for stay := 0; stay < 2; stay++ {
 			room := engine.InnRoom(rng.Intn(5))
 			seed(s)
-			if _, err := ops.Stay(room); err != nil {
+			if _, err := ops.Stay(room, 0); err != nil {
 				t.Fatalf("seed %d: stay: %v", s, err)
 			}
 			next := rand.Int63()
@@ -130,7 +130,7 @@ func TestInnQuoteIsTheStay(t *testing.T) {
 			}
 			c.GoTo(engine.Inn)
 			c.InnEnter(slot)
-			q, err := c.Quote(room)
+			q, err := c.Quote(room, 0)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -138,7 +138,7 @@ func TestInnQuoteIsTheStay(t *testing.T) {
 			if v.Rooms[room].UntilHealed != q {
 				t.Fatalf("seed %d room %d: view %+v, quote %+v", s, room, v.Rooms[room].UntilHealed, q)
 			}
-			st, err := c.Stay(room)
+			st, err := c.Stay(room, 0)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -163,7 +163,7 @@ func TestInnViewIsReadOnly(t *testing.T) {
 		seed(s)
 		c.InnView()
 		for room := engine.Stables; room <= engine.Royal; room++ {
-			c.Quote(room)
+			c.Quote(room, 0)
 		}
 		next := rand.Int63()
 		seed(s)
@@ -193,7 +193,7 @@ func innFixture(t *testing.T) *Controller {
 func TestInnOperations(t *testing.T) {
 	c := innFixture(t)
 	arne, mage := c.Game.Town.Party.Members[0], c.Game.Town.Party.Members[2]
-	if _, err := c.Stay(engine.Cot); !errors.Is(err, ErrWrongState) {
+	if _, err := c.Stay(engine.Cot, 0); !errors.Is(err, ErrWrongState) {
 		t.Errorf("a stay away from the Inn: %v", err)
 	}
 	if _, err := c.InnView(); !errors.Is(err, ErrWrongState) {
@@ -211,13 +211,13 @@ func TestInnOperations(t *testing.T) {
 	if err := c.InnEnter(5); !errors.Is(err, ErrNoSuchPartyMember) {
 		t.Errorf("no such member: %v", err)
 	}
-	if _, err := c.Stay(engine.Cot); !errors.Is(err, ErrWrongState) {
+	if _, err := c.Stay(engine.Cot, 0); !errors.Is(err, ErrWrongState) {
 		t.Errorf("a stay with no guest: %v", err)
 	}
 	if err := c.InnEnter(0); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := c.Stay(engine.InnRoom(5)); !errors.Is(err, ErrInvalidChoice) {
+	if _, err := c.Stay(engine.InnRoom(5), 0); !errors.Is(err, ErrInvalidChoice) {
 		t.Errorf("room 5: %v", err)
 	}
 	v, _ = c.InnView()
@@ -232,16 +232,16 @@ func TestInnOperations(t *testing.T) {
 		t.Errorf("economy with no gold: %+v", q)
 	}
 	arne.Gold, arne.XP = 1000, 1000
-	if q, _ := c.Quote(engine.Economy); q != (InnQuote{Weeks: 6, Cost: 300, HP: 20, Healed: true, Needed: 6, Affordable: 20}) {
+	if q, _ := c.Quote(engine.Economy, 0); q != (InnQuote{Weeks: 6, Cost: 300, HP: 20, Healed: true, Needed: 6, Affordable: 20}) {
 		t.Errorf("economy: %+v", q)
 	}
 	arne.Gold = 120
-	if q, _ := c.Quote(engine.Economy); q != (InnQuote{Weeks: 2, Cost: 100, HP: 9, Needed: 6, Affordable: 2}) {
+	if q, _ := c.Quote(engine.Economy, 0); q != (InnQuote{Weeks: 2, Cost: 100, HP: 9, Needed: 6, Affordable: 2}) {
 		t.Errorf("economy, short of gold: %+v", q)
 	}
 	arne.Gold = 1000
 	seed(1)
-	st, err := c.Stay(engine.Economy)
+	st, err := c.Stay(engine.Economy, 0)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -252,7 +252,7 @@ func TestInnOperations(t *testing.T) {
 		t.Errorf("after the stay: %+v", v)
 	}
 	// Again, from the result: the stables, and experience still needed.
-	st, err = c.Stay(engine.Stables)
+	st, err = c.Stay(engine.Stables, 0)
 	if err != nil || st.Weeks != 0 || st.Charged != 0 || st.LevelAfter != 2 || st.XPNeeded != 724 {
 		t.Errorf("the stables after: %+v %v", st, err)
 	}
@@ -263,7 +263,7 @@ func TestInnOperations(t *testing.T) {
 	mage.MaxMageSpells, mage.MageSpells, mage.XP = [7]int{2}, [7]int{}, 1100
 	c.InnEnter(2)
 	seed(2)
-	st, err = c.Stay(engine.Stables)
+	st, err = c.Stay(engine.Stables, 0)
 	if err != nil || !st.Spells || st.MageAfter[0] == 0 || st.LevelAfter != 2 {
 		t.Errorf("the mage: %+v %v", st, err)
 	}
@@ -284,7 +284,7 @@ func TestInnDeathOfOldAge(t *testing.T) {
 	for s := int64(1); ; s++ {
 		snap := *old
 		seed(s)
-		st, err := c.Stay(engine.Stables)
+		st, err := c.Stay(engine.Stables, 0)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -299,5 +299,108 @@ func TestInnDeathOfOldAge(t *testing.T) {
 		}
 		*old = snap
 		c.press(Key{Kind: KeyEnter})
+	}
+}
+
+// A stay of chosen weeks (I-2): any number the guest needs and can pay for,
+// as quoted; the level check follows as after any stay; the most weeks
+// allowed is the stay until healed, the original's.
+func TestInnChosenWeeks(t *testing.T) {
+	for s := int64(1); s <= 300; s++ {
+		for room := engine.Cot; room <= engine.Royal; room++ {
+			probe := innController(t, rand.New(rand.NewSource(s)))
+			slot := okSlot(probe, rand.New(rand.NewSource(s)))
+			if slot < 0 {
+				break
+			}
+			probe.GoTo(engine.Inn)
+			probe.InnEnter(slot)
+			v, _ := probe.InnView()
+			rv := v.Rooms[room]
+			if rv.MaxWeeks != min(rv.UntilHealed.Needed, rv.UntilHealed.Affordable) || rv.MaxWeeks != rv.UntilHealed.Weeks {
+				t.Fatalf("seed %d room %d: max %d, until healed %+v", s, room, rv.MaxWeeks, rv.UntilHealed)
+			}
+			for weeks := 1; weeks <= min(rv.MaxWeeks, 12); weeks++ {
+				c := innController(t, rand.New(rand.NewSource(s)))
+				c.GoTo(engine.Inn)
+				c.InnEnter(slot)
+				ch := c.Game.Town.InnChar
+				hp, gold := ch.HP, ch.Gold
+				q, _ := c.Quote(room, weeks)
+				seed(s)
+				st, err := c.Stay(room, weeks)
+				if err != nil || q.Refusal != "" {
+					t.Fatalf("seed %d room %d weeks %d: %v %q", s, room, weeks, err, q.Refusal)
+				}
+				r := innRooms[room]
+				if st.Weeks != weeks || st.Charged != weeks*r.fee || ch.Gold != gold-weeks*r.fee || q.Cost != st.Charged ||
+					(!st.Died && (ch.HP != min(st.MaxHPBefore, hp+weeks*r.hp) || q.HP != ch.HP)) {
+					t.Fatalf("seed %d room %d weeks %d: %+v quote %+v", s, room, weeks, st, q)
+				}
+				if c.Game.Town.InnStep != engine.InnLevelUp {
+					t.Fatalf("seed %d: no level check after checking out", s)
+				}
+			}
+			if rv.MaxWeeks > 0 {
+				a := innController(t, rand.New(rand.NewSource(s)))
+				b := innController(t, rand.New(rand.NewSource(s)))
+				for _, c := range []*Controller{a, b} {
+					c.GoTo(engine.Inn)
+					c.InnEnter(slot)
+				}
+				seed(s)
+				a.Stay(room, rv.MaxWeeks)
+				seed(s)
+				b.Stay(room, 0)
+				if townJSON(t, a) != townJSON(t, b) {
+					t.Fatalf("seed %d room %d: the most weeks is not the stay until healed", s, room)
+				}
+			}
+		}
+	}
+}
+
+func TestInnChosenWeeksRefused(t *testing.T) {
+	c := innFixture(t)
+	arne := c.Game.Town.Party.Members[0]
+	arne.Gold = 120 // 3/20 HP: economy needs 6 weeks, 120 GP pays for 2
+	c.GoTo(engine.Inn)
+	c.InnEnter(0)
+	for _, tc := range []struct {
+		room  engine.InnRoom
+		weeks int
+		want  string
+	}{
+		{engine.Economy, -1, "A stay cannot be shorter than a week."},
+		{engine.Stables, 1, "The stables heal nothing: a stay there is one free night."},
+		{engine.Economy, 7, "ARNE needs only 6 weeks to heal fully."},
+		{engine.Economy, 3, "ARNE can pay for 2 weeks (50 GP a week, 120 GP held)."},
+		{engine.Royal, 1, "ARNE can pay for 0 weeks (500 GP a week, 120 GP held)."},
+	} {
+		before := townJSON(t, c)
+		seed(3)
+		_, err := c.Stay(tc.room, tc.weeks)
+		next := rand.Int63()
+		seed(3)
+		var r *Refusal
+		if !errors.As(err, &r) || r.Message != tc.want || next != rand.Int63() || townJSON(t, c) != before {
+			t.Errorf("room %d, %d weeks: %v", tc.room, tc.weeks, err)
+		}
+		if q, _ := c.Quote(tc.room, tc.weeks); q.Refusal != tc.want || q.Weeks != 0 || q.Cost != 0 {
+			t.Errorf("quote, room %d, %d weeks: %+v", tc.room, tc.weeks, q)
+		}
+	}
+	arne.HP = 20
+	if _, err := c.Stay(engine.Cot, 1); err == nil || err.Error() != "ARNE is not hurt: there is nothing to heal." {
+		t.Errorf("healthy: %v", err)
+	}
+	if v, _ := c.InnView(); v.Rooms[engine.Stables].MaxWeeks != 0 || v.Rooms[engine.Cot].MaxWeeks != 0 {
+		t.Errorf("max weeks when healthy: %+v", v.Rooms)
+	}
+	// Two weeks of economy: 9/20 HP, 100 GP, then the level check.
+	arne.HP = 3
+	st, err := c.Stay(engine.Economy, 2)
+	if err != nil || st.Weeks != 2 || st.Charged != 100 || st.HPAfter != 9 || arne.Gold != 20 || st.XPNeeded != 1000 {
+		t.Errorf("two weeks: %+v %v", st, err)
 	}
 }

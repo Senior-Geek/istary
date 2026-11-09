@@ -1,6 +1,10 @@
 package app
 
-import "github.com/Senior-Geek/istary/engine"
+import (
+	"fmt"
+
+	"github.com/Senior-Geek/istary/engine"
+)
 
 // The Inn's operations (I-1), for front ends without keys. Each one is the
 // terminal's keys and heal ticks, pressed for the player, so the two cannot
@@ -20,17 +24,19 @@ func (c *Controller) atInn() bool {
 // the maximum at most, and costs a full week, while the guest is hurt and
 // can pay. Nothing is changed and no random number is drawn.
 type InnQuote struct {
-	Weeks      int  `json:"weeks"`      // weeks of healing the stay pays for
-	Cost       int  `json:"cost"`       // their fee
-	HP         int  `json:"hp"`         // hit points after the stay
-	Healed     bool `json:"healed"`     // the stay ends at full hit points
-	Needed     int  `json:"needed"`     // weeks to heal fully (0 healed, or the stables)
-	Affordable int  `json:"affordable"` // weeks the guest's gold pays for (0 in the stables)
+	Weeks      int    `json:"weeks"`      // weeks of healing the stay pays for
+	Cost       int    `json:"cost"`       // their fee
+	HP         int    `json:"hp"`         // hit points after the stay
+	Healed     bool   `json:"healed"`     // the stay ends at full hit points
+	Needed     int    `json:"needed"`     // weeks to heal fully (0 healed, or the stables)
+	Affordable int    `json:"affordable"` // weeks the guest's gold pays for (0 in the stables)
+	Refusal    string `json:"refusal"`    // why this stay cannot be chosen ("" if it can)
 }
 
-// innQuote quotes a stay in room for ch until healed or out of gold, the
-// original's only stay.
-func innQuote(ch *engine.Character, room engine.InnRoom) InnQuote {
+// innQuote quotes a stay in room for ch: weeks 0 is "until healed" (the
+// original's only stay: until healed or out of gold), more is that many
+// weeks of healing, which must be needed and paid for.
+func innQuote(ch *engine.Character, room engine.InnRoom, weeks int) InnQuote {
 	r := innRooms[room]
 	q := InnQuote{HP: ch.HP}
 	if r.hp > 0 {
@@ -39,11 +45,36 @@ func innQuote(ch *engine.Character, room engine.InnRoom) InnQuote {
 		}
 		q.Affordable = ch.Gold / r.fee
 	}
+	switch {
+	case weeks < 0:
+		q.Refusal = "A stay cannot be shorter than a week."
+	case weeks > 0 && r.hp == 0:
+		q.Refusal = "The stables heal nothing: a stay there is one free night."
+	case weeks > 0 && q.Needed == 0:
+		q.Refusal = fmt.Sprintf("%s is not hurt: there is nothing to heal.", ch.Name)
+	case weeks > q.Needed:
+		q.Refusal = fmt.Sprintf("%s needs only %s to heal fully.", ch.Name, plural(q.Needed, "week"))
+	case weeks > q.Affordable:
+		q.Refusal = fmt.Sprintf("%s can pay for %s (%d GP a week, %d GP held).", ch.Name, plural(q.Affordable, "week"), r.fee, ch.Gold)
+	}
+	if q.Refusal != "" {
+		return q
+	}
 	q.Weeks = min(q.Needed, q.Affordable)
+	if weeks > 0 {
+		q.Weeks = weeks
+	}
 	q.Cost = q.Weeks * r.fee
 	q.HP = min(ch.MaxHP, ch.HP+q.Weeks*r.hp)
 	q.Healed = q.HP == ch.MaxHP
 	return q
+}
+
+func plural(n int, unit string) string {
+	if n == 1 {
+		return "1 " + unit
+	}
+	return fmt.Sprintf("%d %ss", n, unit)
 }
 
 // InnStay is what a stay did: the room and weeks, the gold charged, and the
@@ -130,10 +161,12 @@ func (c *Controller) LeaveInn() error {
 	return nil
 }
 
-// Stay is the guest's stay in room until healed or out of gold, as the
-// original does, then the level check. From the level check's result the
-// guest may stay again.
-func (c *Controller) Stay(room engine.InnRoom) (*InnStay, error) {
+// Stay is the guest's stay in room, then the level check. weeks 0 stays
+// until healed or out of gold, as the original does; more stays that many
+// weeks of healing and checks out (the guide's early checkout, p.34),
+// which must be needed and paid for (InnQuote). A refusal changes nothing.
+// From the level check's result the guest may stay again.
+func (c *Controller) Stay(room engine.InnRoom, weeks int) (*InnStay, error) {
 	town := c.Game.Town
 	if !c.atInn() || town.InnChar == nil || (town.InnStep != engine.InnSelectRoom && town.InnStep != engine.InnLevelUp) {
 		return nil, ErrWrongState
@@ -142,6 +175,10 @@ func (c *Controller) Stay(room engine.InnRoom) (*InnStay, error) {
 		return nil, ErrInvalidChoice
 	}
 	ch := town.InnChar
+	q := innQuote(ch, room, weeks)
+	if q.Refusal != "" {
+		return nil, &Refusal{Message: q.Refusal}
+	}
 	if town.InnStep == engine.InnLevelUp {
 		c.press(Key{Kind: KeyEnter})
 	}
@@ -155,6 +192,10 @@ func (c *Controller) Stay(room engine.InnRoom) (*InnStay, error) {
 	c.press(Rune(innRooms[room].key))
 	for town.InnStep == engine.InnHealing {
 		if town.InnHealAmt > 0 && ch.HP < ch.MaxHP && ch.Gold >= town.InnHealCost {
+			if weeks > 0 && s.Weeks == weeks {
+				innLevelCheck(c.Game) // checking out early
+				break
+			}
 			s.Weeks++
 		}
 		c.InnTick()

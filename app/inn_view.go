@@ -24,7 +24,8 @@ type InnGuestView struct {
 }
 
 // InnRoomView is a room, its rate, and for the guest a stay until healed
-// there.
+// there, and how many weeks they may choose instead (0: no choice, in the
+// stables or with nothing to heal or no gold for a week).
 type InnRoomView struct {
 	Room        int      `json:"room"` // engine.InnRoom
 	Key         string   `json:"key"`  // its letter on the terminal's menu
@@ -33,6 +34,7 @@ type InnRoomView struct {
 	FeePerWeek  int      `json:"feePerWeek"`
 	Free        bool     `json:"free"`
 	UntilHealed InnQuote `json:"untilHealed"`
+	MaxWeeks    int      `json:"maxWeeks"`
 }
 
 var innStepNames = map[engine.InnStep]string{
@@ -70,16 +72,19 @@ func (c *Controller) InnView() (InnView, error) {
 		rv := InnRoomView{
 			Room: r, Key: string(room.key), Name: room.name,
 			HPPerWeek: room.hp, FeePerWeek: room.fee, Free: room.fee == 0,
-			UntilHealed: innQuote(ch, engine.InnRoom(r)),
+			UntilHealed: innQuote(ch, engine.InnRoom(r), 0),
+		}
+		if room.hp > 0 {
+			rv.MaxWeeks = min(rv.UntilHealed.Needed, rv.UntilHealed.Affordable)
 		}
 		v.Rooms = append(v.Rooms, rv)
 	}
 	return v, nil
 }
 
-// Quote quotes the guest's stay in room, as Stay would take it, without
-// changing anything.
-func (c *Controller) Quote(room engine.InnRoom) (InnQuote, error) {
+// Quote quotes the guest's stay in room for weeks (0: until healed), as
+// Stay would take it, without changing anything.
+func (c *Controller) Quote(room engine.InnRoom, weeks int) (InnQuote, error) {
 	town := c.Game.Town
 	if !c.atInn() || town.InnChar == nil || town.InnStep == engine.InnWho {
 		return InnQuote{}, ErrWrongState
@@ -87,5 +92,5 @@ func (c *Controller) Quote(room engine.InnRoom) (InnQuote, error) {
 	if room < engine.Stables || room > engine.Royal {
 		return InnQuote{}, ErrInvalidChoice
 	}
-	return innQuote(town.InnChar, room), nil
+	return innQuote(town.InnChar, room, weeks), nil
 }
