@@ -246,6 +246,7 @@ func startEquipFlow(game *engine.GameState, town *engine.TownState) {
 			c.Items[i].Equipped = false
 		}
 	}
+	c.RecalcAC(game.Scenario.Items) // AC always matches what is worn (#35)
 
 	town.InputMode = engine.InputEquip
 	town.EquipCategory = 0 // start with first category in EquipCategories
@@ -261,7 +262,7 @@ func buildEquipChoices(game *engine.GameState, town *engine.TownState) {
 	catIdx := town.EquipCategory
 	if catIdx >= len(engine.EquipCategories) {
 		// Done with all categories — recalculate AC from equipped items
-		RecalcAC(c, items)
+		c.RecalcAC(items)
 		town.EquipChoices = nil
 
 		// Party-wide equip mode: advance to next party member
@@ -338,6 +339,7 @@ func handleEquipSelection(game *engine.GameState, town *engine.TownState, sel in
 	if engine.CursesOnEquip(game.Scenario.Items[c.Items[pos].ItemIndex], c) {
 		c.Items[pos].Cursed = true
 	}
+	c.RecalcAC(game.Scenario.Items)
 	advanceEquipCategory(game, town)
 	if c.Items[pos].Cursed {
 		town.Message = "** CURSED **" // after the next category's prompt clears it
@@ -362,21 +364,6 @@ func advanceEquipCategory(game *engine.GameState, town *engine.TownState) {
 	buildEquipChoices(game, town)
 }
 
-// RecalcAC recalculates a character's armor class from equipped items.
-// Base AC is 10. Each equipped item's ACMod subtracts from it (lower = better).
-func RecalcAC(c *engine.Character, items []data.Item) {
-	ac := 10
-	for i := 0; i < c.ItemCount; i++ {
-		if !c.Items[i].Equipped {
-			continue
-		}
-		idx := c.Items[i].ItemIndex
-		if idx >= 0 && idx < len(items) {
-			ac -= items[idx].ACMod
-		}
-	}
-	c.AC = ac
-}
 
 // handleDropItem removes an item from the character.
 // From CAMP segment p-code proc 19: "DROP ITEM (0=EXIT) ? >"
@@ -402,6 +389,7 @@ func handleDropItem(game *engine.GameState, town *engine.TownState, num int) {
 	}
 
 	c.DropItem(pos)
+	c.RecalcAC(game.Scenario.Items) // an equipped item may have gone (#35)
 	if town.Message == "" {
 		town.Message = "DROPPED"
 	}

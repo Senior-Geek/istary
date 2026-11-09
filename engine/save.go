@@ -161,6 +161,8 @@ func (g *GameState) Load() error {
 			c.MaxPriestSpells = c.PriestSpells
 		}
 		c.MigrateItems()
+		// AC is derived from what is worn: never trust a stored value (#35).
+		c.RecalcAC(g.Scenario.Items)
 		// Force reset SpellKnown — spell table was reordered (MONTINO moved from
 		// Mage to Priest, spells reindexed to match Pascal SPELLSKN[1..50]).
 		// MigrateSpellKnown will regenerate from current spell slots.

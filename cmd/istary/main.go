@@ -76,14 +76,7 @@ func main() {
 	}
 	game.BuildDate = buildDate
 
-	game.Load() // restore roster/party from ~/.config/wizardry/
-
-	// Recalculate AC for all characters from equipped items
-	for _, c := range game.Town.Roster.Characters {
-		if c != nil {
-			app.RecalcAC(c, game.Scenario.Items)
-		}
-	}
+	game.Load() // restore roster/party from ~/.config/wizardry/ (Load works out every AC)
 
 	// Detect sixel support BEFORE tcell takes over the terminal.
 	// DetectSixel sends DA1 (ESC[c) and checks for attribute 4.
@@ -1300,7 +1293,7 @@ func handleClassChange(game *engine.GameState, ev *tcell.EventKey) bool {
 	}
 
 	// Recalculate AC (only cursed equipped items remain)
-	app.RecalcAC(c, game.Scenario.Items)
+	c.RecalcAC(game.Scenario.Items)
 
 	// Recalculate spell slots for new class (SetSpells uses class+level)
 	engine.SetSpells(c)

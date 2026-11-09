@@ -27,6 +27,7 @@ const (
 	itemStaff     = 5  // 10 GP, unlimited, anyone
 	itemHelm      = 14 // 100 GP, unlimited, unknown name HELM
 	itemCursed    = 29 // LONG SWORD -1, a cursed type: never in the catalog
+	chainMail     = 11 // 90 GP, AC 3
 	mageSlot      = 4  // partySession's mage
 )
 
@@ -624,5 +625,35 @@ func TestShopViewFixture(t *testing.T) {
 	}
 	if !bytes.Equal(got, want) {
 		t.Fatal("shop-views.json is out of date (run with ISTARY_UPDATE_FIXTURES=1)")
+	}
+}
+
+// Selling worn armour at Boltac's changes the AC the party bar shows and
+// the save holds (finding #35); a stale AC in a save is worked out again
+// when the window loads it.
+func TestShopSaleUpdatesAC(t *testing.T) {
+	s, dir := shopSession(t)
+	g := s.ctrl.Game
+	fighter := g.Town.Party.Members[0]
+	fighter.AddItem(chainMail, true)
+	fighter.Items[0].Equipped = true
+	fighter.RecalcAC(g.Scenario.Items)
+	worn := fighter.AC
+	s.ctrl.Save()
+	s.ShopAction(ShopRequest{Action: ShopActEnter, Slot: 0})
+	v := done(t, s, dir, ShopRequest{Action: ShopActSell, N: 1}, "sell", "CHAIN MAIL", 45)
+	if v.PartyBar[0].AC != 10 || worn == 10 {
+		t.Fatalf("after selling worn chain mail: party bar AC %d (was %d)", v.PartyBar[0].AC, worn)
+	}
+	if ac := onDisk(t, dir).Roster[rosterIndex(g, fighter)].AC; ac != 10 {
+		t.Fatalf("saved AC %d", ac)
+	}
+
+	editSave(t, dir, func(st map[string]any) {
+		st["roster"].([]any)[0].(map[string]any)["AC"] = 2
+	})
+	walkTo(t, s, "settings")
+	if v := s.ReloadRoster(); v.Error != "" || v.PartyBar[0].AC != 10 {
+		t.Fatalf("reloaded with a stale AC: %q, AC %d", v.Error, v.PartyBar[0].AC)
 	}
 }

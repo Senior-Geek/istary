@@ -166,6 +166,7 @@ func NewCharacter(name string, race Race, class Class, align Alignment) *Charact
 		HP:        0, // rolled during creation
 		Gold:      0, // rolled during creation
 		Age:       0, // set by FinalizeCharacter or DSK import
+		AC:        10, // wearing nothing (RecalcAC, finding #35)
 	}
 	for i := range c.Equipment {
 		c.Equipment[i] = -1

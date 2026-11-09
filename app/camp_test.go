@@ -43,6 +43,7 @@ func campers(t *testing.T, rng *rand.Rand) *Controller {
 				ch.EquipItem(ch.ItemCount - 1)
 			}
 		}
+		ch.RecalcAC(g.Scenario.Items) // what they wear, as a load would work out (#35)
 		ch.InMaze = true
 		g.Town.Roster.Add(ch)
 		g.Town.Party.Members = append(g.Town.Party.Members, ch)

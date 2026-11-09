@@ -19,7 +19,7 @@
       "Vitality": 14,
       "Agility": 6,
       "Luck": 9,
-      "AC": 4,
+      "AC": 10,
       "MageSpells": [
         0,
         0,
@@ -190,7 +190,7 @@
       "Vitality": 0,
       "Agility": 0,
       "Luck": 0,
-      "AC": 0,
+      "AC": 10,
       "MageSpells": [
         0,
         0,

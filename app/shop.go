@@ -236,6 +236,7 @@ func shopInput(game *engine.GameState, town *engine.TownState, ch rune) {
 					c.Gold += sellPrice
 					// Remove item — p-code IC 3211-3308
 					c.DropItem(idx)
+					c.RecalcAC(items) // it may have been worn (#35)
 					// Increment stock — p-code IC 3337-3357
 					if n := game.Stock(itemIdx); n > -1 {
 						game.SetStock(itemIdx, n+1)
@@ -268,6 +269,7 @@ func shopInput(game *engine.GameState, town *engine.TownState, ch rune) {
 					// (DropItem keeps a stuck item; finding #34).
 					c.Items[idx].Equipped, c.Items[idx].Cursed = false, false
 					c.DropItem(idx)
+					c.RecalcAC(items) // #35
 					// Increment stock — p-code IC 3337-3357
 					if n := game.Stock(itemIdx); n > -1 {
 						game.SetStock(itemIdx, n+1)

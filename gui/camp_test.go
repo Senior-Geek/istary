@@ -356,7 +356,7 @@ func TestCampRestartFollowsUninterruptedPlay(t *testing.T) {
 		standing []standing
 	}
 	restartedAt := map[string]bool{}
-	for seed := int64(1); seed <= 12; seed++ { // 12: stuck items (#34) changed the walks
+	for seed := int64(1); seed <= 12; seed++ { // 12: worked-out AC (#35) changed the walks
 		rand.Seed(seed)
 		rng := rand.New(rand.NewSource(seed))
 		s, dir := campSession(t, rng, true)

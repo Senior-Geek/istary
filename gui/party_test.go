@@ -19,6 +19,7 @@ func rosterWith(t *testing.T, s *Session, chars ...*engine.Character) {
 		if ch.HP == 0 {
 			ch.HP, ch.MaxHP = 8, 8
 		}
+		ch.RecalcAC(s.scenario.Items) // what they wear, as every load works it out (#35)
 		s.ctrl.Game.Town.Roster.Add(ch)
 	}
 	if err := s.ctrl.Save(); err != nil {

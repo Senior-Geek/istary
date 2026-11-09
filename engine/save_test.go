@@ -58,6 +58,7 @@ func TestSaveFileFormat(t *testing.T) {
 	g := newTestGame(t, 1)
 	c := sampleCharacter()
 	other := NewCharacter("BENCHWARMER", Human, Fighter, Neutral)
+	other.AC = 0 // as NewCharacter left it before #35: the golden is also an old save to load
 	g.Town.Roster.Add(c)
 	g.Town.Roster.Add(other)
 	g.Town.Party.Members = []*Character{c}
