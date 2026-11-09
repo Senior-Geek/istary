@@ -34,7 +34,7 @@ import (
 
 // Shop actions (ShopRequest.Action).
 const (
-	ShopActEnter         = "enter"          // Slot: the party member who enters (0-based)
+	ShopActEnter         = "enter"          // Slot: the party member who enters (0-based), in place of any customer
 	ShopActLeaveCustomer = "leave-customer" // back to "WHO WILL ENTER"
 	ShopActBuy           = "buy"            // Item: a ShopOffer's Item
 	ShopActConfirm       = "confirm"        // Yes: buy the unusable item anyway
@@ -122,8 +122,20 @@ func (s *Session) shopRefusal() error {
 func shopOp(c *app.Controller, v app.ShopView, r ShopRequest) error {
 	switch r.Action {
 	case ShopActEnter:
-		if v.Step != "who" {
-			return errors.New("A customer is already at the counter. Leave first.")
+		// Another customer: the one at the counter leaves first, as RETURN
+		// does, unless Boltac is asking something.
+		switch {
+		case v.Step == "confirm":
+			return errAnswerBoltac
+		case v.Step == "who":
+		case r.Slot == v.Customer:
+			return nil // already at the counter
+		case !isMember(c.Game, r.Slot):
+			return app.ErrNoSuchPartyMember
+		default:
+			if err := c.ShopLeaveCustomer(); err != nil {
+				return err
+			}
 		}
 		return c.ShopEnter(r.Slot)
 	case ShopActLeaveCustomer:
@@ -164,6 +176,12 @@ func shopOp(c *app.Controller, v app.ShopView, r ShopRequest) error {
 		return errNoSuchItem
 	}
 	return err
+}
+
+// isMember reports whether slot (0-based) holds a party member.
+func isMember(g *engine.GameState, slot int) bool {
+	m := g.Town.Party.Members
+	return slot >= 0 && slot < len(m) && m[slot] != nil
 }
 
 // rosterBytes is the roster as saved, to tell whether an action changed it.

@@ -134,7 +134,13 @@ func TestShopTransactions(t *testing.T) {
 	if sv := v.Shop.View; sv.Step != "main" || sv.Customer != mageSlot || sv.Name != mage.Name || sv.Gold != 1000 || sv.Room != 8 {
 		t.Fatalf("the mage enters: %+v", sv)
 	}
-	refused(t, s, dir, ShopRequest{Action: ShopActEnter, Slot: 0}, "A customer is already at the counter. Leave first.")
+	if v = unchanged(t, s, dir, ShopRequest{Action: ShopActEnter, Slot: mageSlot}); v.Shop.View.Customer != mageSlot || v.Shop.View.Step != "main" {
+		t.Fatalf("the mage again: %+v", v.Shop.View)
+	}
+	refused(t, s, dir, ShopRequest{Action: ShopActEnter, Slot: 6}, "No party member in that slot.")
+	if v = s.State(); v.Shop.View.Customer != mageSlot {
+		t.Fatalf("a bad slot sent the mage away: %+v", v.Shop.View)
+	}
 
 	// A purchase, saved; what Boltac cannot sell or the mage cannot pay
 	// is refused as the offer says.
@@ -158,6 +164,7 @@ func TestShopTransactions(t *testing.T) {
 	}
 	refused(t, s, dir, ShopRequest{Action: ShopActBuy, Item: itemStaff}, errAnswerBoltac.Error())
 	refused(t, s, dir, ShopRequest{Action: ShopActSell, N: 1}, errAnswerBoltac.Error())
+	refused(t, s, dir, ShopRequest{Action: ShopActEnter, Slot: 0}, errAnswerBoltac.Error())
 	if v = unchanged(t, s, dir, ShopRequest{Action: ShopActConfirm, Yes: false}); v.Shop.View.Step != "buy" {
 		t.Fatalf("after no: %q", v.Shop.View.Step)
 	}
@@ -220,12 +227,19 @@ func TestShopTransactions(t *testing.T) {
 	refused(t, s, dir, ShopRequest{Action: ShopActBuy, Item: itemStaff}, "** YOU CANT CARRY ANYTHING MORE **")
 
 	// Another customer.
-	refused(t, s, dir, ShopRequest{Action: ShopActEnter, Slot: 0}, "A customer is already at the counter. Leave first.")
+	// Another customer, straight from the counter (the mage leaves first),
+	// and back by "WHO WILL ENTER".
+	fighter := g.Town.Party.Members[0]
+	if v = unchanged(t, s, dir, ShopRequest{Action: ShopActEnter, Slot: 0}); v.Shop.View.Name != fighter.Name || v.Shop.View.Customer != 0 || v.Shop.View.Step != "main" {
+		t.Fatalf("the fighter in the mage's place: %+v", v.Shop.View)
+	}
+	if v = unchanged(t, s, dir, ShopRequest{Action: ShopActEnter, Slot: mageSlot}); v.Shop.View.Customer != mageSlot || v.Shop.View.Room != 0 {
+		t.Fatalf("the mage back: %+v", v.Shop.View)
+	}
 	if v = unchanged(t, s, dir, ShopRequest{Action: ShopActLeaveCustomer}); v.Shop.View.Step != "who" || v.Shop.View.Customer != -1 {
 		t.Fatalf("after leaving: %+v", v.Shop.View)
 	}
 	refused(t, s, dir, ShopRequest{Action: ShopActLeaveCustomer}, errNoCustomer.Error())
-	fighter := g.Town.Party.Members[0]
 	if v = unchanged(t, s, dir, ShopRequest{Action: ShopActEnter, Slot: 0}); v.Shop.View.Name != fighter.Name || v.Shop.View.Room != 8 {
 		t.Fatalf("the fighter enters: %+v", v.Shop.View)
 	}
@@ -455,8 +469,16 @@ func TestShopActionsAreTheControllers(t *testing.T) {
 			roster := rosterBytes(s.ctrl.Game)
 			v, wrote := shopAct(t, s, dir, r)
 			switch r.Action {
-			case ShopActEnter:
-				twin.ShopEnter(r.Slot)
+			case ShopActEnter: // in place of the customer, as the GUI offers it
+				tv, _ := twin.ShopView()
+				members := tg.Town.Party.Members
+				valid := r.Slot < len(members) && members[r.Slot] != nil
+				if tv.Step != "who" && tv.Step != "confirm" && r.Slot != tv.Customer && valid {
+					twin.ShopLeaveCustomer()
+				}
+				if r.Slot != tv.Customer {
+					twin.ShopEnter(r.Slot)
+				}
 			case ShopActLeaveCustomer:
 				twin.ShopLeaveCustomer()
 			case ShopActBuy:
