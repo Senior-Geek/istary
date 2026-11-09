@@ -462,6 +462,37 @@ the Castle (Player's Guide pp.22, 36, 38).
   the random numbers unchanged); the bridge tests walk explicitly with
   `walkTo` before each action.
 
+**The Adventurer's Inn** (`app/inn.go`, `app/inn_ops.go`, `app/inn_view.go`,
+I-1, I-2). The terminal's Inn moved here intact (the castle's A, WHO WILL
+STAY, the rooms, the heal loop, the level check, RETURN); the terminal
+reaches it through `HandleKey`, and its 0.7-second timer calls `InnTick`.
+The rooms' letters, names and rates are one table, `innRooms` (the same
+rates as `engine.InnRoomQuality` and `InnRoomCosts`). A week heals the
+room's rate, to the maximum at most, and costs a full week, while the guest
+is hurt and can pay; spell points come back when any room is chosen; the
+level check follows every stay (one level at most; age-weighted attribute
+changes; death of old age at vitality 2, LOST). Healing draws no random
+number; the level check does. Inn stays age no one (finding #11).
+
+| Operation | Effect |
+|---|---|
+| `InnEnter(slot)` | Choose the guest (WHO WILL STAY); only an OK guest (`*Refusal` "NAME IS NOT OK") |
+| `InnLeaveGuest()`, `LeaveInn()` | Back to WHO WILL STAY; out to the castle (RETURN steps) |
+| `Stay(room, weeks)` | The room's letter, its weeks and the level check, in one call. `weeks` 0: until healed or out of gold (the original's stay); more: that many weeks of healing, then checking out early (PG p.34), refused (`*Refusal`, nothing changed) unless needed and paid for, and never in the stables (one free night). Returns `InnStay`: room, weeks, gold charged, and the guest before and after (HP, maximum, gold, spells, level, attributes, age, learned spells, the level check's words, death) |
+| `Quote(room, weeks)` | Read-only: weeks, cost, HP after, healed, weeks needed and affordable, refusal |
+| `InnView()` | Read-only: the step, the guests (refusals), the guest, and each room's rate, quote until healed and most weeks |
+| `PoolGold(slot)`, `DivvyGold()` (`app/gold.go`, I-3) | Pool every other member's gold to one (the Tavern, Boltac's, the Inn); share it evenly (the Tavern). `GoldMove`: everyone before and after; the total kept; every member takes part; a remainder one piece each in party order |
+
+Tests: the I-0 characterization (`cmd/istary/inn_test.go`: a transcript and
+the screens as goldens, every room, running out of gold, spells, levels,
+death of old age, no aging, no early checkout); `Stay` against the
+terminal's keys and ticks on twins (1,500 random parties, two stays each:
+the same town and the same random numbers); quotes against stays; chosen
+weeks against their quotes and the most weeks against the stay until
+healed; refusals changing nothing; pooling and sharing on random parties
+(`app/inn_test.go`, `app/gold_test.go`). `engine.RestAtInn`, unused and at
+odds with the terminal (its stables restored no spells), was removed.
+
 **Boltac's Trading Post in the window (M8-3).** `gui/shop.go` is the bridge
 to the controller's Boltac's operations (M8-2); the screen is M8-4 (below).
 - **Going there and back:** the Castle's Boltac's exit is open for a party
@@ -575,6 +606,46 @@ frame, from `View.Shop` only; `lib/shop.js` reshapes it and decides nothing.
   1512x945: the sell question (No, Escape and Sell it), a failed save
   retried, and the sheet equipping chain mail and an evil shield that
   sticks. Stills in `docs/design/m2-exploration/stills/gui-m8-completion/`.
+
+**The Adventurer's Inn in the window (I-4).** `gui/inn.go` is the bridge;
+`InnScreen.svelte` the screen, from `View.Inn` only; `lib/inn.js` reshapes
+it and decides nothing.
+- **View and actions:** `View.Inn` (nil elsewhere) is `{view, last}`:
+  `app.InnView` unchanged and the receipt of the last stay or pooling
+  (`stay` or `gold`, `saved`, `durable`). `InnAction(InnRequest{action,
+  slot, room, weeks})`: `enter` (in place of any guest), `leave-guest`,
+  `stay` (a room; weeks 0 until healed) and `pool` (the party's gold to the
+  guest). `InnQuote(room, weeks)` quotes chosen weeks, read-only.
+  `GoldAction(GoldRequest{action, slot})`: `divvy` at the Tavern, `pool`;
+  its receipt is `View.Gold`, at the Tavern.
+- **Saving:** a stay and its level check are one action and one atomic
+  write of the roster, so a stay is never half saved and no step lies
+  between payment and the level check's rolls for a closed window to undo.
+  Pooling and sharing are one write each. Choosing or switching the guest,
+  checking out, a refusal, quoting and looking write nothing; a stay that
+  changes nothing (a night in the stables short of a level) writes nothing
+  but keeps its receipt. A failed save keeps the stay in the window, the
+  receipt NOT saved; Try saving again (`SaveNow`) marks it saved and repeats
+  nothing (no healing, charge or roll); closing the window asks first.
+- **The screen:** the guest from the party bar (marked there) or, with the
+  party hidden or for a guest who may not stay, a list with Go's refusal;
+  the guest card (class, level, HP, gold, age, spell points, experience and
+  the next level's), the character sheet, Pool party gold, Check out. Two
+  modes: Rest until healed (each room's quote: weeks, gold, HP after, and
+  when gold falls short, the weeks it pays for of those needed) and Choose
+  weeks (Go's quote per room for the weeks typed; a disabled Stay says
+  Go's refusal); the stables are one free night in either. The receipt
+  lists room and weeks, gold, HP, maximum HP, spell points restored, age,
+  level, attribute changes, learned spells and death of old age, with the
+  level check's words. A note says spell points come back with every stay
+  and that Istary does not yet age characters for Inn stays. At the
+  Tavern, Divvy gold and its receipt (everyone before and after).
+- **Tests:** `gui/inn_test.go` (one save per stay or pooling and none
+  otherwise, a failed save retried with nothing repeated and found after a
+  restart, Divvy at the Tavern only) and `TestInnViewFixture`
+  (`testdata/inn-views.json`, held by `innViews.test.js`). Live (`wails dev`
+  + headless Chrome) at 760x532, 980x692 and 1512x945. Stills in
+  `docs/design/m2-exploration/stills/gui-inn-i4/`.
 
 **The location frame (Castle-0 C0-3).** Every town place is drawn in one
 frame (`LocationFrame.svelte`), in grid areas that never overlap:

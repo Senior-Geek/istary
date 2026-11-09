@@ -12,9 +12,19 @@ at the top (or press Esc; it abandons only what is unfinished, such as a
 character being created), its destinations ("Go to") and its actions apart, its
 picture (a themed panel until artwork exists), and the party bar at the
 bottom, shown or hidden with Hide party.
-- **The Castle:** Gilgamesh's Tavern, Boltac's Trading Post (for a party),
-  the Edge of Town; the Adventurer's Inn and the Temple of Cant are shown
+- **The Castle:** Gilgamesh's Tavern, the Adventurer's Inn and Boltac's
+  Trading Post (for a party), the Edge of Town; the Temple of Cant is shown
   closed (not in the window yet).
+- **The Adventurer's Inn (I-4):** click a party member to check them in
+  (only a character who is OK may stay). Each room shows its rate and, for
+  the guest, what a stay there does: Rest until healed (the original's
+  stay: until healed or out of gold) or Choose weeks (leave partly healed).
+  The stables are a free night that heals nothing. Every stay restores
+  spell points and ends with a level check; the receipt shows gold, HP,
+  spells, level and attribute changes, and whether it is saved (Try saving
+  again if not). Pool party gold gives the guest everyone's gold. Istary
+  does not yet age characters for Inn stays (the original's rate is not
+  established).
 - **Boltac's Trading Post (M8-4):** click a party member in the party bar
   to bring them to the counter (another click on someone else switches);
   Buy, Sell, Identify and Uncurse list Boltac's catalog and the customer's
@@ -23,13 +33,15 @@ bottom, shown or hidden with Hide party.
   equipment the customer cannot use asks first, and so does selling
   something they wear. Each purchase, sale, identification or uncursing is
   saved at once, and the receipt says Saved, saved but perhaps not durably,
-  or NOT saved (with Try saving again). Pool Gold is not offered (deferred).
+  or NOT saved (with Try saving again). Pool Gold is offered at the Inn,
+  not yet here.
 - **Character sheets** (click a party member or a roster character):
   Equip and Take off for each item, anywhere in town; a greyed button says
   why (the class cannot use it, a cursed item is stuck in its place...).
   The armour class changes at once. Cursed items, and items of another
   alignment, stick once worn: only Boltac can remove them.
-- **Gilgamesh's Tavern:** form the party: Join, Remove, and the password.
+- **Gilgamesh's Tavern:** form the party: Join, Remove, and the password;
+  Divvy gold shares the party's gold evenly.
 - **The Edge of Town:** Enter the maze; practice (Istary only); Leave the
   game; the way to the Training Grounds and to Settings.
 - **The Training Grounds:** the roster (click a character for its sheet,
