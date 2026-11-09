@@ -23,12 +23,15 @@
   //   actions   snippet: the place's actions, under the destinations (optional)
   //   aside     snippet beside the nav, e.g. a map (optional)
   //   children  the place's wider content (optional)
+  //   pick, onpick, current
+  //             the party bar's picking (PartyBar): what a click on a member
+  //             does here, and the member worked with (optional; Boltac's)
   import * as S from '../../wailsjs/go/main/Session.js'
   import LocationScene from './LocationScene.svelte'
   import PartyBar from './PartyBar.svelte'
   import { title, back, destinations } from './navigation.js'
 
-  let { view, busy = false, call, onopen, scene, actions, aside, children } = $props()
+  let { view, busy = false, call, onopen, scene, actions, aside, children, pick, onpick, current = -1 } = $props()
 
   const here = $derived(title(view.location))
   const way = $derived(back(view))
@@ -84,7 +87,7 @@
 
   {#if partyShown}
     <div class="party-area">
-      <PartyBar slots={view.partyBar ?? []} frontRow={view.frontRow} {onopen} />
+      <PartyBar slots={view.partyBar ?? []} frontRow={view.frontRow} {onopen} {pick} {onpick} {current} {busy} />
     </div>
   {/if}
 </div>

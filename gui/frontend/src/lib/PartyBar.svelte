@@ -5,7 +5,8 @@
   // level, HP, AC and condition, with the HP left as a thin bar. It renders
   // view.partyBar (Go's; the practice copies during practice) and nothing
   // else, and reports a click on a member: in Camp, picking the member for
-  // what Camp asks (pick); elsewhere, opening a character sheet (onopen).
+  // what Camp asks, or at Boltac's the customer (pick); elsewhere, opening
+  // a character sheet (onopen).
   //
   // Props:
   //   slots     view.partyBar

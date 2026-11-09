@@ -14,6 +14,7 @@
   import TrainingScreen from './lib/TrainingScreen.svelte'
   import TavernScreen from './lib/TavernScreen.svelte'
   import SettingsScreen from './lib/SettingsScreen.svelte'
+  import TradingScreen from './lib/TradingScreen.svelte'
 
   let view = $state(null)
   let busy = $state(false)
@@ -88,7 +89,8 @@
             </div>
           </div>
         {/if}
-        {#if view.notice}<div class="banner notice">{view.notice}</div>{/if}
+        <!-- At Boltac's the transaction's receipt says it, saved or not. -->
+        {#if view.notice && !view.shop?.last}<div class="banner notice">{view.notice}</div>{/if}
         {#if view.settings?.note}<div class="banner error">{view.settings.note}</div>{/if}
       </div>
 
@@ -106,6 +108,8 @@
             <TrainingScreen {view} {busy} {call} {selected} onselect={select} onopen={open} />
           {:else if view.location === 'tavern'}
             <TavernScreen {view} {busy} {call} {selected} onselect={select} onopen={open} />
+          {:else if view.location === 'trading'}
+            <TradingScreen {view} {busy} {call} onopen={open} />
           {:else if view.location === 'settings'}
             <SettingsScreen {view} {busy} {call} onopen={open} onroster={() => { selected = -1 }} />
           {:else}
