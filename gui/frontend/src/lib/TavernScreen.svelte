@@ -3,7 +3,8 @@
   // roster says who may join and, for those who may not, the Tavern's
   // answer (Go's JoinRefusal); members can be removed. The party itself is
   // shown by the party bar below, as everywhere. Who may join, the
-  // password and the order are Go's.
+  // password and the order are Go's. Divvy Gold shares the party's gold
+  // (Session.GoldAction); how is Go's, and so is its receipt (view.gold).
   //
   // Props:
   //   view      the Go View (view.location is "tavern")
@@ -20,6 +21,7 @@
   let password = $state('')
 
   const members = $derived(view.party?.length ?? 0)
+  const gold = $derived(view.gold) // the last Divvy Gold (Go's receipt)
   // A short form of the Tavern's refusal for the roster's Party column.
   const hint = (msg) => msg.replace(/^\*\* | \*\*$/g, '').replace(/ IS ALREADY IN THE PARTY!$/, ' IN PARTY')
 
@@ -46,6 +48,25 @@
     {:else}
       <p class="muted">Choose Join beside a character to add them; Remove takes a member out. Members keep the
         order they joined; the order is changed in Camp, as in the original game.</p>
+    {/if}
+    {#if members > 1}
+      <div class="divvy">
+        <button class="small" disabled={busy} onclick={() => call(S.GoldAction, { action: 'divvy' })}
+          title="Pool the party's gold and share it evenly (Divvy Gold)">Divvy gold</button>
+        <span class="muted">Shares the party's gold evenly; any odd pieces go to the first members.</span>
+      </div>
+    {/if}
+    {#if gold}
+      <div class="receipt {gold.saved ? (gold.durable ? 'saved' : 'notDurable') : 'unsaved'}" aria-label="Gold shared">
+        <b>Shared the party's {gold.move.total} GP.</b>
+        <span class="status">{gold.saved ? (gold.durable ? 'Saved' : 'Saved, but perhaps not durably') : 'NOT saved'}</span>
+        {#if !gold.saved}
+          <button class="small" disabled={busy} onclick={() => call(S.SaveNow)}>Try saving again</button>
+        {/if}
+        <ul>
+          {#each gold.move.names as n, i (i)}<li>{n}: {gold.move.before[i]} → {gold.move.after[i]} GP</li>{/each}
+        </ul>
+      </div>
     {/if}
   {/snippet}
 
@@ -93,4 +114,13 @@
   .pending .row button { margin: 0; }
   .inparty { color: var(--accent); font-weight: 600; margin-right: 6px; }
   button.small { font-size: 12px; padding: 1px 8px; margin: 0; }
+  .divvy { display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; margin-top: 8px; font-size: 12px; }
+  .receipt { margin-top: 8px; padding: 6px 10px; border-radius: 4px; font-size: 13px; border-left: 3px solid; }
+  .receipt .status { font-weight: 600; font-size: 12px; margin-left: 6px; }
+  .receipt ul { margin: 4px 0 0; padding-left: 18px; }
+  .receipt.saved { background: #1e2a1e; border-color: var(--accent); }
+  .receipt.saved .status { color: var(--accent); }
+  .receipt.notDurable { background: #2e2a1a; border-color: var(--gold); }
+  .receipt.unsaved { background: #3a1d1b; border-color: var(--error); }
+  .receipt.unsaved .status { color: var(--error); }
 </style>
