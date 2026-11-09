@@ -115,6 +115,13 @@ func TestGoToShopsAndServices(t *testing.T) {
 			if err := c.GoTo(loc); err != nil || c.Game.Town.Location != engine.Trading || c.Game.Town.ShopStep != engine.ShopWho || c.Game.Town.Message != "" {
 				t.Errorf("Boltac's with a party: %v", err)
 			}
+		} else if loc == engine.Inn { // the Inn is the controller's (I-1)
+			if err := c.GoTo(loc); err != nil || c.Game.Town.Location != engine.Inn || c.Game.Town.InnStep != engine.InnWho || c.Game.Town.Message != "" {
+				t.Errorf("the Inn with a party: %v", err)
+			}
+			if err := c.GoTo(engine.Castle); err != nil || c.Game.Town.Location != engine.Castle {
+				t.Errorf("back from the Inn: %v", err)
+			}
 		} else if err := c.GoTo(loc); !errors.Is(err, ErrLocationNotMigrated) || !reflect.DeepEqual(*c.Game.Town, before) {
 			t.Errorf("%v with a party: %v", loc, err)
 		}

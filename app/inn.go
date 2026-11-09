@@ -13,6 +13,37 @@ import (
 // from the CASTLE segment p-code and the Pascal CASTLE2.TEXT. Healing draws
 // no random number; the level check does.
 
+// innRoom is one of the Inn's rooms: its letter on the menu, its name as
+// the terminal's menu shows it, and its rate, the HP a week heals and the
+// gold a week costs (Pascal TAKENAP(HPADD, cost); CASTLE2.TEXT line 500
+// for the royal suite). The Player's Guide (p.34) calls them the Stables,
+// Barracks, Double Occupancy, Private Room and Royal Suite, at the same
+// rates.
+type innRoom struct {
+	key     rune
+	name    string
+	hp, fee int
+}
+
+// innRooms are the rooms in the menu's order, indexed by engine.InnRoom.
+var innRooms = [...]innRoom{
+	engine.Stables:  {'A', "THE STABLES", 0, 0},
+	engine.Cot:      {'B', "COTS", 1, 10},
+	engine.Economy:  {'C', "ECONOMY ROOMS", 3, 50},
+	engine.Merchant: {'D', "MERCHANT SUITES", 7, 200},
+	engine.Royal:    {'E', "ROYAL SUITES", 10, 500},
+}
+
+// innRoomOfKey is the room a menu letter chooses.
+func innRoomOfKey(ch rune) (engine.InnRoom, bool) {
+	for r, room := range innRooms {
+		if room.key == ch {
+			return engine.InnRoom(r), true
+		}
+	}
+	return 0, false
+}
+
 // castleInnKey is the castle menu's A: the Inn, for a party.
 func (c *Controller) castleInnKey() {
 	town := c.Game.Town
@@ -69,26 +100,11 @@ func innInput(town *engine.TownState, ch rune) {
 	case engine.InnSelectRoom:
 		// Pascal TAKENAP (CASTLE2.TEXT lines 415-479):
 		// Sets up healing parameters, then enters animated healing loop.
-		var healAmt, healCost int
-		switch ch {
-		case 'A':
-			healAmt = 0
-			healCost = 0
-		case 'B':
-			healAmt = 1
-			healCost = 10
-		case 'C':
-			healAmt = 3
-			healCost = 50
-		case 'D':
-			healAmt = 7
-			healCost = 200
-		case 'E':
-			healAmt = 10 // Pascal CASTLE2.TEXT line 500: TAKENAP(10, 500)
-			healCost = 500
-		default:
+		r, ok := innRoomOfKey(ch)
+		if !ok {
 			return
 		}
+		healAmt, healCost := innRooms[r].hp, innRooms[r].fee
 		c := town.InnChar
 
 		// Restore spells on any room (Pascal calls SETSPELS in TAKENAP)
