@@ -8,70 +8,9 @@ import (
 // InnRoomQuality is the HP healed per week for each room type.
 // Traced from CASTLE segment p-code (byte 5141-5171):
 //   Stables=0, Cot=1, Economy=3, Merchant=7, Royal=10
+// The Inn itself is app/inn.go (its rooms, the heal loop and the level
+// check).
 var InnRoomQuality = [...]int{0, 1, 3, 7, 10}
-
-// RestAtInn processes one character staying at the inn.
-// Returns a slice of messages describing what happened.
-//
-// From CASTLE segment p-code proc 4 (IC 4886):
-//   - Only STATUS=OK characters can stay (byte 5119-5123)
-//   - Stables (quality=0): "IS NAPPING", no healing, no stat changes
-//   - Paid rooms: heal loop, restore spells silently, stat changes
-//   - Original animates HP/gold each tick; we show the final state
-func RestAtInn(c *Character, room InnRoom) []string {
-	var msgs []string
-
-	// Only STATUS=OK characters can use the inn
-	if c.Status != OK {
-		return nil
-	}
-
-	cost := InnRoomCosts[room]
-	quality := InnRoomQuality[room]
-
-	if quality == 0 {
-		// Stables: free, no healing — from p-code byte 4985: " IS NAPPING"
-		msgs = append(msgs, fmt.Sprintf("%s IS NAPPING", c.Name))
-		return msgs
-	}
-
-	// Paid rooms: heal loop
-	// From p-code proc 4 (IC 4910-4964):
-	//   WHILE gold >= cost AND HP < MaxHP: heal, deduct gold
-	startHP := c.HP
-	for c.Gold >= cost && c.HP < c.MaxHP {
-		c.HP += quality
-		if c.HP > c.MaxHP {
-			c.HP = c.MaxHP
-		}
-		c.Gold -= cost
-	}
-
-	// Display result — from p-code proc 15 (IC 4568):
-	//   "<name> IS HEALING UP"    (row 13)
-	//   blank                     (row 14)
-	//   blank                     (row 15)
-	//   "         HIT POINTS (<HP>/<maxHP>)"  (row 16)
-	//   blank                     (row 17)
-	//   "               GOLD  <gold>"         (row 18)
-	if c.HP > startHP {
-		msgs = append(msgs, fmt.Sprintf("%s IS HEALING UP", c.Name))
-		msgs = append(msgs, "")
-		msgs = append(msgs, "")
-		msgs = append(msgs, fmt.Sprintf("         HIT POINTS (%d/%d)", c.HP, c.MaxHP))
-		msgs = append(msgs, "")
-		msgs = append(msgs, fmt.Sprintf("               GOLD  %d", c.Gold))
-	}
-
-	// Restore spells silently — original does not display a message
-	RestoreSpells(c)
-
-	// Stat changes only happen on LEVEL UP, not every inn rest.
-	// From p-code: proc 14 calls stat changes only when enough XP.
-	// The caller (handleInnInput) handles level-up + stat changes.
-
-	return msgs
-}
 
 // restoreSpells sets current spell slots to max based on character class.
 // From p-code proc 18/17 (IC 2700/2778) — CIP 22 dispatches by class:
