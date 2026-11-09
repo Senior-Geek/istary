@@ -41,6 +41,7 @@
       "refusal": ""
      }
     ],
+    "guestRefusal": "",
     "rooms": null
    },
    "last": null
@@ -174,6 +175,7 @@
       "refusal": ""
      }
     ],
+    "guestRefusal": "",
     "rooms": null
    },
    "last": null
@@ -307,6 +309,7 @@
       "refusal": ""
      }
     ],
+    "guestRefusal": "",
     "rooms": [
      {
       "room": 0,
@@ -358,7 +361,7 @@
        "healed": false,
        "needed": 4,
        "affordable": 0,
-       "refusal": ""
+       "refusal": "EGUI cannot pay for a week in the economy rooms (50 GP a week, 25 GP held). The stables are free."
       },
       "maxWeeks": 0
      },
@@ -376,7 +379,7 @@
        "healed": false,
        "needed": 2,
        "affordable": 0,
-       "refusal": ""
+       "refusal": "EGUI cannot pay for a week in the merchant suites (200 GP a week, 25 GP held). The stables are free."
       },
       "maxWeeks": 0
      },
@@ -394,7 +397,7 @@
        "healed": false,
        "needed": 2,
        "affordable": 0,
-       "refusal": ""
+       "refusal": "EGUI cannot pay for a week in the royal suites (500 GP a week, 25 GP held). The stables are free."
       },
       "maxWeeks": 0
      }
@@ -527,7 +530,7 @@
      "healed": false,
      "needed": 4,
      "affordable": 0,
-     "refusal": "EGUI can pay for 0 weeks (50 GP a week, 25 GP held)."
+     "refusal": "EGUI cannot pay for a week in the economy rooms (50 GP a week, 25 GP held). The stables are free."
     }
    },
    {
@@ -540,7 +543,7 @@
      "healed": false,
      "needed": 4,
      "affordable": 0,
-     "refusal": "EGUI needs only 4 weeks to heal fully."
+     "refusal": "EGUI cannot pay for a week in the economy rooms (50 GP a week, 25 GP held). The stables are free."
     }
    },
    {
@@ -553,7 +556,7 @@
      "healed": false,
      "needed": 2,
      "affordable": 0,
-     "refusal": "EGUI can pay for 0 weeks (500 GP a week, 25 GP held)."
+     "refusal": "EGUI cannot pay for a week in the royal suites (500 GP a week, 25 GP held). The stables are free."
     }
    }
   ],
@@ -688,6 +691,7 @@
       "refusal": ""
      }
     ],
+    "guestRefusal": "",
     "rooms": [
      {
       "room": 0,
@@ -739,7 +743,7 @@
        "healed": false,
        "needed": 4,
        "affordable": 0,
-       "refusal": ""
+       "refusal": "EGUI cannot pay for a week in the economy rooms (50 GP a week, 25 GP held). The stables are free."
       },
       "maxWeeks": 0
      },
@@ -757,7 +761,7 @@
        "healed": false,
        "needed": 2,
        "affordable": 0,
-       "refusal": ""
+       "refusal": "EGUI cannot pay for a week in the merchant suites (200 GP a week, 25 GP held). The stables are free."
       },
       "maxWeeks": 0
      },
@@ -775,7 +779,7 @@
        "healed": false,
        "needed": 2,
        "affordable": 0,
-       "refusal": ""
+       "refusal": "EGUI cannot pay for a week in the royal suites (500 GP a week, 25 GP held). The stables are free."
       },
       "maxWeeks": 0
      }
@@ -991,7 +995,7 @@
      "healed": false,
      "needed": 4,
      "affordable": 0,
-     "refusal": "EGUI can pay for 0 weeks (50 GP a week, 25 GP held)."
+     "refusal": "EGUI cannot pay for a week in the economy rooms (50 GP a week, 25 GP held). The stables are free."
     }
    },
    {
@@ -1004,7 +1008,7 @@
      "healed": false,
      "needed": 4,
      "affordable": 0,
-     "refusal": "EGUI needs only 4 weeks to heal fully."
+     "refusal": "EGUI cannot pay for a week in the economy rooms (50 GP a week, 25 GP held). The stables are free."
     }
    },
    {
@@ -1017,7 +1021,7 @@
      "healed": false,
      "needed": 2,
      "affordable": 0,
-     "refusal": "EGUI can pay for 0 weeks (500 GP a week, 25 GP held)."
+     "refusal": "EGUI cannot pay for a week in the royal suites (500 GP a week, 25 GP held). The stables are free."
     }
    }
   ],
@@ -1152,6 +1156,7 @@
       "refusal": ""
      }
     ],
+    "guestRefusal": "",
     "rooms": [
      {
       "room": 0,
@@ -1185,7 +1190,7 @@
        "healed": false,
        "needed": 10,
        "affordable": 0,
-       "refusal": ""
+       "refusal": "EGUI cannot pay for a week in the cots (10 GP a week, 5 GP held). The stables are free."
       },
       "maxWeeks": 0
      },
@@ -1203,7 +1208,7 @@
        "healed": false,
        "needed": 4,
        "affordable": 0,
-       "refusal": ""
+       "refusal": "EGUI cannot pay for a week in the economy rooms (50 GP a week, 5 GP held). The stables are free."
       },
       "maxWeeks": 0
      },
@@ -1221,7 +1226,7 @@
        "healed": false,
        "needed": 2,
        "affordable": 0,
-       "refusal": ""
+       "refusal": "EGUI cannot pay for a week in the merchant suites (200 GP a week, 5 GP held). The stables are free."
       },
       "maxWeeks": 0
      },
@@ -1239,7 +1244,7 @@
        "healed": false,
        "needed": 1,
        "affordable": 0,
-       "refusal": ""
+       "refusal": "EGUI cannot pay for a week in the royal suites (500 GP a week, 5 GP held). The stables are free."
       },
       "maxWeeks": 0
      }
@@ -1429,7 +1434,7 @@
      "healed": false,
      "needed": 10,
      "affordable": 0,
-     "refusal": "EGUI can pay for 0 weeks (10 GP a week, 5 GP held)."
+     "refusal": "EGUI cannot pay for a week in the cots (10 GP a week, 5 GP held). The stables are free."
     }
    },
    {
@@ -1442,7 +1447,7 @@
      "healed": false,
      "needed": 10,
      "affordable": 0,
-     "refusal": "EGUI can pay for 0 weeks (10 GP a week, 5 GP held)."
+     "refusal": "EGUI cannot pay for a week in the cots (10 GP a week, 5 GP held). The stables are free."
     }
    },
    {
@@ -1455,7 +1460,7 @@
      "healed": false,
      "needed": 4,
      "affordable": 0,
-     "refusal": "EGUI can pay for 0 weeks (50 GP a week, 5 GP held)."
+     "refusal": "EGUI cannot pay for a week in the economy rooms (50 GP a week, 5 GP held). The stables are free."
     }
    },
    {
@@ -1468,7 +1473,7 @@
      "healed": false,
      "needed": 4,
      "affordable": 0,
-     "refusal": "EGUI needs only 4 weeks to heal fully."
+     "refusal": "EGUI cannot pay for a week in the economy rooms (50 GP a week, 5 GP held). The stables are free."
     }
    },
    {
@@ -1481,7 +1486,7 @@
      "healed": false,
      "needed": 1,
      "affordable": 0,
-     "refusal": "EGUI can pay for 0 weeks (500 GP a week, 5 GP held)."
+     "refusal": "EGUI cannot pay for a week in the royal suites (500 GP a week, 5 GP held). The stables are free."
     }
    }
   ],
@@ -1612,6 +1617,7 @@
       "refusal": ""
      }
     ],
+    "guestRefusal": "",
     "rooms": [
      {
       "room": 0,
@@ -1992,6 +1998,7 @@
       "refusal": ""
      }
     ],
+    "guestRefusal": "",
     "rooms": [
      {
       "room": 0,
@@ -2457,6 +2464,7 @@
       "refusal": ""
      }
     ],
+    "guestRefusal": "",
     "rooms": [
      {
       "room": 0,
@@ -2550,7 +2558,92 @@
      }
     ]
    },
-   "last": null
+   "last": {
+    "stay": {
+     "guest": "AGUI",
+     "room": 2,
+     "roomName": "ECONOMY ROOMS",
+     "weeks": 2,
+     "charged": 100,
+     "hpBefore": 3,
+     "hpAfter": 9,
+     "maxHpBefore": 14,
+     "maxHpAfter": 21,
+     "goldBefore": 1000,
+     "goldAfter": 900,
+     "spells": false,
+     "mageBefore": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "mageAfter": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "priestBefore": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "priestAfter": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "levelBefore": 2,
+     "levelAfter": 3,
+     "statsBefore": [
+      16,
+      0,
+      0,
+      0,
+      12,
+      0
+     ],
+     "statsAfter": [
+      16,
+      1,
+      1,
+      0,
+      13,
+      0
+     ],
+     "ageBefore": 1040,
+     "ageAfter": 1040,
+     "learned": null,
+     "status": "OK",
+     "died": false,
+     "messages": [
+      "YOU MADE A LEVEL!",
+      "",
+      "YOU GAINED I.Q.",
+      "YOU GAINED PIETY",
+      "YOU GAINED AGILITY"
+     ],
+     "xpNeeded": 0
+    },
+    "gold": null,
+    "saved": true,
+    "durable": true
+   }
   },
   "guest": {
    "index": 0,
@@ -2837,6 +2930,7 @@
       "refusal": ""
      }
     ],
+    "guestRefusal": "",
     "rooms": [
      {
       "room": 0,
@@ -3247,6 +3341,7 @@
       "refusal": ""
      }
     ],
+    "guestRefusal": "",
     "rooms": [
      {
       "room": 0,
@@ -3708,6 +3803,7 @@
       "refusal": ""
      }
     ],
+    "guestRefusal": "",
     "rooms": [
      {
       "room": 0,
@@ -4169,6 +4265,7 @@
       "refusal": ""
      }
     ],
+    "guestRefusal": "",
     "rooms": [
      {
       "room": 0,
@@ -4220,7 +4317,7 @@
        "healed": false,
        "needed": 6,
        "affordable": 0,
-       "refusal": ""
+       "refusal": "AGUI cannot pay for a week in the economy rooms (50 GP a week, 25 GP held). The stables are free."
       },
       "maxWeeks": 0
      },
@@ -4238,7 +4335,7 @@
        "healed": false,
        "needed": 3,
        "affordable": 0,
-       "refusal": ""
+       "refusal": "AGUI cannot pay for a week in the merchant suites (200 GP a week, 25 GP held). The stables are free."
       },
       "maxWeeks": 0
      },
@@ -4256,7 +4353,7 @@
        "healed": false,
        "needed": 2,
        "affordable": 0,
-       "refusal": ""
+       "refusal": "AGUI cannot pay for a week in the royal suites (500 GP a week, 25 GP held). The stables are free."
       },
       "maxWeeks": 0
      }
@@ -4469,7 +4566,7 @@
      "healed": false,
      "needed": 6,
      "affordable": 0,
-     "refusal": "AGUI can pay for 0 weeks (50 GP a week, 25 GP held)."
+     "refusal": "AGUI cannot pay for a week in the economy rooms (50 GP a week, 25 GP held). The stables are free."
     }
    },
    {
@@ -4482,7 +4579,7 @@
      "healed": false,
      "needed": 6,
      "affordable": 0,
-     "refusal": "AGUI needs only 6 weeks to heal fully."
+     "refusal": "AGUI cannot pay for a week in the economy rooms (50 GP a week, 25 GP held). The stables are free."
     }
    },
    {
@@ -4495,7 +4592,7 @@
      "healed": false,
      "needed": 2,
      "affordable": 0,
-     "refusal": "AGUI can pay for 0 weeks (500 GP a week, 25 GP held)."
+     "refusal": "AGUI cannot pay for a week in the royal suites (500 GP a week, 25 GP held). The stables are free."
     }
    }
   ],
@@ -4630,6 +4727,7 @@
       "refusal": ""
      }
     ],
+    "guestRefusal": "",
     "rooms": [
      {
       "room": 0,
@@ -4681,7 +4779,7 @@
        "healed": false,
        "needed": 6,
        "affordable": 0,
-       "refusal": ""
+       "refusal": "AGUI cannot pay for a week in the economy rooms (50 GP a week, 25 GP held). The stables are free."
       },
       "maxWeeks": 0
      },
@@ -4699,7 +4797,7 @@
        "healed": false,
        "needed": 3,
        "affordable": 0,
-       "refusal": ""
+       "refusal": "AGUI cannot pay for a week in the merchant suites (200 GP a week, 25 GP held). The stables are free."
       },
       "maxWeeks": 0
      },
@@ -4717,7 +4815,7 @@
        "healed": false,
        "needed": 2,
        "affordable": 0,
-       "refusal": ""
+       "refusal": "AGUI cannot pay for a week in the royal suites (500 GP a week, 25 GP held). The stables are free."
       },
       "maxWeeks": 0
      }
@@ -4930,7 +5028,7 @@
      "healed": false,
      "needed": 6,
      "affordable": 0,
-     "refusal": "AGUI can pay for 0 weeks (50 GP a week, 25 GP held)."
+     "refusal": "AGUI cannot pay for a week in the economy rooms (50 GP a week, 25 GP held). The stables are free."
     }
    },
    {
@@ -4943,7 +5041,7 @@
      "healed": false,
      "needed": 6,
      "affordable": 0,
-     "refusal": "AGUI needs only 6 weeks to heal fully."
+     "refusal": "AGUI cannot pay for a week in the economy rooms (50 GP a week, 25 GP held). The stables are free."
     }
    },
    {
@@ -4956,7 +5054,7 @@
      "healed": false,
      "needed": 2,
      "affordable": 0,
-     "refusal": "AGUI can pay for 0 weeks (500 GP a week, 25 GP held)."
+     "refusal": "AGUI cannot pay for a week in the royal suites (500 GP a week, 25 GP held). The stables are free."
     }
    }
   ],
@@ -5091,6 +5189,7 @@
       "refusal": ""
      }
     ],
+    "guestRefusal": "",
     "rooms": [
      {
       "room": 0,
@@ -5142,7 +5241,7 @@
        "healed": false,
        "needed": 7,
        "affordable": 0,
-       "refusal": ""
+       "refusal": "AGUI cannot pay for a week in the economy rooms (50 GP a week, 15 GP held). The stables are free."
       },
       "maxWeeks": 0
      },
@@ -5160,7 +5259,7 @@
        "healed": false,
        "needed": 3,
        "affordable": 0,
-       "refusal": ""
+       "refusal": "AGUI cannot pay for a week in the merchant suites (200 GP a week, 15 GP held). The stables are free."
       },
       "maxWeeks": 0
      },
@@ -5178,7 +5277,7 @@
        "healed": false,
        "needed": 2,
        "affordable": 0,
-       "refusal": ""
+       "refusal": "AGUI cannot pay for a week in the royal suites (500 GP a week, 15 GP held). The stables are free."
       },
       "maxWeeks": 0
      }
@@ -5391,7 +5490,7 @@
      "healed": false,
      "needed": 7,
      "affordable": 0,
-     "refusal": "AGUI can pay for 0 weeks (50 GP a week, 15 GP held)."
+     "refusal": "AGUI cannot pay for a week in the economy rooms (50 GP a week, 15 GP held). The stables are free."
     }
    },
    {
@@ -5404,7 +5503,7 @@
      "healed": false,
      "needed": 7,
      "affordable": 0,
-     "refusal": "AGUI needs only 7 weeks to heal fully."
+     "refusal": "AGUI cannot pay for a week in the economy rooms (50 GP a week, 15 GP held). The stables are free."
     }
    },
    {
@@ -5417,7 +5516,7 @@
      "healed": false,
      "needed": 2,
      "affordable": 0,
-     "refusal": "AGUI can pay for 0 weeks (500 GP a week, 15 GP held)."
+     "refusal": "AGUI cannot pay for a week in the royal suites (500 GP a week, 15 GP held). The stables are free."
     }
    }
   ],
@@ -5548,6 +5647,7 @@
       "refusal": ""
      }
     ],
+    "guestRefusal": "",
     "rooms": null
    },
    "last": null
@@ -5638,5 +5738,889 @@
   "notice": "",
   "unsaved": "",
   "warning": "Saved, but the save folder could not be synced (no sync); the last save may not survive a crash or power loss."
+ },
+ {
+  "case": "old age: LOST",
+  "location": "inn",
+  "inn": {
+   "view": {
+    "step": "levelUp",
+    "guest": 5,
+    "name": "FGUI",
+    "message": "",
+    "messages": [
+     "YOU MADE A LEVEL!",
+     "",
+     "YOU LOST STRENGTH",
+     "YOU LOST VITALITY",
+     "** YOU HAVE DIED OF OLD AGE **"
+    ],
+    "guests": [
+     {
+      "slot": 0,
+      "name": "AGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 1,
+      "name": "BGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 2,
+      "name": "CGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 3,
+      "name": "DGUI",
+      "refusal": "DGUI IS NOT OK"
+     },
+     {
+      "slot": 4,
+      "name": "EGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 5,
+      "name": "FGUI",
+      "refusal": "FGUI IS NOT OK"
+     }
+    ],
+    "guestRefusal": "FGUI IS NOT OK: LOST and cannot stay at the Inn.",
+    "rooms": null
+   },
+   "last": {
+    "stay": {
+     "guest": "FGUI",
+     "room": 0,
+     "roomName": "THE STABLES",
+     "weeks": 0,
+     "charged": 0,
+     "hpBefore": 14,
+     "hpAfter": 0,
+     "maxHpBefore": 14,
+     "maxHpAfter": 17,
+     "goldBefore": 0,
+     "goldAfter": 0,
+     "spells": false,
+     "mageBefore": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "mageAfter": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "priestBefore": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "priestAfter": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "levelBefore": 2,
+     "levelAfter": 3,
+     "statsBefore": [
+      16,
+      0,
+      0,
+      3,
+      12,
+      0
+     ],
+     "statsAfter": [
+      15,
+      0,
+      0,
+      2,
+      12,
+      0
+     ],
+     "ageBefore": 10400,
+     "ageAfter": 10400,
+     "learned": null,
+     "status": "LOST",
+     "died": true,
+     "messages": [
+      "YOU MADE A LEVEL!",
+      "",
+      "YOU LOST STRENGTH",
+      "YOU LOST VITALITY",
+      "** YOU HAVE DIED OF OLD AGE **"
+     ],
+     "xpNeeded": 0
+    },
+    "gold": null,
+    "saved": true,
+    "durable": true
+   }
+  },
+  "guest": {
+   "index": 5,
+   "name": "FGUI",
+   "race": "HUMAN",
+   "alignment": "NEUTRAL",
+   "class": "FIGHTER",
+   "short": "N-FIG",
+   "level": 3,
+   "hp": 0,
+   "maxHp": 17,
+   "ac": 10,
+   "status": "LOST",
+   "gold": 0,
+   "age": 200,
+   "stats": [
+    15,
+    0,
+    0,
+    2,
+    12,
+    0
+   ],
+   "xp": 1073741824,
+   "nextXp": 2972,
+   "hasPassword": false,
+   "mageSpells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxMage": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "priestSpells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxPriest": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "spells": null,
+   "items": null,
+   "poison": 0,
+   "inMaze": true,
+   "mazeLevel": 0,
+   "legacy": false,
+   "equipNote": "",
+   "inParty": true,
+   "partySlot": 6,
+   "joinRefusal": "** PARTY IS FULL **"
+  },
+  "quotes": [
+   {
+    "room": 0,
+    "weeks": 1,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 0,
+     "healed": false,
+     "needed": 0,
+     "affordable": 0,
+     "refusal": "FGUI IS NOT OK: LOST and cannot stay at the Inn."
+    }
+   },
+   {
+    "room": 1,
+    "weeks": 1,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 0,
+     "healed": false,
+     "needed": 17,
+     "affordable": 0,
+     "refusal": "FGUI IS NOT OK: LOST and cannot stay at the Inn."
+    }
+   },
+   {
+    "room": 1,
+    "weeks": 3,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 0,
+     "healed": false,
+     "needed": 17,
+     "affordable": 0,
+     "refusal": "FGUI IS NOT OK: LOST and cannot stay at the Inn."
+    }
+   },
+   {
+    "room": 2,
+    "weeks": 2,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 0,
+     "healed": false,
+     "needed": 6,
+     "affordable": 0,
+     "refusal": "FGUI IS NOT OK: LOST and cannot stay at the Inn."
+    }
+   },
+   {
+    "room": 2,
+    "weeks": 40,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 0,
+     "healed": false,
+     "needed": 6,
+     "affordable": 0,
+     "refusal": "FGUI IS NOT OK: LOST and cannot stay at the Inn."
+    }
+   },
+   {
+    "room": 4,
+    "weeks": 1,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 0,
+     "healed": false,
+     "needed": 2,
+     "affordable": 0,
+     "refusal": "FGUI IS NOT OK: LOST and cannot stay at the Inn."
+    }
+   }
+  ],
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 3,
+    "ac": 10,
+    "hp": 2,
+    "maxHp": 21,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "ac": 10,
+    "hp": 0,
+    "maxHp": 14,
+    "status": "DEAD",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "ac": 10,
+    "hp": 4,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 3,
+    "ac": 10,
+    "hp": 0,
+    "maxHp": 17,
+    "status": "LOST",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "error": "",
+  "notice": "FGUI spent a night in the stables, made a level and died of old age. Saved.",
+  "unsaved": "",
+  "warning": ""
+ },
+ {
+  "case": "old age: no room again",
+  "location": "inn",
+  "inn": {
+   "view": {
+    "step": "levelUp",
+    "guest": 5,
+    "name": "FGUI",
+    "message": "",
+    "messages": [
+     "YOU MADE A LEVEL!",
+     "",
+     "YOU LOST STRENGTH",
+     "YOU LOST VITALITY",
+     "** YOU HAVE DIED OF OLD AGE **"
+    ],
+    "guests": [
+     {
+      "slot": 0,
+      "name": "AGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 1,
+      "name": "BGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 2,
+      "name": "CGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 3,
+      "name": "DGUI",
+      "refusal": "DGUI IS NOT OK"
+     },
+     {
+      "slot": 4,
+      "name": "EGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 5,
+      "name": "FGUI",
+      "refusal": "FGUI IS NOT OK"
+     }
+    ],
+    "guestRefusal": "FGUI IS NOT OK: LOST and cannot stay at the Inn.",
+    "rooms": null
+   },
+   "last": {
+    "stay": {
+     "guest": "FGUI",
+     "room": 0,
+     "roomName": "THE STABLES",
+     "weeks": 0,
+     "charged": 0,
+     "hpBefore": 14,
+     "hpAfter": 0,
+     "maxHpBefore": 14,
+     "maxHpAfter": 17,
+     "goldBefore": 0,
+     "goldAfter": 0,
+     "spells": false,
+     "mageBefore": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "mageAfter": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "priestBefore": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "priestAfter": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "levelBefore": 2,
+     "levelAfter": 3,
+     "statsBefore": [
+      16,
+      0,
+      0,
+      3,
+      12,
+      0
+     ],
+     "statsAfter": [
+      15,
+      0,
+      0,
+      2,
+      12,
+      0
+     ],
+     "ageBefore": 10400,
+     "ageAfter": 10400,
+     "learned": null,
+     "status": "LOST",
+     "died": true,
+     "messages": [
+      "YOU MADE A LEVEL!",
+      "",
+      "YOU LOST STRENGTH",
+      "YOU LOST VITALITY",
+      "** YOU HAVE DIED OF OLD AGE **"
+     ],
+     "xpNeeded": 0
+    },
+    "gold": null,
+    "saved": true,
+    "durable": true
+   }
+  },
+  "guest": {
+   "index": 5,
+   "name": "FGUI",
+   "race": "HUMAN",
+   "alignment": "NEUTRAL",
+   "class": "FIGHTER",
+   "short": "N-FIG",
+   "level": 3,
+   "hp": 0,
+   "maxHp": 17,
+   "ac": 10,
+   "status": "LOST",
+   "gold": 0,
+   "age": 200,
+   "stats": [
+    15,
+    0,
+    0,
+    2,
+    12,
+    0
+   ],
+   "xp": 1073741824,
+   "nextXp": 2972,
+   "hasPassword": false,
+   "mageSpells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxMage": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "priestSpells": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "maxPriest": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "spells": null,
+   "items": null,
+   "poison": 0,
+   "inMaze": true,
+   "mazeLevel": 0,
+   "legacy": false,
+   "equipNote": "",
+   "inParty": true,
+   "partySlot": 6,
+   "joinRefusal": "** PARTY IS FULL **"
+  },
+  "quotes": [
+   {
+    "room": 0,
+    "weeks": 1,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 0,
+     "healed": false,
+     "needed": 0,
+     "affordable": 0,
+     "refusal": "FGUI IS NOT OK: LOST and cannot stay at the Inn."
+    }
+   },
+   {
+    "room": 1,
+    "weeks": 1,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 0,
+     "healed": false,
+     "needed": 17,
+     "affordable": 0,
+     "refusal": "FGUI IS NOT OK: LOST and cannot stay at the Inn."
+    }
+   },
+   {
+    "room": 1,
+    "weeks": 3,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 0,
+     "healed": false,
+     "needed": 17,
+     "affordable": 0,
+     "refusal": "FGUI IS NOT OK: LOST and cannot stay at the Inn."
+    }
+   },
+   {
+    "room": 2,
+    "weeks": 2,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 0,
+     "healed": false,
+     "needed": 6,
+     "affordable": 0,
+     "refusal": "FGUI IS NOT OK: LOST and cannot stay at the Inn."
+    }
+   },
+   {
+    "room": 2,
+    "weeks": 40,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 0,
+     "healed": false,
+     "needed": 6,
+     "affordable": 0,
+     "refusal": "FGUI IS NOT OK: LOST and cannot stay at the Inn."
+    }
+   },
+   {
+    "room": 4,
+    "weeks": 1,
+    "quote": {
+     "weeks": 0,
+     "cost": 0,
+     "hp": 0,
+     "healed": false,
+     "needed": 2,
+     "affordable": 0,
+     "refusal": "FGUI IS NOT OK: LOST and cannot stay at the Inn."
+    }
+   }
+  ],
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 3,
+    "ac": 10,
+    "hp": 2,
+    "maxHp": 21,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "ac": 10,
+    "hp": 0,
+    "maxHp": 14,
+    "status": "DEAD",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "ac": 10,
+    "hp": 4,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 3,
+    "ac": 10,
+    "hp": 0,
+    "maxHp": 17,
+    "status": "LOST",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "error": "FGUI IS NOT OK: LOST and cannot stay at the Inn.",
+  "notice": "",
+  "unsaved": "",
+  "warning": ""
+ },
+ {
+  "case": "old age: refused at who",
+  "location": "inn",
+  "inn": {
+   "view": {
+    "step": "who",
+    "guest": -1,
+    "name": "",
+    "message": "",
+    "messages": null,
+    "guests": [
+     {
+      "slot": 0,
+      "name": "AGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 1,
+      "name": "BGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 2,
+      "name": "CGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 3,
+      "name": "DGUI",
+      "refusal": "DGUI IS NOT OK"
+     },
+     {
+      "slot": 4,
+      "name": "EGUI",
+      "refusal": ""
+     },
+     {
+      "slot": 5,
+      "name": "FGUI",
+      "refusal": "FGUI IS NOT OK"
+     }
+    ],
+    "guestRefusal": "",
+    "rooms": null
+   },
+   "last": null
+  },
+  "guest": null,
+  "quotes": null,
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 3,
+    "ac": 10,
+    "hp": 2,
+    "maxHp": 21,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "ac": 10,
+    "hp": 0,
+    "maxHp": 14,
+    "status": "DEAD",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "ac": 10,
+    "hp": 4,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 3,
+    "ac": 10,
+    "hp": 0,
+    "maxHp": 17,
+    "status": "LOST",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "error": "",
+  "notice": "",
+  "unsaved": "",
+  "warning": ""
  }
 ]

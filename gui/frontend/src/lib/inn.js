@@ -67,7 +67,9 @@ export function shortfall(q, name) {
 // rows are the rooms as the screen lists them, for a mode: 'healed' uses
 // each room's quote until healed from the view; 'weeks' uses the quotes Go
 // gave for the chosen weeks (quotes, by room), the stables always one free
-// night. Each row says what its Stay button asks Go and why it is disabled.
+// night. Each row says what its Stay button asks Go and why it is disabled
+// (Go's refusal: a paid room the guest cannot pay a week of names the free
+// stables). A guest who may not stay (Go's guestRefusal) gets no rows.
 export function rows(inn, mode = 'healed', weeks = 1, quotes = {}) {
   const v = inn?.view
   if (!v || v.guest < 0) return []
@@ -83,7 +85,7 @@ export function rows(inn, mode = 'healed', weeks = 1, quotes = {}) {
       text: quoteText(q, r),
       short: chosen ? '' : shortfall(q, v.name),
       request: { action: 'stay', room: r.room, weeks: chosen ? weeks : 0 },
-      reason: chosen ? (q ? q.refusal : 'Working out…') : '',
+      reason: q ? q.refusal : 'Working out…',
       maxWeeks: r.maxWeeks,
     }
   })

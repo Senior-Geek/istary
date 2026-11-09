@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/Senior-Geek/istary/engine"
 )
@@ -36,6 +37,14 @@ type InnQuote struct {
 // innQuote quotes a stay in room for ch: weeks 0 is "until healed" (the
 // original's only stay: until healed or out of gold), more is that many
 // weeks of healing, which must be needed and paid for.
+//
+// The quote, and so Stay, is stricter than the terminal's keys in two
+// cases, on purpose (the acceptance of I-4): a guest who is no longer OK
+// (LOST of old age at the last level check) may not stay again, and a
+// paid room for a hurt guest who cannot pay a single week is refused, with
+// the free stables named, where the keys take the room and heal nothing,
+// as the stables would. The terminal keeps the original's behaviour
+// (cmd/istary/inn_test.go).
 func innQuote(ch *engine.Character, room engine.InnRoom, weeks int) InnQuote {
 	r := innRooms[room]
 	q := InnQuote{HP: ch.HP}
@@ -46,12 +55,17 @@ func innQuote(ch *engine.Character, room engine.InnRoom, weeks int) InnQuote {
 		q.Affordable = ch.Gold / r.fee
 	}
 	switch {
+	case ch.Status != engine.OK:
+		q.Refusal = guestRefusal(ch)
 	case weeks < 0:
 		q.Refusal = "A stay cannot be shorter than a week."
 	case weeks > 0 && r.hp == 0:
 		q.Refusal = "The stables heal nothing: a stay there is one free night."
 	case weeks > 0 && q.Needed == 0:
 		q.Refusal = fmt.Sprintf("%s is not hurt: there is nothing to heal.", ch.Name)
+	case r.hp > 0 && q.Needed > 0 && q.Affordable == 0:
+		q.Refusal = fmt.Sprintf("%s cannot pay for a week in the %s (%d GP a week, %d GP held). The stables are free.",
+			ch.Name, strings.ToLower(r.name), r.fee, ch.Gold)
 	case weeks > q.Needed:
 		q.Refusal = fmt.Sprintf("%s needs only %s to heal fully.", ch.Name, plural(q.Needed, "week"))
 	case weeks > q.Affordable:
@@ -68,6 +82,15 @@ func innQuote(ch *engine.Character, room engine.InnRoom, weeks int) InnQuote {
 	q.HP = min(ch.MaxHP, ch.HP+q.Weeks*r.hp)
 	q.Healed = q.HP == ch.MaxHP
 	return q
+}
+
+// guestRefusal is why ch may not stay: only an OK guest may (CASTLE p-code
+// proc 26, "NAME IS NOT OK").
+func guestRefusal(ch *engine.Character) string {
+	if ch.Status == engine.OK {
+		return ""
+	}
+	return fmt.Sprintf("%s IS NOT OK: %s and cannot stay at the Inn.", ch.Name, ch.Status)
 }
 
 func plural(n int, unit string) string {
@@ -161,7 +184,9 @@ func (c *Controller) LeaveInn() error {
 	return nil
 }
 
-// Stay is the guest's stay in room, then the level check. weeks 0 stays
+// Stay is the guest's stay in room, then the level check (stricter than the
+// keys for a guest who is not OK and a room not one week of which is paid
+// for: see innQuote). weeks 0 stays
 // until healed or out of gold, as the original does; more stays that many
 // weeks of healing and checks out (the guide's early checkout, p.34),
 // which must be needed and paid for (InnQuote). A refusal changes nothing.

@@ -99,6 +99,36 @@ func TestInnStayIsTheKeys(t *testing.T) {
 		keys.HandleKey(Rune('1' + rune(slot)))
 		for stay := 0; stay < 2; stay++ {
 			room := engine.InnRoom(rng.Intn(5))
+			if q, _ := ops.Quote(room, 0); q.Refusal != "" {
+				// A room not one week of which is paid for: Stay refuses and
+				// changes nothing; the keys keep the original, taking the
+				// room and healing and charging nothing, as the stables.
+				before := townJSON(t, ops)
+				seed(s)
+				_, err := ops.Stay(room, 0)
+				next := rand.Int63()
+				seed(s)
+				var r *Refusal
+				if !errors.As(err, &r) || r.Message != q.Refusal || townJSON(t, ops) != before || next != rand.Int63() {
+					t.Fatalf("seed %d: a refused stay: %v", s, err)
+				}
+				if stay > 0 {
+					keys.HandleKey(Key{Kind: KeyEnter})
+				}
+				g := keys.Game.Town.InnChar
+				hp, gold, lost := g.HP, g.Gold, g.Status != engine.OK
+				termStay(keys, room)
+				if lost { // the keys let a LOST guest stay on (pinned in I-0)
+					if keys.Game.Town.InnStep != engine.InnLevelUp {
+						t.Fatalf("seed %d: the keys for a LOST guest", s)
+					}
+					break
+				}
+				if (g.HP != hp && g.Status != engine.Lost) || g.Gold != gold || keys.Game.Town.InnStep != engine.InnLevelUp {
+					t.Fatalf("seed %d: the keys in an unpaid room: HP %d->%d, gold %d->%d", s, hp, g.HP, gold, g.Gold)
+				}
+				break
+			}
 			seed(s)
 			if _, err := ops.Stay(room, 0); err != nil {
 				t.Fatalf("seed %d: stay: %v", s, err)
@@ -137,6 +167,13 @@ func TestInnQuoteIsTheStay(t *testing.T) {
 			v, _ := c.InnView()
 			if v.Rooms[room].UntilHealed != q {
 				t.Fatalf("seed %d room %d: view %+v, quote %+v", s, room, v.Rooms[room].UntilHealed, q)
+			}
+			if q.Refusal != "" {
+				var r *Refusal
+				if _, err := c.Stay(room, 0); !errors.As(err, &r) || r.Message != q.Refusal || q.Weeks != 0 || q.Cost != 0 {
+					t.Fatalf("seed %d room %d: refused quote %+v, stay %v", s, room, q, err)
+				}
+				continue
 			}
 			st, err := c.Stay(room, 0)
 			if err != nil {
@@ -228,7 +265,8 @@ func TestInnOperations(t *testing.T) {
 		}
 	}
 	// No gold: a paid room heals nothing, as the stables.
-	if q := v.Rooms[engine.Economy].UntilHealed; q.Weeks != 0 || q.Needed != 6 || q.Affordable != 0 || q.HP != 3 {
+	if q := v.Rooms[engine.Economy].UntilHealed; q.Weeks != 0 || q.Needed != 6 || q.Affordable != 0 || q.HP != 3 ||
+		q.Refusal != "ARNE cannot pay for a week in the economy rooms (50 GP a week, 0 GP held). The stables are free." || v.Rooms[engine.Stables].UntilHealed.Refusal != "" {
 		t.Errorf("economy with no gold: %+v", q)
 	}
 	arne.Gold, arne.XP = 1000, 1000
@@ -291,6 +329,33 @@ func TestInnDeathOfOldAge(t *testing.T) {
 		if st.Died {
 			if st.Status != "LOST" || old.Status != engine.Lost || st.Messages[len(st.Messages)-1] != "** YOU HAVE DIED OF OLD AGE **" {
 				t.Errorf("died: %+v", st)
+			}
+			// No more rooms for the LOST guest: the view offers none and
+			// says why, and every stay is refused, changing nothing.
+			want := "ARNE IS NOT OK: LOST and cannot stay at the Inn."
+			v, _ := c.InnView()
+			if v.Step != "levelUp" || v.Guest != 0 || v.GuestRefusal != want || len(v.Rooms) != 0 || v.Guests[0].Refusal != "ARNE IS NOT OK" {
+				t.Errorf("after death: %+v", v)
+			}
+			before := townJSON(t, c)
+			for room := engine.Stables; room <= engine.Royal; room++ {
+				var r *Refusal
+				if _, err := c.Stay(room, 0); !errors.As(err, &r) || r.Message != want || townJSON(t, c) != before {
+					t.Errorf("room %d after death: %v", room, err)
+				}
+				if q, _ := c.Quote(room, 0); q.Refusal != want {
+					t.Errorf("quote after death: %+v", q)
+				}
+			}
+			// Back at WHO WILL STAY, and on another visit, he is refused.
+			c.InnLeaveGuest()
+			if err := c.InnEnter(0); !errors.As(err, new(*Refusal)) {
+				t.Errorf("checking in the LOST: %v", err)
+			}
+			c.LeaveInn()
+			c.GoTo(engine.Inn)
+			if v, _ := c.InnView(); v.Guests[0].Refusal != "ARNE IS NOT OK" || c.InnEnter(0) == nil {
+				t.Errorf("another visit: %+v", v.Guests)
 			}
 			return
 		}
@@ -375,7 +440,8 @@ func TestInnChosenWeeksRefused(t *testing.T) {
 		{engine.Stables, 1, "The stables heal nothing: a stay there is one free night."},
 		{engine.Economy, 7, "ARNE needs only 6 weeks to heal fully."},
 		{engine.Economy, 3, "ARNE can pay for 2 weeks (50 GP a week, 120 GP held)."},
-		{engine.Royal, 1, "ARNE can pay for 0 weeks (500 GP a week, 120 GP held)."},
+		{engine.Royal, 1, "ARNE cannot pay for a week in the royal suites (500 GP a week, 120 GP held). The stables are free."},
+		{engine.Royal, 0, "ARNE cannot pay for a week in the royal suites (500 GP a week, 120 GP held). The stables are free."},
 	} {
 		before := townJSON(t, c)
 		seed(3)

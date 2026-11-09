@@ -53,8 +53,8 @@ type InnRequest struct {
 // last stay or pooling made there.
 type InnPanel struct {
 	View app.InnView `json:"view"`
-	// Last is what the last Inn action completed, until the next one or
-	// the next visit; nil when it completed nothing.
+	// Last is what the last stay or pooling completed, until the next one,
+	// a change of guest or the next visit; a refusal keeps it.
 	Last *InnReceipt `json:"last"`
 }
 
@@ -79,7 +79,7 @@ func (s *Session) InnAction(r InnRequest) View {
 	if s.startErr != nil {
 		return s.view(nil)
 	}
-	s.notice, s.innLast = "", nil
+	s.notice = ""
 	if err := s.innRefusal(); err != nil {
 		return s.view(err)
 	}
@@ -90,10 +90,14 @@ func (s *Session) InnAction(r InnRequest) View {
 	if !bytes.Equal(roster, rosterBytes(c.Game)) {
 		saveErr = s.save()
 	}
+	if err == nil && (r.Action == InnActEnter || r.Action == InnActLeaveGuest) {
+		s.innLast = nil // another guest, or none: the last receipt was theirs
+	}
 	if last != nil {
 		// A stay or a pooling that changed nothing on disk (a night in
 		// the stables short of a level) still has its receipt: it is
-		// saved exactly when nothing else waits to be.
+		// saved exactly when nothing else waits to be. A refusal keeps
+		// the last receipt (a death of old age stays in view).
 		last.Saved = saveErr == nil && s.unsaved == ""
 		last.Durable = last.Saved && s.uncertain == ""
 		s.innLast = last

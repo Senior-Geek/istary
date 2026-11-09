@@ -32,13 +32,13 @@ test('the guest is Go’s, with the roster’s HP, gold, age, spells and experie
   assert.match(m.mage, /^\d+\/\d+/)
 })
 
-test('until healed: every room as Go quotes it, the stables free, nothing disabled', () => {
-  for (const v of views.filter((v) => v.inn.view.guest >= 0)) {
+test('until healed: every room as Go quotes it, the stables free, disabled exactly by Go’s refusal', () => {
+  for (const v of views.filter((v) => v.inn.view.guest >= 0 && !v.inn.view.guestRefusal)) {
     const rs = rows(v.inn, 'healed')
     assert.equal(rs.length, 5, v.case)
     v.inn.view.rooms.forEach((r, i) => {
       assert.deepEqual(rs[i].request, { action: 'stay', room: r.room, weeks: 0 })
-      assert.equal(rs[i].reason, '')
+      assert.equal(rs[i].reason, r.untilHealed.refusal)
       assert.equal(rs[i].text, quoteText(r.untilHealed, r))
       assert.equal(rs[i].free, r.free)
     })
@@ -66,7 +66,11 @@ test('a guest short of gold is told so, from Go’s weeks needed and affordable'
   const v = at('mage: little gold')
   const royal = v.inn.view.rooms[4].untilHealed
   assert.equal(royal.weeks, 0)
-  assert.equal(quoteText(royal, v.inn.view.rooms[4]), 'Cannot pay for a week: no healing, no charge')
+  assert.equal(royal.refusal, 'EGUI cannot pay for a week in the royal suites (500 GP a week, 25 GP held). The stables are free.')
+  assert.equal(quoteText(royal, v.inn.view.rooms[4]), royal.refusal)
+  const r = rows(v.inn, 'healed')
+  assert.equal(r[4].reason, royal.refusal, 'a paid room not one week of which is paid for: refused, the stables named')
+  assert.equal(r[0].reason, '', 'the stables stay open')
   assert.equal(shortfall(royal, 'EGUI'), '', 'no week at all is said once, by the quote')
   const cot = v.inn.view.rooms[1].untilHealed
   assert.ok(cot.weeks < cot.needed)
@@ -122,4 +126,21 @@ test('NOT saved, then saved again: the receipt follows Go', () => {
 test('room names read as names', () => {
   assert.equal(roomName('ROYAL SUITES'), 'Royal Suites')
   assert.equal(roomName('THE STABLES'), 'The Stables')
+})
+
+test('a guest LOST of old age keeps the receipt, death included, and is offered no room', () => {
+  const v = at('old age: LOST')
+  const r = receipt(v.inn)
+  assert.ok(v.inn.last.stay.died)
+  assert.ok(r.lines.some((l) => l.kind === 'bad' && /died of old age and is LOST/.test(l.text)), r.lines)
+  assert.ok(r.lines.some((l) => l.kind === 'loss'), 'attribute changes kept')
+  assert.match(v.inn.view.guestRefusal, /IS NOT OK: LOST/)
+  assert.deepEqual(rows(v.inn, 'healed'), [])
+  assert.deepEqual(rows(v.inn, 'weeks', 1, {}), [])
+  const again = at('old age: no room again')
+  assert.equal(again.error, again.inn.view.guestRefusal)
+  assert.ok(receipt(again.inn).lines.some((l) => l.kind === 'bad'), 'a refusal keeps the receipt')
+  const who = at('old age: refused at who')
+  const g = who.inn.view.guests.find((g) => g.refusal)
+  assert.equal(pickLabel(who.inn, g.slot), null)
 })

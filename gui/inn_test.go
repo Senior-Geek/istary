@@ -25,6 +25,7 @@ const (
 	innFighter = 0 // 3/14 HP, 1000 GP, experience for level 3
 	innDead    = 3 // the priest, dead
 	innMage    = 4 // 2/14 HP, 25 GP, spells spent
+	innOld     = 5 // made old in the fixture, to die of old age
 )
 
 // innSession is partySession's party, wounded and paid, at the Inn; the
@@ -168,6 +169,49 @@ func TestInnFailedSaveRetried(t *testing.T) {
 	}
 }
 
+// A guest who dies of old age keeps the stay's receipt, death included, and
+// is offered no room again: not now, not after checking out, not on another
+// visit. Refused stays write nothing.
+func TestInnLostGuest(t *testing.T) {
+	s, dir := innSession(t)
+	old := s.ctrl.Game.Town.Party.Members[innFighter]
+	old.Age, old.Vitality, old.XP = 200*52, 3, 1<<30
+	s.ctrl.Save()
+	s.InnAction(InnRequest{Action: InnActEnter, Slot: innFighter})
+	var v View
+	for i := 0; old.Status == engine.OK; i++ {
+		if i > 20 {
+			t.Fatal("no death of old age in 20 stays")
+		}
+		v = s.InnAction(InnRequest{Action: InnActStay, Room: int(engine.Stables)})
+	}
+	st := v.Inn.Last.Stay
+	if !st.Died || st.Status != "LOST" || !v.Inn.Last.Saved || st.StatsAfter == st.StatsBefore || v.Inn.View.GuestRefusal == "" || len(v.Inn.View.Rooms) != 0 {
+		t.Fatalf("died: %+v view %+v", st, v.Inn.View)
+	}
+	mustMatchDisk(t, s, dir, "after the death")
+	for room := 0; room < 5; room++ {
+		v, wrote := innAct(t, s, dir, InnRequest{Action: InnActStay, Room: room})
+		if wrote || v.Error != "AGUI IS NOT OK: LOST and cannot stay at the Inn." || !v.Inn.Last.Stay.Died {
+			t.Errorf("room %d after death: %q, wrote %v, receipt %+v", room, v.Error, wrote, v.Inn.Last)
+		}
+		if q, _ := s.InnQuote(room, 0); q.Refusal != v.Error {
+			t.Errorf("quote after death: %+v", q)
+		}
+	}
+	v, _ = innAct(t, s, dir, InnRequest{Action: InnActEnter, Slot: innMage})
+	if v.Inn.View.Guests[innFighter].Refusal != "AGUI IS NOT OK" {
+		t.Errorf("switching guests: %+v", v.Inn.View.Guests)
+	}
+	if v, wrote := innAct(t, s, dir, InnRequest{Action: InnActEnter, Slot: innFighter}); wrote || v.Error != "AGUI IS NOT OK" {
+		t.Errorf("checking the LOST back in: %q", v.Error)
+	}
+	walkTo(t, s, "castle")
+	if v := walkTo(t, s, "inn"); v.Inn.View.Guests[innFighter].Refusal != "AGUI IS NOT OK" || v.Inn.Last != nil {
+		t.Errorf("another visit: %+v", v.Inn)
+	}
+}
+
 func TestDivvyGoldAtTheTavern(t *testing.T) {
 	s, dir := innSession(t)
 	walkTo(t, s, "castle")
@@ -283,6 +327,23 @@ func TestInnViewFixture(t *testing.T) {
 	add("not durable", s.InnAction(InnRequest{Action: InnActStay, Room: int(engine.Cot), Weeks: 1}))
 	saveGame = (*app.Controller).Save
 	add("guest left", s.InnAction(InnRequest{Action: InnActLeaveGuest}))
+	// An old member dies of old age at a level check: the receipt says so,
+	// and he is offered no room again.
+	old := s.ctrl.Game.Town.Party.Members[innOld]
+	old.Age, old.Vitality, old.XP, old.Status = 200*52, 3, 1<<30, engine.OK
+	s.ctrl.Save()
+	s.InnAction(InnRequest{Action: InnActEnter, Slot: innOld})
+	for i := 0; old.Status == engine.OK; i++ {
+		if i > 20 {
+			t.Fatal("no death of old age in 20 stays")
+		}
+		v := s.InnAction(InnRequest{Action: InnActStay, Room: int(engine.Stables)})
+		if old.Status != engine.OK {
+			add("old age: LOST", v)
+		}
+	}
+	add("old age: no room again", s.InnAction(InnRequest{Action: InnActStay, Room: int(engine.Stables)}))
+	add("old age: refused at who", s.InnAction(InnRequest{Action: InnActLeaveGuest}))
 	s.shutdown()
 
 	got, _ := json.MarshalIndent(cases, "", " ")

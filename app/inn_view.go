@@ -13,7 +13,10 @@ type InnView struct {
 	Message  string         `json:"message"`
 	Messages []string       `json:"messages"` // the level check's words, at "levelUp"
 	Guests   []InnGuestView `json:"guests"`   // every party member, and whether they may stay
-	Rooms    []InnRoomView  `json:"rooms"`    // with a guest: each room, quoted for them
+	// GuestRefusal is why the guest may not stay (any more): LOST of old
+	// age at the last level check, say. Then no room is offered.
+	GuestRefusal string        `json:"guestRefusal"`
+	Rooms        []InnRoomView `json:"rooms"` // with a guest who may stay: each room, quoted for them
 }
 
 // InnGuestView is a party member at "WHO WILL STAY".
@@ -67,6 +70,9 @@ func (c *Controller) InnView() (InnView, error) {
 	}
 	if town.InnStep == engine.InnLevelUp {
 		v.Messages = append([]string(nil), town.InnMessages...)
+	}
+	if v.GuestRefusal = guestRefusal(ch); v.GuestRefusal != "" {
+		return v, nil
 	}
 	for r, room := range innRooms {
 		rv := InnRoomView{

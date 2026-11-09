@@ -128,7 +128,9 @@
       {/if}
     </div>
 
-    {#if lines.length}
+    {#if inn?.view?.guestRefusal}
+      <p class="refusal" role="status">{inn.view.guestRefusal} Choose another guest.</p>
+    {:else if lines.length}
       <div class="tablewrap">
         <table class="rooms">
           <thead><tr><th>Room</th><th>Rate</th><th>{mode === 'healed' ? 'Until healed' : `For ${weeks} week${Number(weeks) === 1 ? '' : 's'}`}</th><th></th></tr></thead>
@@ -177,6 +179,7 @@
   .who-line b { color: var(--text); font-weight: 600; }
   .explain { margin: 0; font-size: 12px; }
   .notes { margin: 8px 0 0; font-size: 12px; }
+  .refusal { margin: 8px 0 0; color: var(--error); font-weight: 600; }
   .receipt { padding: 6px 10px; border-radius: 4px; font-size: 13px; border-left: 3px solid; }
   .receipt .status { font-weight: 600; font-size: 12px; margin-left: 6px; }
   .receipt ul { margin: 4px 0 0; padding-left: 18px; columns: 2 220px; }
