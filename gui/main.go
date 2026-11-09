@@ -60,6 +60,20 @@ func main() {
 			session.setQuit(func() { runtime.Quit(ctx) })
 			session.start()
 		},
+		// Closing the window or quitting asks first if the last save
+		// failed (close.go).
+		OnBeforeClose: func(ctx context.Context) bool {
+			return session.beforeClose(func(message string) (string, error) {
+				return runtime.MessageDialog(ctx, runtime.MessageDialogOptions{
+					Type:          runtime.WarningDialog,
+					Title:         closeTitle,
+					Message:       message,
+					Buttons:       []string{closeKeepPlaying, closeSaveAgain, closeDiscard},
+					DefaultButton: closeKeepPlaying,
+					CancelButton:  closeKeepPlaying,
+				})
+			})
+		},
 		OnShutdown: func(context.Context) { session.shutdown() },
 	})
 	if err != nil {

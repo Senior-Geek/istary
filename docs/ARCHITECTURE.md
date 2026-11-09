@@ -560,6 +560,14 @@ frame, from `View.Shop` only; `lib/shop.js` reshapes it and decides nothing.
   recorded first). The banner says closing now would lose what is unsaved
   and offers Try saving again; Boltac's NOT saved receipt offers it too and
   becomes Saved when it works.
+- **Closing the window** (`gui/close.go`, Wails's `OnBeforeClose`): with
+  everything saved the close button, ⌘Q and Quit close at once. With the
+  last save failed a native dialog asks: Keep playing (default, Escape),
+  Try saving again (`SaveNow`; asks again if it fails, closes once it
+  works) or Quit without saving. A close while the dialog is open is
+  refused without a second dialog. Leave the game still refuses while
+  unsaved, so the close it starts never asks. Tests: `gui/close_test.go`;
+  verified live in the app (2026-11-09).
 - **Tests:** `gui/equip_test.go` (with `equip-views.json` and
   `equipViews.test.js`), `TestShopSellingAWornItemAsks`,
   `TestSaveNowAfterAFailedSave`, `TestSaveNowOnAnExpedition`; the shop

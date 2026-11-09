@@ -60,6 +60,9 @@ type Session struct {
 	// quit closes the window (Wails's Quit), for LeaveGame (edge.go); nil
 	// until the window starts, and in tests.
 	quit func()
+	// closing is set while the window asks what to do with an unsaved
+	// game before closing (close.go), so a second close does not ask twice.
+	closing bool
 
 	// prefs are the window's own settings (settings.go); prefsNote says
 	// when they could not be read or saved.

@@ -1,7 +1,7 @@
 # M8 acceptance — Boltac's Trading Post
 
 Branch `m8-boltac`, reviewed through `70191a0` (23 commits on `main`
-86e6b1c). Accepted on 2026-11-09, pending the owner's approval.
+86e6b1c). Accepted on 2026-11-09.
 
 "M8" here is the working milestone for Boltac's. In
 `ISTARY-DEVELOPMENT-ROADMAP.md`, Boltac's belongs to M3/M4; the roadmap's
@@ -63,10 +63,9 @@ working tree clean. Each M8 completion commit had passed on its own
 
 ## Known limitations
 
-- **Closing the window with a failed save quits without a warning.** Leave
-  the game is refused, and the banner says closing would lose the change,
-  but the window's close button and ⌘Q do not ask. Wails' `OnBeforeClose`
-  could ask without a new persistence system; not done in M8.
+- **Closing the window with a failed save** (found in acceptance) was
+  fixed before release: the close button, ⌘Q and Quit ask first (Keep
+  playing, Try saving again, Quit without saving); see `ARCHITECTURE.md`.
 - Deferred by decision: further impairment from misaligned items, bishop
   identification failure, restrictions on dead characters' equipment,
   Pool Gold (#4).
@@ -90,5 +89,5 @@ saved again, after restart, Camp.
 ## Recommendation
 
 **Accept.** Every workflow check passed in the app at three sizes, the full
-gate is green, and the one finding (closing the window while unsaved) is a
-limitation with a contained fix, not a regression.
+gate is green, and the one finding (closing the window while unsaved) was
+fixed before release. Accepted by the owner on 2026-11-09.
