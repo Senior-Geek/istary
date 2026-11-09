@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
+	"regexp"
 	"slices"
 	"strings"
 	"testing"
@@ -525,4 +526,103 @@ func TestShopSaveNotDurable(t *testing.T) {
 		t.Fatalf("notice %q", v.Notice)
 	}
 	mustMatchDisk(t, s, dir, "not durable")
+}
+
+// shopCase is what the Trading Post screen reads from a View.
+type shopCase struct {
+	Case     string         `json:"case"`
+	Location string         `json:"location"`
+	Shop     *ShopPanel     `json:"shop"`
+	PartyBar []PartyBarSlot `json:"partyBar"`
+	FrontRow int            `json:"frontRow"`
+	Return   *ReturnView    `json:"return"`
+	Error    string         `json:"error"`
+	Notice   string         `json:"notice"`
+	Unsaved  string         `json:"unsaved"`
+	Warning  string         `json:"warning"`
+}
+
+func shopCaseOf(name string, v View) shopCase {
+	return shopCase{name, v.Location, v.Shop, v.PartyBar, v.FrontRow, v.Return, v.Error, v.Notice, v.Unsaved, v.Warning}
+}
+
+// TestShopViewFixture records real views at Boltac's, one for each state
+// the Trading Post screen draws, for the page's tests
+// (frontend/src/lib/shopViews.test.js). Run with ISTARY_UPDATE_FIXTURES=1
+// to rewrite it.
+func TestShopViewFixture(t *testing.T) {
+	var cases []shopCase
+	s, dir := shopSession(t)
+	g := s.ctrl.Game
+	mage := g.Town.Party.Members[mageSlot]
+	mage.AddItem(itemLongSword, true)
+	mage.Items[0].Equipped = true
+	mage.AddItem(itemHelm, false)
+	mage.AddItem(itemStaff, true)
+	mage.Items[2].Cursed = true
+	mage.AddItem(scrollHalito, false)
+	mage.Items[3].Cursed = true // unidentified and cursed
+	g.Town.Party.Members[2].Gold = 5
+	priest := g.Town.Party.Members[3]
+	priest.Gold = 0
+	priest.AddItem(itemHelm, false)
+	s.ctrl.Save()
+	add := func(name string, v View) { cases = append(cases, shopCaseOf(name, v)) }
+
+	add("who", s.State())
+	add("mage at the counter", s.ShopAction(ShopRequest{Action: ShopActEnter, Slot: mageSlot}))
+	add("bought, saved", s.ShopAction(ShopRequest{Action: ShopActBuy, Item: itemStaff}))
+	add("refused: cannot afford", s.ShopAction(ShopRequest{Action: ShopActBuy, Item: shortSwordPlus1}))
+	add("Boltac asks: unusable", s.ShopAction(ShopRequest{Action: ShopActBuy, Item: itemLongSword}))
+	add("bought anyway", s.ShopAction(ShopRequest{Action: ShopActConfirm, Yes: true}))
+	add("identified", s.ShopAction(ShopRequest{Action: ShopActIdentify, N: 2}))
+	add("uncursed", s.ShopAction(ShopRequest{Action: ShopActUncurse, N: 3}))
+	add("sold", s.ShopAction(ShopRequest{Action: ShopActSell, N: 1}))
+	for mage.ItemCount < 8 {
+		s.ShopAction(ShopRequest{Action: ShopActBuy, Item: itemStaff})
+	}
+	add("no room", s.State())
+	add("thief: little gold, nothing to sell", s.ShopAction(ShopRequest{Action: ShopActEnter, Slot: 2}))
+	add("priest: no gold for a fee", s.ShopAction(ShopRequest{Action: ShopActEnter, Slot: 3}))
+
+	s.ShopAction(ShopRequest{Action: ShopActEnter, Slot: 0})
+	if os.Geteuid() != 0 {
+		os.Chmod(dir, 0o555)
+		v := s.ShopAction(ShopRequest{Action: ShopActBuy, Item: itemStaff})
+		os.Chmod(dir, 0o755)
+		// The message names the folder and a temporary file, which change
+		// every run.
+		tidy := func(msg string) string {
+			msg = strings.ReplaceAll(msg, "/private"+dir, "<saves>")
+			msg = strings.ReplaceAll(msg, dir, "<saves>")
+			return regexp.MustCompile(`tmp-[0-9a-f]+`).ReplaceAllString(msg, "tmp-<random>")
+		}
+		v.Error, v.Unsaved = tidy(v.Error), tidy(v.Unsaved)
+		add("bought, NOT saved", v)
+	}
+	saveGame = func(c *app.Controller) error {
+		if err := c.Save(); err != nil {
+			return err
+		}
+		return &engine.NotDurableError{Err: errors.New("no sync")}
+	}
+	add("bought, not durable", s.ShopAction(ShopRequest{Action: ShopActBuy, Item: itemStaff}))
+	saveGame = (*app.Controller).Save
+	s.shutdown()
+
+	got, _ := json.MarshalIndent(cases, "", " ")
+	got = append(got, '\n')
+	path := filepath.Join("frontend", "src", "lib", "testdata", "shop-views.json")
+	if os.Getenv("ISTARY_UPDATE_FIXTURES") != "" {
+		if err := os.WriteFile(path, got, 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	want, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatalf("%v (run with ISTARY_UPDATE_FIXTURES=1)", err)
+	}
+	if !bytes.Equal(got, want) {
+		t.Fatal("shop-views.json is out of date (run with ISTARY_UPDATE_FIXTURES=1)")
+	}
 }

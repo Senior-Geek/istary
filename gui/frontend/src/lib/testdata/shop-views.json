@@ -1,0 +1,5509 @@
+[
+ {
+  "case": "who",
+  "location": "trading",
+  "shop": {
+   "view": {
+    "step": "who",
+    "prompt": false,
+    "message": "",
+    "customer": -1,
+    "name": "",
+    "class": "",
+    "gold": 0,
+    "confirm": -1,
+    "catalog": null,
+    "items": null,
+    "room": 0
+   },
+   "last": null
+  },
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "frontRow": 3,
+  "return": {
+   "open": true,
+   "note": ""
+  },
+  "error": "",
+  "notice": "",
+  "unsaved": "",
+  "warning": ""
+ },
+ {
+  "case": "mage at the counter",
+  "location": "trading",
+  "shop": {
+   "view": {
+    "step": "main",
+    "prompt": false,
+    "message": "",
+    "customer": 4,
+    "name": "EGUI",
+    "class": "MAGE",
+    "gold": 1000,
+    "confirm": -1,
+    "catalog": [
+     {
+      "item": 1,
+      "name": "LONG SWORD",
+      "price": 25,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 2,
+      "name": "SHORT SWORD",
+      "price": 15,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 3,
+      "name": "ANOINTED MACE",
+      "price": 30,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 4,
+      "name": "ANOINTED FLAIL",
+      "price": 150,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 5,
+      "name": "STAFF",
+      "price": 10,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 6,
+      "name": "DAGGER",
+      "price": 5,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 7,
+      "name": "SMALL SHIELD",
+      "price": 20,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 8,
+      "name": "LARGE SHIELD",
+      "price": 40,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 9,
+      "name": "ROBES",
+      "price": 15,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 10,
+      "name": "LEATHER ARMOR",
+      "price": 50,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 11,
+      "name": "CHAIN MAIL",
+      "price": 90,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 12,
+      "name": "BREAST PLATE",
+      "price": 200,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 13,
+      "name": "PLATE MAIL",
+      "price": 750,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 14,
+      "name": "HELM",
+      "price": 100,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 15,
+      "name": "DIOS POTION",
+      "price": 500,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 16,
+      "name": "LATUMOFIS POT.",
+      "price": 300,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 18,
+      "name": "SHORT SWORD+1",
+      "price": 70536,
+      "stock": 2,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 19,
+      "name": "MACE+1",
+      "price": 68036,
+      "stock": 1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 20,
+      "name": "STAFF OF MOGREF",
+      "price": 3000,
+      "stock": 3,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 21,
+      "name": "SCROLL/KANTINO",
+      "price": 500,
+      "stock": 4,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 22,
+      "name": "LEATHER + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 23,
+      "name": "CHAIN MAIL + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 25,
+      "name": "SHIELD + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 26,
+      "name": "BREAST PLATE +1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 27,
+      "name": "SCROLL/BADIOS",
+      "price": 500,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 28,
+      "name": "SCROLL/HALITO",
+      "price": 500,
+      "stock": 27,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 32,
+      "name": "STAFF +2",
+      "price": 2500,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 39,
+      "name": "JEWELED AMULET",
+      "price": 5000,
+      "stock": 2,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 41,
+      "name": "POTION OF SOPIC",
+      "price": 1500,
+      "stock": 1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 47,
+      "name": "COPPER GLOVES",
+      "price": 6000,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 62,
+      "name": "EVIL CHAIN + 2",
+      "price": 8000,
+      "stock": 2,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     }
+    ],
+    "items": [
+     {
+      "n": 1,
+      "item": 1,
+      "name": "LONG SWORD",
+      "identified": true,
+      "equipped": true,
+      "cursed": false,
+      "price": 12,
+      "sellRefusal": "",
+      "fee": 12,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     },
+     {
+      "n": 2,
+      "item": 14,
+      "name": "HELM",
+      "identified": false,
+      "equipped": false,
+      "cursed": false,
+      "price": 1,
+      "sellRefusal": "",
+      "fee": 50,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": ""
+     },
+     {
+      "n": 3,
+      "item": 5,
+      "name": "STAFF",
+      "identified": true,
+      "equipped": false,
+      "cursed": true,
+      "price": 5,
+      "sellRefusal": "** WE DONT BUY CURSED ITEMS **",
+      "fee": 5,
+      "uncurseRefusal": "",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     },
+     {
+      "n": 4,
+      "item": 28,
+      "name": "SCROLL",
+      "identified": false,
+      "equipped": false,
+      "cursed": true,
+      "price": 1,
+      "sellRefusal": "** WE DONT BUY CURSED ITEMS **",
+      "fee": 250,
+      "uncurseRefusal": "",
+      "identifyRefusal": ""
+     }
+    ],
+    "room": 4
+   },
+   "last": null
+  },
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "frontRow": 3,
+  "return": {
+   "open": true,
+   "note": ""
+  },
+  "error": "",
+  "notice": "",
+  "unsaved": "",
+  "warning": ""
+ },
+ {
+  "case": "bought, saved",
+  "location": "trading",
+  "shop": {
+   "view": {
+    "step": "buy",
+    "prompt": false,
+    "message": "** JUST WHAT YOU NEEDED **",
+    "customer": 4,
+    "name": "EGUI",
+    "class": "MAGE",
+    "gold": 990,
+    "confirm": -1,
+    "catalog": [
+     {
+      "item": 1,
+      "name": "LONG SWORD",
+      "price": 25,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 2,
+      "name": "SHORT SWORD",
+      "price": 15,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 3,
+      "name": "ANOINTED MACE",
+      "price": 30,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 4,
+      "name": "ANOINTED FLAIL",
+      "price": 150,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 5,
+      "name": "STAFF",
+      "price": 10,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 6,
+      "name": "DAGGER",
+      "price": 5,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 7,
+      "name": "SMALL SHIELD",
+      "price": 20,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 8,
+      "name": "LARGE SHIELD",
+      "price": 40,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 9,
+      "name": "ROBES",
+      "price": 15,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 10,
+      "name": "LEATHER ARMOR",
+      "price": 50,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 11,
+      "name": "CHAIN MAIL",
+      "price": 90,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 12,
+      "name": "BREAST PLATE",
+      "price": 200,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 13,
+      "name": "PLATE MAIL",
+      "price": 750,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 14,
+      "name": "HELM",
+      "price": 100,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 15,
+      "name": "DIOS POTION",
+      "price": 500,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 16,
+      "name": "LATUMOFIS POT.",
+      "price": 300,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 18,
+      "name": "SHORT SWORD+1",
+      "price": 70536,
+      "stock": 2,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 19,
+      "name": "MACE+1",
+      "price": 68036,
+      "stock": 1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 20,
+      "name": "STAFF OF MOGREF",
+      "price": 3000,
+      "stock": 3,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 21,
+      "name": "SCROLL/KANTINO",
+      "price": 500,
+      "stock": 4,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 22,
+      "name": "LEATHER + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 23,
+      "name": "CHAIN MAIL + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 25,
+      "name": "SHIELD + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 26,
+      "name": "BREAST PLATE +1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 27,
+      "name": "SCROLL/BADIOS",
+      "price": 500,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 28,
+      "name": "SCROLL/HALITO",
+      "price": 500,
+      "stock": 27,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 32,
+      "name": "STAFF +2",
+      "price": 2500,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 39,
+      "name": "JEWELED AMULET",
+      "price": 5000,
+      "stock": 2,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 41,
+      "name": "POTION OF SOPIC",
+      "price": 1500,
+      "stock": 1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 47,
+      "name": "COPPER GLOVES",
+      "price": 6000,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 62,
+      "name": "EVIL CHAIN + 2",
+      "price": 8000,
+      "stock": 2,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     }
+    ],
+    "items": [
+     {
+      "n": 1,
+      "item": 1,
+      "name": "LONG SWORD",
+      "identified": true,
+      "equipped": true,
+      "cursed": false,
+      "price": 12,
+      "sellRefusal": "",
+      "fee": 12,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     },
+     {
+      "n": 2,
+      "item": 14,
+      "name": "HELM",
+      "identified": false,
+      "equipped": false,
+      "cursed": false,
+      "price": 1,
+      "sellRefusal": "",
+      "fee": 50,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": ""
+     },
+     {
+      "n": 3,
+      "item": 5,
+      "name": "STAFF",
+      "identified": true,
+      "equipped": false,
+      "cursed": true,
+      "price": 5,
+      "sellRefusal": "** WE DONT BUY CURSED ITEMS **",
+      "fee": 5,
+      "uncurseRefusal": "",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     },
+     {
+      "n": 4,
+      "item": 28,
+      "name": "SCROLL",
+      "identified": false,
+      "equipped": false,
+      "cursed": true,
+      "price": 1,
+      "sellRefusal": "** WE DONT BUY CURSED ITEMS **",
+      "fee": 250,
+      "uncurseRefusal": "",
+      "identifyRefusal": ""
+     },
+     {
+      "n": 5,
+      "item": 5,
+      "name": "STAFF",
+      "identified": true,
+      "equipped": false,
+      "cursed": false,
+      "price": 5,
+      "sellRefusal": "",
+      "fee": 5,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     }
+    ],
+    "room": 3
+   },
+   "last": {
+    "action": "buy",
+    "customer": "EGUI",
+    "item": "STAFF",
+    "gold": -10,
+    "saved": true,
+    "durable": true
+   }
+  },
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "frontRow": 3,
+  "return": {
+   "open": true,
+   "note": ""
+  },
+  "error": "",
+  "notice": "EGUI bought STAFF for 10 GP. Saved.",
+  "unsaved": "",
+  "warning": ""
+ },
+ {
+  "case": "refused: cannot afford",
+  "location": "trading",
+  "shop": {
+   "view": {
+    "step": "buy",
+    "prompt": false,
+    "message": "** YOU CANNOT AFFORD IT **",
+    "customer": 4,
+    "name": "EGUI",
+    "class": "MAGE",
+    "gold": 990,
+    "confirm": -1,
+    "catalog": [
+     {
+      "item": 1,
+      "name": "LONG SWORD",
+      "price": 25,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 2,
+      "name": "SHORT SWORD",
+      "price": 15,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 3,
+      "name": "ANOINTED MACE",
+      "price": 30,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 4,
+      "name": "ANOINTED FLAIL",
+      "price": 150,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 5,
+      "name": "STAFF",
+      "price": 10,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 6,
+      "name": "DAGGER",
+      "price": 5,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 7,
+      "name": "SMALL SHIELD",
+      "price": 20,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 8,
+      "name": "LARGE SHIELD",
+      "price": 40,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 9,
+      "name": "ROBES",
+      "price": 15,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 10,
+      "name": "LEATHER ARMOR",
+      "price": 50,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 11,
+      "name": "CHAIN MAIL",
+      "price": 90,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 12,
+      "name": "BREAST PLATE",
+      "price": 200,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 13,
+      "name": "PLATE MAIL",
+      "price": 750,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 14,
+      "name": "HELM",
+      "price": 100,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 15,
+      "name": "DIOS POTION",
+      "price": 500,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 16,
+      "name": "LATUMOFIS POT.",
+      "price": 300,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 18,
+      "name": "SHORT SWORD+1",
+      "price": 70536,
+      "stock": 2,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 19,
+      "name": "MACE+1",
+      "price": 68036,
+      "stock": 1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 20,
+      "name": "STAFF OF MOGREF",
+      "price": 3000,
+      "stock": 3,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 21,
+      "name": "SCROLL/KANTINO",
+      "price": 500,
+      "stock": 4,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 22,
+      "name": "LEATHER + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 23,
+      "name": "CHAIN MAIL + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 25,
+      "name": "SHIELD + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 26,
+      "name": "BREAST PLATE +1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 27,
+      "name": "SCROLL/BADIOS",
+      "price": 500,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 28,
+      "name": "SCROLL/HALITO",
+      "price": 500,
+      "stock": 27,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 32,
+      "name": "STAFF +2",
+      "price": 2500,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 39,
+      "name": "JEWELED AMULET",
+      "price": 5000,
+      "stock": 2,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 41,
+      "name": "POTION OF SOPIC",
+      "price": 1500,
+      "stock": 1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 47,
+      "name": "COPPER GLOVES",
+      "price": 6000,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 62,
+      "name": "EVIL CHAIN + 2",
+      "price": 8000,
+      "stock": 2,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     }
+    ],
+    "items": [
+     {
+      "n": 1,
+      "item": 1,
+      "name": "LONG SWORD",
+      "identified": true,
+      "equipped": true,
+      "cursed": false,
+      "price": 12,
+      "sellRefusal": "",
+      "fee": 12,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     },
+     {
+      "n": 2,
+      "item": 14,
+      "name": "HELM",
+      "identified": false,
+      "equipped": false,
+      "cursed": false,
+      "price": 1,
+      "sellRefusal": "",
+      "fee": 50,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": ""
+     },
+     {
+      "n": 3,
+      "item": 5,
+      "name": "STAFF",
+      "identified": true,
+      "equipped": false,
+      "cursed": true,
+      "price": 5,
+      "sellRefusal": "** WE DONT BUY CURSED ITEMS **",
+      "fee": 5,
+      "uncurseRefusal": "",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     },
+     {
+      "n": 4,
+      "item": 28,
+      "name": "SCROLL",
+      "identified": false,
+      "equipped": false,
+      "cursed": true,
+      "price": 1,
+      "sellRefusal": "** WE DONT BUY CURSED ITEMS **",
+      "fee": 250,
+      "uncurseRefusal": "",
+      "identifyRefusal": ""
+     },
+     {
+      "n": 5,
+      "item": 5,
+      "name": "STAFF",
+      "identified": true,
+      "equipped": false,
+      "cursed": false,
+      "price": 5,
+      "sellRefusal": "",
+      "fee": 5,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     }
+    ],
+    "room": 3
+   },
+   "last": null
+  },
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "frontRow": 3,
+  "return": {
+   "open": true,
+   "note": ""
+  },
+  "error": "** YOU CANNOT AFFORD IT **",
+  "notice": "",
+  "unsaved": "",
+  "warning": ""
+ },
+ {
+  "case": "Boltac asks: unusable",
+  "location": "trading",
+  "shop": {
+   "view": {
+    "step": "confirm",
+    "prompt": false,
+    "message": "UNUSABLE ITEM - CONFIRM BUY (Y/N) ? \u003e",
+    "customer": 4,
+    "name": "EGUI",
+    "class": "MAGE",
+    "gold": 990,
+    "confirm": 1,
+    "catalog": [
+     {
+      "item": 1,
+      "name": "LONG SWORD",
+      "price": 25,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 2,
+      "name": "SHORT SWORD",
+      "price": 15,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 3,
+      "name": "ANOINTED MACE",
+      "price": 30,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 4,
+      "name": "ANOINTED FLAIL",
+      "price": 150,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 5,
+      "name": "STAFF",
+      "price": 10,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 6,
+      "name": "DAGGER",
+      "price": 5,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 7,
+      "name": "SMALL SHIELD",
+      "price": 20,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 8,
+      "name": "LARGE SHIELD",
+      "price": 40,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 9,
+      "name": "ROBES",
+      "price": 15,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 10,
+      "name": "LEATHER ARMOR",
+      "price": 50,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 11,
+      "name": "CHAIN MAIL",
+      "price": 90,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 12,
+      "name": "BREAST PLATE",
+      "price": 200,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 13,
+      "name": "PLATE MAIL",
+      "price": 750,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 14,
+      "name": "HELM",
+      "price": 100,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 15,
+      "name": "DIOS POTION",
+      "price": 500,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 16,
+      "name": "LATUMOFIS POT.",
+      "price": 300,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 18,
+      "name": "SHORT SWORD+1",
+      "price": 70536,
+      "stock": 2,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 19,
+      "name": "MACE+1",
+      "price": 68036,
+      "stock": 1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 20,
+      "name": "STAFF OF MOGREF",
+      "price": 3000,
+      "stock": 3,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 21,
+      "name": "SCROLL/KANTINO",
+      "price": 500,
+      "stock": 4,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 22,
+      "name": "LEATHER + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 23,
+      "name": "CHAIN MAIL + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 25,
+      "name": "SHIELD + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 26,
+      "name": "BREAST PLATE +1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 27,
+      "name": "SCROLL/BADIOS",
+      "price": 500,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 28,
+      "name": "SCROLL/HALITO",
+      "price": 500,
+      "stock": 27,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 32,
+      "name": "STAFF +2",
+      "price": 2500,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 39,
+      "name": "JEWELED AMULET",
+      "price": 5000,
+      "stock": 2,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 41,
+      "name": "POTION OF SOPIC",
+      "price": 1500,
+      "stock": 1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 47,
+      "name": "COPPER GLOVES",
+      "price": 6000,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 62,
+      "name": "EVIL CHAIN + 2",
+      "price": 8000,
+      "stock": 2,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     }
+    ],
+    "items": [
+     {
+      "n": 1,
+      "item": 1,
+      "name": "LONG SWORD",
+      "identified": true,
+      "equipped": true,
+      "cursed": false,
+      "price": 12,
+      "sellRefusal": "",
+      "fee": 12,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     },
+     {
+      "n": 2,
+      "item": 14,
+      "name": "HELM",
+      "identified": false,
+      "equipped": false,
+      "cursed": false,
+      "price": 1,
+      "sellRefusal": "",
+      "fee": 50,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": ""
+     },
+     {
+      "n": 3,
+      "item": 5,
+      "name": "STAFF",
+      "identified": true,
+      "equipped": false,
+      "cursed": true,
+      "price": 5,
+      "sellRefusal": "** WE DONT BUY CURSED ITEMS **",
+      "fee": 5,
+      "uncurseRefusal": "",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     },
+     {
+      "n": 4,
+      "item": 28,
+      "name": "SCROLL",
+      "identified": false,
+      "equipped": false,
+      "cursed": true,
+      "price": 1,
+      "sellRefusal": "** WE DONT BUY CURSED ITEMS **",
+      "fee": 250,
+      "uncurseRefusal": "",
+      "identifyRefusal": ""
+     },
+     {
+      "n": 5,
+      "item": 5,
+      "name": "STAFF",
+      "identified": true,
+      "equipped": false,
+      "cursed": false,
+      "price": 5,
+      "sellRefusal": "",
+      "fee": 5,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     }
+    ],
+    "room": 3
+   },
+   "last": null
+  },
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "frontRow": 3,
+  "return": {
+   "open": true,
+   "note": "Returning answers no to Boltac's question: the item is not bought."
+  },
+  "error": "",
+  "notice": "",
+  "unsaved": "",
+  "warning": ""
+ },
+ {
+  "case": "bought anyway",
+  "location": "trading",
+  "shop": {
+   "view": {
+    "step": "buy",
+    "prompt": false,
+    "message": "** ITS YOUR MONEY **",
+    "customer": 4,
+    "name": "EGUI",
+    "class": "MAGE",
+    "gold": 965,
+    "confirm": -1,
+    "catalog": [
+     {
+      "item": 1,
+      "name": "LONG SWORD",
+      "price": 25,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 2,
+      "name": "SHORT SWORD",
+      "price": 15,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 3,
+      "name": "ANOINTED MACE",
+      "price": 30,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 4,
+      "name": "ANOINTED FLAIL",
+      "price": 150,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 5,
+      "name": "STAFF",
+      "price": 10,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 6,
+      "name": "DAGGER",
+      "price": 5,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 7,
+      "name": "SMALL SHIELD",
+      "price": 20,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 8,
+      "name": "LARGE SHIELD",
+      "price": 40,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 9,
+      "name": "ROBES",
+      "price": 15,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 10,
+      "name": "LEATHER ARMOR",
+      "price": 50,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 11,
+      "name": "CHAIN MAIL",
+      "price": 90,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 12,
+      "name": "BREAST PLATE",
+      "price": 200,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 13,
+      "name": "PLATE MAIL",
+      "price": 750,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 14,
+      "name": "HELM",
+      "price": 100,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 15,
+      "name": "DIOS POTION",
+      "price": 500,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 16,
+      "name": "LATUMOFIS POT.",
+      "price": 300,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 18,
+      "name": "SHORT SWORD+1",
+      "price": 70536,
+      "stock": 2,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 19,
+      "name": "MACE+1",
+      "price": 68036,
+      "stock": 1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 20,
+      "name": "STAFF OF MOGREF",
+      "price": 3000,
+      "stock": 3,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 21,
+      "name": "SCROLL/KANTINO",
+      "price": 500,
+      "stock": 4,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 22,
+      "name": "LEATHER + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 23,
+      "name": "CHAIN MAIL + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 25,
+      "name": "SHIELD + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 26,
+      "name": "BREAST PLATE +1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 27,
+      "name": "SCROLL/BADIOS",
+      "price": 500,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 28,
+      "name": "SCROLL/HALITO",
+      "price": 500,
+      "stock": 27,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 32,
+      "name": "STAFF +2",
+      "price": 2500,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 39,
+      "name": "JEWELED AMULET",
+      "price": 5000,
+      "stock": 2,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 41,
+      "name": "POTION OF SOPIC",
+      "price": 1500,
+      "stock": 1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 47,
+      "name": "COPPER GLOVES",
+      "price": 6000,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 62,
+      "name": "EVIL CHAIN + 2",
+      "price": 8000,
+      "stock": 2,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     }
+    ],
+    "items": [
+     {
+      "n": 1,
+      "item": 1,
+      "name": "LONG SWORD",
+      "identified": true,
+      "equipped": true,
+      "cursed": false,
+      "price": 12,
+      "sellRefusal": "",
+      "fee": 12,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     },
+     {
+      "n": 2,
+      "item": 14,
+      "name": "HELM",
+      "identified": false,
+      "equipped": false,
+      "cursed": false,
+      "price": 1,
+      "sellRefusal": "",
+      "fee": 50,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": ""
+     },
+     {
+      "n": 3,
+      "item": 5,
+      "name": "STAFF",
+      "identified": true,
+      "equipped": false,
+      "cursed": true,
+      "price": 5,
+      "sellRefusal": "** WE DONT BUY CURSED ITEMS **",
+      "fee": 5,
+      "uncurseRefusal": "",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     },
+     {
+      "n": 4,
+      "item": 28,
+      "name": "SCROLL",
+      "identified": false,
+      "equipped": false,
+      "cursed": true,
+      "price": 1,
+      "sellRefusal": "** WE DONT BUY CURSED ITEMS **",
+      "fee": 250,
+      "uncurseRefusal": "",
+      "identifyRefusal": ""
+     },
+     {
+      "n": 5,
+      "item": 5,
+      "name": "STAFF",
+      "identified": true,
+      "equipped": false,
+      "cursed": false,
+      "price": 5,
+      "sellRefusal": "",
+      "fee": 5,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     },
+     {
+      "n": 6,
+      "item": 1,
+      "name": "LONG SWORD",
+      "identified": true,
+      "equipped": false,
+      "cursed": false,
+      "price": 12,
+      "sellRefusal": "",
+      "fee": 12,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     }
+    ],
+    "room": 2
+   },
+   "last": {
+    "action": "buy",
+    "customer": "EGUI",
+    "item": "LONG SWORD",
+    "gold": -25,
+    "saved": true,
+    "durable": true
+   }
+  },
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "frontRow": 3,
+  "return": {
+   "open": true,
+   "note": ""
+  },
+  "error": "",
+  "notice": "EGUI bought LONG SWORD for 25 GP. Saved.",
+  "unsaved": "",
+  "warning": ""
+ },
+ {
+  "case": "identified",
+  "location": "trading",
+  "shop": {
+   "view": {
+    "step": "identify",
+    "prompt": false,
+    "message": "** ANYTHING ELSE, SIRE? **",
+    "customer": 4,
+    "name": "EGUI",
+    "class": "MAGE",
+    "gold": 915,
+    "confirm": -1,
+    "catalog": [
+     {
+      "item": 1,
+      "name": "LONG SWORD",
+      "price": 25,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 2,
+      "name": "SHORT SWORD",
+      "price": 15,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 3,
+      "name": "ANOINTED MACE",
+      "price": 30,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 4,
+      "name": "ANOINTED FLAIL",
+      "price": 150,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 5,
+      "name": "STAFF",
+      "price": 10,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 6,
+      "name": "DAGGER",
+      "price": 5,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 7,
+      "name": "SMALL SHIELD",
+      "price": 20,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 8,
+      "name": "LARGE SHIELD",
+      "price": 40,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 9,
+      "name": "ROBES",
+      "price": 15,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 10,
+      "name": "LEATHER ARMOR",
+      "price": 50,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 11,
+      "name": "CHAIN MAIL",
+      "price": 90,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 12,
+      "name": "BREAST PLATE",
+      "price": 200,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 13,
+      "name": "PLATE MAIL",
+      "price": 750,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 14,
+      "name": "HELM",
+      "price": 100,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 15,
+      "name": "DIOS POTION",
+      "price": 500,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 16,
+      "name": "LATUMOFIS POT.",
+      "price": 300,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 18,
+      "name": "SHORT SWORD+1",
+      "price": 70536,
+      "stock": 2,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 19,
+      "name": "MACE+1",
+      "price": 68036,
+      "stock": 1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 20,
+      "name": "STAFF OF MOGREF",
+      "price": 3000,
+      "stock": 3,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 21,
+      "name": "SCROLL/KANTINO",
+      "price": 500,
+      "stock": 4,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 22,
+      "name": "LEATHER + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 23,
+      "name": "CHAIN MAIL + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 25,
+      "name": "SHIELD + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 26,
+      "name": "BREAST PLATE +1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 27,
+      "name": "SCROLL/BADIOS",
+      "price": 500,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 28,
+      "name": "SCROLL/HALITO",
+      "price": 500,
+      "stock": 27,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 32,
+      "name": "STAFF +2",
+      "price": 2500,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 39,
+      "name": "JEWELED AMULET",
+      "price": 5000,
+      "stock": 2,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 41,
+      "name": "POTION OF SOPIC",
+      "price": 1500,
+      "stock": 1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 47,
+      "name": "COPPER GLOVES",
+      "price": 6000,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 62,
+      "name": "EVIL CHAIN + 2",
+      "price": 8000,
+      "stock": 2,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     }
+    ],
+    "items": [
+     {
+      "n": 1,
+      "item": 1,
+      "name": "LONG SWORD",
+      "identified": true,
+      "equipped": true,
+      "cursed": false,
+      "price": 12,
+      "sellRefusal": "",
+      "fee": 12,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     },
+     {
+      "n": 2,
+      "item": 14,
+      "name": "HELM",
+      "identified": true,
+      "equipped": false,
+      "cursed": false,
+      "price": 50,
+      "sellRefusal": "",
+      "fee": 50,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     },
+     {
+      "n": 3,
+      "item": 5,
+      "name": "STAFF",
+      "identified": true,
+      "equipped": false,
+      "cursed": true,
+      "price": 5,
+      "sellRefusal": "** WE DONT BUY CURSED ITEMS **",
+      "fee": 5,
+      "uncurseRefusal": "",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     },
+     {
+      "n": 4,
+      "item": 28,
+      "name": "SCROLL",
+      "identified": false,
+      "equipped": false,
+      "cursed": true,
+      "price": 1,
+      "sellRefusal": "** WE DONT BUY CURSED ITEMS **",
+      "fee": 250,
+      "uncurseRefusal": "",
+      "identifyRefusal": ""
+     },
+     {
+      "n": 5,
+      "item": 5,
+      "name": "STAFF",
+      "identified": true,
+      "equipped": false,
+      "cursed": false,
+      "price": 5,
+      "sellRefusal": "",
+      "fee": 5,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     },
+     {
+      "n": 6,
+      "item": 1,
+      "name": "LONG SWORD",
+      "identified": true,
+      "equipped": false,
+      "cursed": false,
+      "price": 12,
+      "sellRefusal": "",
+      "fee": 12,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     }
+    ],
+    "room": 2
+   },
+   "last": {
+    "action": "identify",
+    "customer": "EGUI",
+    "item": "HELM",
+    "gold": -50,
+    "saved": true,
+    "durable": true
+   }
+  },
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "frontRow": 3,
+  "return": {
+   "open": true,
+   "note": ""
+  },
+  "error": "",
+  "notice": "Boltac identified EGUI's item, for 50 GP: it is HELM. Saved.",
+  "unsaved": "",
+  "warning": ""
+ },
+ {
+  "case": "uncursed",
+  "location": "trading",
+  "shop": {
+   "view": {
+    "step": "uncurse",
+    "prompt": false,
+    "message": "** ANYTHING ELSE, SIRE? **",
+    "customer": 4,
+    "name": "EGUI",
+    "class": "MAGE",
+    "gold": 910,
+    "confirm": -1,
+    "catalog": [
+     {
+      "item": 1,
+      "name": "LONG SWORD",
+      "price": 25,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 2,
+      "name": "SHORT SWORD",
+      "price": 15,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 3,
+      "name": "ANOINTED MACE",
+      "price": 30,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 4,
+      "name": "ANOINTED FLAIL",
+      "price": 150,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 5,
+      "name": "STAFF",
+      "price": 10,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 6,
+      "name": "DAGGER",
+      "price": 5,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 7,
+      "name": "SMALL SHIELD",
+      "price": 20,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 8,
+      "name": "LARGE SHIELD",
+      "price": 40,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 9,
+      "name": "ROBES",
+      "price": 15,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 10,
+      "name": "LEATHER ARMOR",
+      "price": 50,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 11,
+      "name": "CHAIN MAIL",
+      "price": 90,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 12,
+      "name": "BREAST PLATE",
+      "price": 200,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 13,
+      "name": "PLATE MAIL",
+      "price": 750,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 14,
+      "name": "HELM",
+      "price": 100,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 15,
+      "name": "DIOS POTION",
+      "price": 500,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 16,
+      "name": "LATUMOFIS POT.",
+      "price": 300,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 18,
+      "name": "SHORT SWORD+1",
+      "price": 70536,
+      "stock": 2,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 19,
+      "name": "MACE+1",
+      "price": 68036,
+      "stock": 1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 20,
+      "name": "STAFF OF MOGREF",
+      "price": 3000,
+      "stock": 3,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 21,
+      "name": "SCROLL/KANTINO",
+      "price": 500,
+      "stock": 4,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 22,
+      "name": "LEATHER + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 23,
+      "name": "CHAIN MAIL + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 25,
+      "name": "SHIELD + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 26,
+      "name": "BREAST PLATE +1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 27,
+      "name": "SCROLL/BADIOS",
+      "price": 500,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 28,
+      "name": "SCROLL/HALITO",
+      "price": 500,
+      "stock": 27,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 32,
+      "name": "STAFF +2",
+      "price": 2500,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 39,
+      "name": "JEWELED AMULET",
+      "price": 5000,
+      "stock": 2,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 41,
+      "name": "POTION OF SOPIC",
+      "price": 1500,
+      "stock": 1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 47,
+      "name": "COPPER GLOVES",
+      "price": 6000,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 62,
+      "name": "EVIL CHAIN + 2",
+      "price": 8000,
+      "stock": 2,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     }
+    ],
+    "items": [
+     {
+      "n": 1,
+      "item": 1,
+      "name": "LONG SWORD",
+      "identified": true,
+      "equipped": true,
+      "cursed": false,
+      "price": 12,
+      "sellRefusal": "",
+      "fee": 12,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     },
+     {
+      "n": 2,
+      "item": 14,
+      "name": "HELM",
+      "identified": true,
+      "equipped": false,
+      "cursed": false,
+      "price": 50,
+      "sellRefusal": "",
+      "fee": 50,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     },
+     {
+      "n": 3,
+      "item": 28,
+      "name": "SCROLL",
+      "identified": false,
+      "equipped": false,
+      "cursed": true,
+      "price": 1,
+      "sellRefusal": "** WE DONT BUY CURSED ITEMS **",
+      "fee": 250,
+      "uncurseRefusal": "",
+      "identifyRefusal": ""
+     },
+     {
+      "n": 4,
+      "item": 5,
+      "name": "STAFF",
+      "identified": true,
+      "equipped": false,
+      "cursed": false,
+      "price": 5,
+      "sellRefusal": "",
+      "fee": 5,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     },
+     {
+      "n": 5,
+      "item": 1,
+      "name": "LONG SWORD",
+      "identified": true,
+      "equipped": false,
+      "cursed": false,
+      "price": 12,
+      "sellRefusal": "",
+      "fee": 12,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     }
+    ],
+    "room": 3
+   },
+   "last": {
+    "action": "uncurse",
+    "customer": "EGUI",
+    "item": "STAFF",
+    "gold": -5,
+    "saved": true,
+    "durable": true
+   }
+  },
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "frontRow": 3,
+  "return": {
+   "open": true,
+   "note": ""
+  },
+  "error": "",
+  "notice": "Boltac uncursed EGUI's STAFF and kept it, for 5 GP. Saved.",
+  "unsaved": "",
+  "warning": ""
+ },
+ {
+  "case": "sold",
+  "location": "trading",
+  "shop": {
+   "view": {
+    "step": "sell",
+    "prompt": false,
+    "message": "** ANYTHING ELSE, SIRE? **",
+    "customer": 4,
+    "name": "EGUI",
+    "class": "MAGE",
+    "gold": 922,
+    "confirm": -1,
+    "catalog": [
+     {
+      "item": 1,
+      "name": "LONG SWORD",
+      "price": 25,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 2,
+      "name": "SHORT SWORD",
+      "price": 15,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 3,
+      "name": "ANOINTED MACE",
+      "price": 30,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 4,
+      "name": "ANOINTED FLAIL",
+      "price": 150,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 5,
+      "name": "STAFF",
+      "price": 10,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 6,
+      "name": "DAGGER",
+      "price": 5,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 7,
+      "name": "SMALL SHIELD",
+      "price": 20,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 8,
+      "name": "LARGE SHIELD",
+      "price": 40,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 9,
+      "name": "ROBES",
+      "price": 15,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 10,
+      "name": "LEATHER ARMOR",
+      "price": 50,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 11,
+      "name": "CHAIN MAIL",
+      "price": 90,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 12,
+      "name": "BREAST PLATE",
+      "price": 200,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 13,
+      "name": "PLATE MAIL",
+      "price": 750,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 14,
+      "name": "HELM",
+      "price": 100,
+      "stock": -1,
+      "usable": false,
+      "refusal": ""
+     },
+     {
+      "item": 15,
+      "name": "DIOS POTION",
+      "price": 500,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 16,
+      "name": "LATUMOFIS POT.",
+      "price": 300,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 18,
+      "name": "SHORT SWORD+1",
+      "price": 70536,
+      "stock": 2,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 19,
+      "name": "MACE+1",
+      "price": 68036,
+      "stock": 1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 20,
+      "name": "STAFF OF MOGREF",
+      "price": 3000,
+      "stock": 3,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 21,
+      "name": "SCROLL/KANTINO",
+      "price": 500,
+      "stock": 4,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 22,
+      "name": "LEATHER + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 23,
+      "name": "CHAIN MAIL + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 25,
+      "name": "SHIELD + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 26,
+      "name": "BREAST PLATE +1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 27,
+      "name": "SCROLL/BADIOS",
+      "price": 500,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 28,
+      "name": "SCROLL/HALITO",
+      "price": 500,
+      "stock": 27,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 32,
+      "name": "STAFF +2",
+      "price": 2500,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 39,
+      "name": "JEWELED AMULET",
+      "price": 5000,
+      "stock": 2,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 41,
+      "name": "POTION OF SOPIC",
+      "price": 1500,
+      "stock": 1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 47,
+      "name": "COPPER GLOVES",
+      "price": 6000,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 62,
+      "name": "EVIL CHAIN + 2",
+      "price": 8000,
+      "stock": 2,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     }
+    ],
+    "items": [
+     {
+      "n": 1,
+      "item": 14,
+      "name": "HELM",
+      "identified": true,
+      "equipped": false,
+      "cursed": false,
+      "price": 50,
+      "sellRefusal": "",
+      "fee": 50,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     },
+     {
+      "n": 2,
+      "item": 28,
+      "name": "SCROLL",
+      "identified": false,
+      "equipped": false,
+      "cursed": true,
+      "price": 1,
+      "sellRefusal": "** WE DONT BUY CURSED ITEMS **",
+      "fee": 250,
+      "uncurseRefusal": "",
+      "identifyRefusal": ""
+     },
+     {
+      "n": 3,
+      "item": 5,
+      "name": "STAFF",
+      "identified": true,
+      "equipped": false,
+      "cursed": false,
+      "price": 5,
+      "sellRefusal": "",
+      "fee": 5,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     },
+     {
+      "n": 4,
+      "item": 1,
+      "name": "LONG SWORD",
+      "identified": true,
+      "equipped": false,
+      "cursed": false,
+      "price": 12,
+      "sellRefusal": "",
+      "fee": 12,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     }
+    ],
+    "room": 4
+   },
+   "last": {
+    "action": "sell",
+    "customer": "EGUI",
+    "item": "LONG SWORD",
+    "gold": 12,
+    "saved": true,
+    "durable": true
+   }
+  },
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "frontRow": 3,
+  "return": {
+   "open": true,
+   "note": ""
+  },
+  "error": "",
+  "notice": "EGUI sold LONG SWORD for 12 GP. Saved.",
+  "unsaved": "",
+  "warning": ""
+ },
+ {
+  "case": "no room",
+  "location": "trading",
+  "shop": {
+   "view": {
+    "step": "buy",
+    "prompt": false,
+    "message": "** JUST WHAT YOU NEEDED **",
+    "customer": 4,
+    "name": "EGUI",
+    "class": "MAGE",
+    "gold": 882,
+    "confirm": -1,
+    "catalog": [
+     {
+      "item": 1,
+      "name": "LONG SWORD",
+      "price": 25,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANT CARRY ANYTHING MORE **"
+     },
+     {
+      "item": 2,
+      "name": "SHORT SWORD",
+      "price": 15,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANT CARRY ANYTHING MORE **"
+     },
+     {
+      "item": 3,
+      "name": "ANOINTED MACE",
+      "price": 30,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANT CARRY ANYTHING MORE **"
+     },
+     {
+      "item": 4,
+      "name": "ANOINTED FLAIL",
+      "price": 150,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANT CARRY ANYTHING MORE **"
+     },
+     {
+      "item": 5,
+      "name": "STAFF",
+      "price": 10,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANT CARRY ANYTHING MORE **"
+     },
+     {
+      "item": 6,
+      "name": "DAGGER",
+      "price": 5,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANT CARRY ANYTHING MORE **"
+     },
+     {
+      "item": 7,
+      "name": "SMALL SHIELD",
+      "price": 20,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANT CARRY ANYTHING MORE **"
+     },
+     {
+      "item": 8,
+      "name": "LARGE SHIELD",
+      "price": 40,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANT CARRY ANYTHING MORE **"
+     },
+     {
+      "item": 9,
+      "name": "ROBES",
+      "price": 15,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANT CARRY ANYTHING MORE **"
+     },
+     {
+      "item": 10,
+      "name": "LEATHER ARMOR",
+      "price": 50,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANT CARRY ANYTHING MORE **"
+     },
+     {
+      "item": 11,
+      "name": "CHAIN MAIL",
+      "price": 90,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANT CARRY ANYTHING MORE **"
+     },
+     {
+      "item": 12,
+      "name": "BREAST PLATE",
+      "price": 200,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANT CARRY ANYTHING MORE **"
+     },
+     {
+      "item": 13,
+      "name": "PLATE MAIL",
+      "price": 750,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANT CARRY ANYTHING MORE **"
+     },
+     {
+      "item": 14,
+      "name": "HELM",
+      "price": 100,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANT CARRY ANYTHING MORE **"
+     },
+     {
+      "item": 15,
+      "name": "DIOS POTION",
+      "price": 500,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANT CARRY ANYTHING MORE **"
+     },
+     {
+      "item": 16,
+      "name": "LATUMOFIS POT.",
+      "price": 300,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANT CARRY ANYTHING MORE **"
+     },
+     {
+      "item": 18,
+      "name": "SHORT SWORD+1",
+      "price": 70536,
+      "stock": 2,
+      "usable": false,
+      "refusal": "** YOU CANT CARRY ANYTHING MORE **"
+     },
+     {
+      "item": 19,
+      "name": "MACE+1",
+      "price": 68036,
+      "stock": 1,
+      "usable": false,
+      "refusal": "** YOU CANT CARRY ANYTHING MORE **"
+     },
+     {
+      "item": 20,
+      "name": "STAFF OF MOGREF",
+      "price": 3000,
+      "stock": 3,
+      "usable": true,
+      "refusal": "** YOU CANT CARRY ANYTHING MORE **"
+     },
+     {
+      "item": 21,
+      "name": "SCROLL/KANTINO",
+      "price": 500,
+      "stock": 4,
+      "usable": true,
+      "refusal": "** YOU CANT CARRY ANYTHING MORE **"
+     },
+     {
+      "item": 22,
+      "name": "LEATHER + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANT CARRY ANYTHING MORE **"
+     },
+     {
+      "item": 23,
+      "name": "CHAIN MAIL + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANT CARRY ANYTHING MORE **"
+     },
+     {
+      "item": 25,
+      "name": "SHIELD + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANT CARRY ANYTHING MORE **"
+     },
+     {
+      "item": 26,
+      "name": "BREAST PLATE +1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANT CARRY ANYTHING MORE **"
+     },
+     {
+      "item": 27,
+      "name": "SCROLL/BADIOS",
+      "price": 500,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANT CARRY ANYTHING MORE **"
+     },
+     {
+      "item": 28,
+      "name": "SCROLL/HALITO",
+      "price": 500,
+      "stock": 27,
+      "usable": true,
+      "refusal": "** YOU CANT CARRY ANYTHING MORE **"
+     },
+     {
+      "item": 32,
+      "name": "STAFF +2",
+      "price": 2500,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANT CARRY ANYTHING MORE **"
+     },
+     {
+      "item": 39,
+      "name": "JEWELED AMULET",
+      "price": 5000,
+      "stock": 2,
+      "usable": true,
+      "refusal": "** YOU CANT CARRY ANYTHING MORE **"
+     },
+     {
+      "item": 41,
+      "name": "POTION OF SOPIC",
+      "price": 1500,
+      "stock": 1,
+      "usable": true,
+      "refusal": "** YOU CANT CARRY ANYTHING MORE **"
+     },
+     {
+      "item": 47,
+      "name": "COPPER GLOVES",
+      "price": 6000,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANT CARRY ANYTHING MORE **"
+     },
+     {
+      "item": 62,
+      "name": "EVIL CHAIN + 2",
+      "price": 8000,
+      "stock": 2,
+      "usable": false,
+      "refusal": "** YOU CANT CARRY ANYTHING MORE **"
+     }
+    ],
+    "items": [
+     {
+      "n": 1,
+      "item": 14,
+      "name": "HELM",
+      "identified": true,
+      "equipped": false,
+      "cursed": false,
+      "price": 50,
+      "sellRefusal": "",
+      "fee": 50,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     },
+     {
+      "n": 2,
+      "item": 28,
+      "name": "SCROLL",
+      "identified": false,
+      "equipped": false,
+      "cursed": true,
+      "price": 1,
+      "sellRefusal": "** WE DONT BUY CURSED ITEMS **",
+      "fee": 250,
+      "uncurseRefusal": "",
+      "identifyRefusal": ""
+     },
+     {
+      "n": 3,
+      "item": 5,
+      "name": "STAFF",
+      "identified": true,
+      "equipped": false,
+      "cursed": false,
+      "price": 5,
+      "sellRefusal": "",
+      "fee": 5,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     },
+     {
+      "n": 4,
+      "item": 1,
+      "name": "LONG SWORD",
+      "identified": true,
+      "equipped": false,
+      "cursed": false,
+      "price": 12,
+      "sellRefusal": "",
+      "fee": 12,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     },
+     {
+      "n": 5,
+      "item": 5,
+      "name": "STAFF",
+      "identified": true,
+      "equipped": false,
+      "cursed": false,
+      "price": 5,
+      "sellRefusal": "",
+      "fee": 5,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     },
+     {
+      "n": 6,
+      "item": 5,
+      "name": "STAFF",
+      "identified": true,
+      "equipped": false,
+      "cursed": false,
+      "price": 5,
+      "sellRefusal": "",
+      "fee": 5,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     },
+     {
+      "n": 7,
+      "item": 5,
+      "name": "STAFF",
+      "identified": true,
+      "equipped": false,
+      "cursed": false,
+      "price": 5,
+      "sellRefusal": "",
+      "fee": 5,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     },
+     {
+      "n": 8,
+      "item": 5,
+      "name": "STAFF",
+      "identified": true,
+      "equipped": false,
+      "cursed": false,
+      "price": 5,
+      "sellRefusal": "",
+      "fee": 5,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     }
+    ],
+    "room": 0
+   },
+   "last": {
+    "action": "buy",
+    "customer": "EGUI",
+    "item": "STAFF",
+    "gold": -10,
+    "saved": true,
+    "durable": true
+   }
+  },
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "frontRow": 3,
+  "return": {
+   "open": true,
+   "note": ""
+  },
+  "error": "",
+  "notice": "EGUI bought STAFF for 10 GP. Saved.",
+  "unsaved": "",
+  "warning": ""
+ },
+ {
+  "case": "thief: little gold, nothing to sell",
+  "location": "trading",
+  "shop": {
+   "view": {
+    "step": "main",
+    "prompt": false,
+    "message": "",
+    "customer": 2,
+    "name": "CGUI",
+    "class": "THIEF",
+    "gold": 5,
+    "confirm": -1,
+    "catalog": [
+     {
+      "item": 1,
+      "name": "LONG SWORD",
+      "price": 25,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 2,
+      "name": "SHORT SWORD",
+      "price": 15,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 3,
+      "name": "ANOINTED MACE",
+      "price": 30,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 4,
+      "name": "ANOINTED FLAIL",
+      "price": 150,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 5,
+      "name": "STAFF",
+      "price": 10,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 6,
+      "name": "DAGGER",
+      "price": 5,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 7,
+      "name": "SMALL SHIELD",
+      "price": 20,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 8,
+      "name": "LARGE SHIELD",
+      "price": 40,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 9,
+      "name": "ROBES",
+      "price": 15,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 10,
+      "name": "LEATHER ARMOR",
+      "price": 50,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 11,
+      "name": "CHAIN MAIL",
+      "price": 90,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 12,
+      "name": "BREAST PLATE",
+      "price": 200,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 13,
+      "name": "PLATE MAIL",
+      "price": 750,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 14,
+      "name": "HELM",
+      "price": 100,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 15,
+      "name": "DIOS POTION",
+      "price": 500,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 16,
+      "name": "LATUMOFIS POT.",
+      "price": 300,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 18,
+      "name": "SHORT SWORD+1",
+      "price": 70536,
+      "stock": 2,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 19,
+      "name": "MACE+1",
+      "price": 68036,
+      "stock": 1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 20,
+      "name": "STAFF OF MOGREF",
+      "price": 3000,
+      "stock": 3,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 21,
+      "name": "SCROLL/KANTINO",
+      "price": 500,
+      "stock": 4,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 22,
+      "name": "LEATHER + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 23,
+      "name": "CHAIN MAIL + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 25,
+      "name": "SHIELD + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 26,
+      "name": "BREAST PLATE +1",
+      "price": 1500,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 27,
+      "name": "SCROLL/BADIOS",
+      "price": 500,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 28,
+      "name": "SCROLL/HALITO",
+      "price": 500,
+      "stock": 27,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 32,
+      "name": "STAFF +2",
+      "price": 2500,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 39,
+      "name": "JEWELED AMULET",
+      "price": 5000,
+      "stock": 2,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 41,
+      "name": "POTION OF SOPIC",
+      "price": 1500,
+      "stock": 1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 47,
+      "name": "COPPER GLOVES",
+      "price": 6000,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 62,
+      "name": "EVIL CHAIN + 2",
+      "price": 8000,
+      "stock": 2,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     }
+    ],
+    "items": null,
+    "room": 8
+   },
+   "last": null
+  },
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "frontRow": 3,
+  "return": {
+   "open": true,
+   "note": ""
+  },
+  "error": "",
+  "notice": "",
+  "unsaved": "",
+  "warning": ""
+ },
+ {
+  "case": "priest: no gold for a fee",
+  "location": "trading",
+  "shop": {
+   "view": {
+    "step": "main",
+    "prompt": false,
+    "message": "",
+    "customer": 3,
+    "name": "DGUI",
+    "class": "PRIEST",
+    "gold": 0,
+    "confirm": -1,
+    "catalog": [
+     {
+      "item": 1,
+      "name": "LONG SWORD",
+      "price": 25,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 2,
+      "name": "SHORT SWORD",
+      "price": 15,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 3,
+      "name": "ANOINTED MACE",
+      "price": 30,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 4,
+      "name": "ANOINTED FLAIL",
+      "price": 150,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 5,
+      "name": "STAFF",
+      "price": 10,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 6,
+      "name": "DAGGER",
+      "price": 5,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 7,
+      "name": "SMALL SHIELD",
+      "price": 20,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 8,
+      "name": "LARGE SHIELD",
+      "price": 40,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 9,
+      "name": "ROBES",
+      "price": 15,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 10,
+      "name": "LEATHER ARMOR",
+      "price": 50,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 11,
+      "name": "CHAIN MAIL",
+      "price": 90,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 12,
+      "name": "BREAST PLATE",
+      "price": 200,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 13,
+      "name": "PLATE MAIL",
+      "price": 750,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 14,
+      "name": "HELM",
+      "price": 100,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 15,
+      "name": "DIOS POTION",
+      "price": 500,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 16,
+      "name": "LATUMOFIS POT.",
+      "price": 300,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 18,
+      "name": "SHORT SWORD+1",
+      "price": 70536,
+      "stock": 2,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 19,
+      "name": "MACE+1",
+      "price": 68036,
+      "stock": 1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 20,
+      "name": "STAFF OF MOGREF",
+      "price": 3000,
+      "stock": 3,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 21,
+      "name": "SCROLL/KANTINO",
+      "price": 500,
+      "stock": 4,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 22,
+      "name": "LEATHER + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 23,
+      "name": "CHAIN MAIL + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 25,
+      "name": "SHIELD + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 26,
+      "name": "BREAST PLATE +1",
+      "price": 1500,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 27,
+      "name": "SCROLL/BADIOS",
+      "price": 500,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 28,
+      "name": "SCROLL/HALITO",
+      "price": 500,
+      "stock": 27,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 32,
+      "name": "STAFF +2",
+      "price": 2500,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 39,
+      "name": "JEWELED AMULET",
+      "price": 5000,
+      "stock": 2,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 41,
+      "name": "POTION OF SOPIC",
+      "price": 1500,
+      "stock": 1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 47,
+      "name": "COPPER GLOVES",
+      "price": 6000,
+      "stock": -1,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 62,
+      "name": "EVIL CHAIN + 2",
+      "price": 8000,
+      "stock": 2,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     }
+    ],
+    "items": [
+     {
+      "n": 1,
+      "item": 14,
+      "name": "HELM",
+      "identified": false,
+      "equipped": false,
+      "cursed": false,
+      "price": 1,
+      "sellRefusal": "",
+      "fee": 50,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** YOU CANT AFFORD THE FEE **"
+     }
+    ],
+    "room": 7
+   },
+   "last": null
+  },
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "frontRow": 3,
+  "return": {
+   "open": true,
+   "note": ""
+  },
+  "error": "",
+  "notice": "",
+  "unsaved": "",
+  "warning": ""
+ },
+ {
+  "case": "bought, NOT saved",
+  "location": "trading",
+  "shop": {
+   "view": {
+    "step": "buy",
+    "prompt": false,
+    "message": "** JUST WHAT YOU NEEDED **",
+    "customer": 0,
+    "name": "AGUI",
+    "class": "FIGHTER",
+    "gold": 990,
+    "confirm": -1,
+    "catalog": [
+     {
+      "item": 1,
+      "name": "LONG SWORD",
+      "price": 25,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 2,
+      "name": "SHORT SWORD",
+      "price": 15,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 3,
+      "name": "ANOINTED MACE",
+      "price": 30,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 4,
+      "name": "ANOINTED FLAIL",
+      "price": 150,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 5,
+      "name": "STAFF",
+      "price": 10,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 6,
+      "name": "DAGGER",
+      "price": 5,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 7,
+      "name": "SMALL SHIELD",
+      "price": 20,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 8,
+      "name": "LARGE SHIELD",
+      "price": 40,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 9,
+      "name": "ROBES",
+      "price": 15,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 10,
+      "name": "LEATHER ARMOR",
+      "price": 50,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 11,
+      "name": "CHAIN MAIL",
+      "price": 90,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 12,
+      "name": "BREAST PLATE",
+      "price": 200,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 13,
+      "name": "PLATE MAIL",
+      "price": 750,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 14,
+      "name": "HELM",
+      "price": 100,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 15,
+      "name": "DIOS POTION",
+      "price": 500,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 16,
+      "name": "LATUMOFIS POT.",
+      "price": 300,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 18,
+      "name": "SHORT SWORD+1",
+      "price": 70536,
+      "stock": 2,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 19,
+      "name": "MACE+1",
+      "price": 68036,
+      "stock": 1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 20,
+      "name": "STAFF OF MOGREF",
+      "price": 3000,
+      "stock": 3,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 21,
+      "name": "SCROLL/KANTINO",
+      "price": 500,
+      "stock": 4,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 22,
+      "name": "LEATHER + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 23,
+      "name": "CHAIN MAIL + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 25,
+      "name": "SHIELD + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 26,
+      "name": "BREAST PLATE +1",
+      "price": 1500,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 27,
+      "name": "SCROLL/BADIOS",
+      "price": 500,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 28,
+      "name": "SCROLL/HALITO",
+      "price": 500,
+      "stock": 27,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 32,
+      "name": "STAFF +2",
+      "price": 2500,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 39,
+      "name": "JEWELED AMULET",
+      "price": 5000,
+      "stock": 2,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 41,
+      "name": "POTION OF SOPIC",
+      "price": 1500,
+      "stock": 1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 47,
+      "name": "COPPER GLOVES",
+      "price": 6000,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 62,
+      "name": "EVIL CHAIN + 2",
+      "price": 8000,
+      "stock": 2,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     }
+    ],
+    "items": [
+     {
+      "n": 1,
+      "item": 5,
+      "name": "STAFF",
+      "identified": true,
+      "equipped": false,
+      "cursed": false,
+      "price": 5,
+      "sellRefusal": "",
+      "fee": 5,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     }
+    ],
+    "room": 7
+   },
+   "last": {
+    "action": "buy",
+    "customer": "AGUI",
+    "item": "STAFF",
+    "gold": -10,
+    "saved": false,
+    "durable": false
+   }
+  },
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "frontRow": 3,
+  "return": {
+   "open": true,
+   "note": ""
+  },
+  "error": "Could not save: write \u003csaves\u003e/roster1.json: open \u003csaves\u003e/.roster1.json.tmp-\u003crandom\u003e: permission denied",
+  "notice": "AGUI bought STAFF for 10 GP. It is NOT saved: it exists only in this window until a save succeeds.",
+  "unsaved": "write \u003csaves\u003e/roster1.json: open \u003csaves\u003e/.roster1.json.tmp-\u003crandom\u003e: permission denied",
+  "warning": ""
+ },
+ {
+  "case": "bought, not durable",
+  "location": "trading",
+  "shop": {
+   "view": {
+    "step": "buy",
+    "prompt": false,
+    "message": "** JUST WHAT YOU NEEDED **",
+    "customer": 0,
+    "name": "AGUI",
+    "class": "FIGHTER",
+    "gold": 980,
+    "confirm": -1,
+    "catalog": [
+     {
+      "item": 1,
+      "name": "LONG SWORD",
+      "price": 25,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 2,
+      "name": "SHORT SWORD",
+      "price": 15,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 3,
+      "name": "ANOINTED MACE",
+      "price": 30,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 4,
+      "name": "ANOINTED FLAIL",
+      "price": 150,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 5,
+      "name": "STAFF",
+      "price": 10,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 6,
+      "name": "DAGGER",
+      "price": 5,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 7,
+      "name": "SMALL SHIELD",
+      "price": 20,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 8,
+      "name": "LARGE SHIELD",
+      "price": 40,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 9,
+      "name": "ROBES",
+      "price": 15,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 10,
+      "name": "LEATHER ARMOR",
+      "price": 50,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 11,
+      "name": "CHAIN MAIL",
+      "price": 90,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 12,
+      "name": "BREAST PLATE",
+      "price": 200,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 13,
+      "name": "PLATE MAIL",
+      "price": 750,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 14,
+      "name": "HELM",
+      "price": 100,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 15,
+      "name": "DIOS POTION",
+      "price": 500,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 16,
+      "name": "LATUMOFIS POT.",
+      "price": 300,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 18,
+      "name": "SHORT SWORD+1",
+      "price": 70536,
+      "stock": 2,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 19,
+      "name": "MACE+1",
+      "price": 68036,
+      "stock": 1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 20,
+      "name": "STAFF OF MOGREF",
+      "price": 3000,
+      "stock": 3,
+      "usable": false,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 21,
+      "name": "SCROLL/KANTINO",
+      "price": 500,
+      "stock": 4,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 22,
+      "name": "LEATHER + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 23,
+      "name": "CHAIN MAIL + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 25,
+      "name": "SHIELD + 1",
+      "price": 1500,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 26,
+      "name": "BREAST PLATE +1",
+      "price": 1500,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 27,
+      "name": "SCROLL/BADIOS",
+      "price": 500,
+      "stock": -1,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 28,
+      "name": "SCROLL/HALITO",
+      "price": 500,
+      "stock": 27,
+      "usable": true,
+      "refusal": ""
+     },
+     {
+      "item": 32,
+      "name": "STAFF +2",
+      "price": 2500,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 39,
+      "name": "JEWELED AMULET",
+      "price": 5000,
+      "stock": 2,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 41,
+      "name": "POTION OF SOPIC",
+      "price": 1500,
+      "stock": 1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 47,
+      "name": "COPPER GLOVES",
+      "price": 6000,
+      "stock": -1,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     },
+     {
+      "item": 62,
+      "name": "EVIL CHAIN + 2",
+      "price": 8000,
+      "stock": 2,
+      "usable": true,
+      "refusal": "** YOU CANNOT AFFORD IT **"
+     }
+    ],
+    "items": [
+     {
+      "n": 1,
+      "item": 5,
+      "name": "STAFF",
+      "identified": true,
+      "equipped": false,
+      "cursed": false,
+      "price": 5,
+      "sellRefusal": "",
+      "fee": 5,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     },
+     {
+      "n": 2,
+      "item": 5,
+      "name": "STAFF",
+      "identified": true,
+      "equipped": false,
+      "cursed": false,
+      "price": 5,
+      "sellRefusal": "",
+      "fee": 5,
+      "uncurseRefusal": "** THAT IS NOT A CURSED ITEM **",
+      "identifyRefusal": "** THAT HAS BEEN IDENTIFIED **"
+     }
+    ],
+    "room": 6
+   },
+   "last": {
+    "action": "buy",
+    "customer": "AGUI",
+    "item": "STAFF",
+    "gold": -10,
+    "saved": true,
+    "durable": false
+   }
+  },
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 7,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "frontRow": 3,
+  "return": {
+   "open": true,
+   "note": ""
+  },
+  "error": "",
+  "notice": "AGUI bought STAFF for 10 GP. Saved, but perhaps not durably.",
+  "unsaved": "",
+  "warning": "Saved, but the save folder could not be synced (no sync); the last save may not survive a crash or power loss."
+ }
+]
