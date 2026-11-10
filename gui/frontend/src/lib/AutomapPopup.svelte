@@ -45,7 +45,7 @@
     {#if map}
       <div class="sheet"><MapSvg view={map} full label="{levelLabel(map.level)}, explored squares" /></div>
       <p class="legend">
-        <span class="k wall"></span>wall <span class="k door"></span>door <span class="k oneway"></span>one side only
+        <span class="k visited"></span>visited <span class="k wall"></span>wall <span class="k door"></span>door <span class="k oneway"></span>one side only
         <span class="k wrap">›</span>way across the edge · only what the party has seen
         {#if !map.party}· the party is not on this level{/if}
       </p>
@@ -67,6 +67,7 @@
   .sheet { min-height: 0; aspect-ratio: 1; max-height: 70vh; justify-self: center; width: 100%; max-width: 70vh; }
   .legend { margin: 0; font-size: 11px; color: var(--muted); display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
   .k { display: inline-block; width: 16px; height: 0; border-top: 2px solid #4fd16a; }
+  .k.visited { width: 12px; height: 12px; border: none; background: rgba(79, 209, 106, 0.07); outline: 1px solid rgba(79, 209, 106, 0.18); }
   .k.door { border-top: 4px solid #f2c14e; width: 8px; }
   .k.oneway { border-top: 2px dashed #4fd16a; }
   .k.wrap { border: none; width: auto; height: auto; color: #4fd16a; font-weight: 700; }
