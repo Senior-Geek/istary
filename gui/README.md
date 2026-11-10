@@ -88,6 +88,13 @@ copies of the party into the real maze, to Camp at the entrance.
 - **The screen** (`frontend/src/lib/DungeonScreen.svelte`) draws a simple
   wireframe of the corridor, not the Classic picture, with the party bar
   at the bottom; in Camp a click on a member there picks them.
+- **Maps (M-1):** a minimap in the corner of the view shows the explored
+  squares around the party (north up; green walls, yellow doors, stairs and
+  elevator symbols, the party's arrow); Hide minimap keeps the choice. Map
+  or F10 opens the full map of an explored level; F10 or Escape closes it,
+  and no key reaches the maze while it is open. Only what the party has
+  seen is shown, each wall from the side seen; a real expedition saves the
+  map with every action, practice discards it.
 
 **Practice encounters.**
 - **What you fight:** "Practice encounter" at the Edge of Town starts a real

@@ -274,7 +274,8 @@ characters.
 - **Rescue:** a rescue expedition brings OUT characters back, end to end in
   the GUI.
 - **No map unless enabled:** no map is shown unless the automap enhancement
-  is enabled (D9).
+  is enabled (D9). *M-1 (2026-11-10) shows the GUI's explored-only minimap
+  by default, per its brief; pending confirmation against D9.*
 
 ## M7 — Combat and chests in the GUI
 

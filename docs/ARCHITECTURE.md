@@ -314,7 +314,9 @@ the maze and Camp:
 
 The view shows nothing the maze screen does not: no position, facing or
 floor (only DUMAPIC tells those), no map, nothing past the light, no
-encounter state. A hidden door is a wall without light and a door with it.
+encounter state. (The maps of M-1 are separate views, below.) The corridor
+itself is the engine's `GameState.Sight()` (`engine/sight.go`), which the
+exploration record reads too. A hidden door is a wall without light and a door with it.
 The Classic view also lets one flicker into view one draw in six without
 light; that needs a random number, and building the view never draws one,
 so it is left out (`WIZARDRY-COMPATIBILITY.md` #23). A test checks that
@@ -879,6 +881,45 @@ shows no bar. `View.PartyBar` carries AC as well.
 - **Not yet:** rescue and recovery (M6b-4). Camp is in the GUI since M6b-3B
   (below), except Disband and MALOR.
 
+**The maps (M-1).** An explored-only minimap beside the corridor and a
+full map of a level (F10), drawn from one record in Go.
+- **Coordinates:** `engine/place.go` is the only conversion between the
+  engine's own (0-based level; X east, Y north from the south-west stairs)
+  and `L:R:C` (L0 the castle, L1 the first level; R0:C0 the north-west
+  corner, rows south, columns east): `L = level+1`, `R = 19-Y`, `C = X`.
+  The entrance is `L1:R19:C0` facing north, checked against the maze data of
+  every scenario (`MazeEntrance`). A position off the maze (#31) has no
+  `L:R:C` and is never clamped.
+- **What is recorded** (`engine/explore.go`, `GameState.Explore`): the
+  square the party stands on (visited, and its stairs or elevator) and, in
+  the maze, every wall of `Sight()`, each from the side it was seen. The
+  two sides of a boundary are kept apart because the maze has one-way walls
+  and doors; nothing is read from the maze that the party has not seen; a
+  hidden door is a wall until seen with light; darkness shows nothing;
+  teleporters, chutes and stairs show only where they lead.
+- **When:** the GUI calls `app.Controller.Explore` after every dungeon,
+  Camp and combat action (`combatDo`) and after resuming; the terminal never
+  does. A practice expedition starts from a copy of the map and discards it.
+- **Views** (`app/map_view.go`): `LocalMap()`, the 7x7 squares around the
+  party, north up, continuing across the level's edge with `NorthEdge` and
+  `WestEdge` marking where it runs; `Map(level)`, a whole level in its fixed
+  20x20 frame, with `Wraps` where a seen way crosses the edge. Both decide
+  each boundary alike: seen from one side, or alike from both, one wall;
+  seen differently, each side's own wall, `OneWay`, drawn inside its square.
+  Reading either changes nothing and draws no random number.
+- **Bridge:** `View.Minimap` on an expedition; `Session.Automap(level)`
+  (read-only); `SetMinimapVisible` (a kept setting, on by default).
+- **Screen:** `MapSvg.svelte` draws both (green walls, yellow doors, stairs
+  and elevator symbols, the white arrow); `AutomapPopup.svelte` is the full
+  map in the same window. F10 or Escape closes it, and no key reaches the
+  maze while it is open (`lib/automap.js` `mapKey`).
+- **Tests:** `engine/place_test.go` (all 4,000 squares both ways, the
+  entrance, wrapping), `engine/explore_test.go`, `app/map_view_test.go`
+  (minimap and full map agree over seeded walks of every level; teleports
+  reveal only the destination), `gui/automap_test.go`, and
+  `lib/automap.test.js` over `testdata/map-views.json` (recorded by
+  `gui/map_fixture_test.go`).
+
 **Real expeditions (M6b-1).** `RealExpedition()` takes the party itself,
 in the saved game, through the same dungeon, combat and chest operations.
 - **Saving:** every action is saved (atomically), whatever happened, so
@@ -926,6 +967,16 @@ expedition is out, an optional `expedition` section
   unchanged; the terminal does the same with a GUI expedition.
 - **Members' identity:** while one is saved, the controller refuses to
   rename or delete its members.
+
+An optional `exploration` section (M-1, `engine/explore.go`) holds what the
+player has seen, for the GUI's maps: `version`, `dungeon` (the scenario,
+"1"), and per level `L` twenty rows from R0 of `visited` ('v' or '.') and
+`walls` (four characters a square, N E S W: 'o' open, 'w' wall, 'd' door,
+'.' unknown), with `features` by row and column. It is absent when nothing
+has been recorded, so a terminal save, or a GUI save before any
+exploration, is unchanged; an old save loads with an empty map. A section
+of another version or scenario, or one that cannot be read, is kept and
+written back unchanged, and nothing is recorded over it.
 
 **One window per folder (M6b-2).** The GUI holds an advisory `flock` on
 `istary.lock` in its save folder (`gui/lock.go`).
