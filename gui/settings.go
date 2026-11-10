@@ -28,13 +28,16 @@ const settingsFormat = 1
 type Settings struct {
 	Version     int  `json:"version"`
 	PartyHidden bool `json:"partyHidden"` // the party panel is hidden
+	// MinimapHidden: the dungeon's minimap is hidden (M-1).
+	MinimapHidden bool `json:"minimapHidden,omitempty"`
 }
 
 // SettingsView is the settings as the page sees them, and Note, when they
 // could not be read or saved.
 type SettingsView struct {
-	PartyVisible bool   `json:"partyVisible"`
-	Note         string `json:"note"`
+	PartyVisible   bool   `json:"partyVisible"`
+	MinimapVisible bool   `json:"minimapVisible"`
+	Note           string `json:"note"`
 }
 
 func (s *Session) settingsPath() string {
@@ -81,6 +84,23 @@ func (s *Session) SetPartyVisible(visible bool) View {
 	return s.view(nil)
 }
 
+// SetMinimapVisible shows or hides the dungeon's minimap and saves the
+// choice, as SetPartyVisible does: accepted anywhere, touching nothing of
+// the game.
+func (s *Session) SetMinimapVisible(visible bool) View {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.startErr != nil {
+		return s.view(nil)
+	}
+	s.prefs.MinimapHidden = !visible
+	s.prefsNote = ""
+	if err := s.saveSettings(); err != nil {
+		s.prefsNote = fmt.Sprintf("The window's settings could not be saved (%v); this choice holds until Istary closes.", err)
+	}
+	return s.view(nil)
+}
+
 func (s *Session) saveSettings() error {
 	st := s.prefs
 	st.Version = settingsFormat
@@ -97,5 +117,5 @@ func (s *Session) saveSettings() error {
 }
 
 func (s *Session) settingsView() SettingsView {
-	return SettingsView{PartyVisible: !s.prefs.PartyHidden, Note: s.prefsNote}
+	return SettingsView{PartyVisible: !s.prefs.PartyHidden, MinimapVisible: !s.prefs.MinimapHidden, Note: s.prefsNote}
 }

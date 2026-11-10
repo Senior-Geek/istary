@@ -134,6 +134,7 @@ func (s *Session) resume() {
 		return
 	}
 	s.real = true
+	s.ctrl.Explore() // an old save has no map: only what is seen from here
 	switch interrupted {
 	case app.InterruptedCombat:
 		s.notice = "Istary closed during an encounter. The party is back in the maze where it stood; the encounter is over and its unclaimed rewards are lost."

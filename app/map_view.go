@@ -293,3 +293,9 @@ func boundaryInWindow(i, j int, d engine.Direction, size int) bool {
 	}
 	return j < size-1
 }
+
+// Explore records what the party sees and stands on now into the
+// exploration (engine.GameState.Explore), and reports whether anything was
+// new. Front ends that show the maps call it after every action in the
+// maze; the terminal does not.
+func (c *Controller) Explore() bool { return c.Game.Explore() }

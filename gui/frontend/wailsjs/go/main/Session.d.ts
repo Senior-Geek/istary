@@ -9,6 +9,8 @@ export function AddPoint(arg1:number):Promise<main.View>;
 
 export function AnswerCreate(arg1:boolean):Promise<main.View>;
 
+export function Automap(arg1:number):Promise<app.MapView>;
+
 export function Back():Promise<main.View>;
 
 export function CampAction(arg1:main.CampRequest):Promise<main.View>;
@@ -96,6 +98,8 @@ export function ReturnExpeditionToCastle():Promise<main.View>;
 export function ReturnToCastle():Promise<main.View>;
 
 export function SaveNow():Promise<main.View>;
+
+export function SetMinimapVisible(arg1:boolean):Promise<main.View>;
 
 export function SetName(arg1:string):Promise<main.View>;
 

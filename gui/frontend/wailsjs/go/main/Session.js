@@ -14,6 +14,10 @@ export function AnswerCreate(arg1) {
   return window['go']['main']['Session']['AnswerCreate'](arg1);
 }
 
+export function Automap(arg1) {
+  return window['go']['main']['Session']['Automap'](arg1);
+}
+
 export function Back() {
   return window['go']['main']['Session']['Back']();
 }
@@ -188,6 +192,10 @@ export function ReturnToCastle() {
 
 export function SaveNow() {
   return window['go']['main']['Session']['SaveNow']();
+}
+
+export function SetMinimapVisible(arg1) {
+  return window['go']['main']['Session']['SetMinimapVisible'](arg1);
 }
 
 export function SetName(arg1) {

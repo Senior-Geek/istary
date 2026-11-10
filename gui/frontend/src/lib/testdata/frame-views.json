@@ -113,6 +113,7 @@
   "frontRow": 3,
   "settings": {
    "partyVisible": true,
+   "minimapVisible": true,
    "note": ""
   },
   "departures": {
@@ -237,6 +238,7 @@
   "frontRow": 3,
   "settings": {
    "partyVisible": true,
+   "minimapVisible": true,
    "note": ""
   },
   "departures": {
@@ -341,6 +343,7 @@
   "frontRow": 3,
   "settings": {
    "partyVisible": true,
+   "minimapVisible": true,
    "note": ""
   },
   "departures": {
@@ -458,6 +461,7 @@
   "frontRow": 3,
   "settings": {
    "partyVisible": true,
+   "minimapVisible": true,
    "note": ""
   },
   "departures": {
@@ -565,6 +569,7 @@
   "frontRow": 3,
   "settings": {
    "partyVisible": true,
+   "minimapVisible": true,
    "note": ""
   },
   "departures": {
@@ -672,6 +677,7 @@
   "frontRow": 3,
   "settings": {
    "partyVisible": true,
+   "minimapVisible": true,
    "note": ""
   },
   "departures": {
@@ -799,6 +805,7 @@
   "frontRow": 3,
   "settings": {
    "partyVisible": false,
+   "minimapVisible": true,
    "note": ""
   },
   "departures": {
@@ -903,6 +910,7 @@
   "frontRow": 3,
   "settings": {
    "partyVisible": true,
+   "minimapVisible": true,
    "note": ""
   },
   "departures": {
@@ -1010,6 +1018,7 @@
   "frontRow": 3,
   "settings": {
    "partyVisible": true,
+   "minimapVisible": true,
    "note": ""
   },
   "departures": {
@@ -1111,6 +1120,7 @@
   "frontRow": 3,
   "settings": {
    "partyVisible": true,
+   "minimapVisible": true,
    "note": ""
   },
   "departures": {
@@ -1209,6 +1219,7 @@
   "frontRow": 3,
   "settings": {
    "partyVisible": true,
+   "minimapVisible": true,
    "note": ""
   },
   "departures": {

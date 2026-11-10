@@ -67,6 +67,9 @@ func (s *Session) practiceGame() (*engine.GameState, error) {
 	pg := engine.New(s.scenario)
 	pg.Title = nil
 	pg.Phase = engine.PhaseTown
+	// Practice starts from the player's map; what it shows is discarded
+	// with the practice game.
+	pg.Exploration, pg.OtherExploration = g.Exploration.Clone(), g.OtherExploration
 	for _, m := range g.Town.Party.Members {
 		cp, err := cloneCharacter(m)
 		if err != nil {
@@ -146,6 +149,9 @@ func (s *Session) combatDo(action func() error) View {
 	}
 	s.notice = ""
 	err := action()
+	if c := s.active(); c != nil {
+		c.Explore() // what the party now sees joins the map, saved with the action
+	}
 	if s.real {
 		err = errors.Join(err, s.checkpoint(), s.save())
 		if g := s.ctrl.Game; g.Phase == engine.PhaseTown {

@@ -57,10 +57,13 @@ type View struct {
 
 	// Dungeon (Screen "dungeon"): the controller's DungeonView of the
 	// expedition under way, and nothing else from the maze.
-	Dungeon    *app.DungeonView `json:"dungeon"`
-	Camp       *CampPanel       `json:"camp"`       // in Camp: its screen and the party's sheets
-	Expedition bool             `json:"expedition"` // an expedition (practice or real) is under way (any screen)
-	Real       bool             `json:"real"`       // it is the real, saved expedition, not practice
+	Dungeon *app.DungeonView `json:"dungeon"`
+	// Minimap (Screen "dungeon", M-1): the explored squares around the
+	// party, or nil. View.Settings says whether the page shows it.
+	Minimap    *app.LocalMapView `json:"minimap"`
+	Camp       *CampPanel        `json:"camp"`       // in Camp: its screen and the party's sheets
+	Expedition bool              `json:"expedition"` // an expedition (practice or real) is under way (any screen)
+	Real       bool              `json:"real"`       // it is the real, saved expedition, not practice
 
 	// Shop (at Boltac's Trading Post, shop.go): the controller's ShopView
 	// and the last transaction; nil elsewhere.
@@ -330,6 +333,7 @@ func (s *Session) view(err error) View {
 		} else if v.Expedition {
 			dv := c.DungeonView()
 			v.Screen, v.Dungeon = "dungeon", &dv
+			v.Minimap = s.minimap()
 			if c.Game.Phase == engine.PhaseCamp {
 				v.Camp = campPanel(c)
 			}
