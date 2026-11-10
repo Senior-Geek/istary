@@ -81,7 +81,7 @@ func (s *Session) TempleAction(r TempleRequest) View {
 	switch r.Action {
 	case TempleActTreat:
 		var t *app.TempleReceipt
-		if t, err = c.Treat(r.Patient, r.Payer); err == nil {
+		if t, err = c.Treat(r.Patient, r.Payer, false); err == nil {
 			last = &TempleLast{Treat: t}
 		}
 	case TempleActPool:

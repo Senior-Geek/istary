@@ -59,7 +59,7 @@ func (c *Controller) TempleView() (TempleView, error) {
 		}
 		p := TemplePayer{Slot: i, Name: m.Name, Gold: m.Gold}
 		if m.Status != engine.OK {
-			p.Refusal = payerRefusal(m, 0)
+			p.Refusal = payerRefusal(m)
 		} else {
 			best = max(best, m.Gold)
 		}

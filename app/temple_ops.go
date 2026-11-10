@@ -25,7 +25,9 @@ import (
 //   - the payer must be OK: an incapacitated member's gold can still help,
 //     by Pool Gold (app/gold.go), but they do not tithe themselves;
 //   - a payer short of the donation is refused before anything happens
-//     (the keys refuse too, "CHEAP APOSTATES! OUT!", after a step).
+//     (the keys refuse too, "CHEAP APOSTATES! OUT!", after a step), unless
+//     the party contributes (Treat's party, TempleQuote "party": guide
+//     p.33), which the keys do not offer.
 
 // TempleKind is what the Temple does for a condition.
 const (
@@ -68,64 +70,152 @@ func (c *Controller) patientRefusal(ch *engine.Character) string {
 	return ""
 }
 
-// payerRefusal is why the party member in slot cannot tithe donation, or "".
-func payerRefusal(m *engine.Character, donation int) string {
-	switch {
-	case m.Status != engine.OK:
+// payerRefusal is why party member m may not tithe at all, or "".
+func payerRefusal(m *engine.Character) string {
+	if m.Status != engine.OK {
 		return fmt.Sprintf("%s IS NOT OK and cannot tithe.", m.Name)
-	case m.Gold < donation:
-		return "CHEAP APOSTATES! OUT!"
 	}
 	return ""
 }
 
+// TempleShare is what one other party member brings to the fund when the
+// party contributes: all their gold (Pool Gold).
+type TempleShare struct {
+	Slot int    `json:"slot"` // 0-based
+	Name string `json:"name"`
+	Gold int    `json:"gold"`
+}
+
+// TempleQuote is how a donation would be met for a patient and a payer,
+// worked out by the rules Treat follows, changing nothing:
+//   - "payer": the payer has the donation and pays it;
+//   - "party": the payer is short and the party's gold together covers it:
+//     the entire party's gold goes into the fund (Player's Guide p.33),
+//     that is, every other member's gold is pooled to the payer (the
+//     accepted Pool Gold, app/gold.go: every member, whatever their
+//     condition), the donation is taken from it, and the rest stays with
+//     the payer, as after any pooling;
+//   - "" with Refusal: the patient cannot be treated, the payer may not
+//     tithe, or even the party together is short ("CHEAP APOSTATES! OUT!",
+//     the original's words).
+type TempleQuote struct {
+	Patient   string        `json:"patient"`
+	Donation  int           `json:"donation"`
+	Payer     string        `json:"payer"`
+	PayerGold int           `json:"payerGold"`
+	PartyGold int           `json:"partyGold"` // every member's gold, the payer's included
+	Mode      string        `json:"mode"`
+	Shares    []TempleShare `json:"shares"` // "party": each other member's gold brought to the fund
+	Refusal   string        `json:"refusal"`
+}
+
+// templeQuote quotes the treatment of the roster character at index paid
+// by the party member in slot.
+func (c *Controller) templeQuote(index, slot int) (TempleQuote, error) {
+	town := c.Game.Town
+	roster := town.Roster.Characters
+	if index < 0 || index >= len(roster) || roster[index] == nil {
+		return TempleQuote{}, ErrNoSuchCharacter
+	}
+	if slot < 0 || slot >= len(town.Party.Members) || town.Party.Members[slot] == nil {
+		return TempleQuote{}, ErrNoSuchPartyMember
+	}
+	ch, payer := roster[index], town.Party.Members[slot]
+	q := TempleQuote{Patient: ch.Name, Donation: engine.TempleDonation(ch.Status, ch.Level), Payer: payer.Name, PayerGold: payer.Gold}
+	for _, m := range town.Party.Members {
+		if m != nil {
+			q.PartyGold += m.Gold
+		}
+	}
+	switch {
+	case c.patientRefusal(ch) != "":
+		q.Refusal = c.patientRefusal(ch)
+	case payer.Status != engine.OK:
+		q.Refusal = payerRefusal(payer)
+	case payer.Gold >= q.Donation:
+		q.Mode = "payer"
+	case q.PartyGold >= q.Donation:
+		q.Mode = "party"
+		for i, m := range town.Party.Members {
+			if m != nil && i != slot && m.Gold > 0 {
+				q.Shares = append(q.Shares, TempleShare{Slot: i, Name: m.Name, Gold: m.Gold})
+			}
+		}
+	default:
+		q.Refusal = "CHEAP APOSTATES! OUT!"
+	}
+	return q, nil
+}
+
+// TempleQuote quotes a treatment as Treat would take it; ErrWrongState away
+// from the Temple. It changes nothing and draws no random number.
+func (c *Controller) TempleQuote(index, slot int) (TempleQuote, error) {
+	if !c.atTemple() {
+		return TempleQuote{}, ErrWrongState
+	}
+	return c.templeQuote(index, slot)
+}
+
 // TempleReceipt is what a treatment did: the patient before and after, the
-// donation and who paid it.
+// donation and who paid it, and the party's contribution if it made one.
 type TempleReceipt struct {
-	Patient      string   `json:"patient"`
-	Index        int      `json:"index"` // roster index
-	Kind         string   `json:"kind"`  // cure, raise or ashes
-	StatusBefore string   `json:"statusBefore"`
-	StatusAfter  string   `json:"statusAfter"`
-	Healed       bool     `json:"healed"` // the treatment succeeded
-	Donation     int      `json:"donation"`
-	Payer        string   `json:"payer"`
-	PayerBefore  int      `json:"payerBefore"` // the payer's gold
-	PayerAfter   int      `json:"payerAfter"`
-	HPBefore     int      `json:"hpBefore"`
-	HPAfter      int      `json:"hpAfter"`
-	MaxHP        int      `json:"maxHp"`
-	AgeBefore    int      `json:"ageBefore"` // weeks
-	AgeAfter     int      `json:"ageAfter"`
-	Messages     []string `json:"messages"` // the Temple's words
+	Patient      string `json:"patient"`
+	Index        int    `json:"index"` // roster index
+	Kind         string `json:"kind"`  // cure, raise or ashes
+	StatusBefore string `json:"statusBefore"`
+	StatusAfter  string `json:"statusAfter"`
+	Healed       bool   `json:"healed"` // the treatment succeeded
+	Donation     int    `json:"donation"`
+	Payer        string `json:"payer"`
+	PayerBefore  int    `json:"payerBefore"` // the payer's own gold, before any contribution
+	PayerAfter   int    `json:"payerAfter"`
+	// Shares are the other members' gold brought to the fund when the
+	// party contributed (nil when the payer paid alone); Party is that
+	// pooling, every member before and after it.
+	Shares    []TempleShare `json:"shares"`
+	Party     *GoldMove     `json:"party"`
+	HPBefore  int           `json:"hpBefore"`
+	HPAfter   int           `json:"hpAfter"`
+	MaxHP     int           `json:"maxHp"`
+	AgeBefore int           `json:"ageBefore"` // weeks
+	AgeAfter  int           `json:"ageAfter"`
+	Messages  []string      `json:"messages"` // the Temple's words
 }
 
 // Treat treats the roster character at index, the donation tithed by the
-// party member in slot (0-based): one action, as the keys take it.
-func (c *Controller) Treat(index, slot int) (*TempleReceipt, error) {
+// party member in slot (0-based): one action, as the keys take it. When
+// the payer is short and the party's gold together covers the donation,
+// party says to let the party contribute (TempleQuote "party"): the
+// pooling, the donation, the treatment and its roll then happen together;
+// without it, a short payer is refused. A payer who has the donation pays
+// alone, party or not.
+func (c *Controller) Treat(index, slot int, party bool) (*TempleReceipt, error) {
 	town := c.Game.Town
 	if !c.atTemple() || town.TempleStep == engine.TempleRitual {
 		return nil, ErrWrongState
 	}
-	roster := town.Roster.Characters
-	if index < 0 || index >= len(roster) || roster[index] == nil {
-		return nil, ErrNoSuchCharacter
+	q, err := c.templeQuote(index, slot)
+	if err != nil {
+		return nil, err
 	}
-	if slot < 0 || slot >= len(town.Party.Members) || town.Party.Members[slot] == nil {
-		return nil, ErrNoSuchPartyMember
+	if q.Refusal != "" {
+		return nil, &Refusal{Message: q.Refusal}
 	}
-	ch, payer := roster[index], town.Party.Members[slot]
-	if why := c.patientRefusal(ch); why != "" {
-		return nil, &Refusal{Message: why}
+	if q.Mode == "party" && !party {
+		return nil, &Refusal{Message: "CHEAP APOSTATES! OUT!"}
 	}
-	donation := engine.TempleDonation(ch.Status, ch.Level)
-	if why := payerRefusal(payer, donation); why != "" {
-		return nil, &Refusal{Message: why}
-	}
+	ch, payer := town.Roster.Characters[index], town.Party.Members[slot]
 	r := &TempleReceipt{
 		Patient: ch.Name, Index: index, Kind: templeKind(ch.Status), StatusBefore: ch.Status.String(),
-		Donation: donation, Payer: payer.Name, PayerBefore: payer.Gold,
+		Donation: q.Donation, Payer: payer.Name, PayerBefore: payer.Gold,
 		HPBefore: ch.HP, AgeBefore: ch.Age,
+	}
+	if q.Mode == "party" {
+		m, err := c.PoolGold(slot) // the entire party's gold into the fund (p.33)
+		if err != nil {
+			return nil, err
+		}
+		r.Shares, r.Party = q.Shares, m
 	}
 	c.toTempleWho()
 	for _, k := range ch.Name {

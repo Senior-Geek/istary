@@ -113,7 +113,7 @@ func TestTreatIsTheKeys(t *testing.T) {
 			}
 			name := ops.Game.Town.Roster.Characters[index].Name
 			seed(s)
-			r, err := ops.Treat(index, slot)
+			r, err := ops.Treat(index, slot, false)
 			if err != nil {
 				t.Fatalf("seed %d: treat %s by %d: %v", s, name, slot, err)
 			}
@@ -264,7 +264,7 @@ func TestTempleViewAndRefusals(t *testing.T) {
 	} {
 		before := townJSON(t, c)
 		seed(4)
-		_, err := c.Treat(idx(tc.name), tc.slot)
+		_, err := c.Treat(idx(tc.name), tc.slot, false)
 		next := rand.Int63()
 		seed(4)
 		var r *Refusal
@@ -272,10 +272,10 @@ func TestTempleViewAndRefusals(t *testing.T) {
 			t.Errorf("%s paid by %d: %v", tc.name, tc.slot, err)
 		}
 	}
-	if _, err := c.Treat(99, 0); !errors.Is(err, ErrNoSuchCharacter) {
+	if _, err := c.Treat(99, 0, false); !errors.Is(err, ErrNoSuchCharacter) {
 		t.Errorf("no such patient: %v", err)
 	}
-	if _, err := c.Treat(idx("PARA"), 5); !errors.Is(err, ErrNoSuchPartyMember) {
+	if _, err := c.Treat(idx("PARA"), 5, false); !errors.Is(err, ErrNoSuchPartyMember) {
 		t.Errorf("no such payer: %v", err)
 	}
 }
@@ -307,7 +307,7 @@ func TestTreatReceipts(t *testing.T) {
 	rich := c.Game.Town.Party.Members[0]
 	// A cure: assured; HP unchanged; a little older.
 	seed(1)
-	r, err := c.Treat(3, 0) // PARA, 300
+	r, err := c.Treat(3, 0, false) // PARA, 300
 	if err != nil || r.Kind != TempleCure || !r.Healed || r.StatusBefore != "PARALYZE" || r.StatusAfter != "OK" || r.Donation != 300 ||
 		r.PayerBefore != 5000 || r.PayerAfter != 4700 || r.HPAfter != 12 || r.AgeAfter <= r.AgeBefore || r.AgeAfter > r.AgeBefore+52 ||
 		fmt.Sprint(r.Messages) != "[PARA IS WELL]" {
@@ -318,20 +318,20 @@ func TestTreatReceipts(t *testing.T) {
 	}
 	// A raise that fails: ashes, the donation kept, no older.
 	seed(find(func(r int) bool { return r > 80 })) // 50 + 3x10
-	r, _ = c.Treat(5, 0)                           // DEAD, 500
+	r, _ = c.Treat(5, 0, false)                    // DEAD, 500
 	if r.Healed || r.StatusAfter != "ASHED" || rich.Gold != 4200 || r.AgeAfter != r.AgeBefore || r.HPAfter != 0 ||
 		fmt.Sprint(r.Messages) != "[DEAD NEEDS KADORTO NOW]" {
 		t.Errorf("a failed raise: %+v", r)
 	}
 	// From ashes, a success: full HP.
 	seed(find(func(r int) bool { return r <= 70 })) // 40 + 3x10
-	r, _ = c.Treat(5, 0)                            // DEAD, now ashes: 500 x 2
+	r, _ = c.Treat(5, 0, false)                     // DEAD, now ashes: 500 x 2
 	if !r.Healed || r.Kind != TempleAshes || r.Donation != 1000 || r.HPAfter != 30 || rich.Gold != 3200 {
 		t.Errorf("ashes raised: %+v", r)
 	}
 	// From ashes, a failure: LOST, kept on the roster, never treated again.
 	seed(find(func(r int) bool { return r > 70 }))
-	r, _ = c.Treat(6, 0) // ASHY, 2000
+	r, _ = c.Treat(6, 0, false) // ASHY, 2000
 	if r.Healed || r.StatusAfter != "LOST" || rich.Gold != 1200 || roster[6].Status != engine.Lost {
 		t.Errorf("ashes lost: %+v", r)
 	}
@@ -340,7 +340,7 @@ func TestTreatReceipts(t *testing.T) {
 	}
 	// A dead raise: 1 HP. Leaving and coming back.
 	seed(find(func(r int) bool { return r <= 80 }))
-	if r, _ = c.Treat(2, 0); !r.Healed || r.HPAfter != 1 || r.StatusAfter != "OK" { // GHOST, a party member
+	if r, _ = c.Treat(2, 0, false); !r.Healed || r.HPAfter != 1 || r.StatusAfter != "OK" { // GHOST, a party member
 		t.Errorf("raised: %+v", r)
 	}
 	if err := c.LeaveTemple(); err != nil || c.Game.Town.Location != engine.Castle {
@@ -349,7 +349,7 @@ func TestTreatReceipts(t *testing.T) {
 	if err := c.LeaveTemple(); !errors.Is(err, ErrWrongState) {
 		t.Errorf("leave twice: %v", err)
 	}
-	if _, err := c.Treat(4, 0); !errors.Is(err, ErrWrongState) {
+	if _, err := c.Treat(4, 0, false); !errors.Is(err, ErrWrongState) {
 		t.Errorf("treat away from the Temple: %v", err)
 	}
 }
@@ -367,7 +367,149 @@ func TestTemplePoolThenTreat(t *testing.T) {
 	if v, _ := c.TempleView(); patient(v, "ASHY").Funding != "payer" || v.Payers[0].Gold != 4100 {
 		t.Errorf("after pooling: %+v", v.Payers)
 	}
-	if _, err := c.Treat(6, 0); err != nil {
+	if _, err := c.Treat(6, 0, false); err != nil {
 		t.Errorf("treat after pooling: %v", err)
+	}
+}
+
+// When the payer is short and the party together is not, the party's gold
+// goes into the fund (p.33): Treat with party is Pool Gold to the payer and
+// then the keys, the same town and random numbers, for random rosters.
+func TestTreatPartyContributes(t *testing.T) {
+	met := map[string]int{}
+	for s := int64(1); s <= 1500; s++ {
+		ops := templeController(t, rand.New(rand.NewSource(s)))
+		keys := templeController(t, rand.New(rand.NewSource(s)))
+		ops.GoTo(engine.Temple)
+		v, _ := ops.TempleView()
+		var index, slot = -1, -1
+		for _, p := range v.Patients {
+			for _, py := range v.Payers {
+				if q, _ := ops.TempleQuote(p.Index, py.Slot); q.Mode == "party" && index < 0 {
+					index, slot = p.Index, py.Slot
+				}
+			}
+		}
+		if index < 0 {
+			continue
+		}
+		q, _ := ops.TempleQuote(index, slot)
+		shares := 0
+		for _, sh := range q.Shares {
+			shares += sh.Gold
+		}
+		if q.PayerGold >= q.Donation || q.PartyGold < q.Donation || q.PayerGold+shares != q.PartyGold {
+			t.Fatalf("seed %d: quote %+v", s, q)
+		}
+		// Without the party: refused, nothing changed, nothing drawn.
+		before := townJSON(t, ops)
+		seed(s)
+		_, err := ops.Treat(index, slot, false)
+		next := rand.Int63()
+		seed(s)
+		if r := new(Refusal); !errors.As(err, &r) || r.Message != "CHEAP APOSTATES! OUT!" || townJSON(t, ops) != before || next != rand.Int63() {
+			t.Fatalf("seed %d: a short payer without the party: %v", s, err)
+		}
+		seed(s)
+		r, err := ops.Treat(index, slot, true)
+		if err != nil {
+			t.Fatalf("seed %d: %v", s, err)
+		}
+		next = rand.Int63()
+		name := ops.Game.Town.Roster.Characters[index].Name
+		keys.HandleKey(Rune('C')) // the keys: pool to the payer, then treat
+		if _, err := keys.PoolGold(slot); err != nil {
+			t.Fatal(err)
+		}
+		seed(s)
+		termTreat(keys, name, slot)
+		if next != rand.Int63() || townJSON(t, ops) != townJSON(t, keys) {
+			t.Fatalf("seed %d: the party's contribution is not Pool Gold and the keys", s)
+		}
+		if r.Party == nil || r.Party.Total != q.PartyGold || r.PayerAfter != q.PartyGold-q.Donation || len(r.Shares) != len(q.Shares) {
+			t.Fatalf("seed %d: receipt %+v", s, r)
+		}
+		met[r.Kind+"/"+r.StatusAfter]++
+	}
+	if len(met) < 3 {
+		t.Errorf("too few outcomes with the party's gold: %v", met)
+	}
+}
+
+func TestTempleQuoteModes(t *testing.T) {
+	c := templeFixture(t) // RICH 5000, POOR 100, GHOST (dead) 3000
+	idx := func(name string) int {
+		for i, ch := range c.Game.Town.Roster.Characters {
+			if ch.Name == name {
+				return i
+			}
+		}
+		return -1
+	}
+	m := c.Game.Town.Party.Members
+	before := townJSON(t, c)
+	seed(2)
+	q, err := c.TempleQuote(idx("ASHY"), 1) // 2000 by POOR (100): the party
+	next := rand.Int63()
+	seed(2)
+	if err != nil || next != rand.Int63() || townJSON(t, c) != before {
+		t.Fatal("quoting changed something")
+	}
+	want := TempleQuote{Patient: "ASHY", Donation: 2000, Payer: "POOR", PayerGold: 100, PartyGold: 8100, Mode: "party",
+		Shares: []TempleShare{{0, "RICH", 5000}, {2, "GHOST", 3000}}}
+	if fmt.Sprint(q) != fmt.Sprint(want) {
+		t.Errorf("party:\n%+v\n%+v", q, want)
+	}
+	if q, _ := c.TempleQuote(idx("ASHY"), 0); q.Mode != "payer" || q.Shares != nil {
+		t.Errorf("payer: %+v", q)
+	}
+	if q, _ := c.TempleQuote(idx("ASHY"), 2); q.Refusal != "GHOST IS NOT OK and cannot tithe." || q.Mode != "" {
+		t.Errorf("a dead payer: %+v", q)
+	}
+	if q, _ := c.TempleQuote(idx("LOSTY"), 0); q.Refusal != "LOSTY IS LOST" {
+		t.Errorf("the LOST: %+v", q)
+	}
+	// The dead GHOST's gold counts: without it the party is short.
+	m[0].Gold, m[2].Gold = 1000, 900
+	if q, _ := c.TempleQuote(idx("ASHY"), 1); q.Mode != "party" || q.PartyGold != 2000 {
+		t.Errorf("exactly enough with the dead's gold: %+v", q)
+	}
+	m[2].Gold = 0
+	before = townJSON(t, c)
+	q, _ = c.TempleQuote(idx("ASHY"), 1)
+	_, err = c.Treat(idx("ASHY"), 1, true)
+	if q.Refusal != "CHEAP APOSTATES! OUT!" || !errors.As(err, new(*Refusal)) || townJSON(t, c) != before {
+		t.Errorf("the party short: %+v %v", q, err)
+	}
+	// A payer who has the donation pays alone, party or not.
+	m[0].Gold = 5000
+	r, err := c.Treat(idx("PARA"), 0, true)
+	if err != nil || r.Party != nil || r.PayerAfter != 4700 || m[1].Gold != 100 {
+		t.Errorf("paid alone: %+v %v", r, err)
+	}
+}
+
+// The party's gold pays for a raise that fails as for one that succeeds:
+// the donation is kept, the rest stays with the payer.
+func TestTreatPartyReceipts(t *testing.T) {
+	find := func(want func(int) bool) int64 {
+		for s := int64(1); ; s++ {
+			rand.Seed(s)
+			if want(rand.Intn(100)) {
+				return s
+			}
+		}
+	}
+	c := templeFixture(t)
+	m := c.Game.Town.Party.Members
+	seed(find(func(r int) bool { return r > 80 })) // DEAD (VIT 10): fails into ashes
+	r, err := c.Treat(5, 1, true)                  // POOR (100) pays 500 with the party
+	if err != nil || r.Healed || r.StatusAfter != "ASHED" || r.PayerBefore != 100 || r.PayerAfter != 7600 ||
+		m[0].Gold != 0 || m[2].Gold != 0 || fmt.Sprint(r.Shares) != "[{0 RICH 5000} {2 GHOST 3000}]" {
+		t.Errorf("a failed raise with the party: %+v %v", r, err)
+	}
+	seed(find(func(r int) bool { return r <= 70 }))
+	if r, _ = c.Treat(5, 1, true); !r.Healed || r.Party != nil || r.PayerAfter != 6600 {
+		t.Errorf("ashes raised by the payer alone now: %+v", r)
 	}
 }
