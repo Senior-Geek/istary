@@ -506,7 +506,8 @@ itself (the terminal's main loop saves after every key, as before).
 
 | Operation | Effect |
 |---|---|
-| `Treat(index, slot)` | One action: the patient's name, RETURN, the payer's number and a key at the ritual, pressed for the player; returns `TempleReceipt` (conditions, donation, the payer's gold, HP and age before and after, the Temple's words). Stricter than the keys, on purpose: the patient must be at the castle (not on a saved expedition; not OUT in the maze by the Tavern's rule: INMAZE or a maze level, for anyone outside the party, whose members are INMAZE by joining), the payer must be OK, and a payer short of the donation is refused before anything happens. Refusals change nothing and draw nothing |
+| `TempleQuote(index, slot)` | Read-only: how the donation would be met: `payer` (alone), `party` (the payer short, the party's gold together enough: each other member's share), or a refusal (the patient, a payer not OK, or even the party short: "CHEAP APOSTATES! OUT!") |
+| `Treat(index, slot, party)` | One action: the patient's name, RETURN, the payer's number and a key at the ritual, pressed for the player; returns `TempleReceipt` (conditions, donation, the payer's gold, HP and age before and after, the Temple's words). Stricter than the keys, on purpose: the patient must be at the castle (not on a saved expedition; not OUT in the maze by the Tavern's rule: INMAZE or a maze level, for anyone outside the party, whose members are INMAZE by joining), the payer must be OK, and a payer short of the donation is refused before anything happens unless `party` is set and the party's gold together covers it (PG p.33): then the entire party's gold goes into the fund (Pool Gold to the payer), the donation is taken from it, and the treatment follows, all in the one action; the receipt's `Shares` and `Party` say what each member put in. Refusals change nothing and draw nothing |
 | `TempleView()` | Read-only: the patients (treatable conditions and the LOST) with kind (cure, raise, ashes), donation, refusal and funding (a payer, only the party together, short), the payers (refusal when not OK) and the party's gold. No chance of success |
 | `LeaveTemple()` | Out to the castle by RETURN from any step but the ritual |
 | `PoolGold(slot)` | Open at the Temple too (PG p.33), as an explicit action |
@@ -695,6 +696,12 @@ reshapes it and decides nothing.
   nothing; a refusal keeps the last receipt. A failed save keeps the
   treatment, the receipt NOT saved; Try saving again marks it saved,
   charging and rolling nothing again; closing the window asks first.
+- **The party's gold:** when the payer is short, the confirmation shows
+  Go's quote (`Session.TempleQuote`): the entire party's gold into the
+  fund, each member's share, the fund and the donation, what the payer
+  keeps; confirming sends `party: true`. The receipt itemises the
+  contributions. A failed save retried moves no gold and rolls nothing
+  again (`TestTempleWithThePartysGold`).
 - **The screen:** the patients (name, class and level, condition,
   donation, whether the gold is there, Go's reason when not treatable; the
   LOST as beyond mortal help), the payer from the party bar or a list

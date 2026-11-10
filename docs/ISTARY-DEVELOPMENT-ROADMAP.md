@@ -389,7 +389,7 @@ own before any work.
   dead or not; paying and the treatment are two keys, each saved after
   it. The GUI treats only characters at the castle, takes an OK payer, and
   makes the donation and the treatment one action and one save.
-- **Temple pooling (finding #5).** The guide pools the party's gold when
-  the payer is short (p.33); the engine refuses, citing the p-code. The
-  GUI offers an explicit Pool party gold; which the original did is
-  unsettled.
+- **Temple pooling (finding #5).** The GUI follows the guide (p.33): a
+  short payer's donation is met from the whole party's gold, asked first.
+  The terminal still refuses, as the engine's p-code citation does; which
+  the original program did is unverified.

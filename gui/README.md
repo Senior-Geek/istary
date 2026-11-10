@@ -17,7 +17,9 @@ bottom, shown or hidden with Hide party.
 - **The Temple of Cant (T-3):** every character the priests can help,
   in the party or not, with their condition and the donation; the LOST
   are listed, beyond help. Choose who tithes from the party bar (only a
-  member who is well), Pool party gold if needed, then Treat…: the
+  member who is well), then Treat…: if the payer is short, the screen
+  offers the whole party's gold (as the guide says) and shows each
+  member's share before anything is paid; the
   screen says what may happen and asks first (no chance is shown). A
   raise from the dead may fail into ashes; from ashes, failure is LOST
   for good; the donation is charged either way. Only characters at the
