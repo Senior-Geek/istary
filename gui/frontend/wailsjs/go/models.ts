@@ -944,6 +944,66 @@ export namespace app {
 	        this.refusal = source["refusal"];
 	    }
 	}
+	export class TempleShare {
+	    slot: number;
+	    name: string;
+	    gold: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new TempleShare(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.slot = source["slot"];
+	        this.name = source["name"];
+	        this.gold = source["gold"];
+	    }
+	}
+	export class TempleQuote {
+	    patient: string;
+	    donation: number;
+	    payer: string;
+	    payerGold: number;
+	    partyGold: number;
+	    mode: string;
+	    shares: TempleShare[];
+	    refusal: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new TempleQuote(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.patient = source["patient"];
+	        this.donation = source["donation"];
+	        this.payer = source["payer"];
+	        this.payerGold = source["payerGold"];
+	        this.partyGold = source["partyGold"];
+	        this.mode = source["mode"];
+	        this.shares = this.convertValues(source["shares"], TempleShare);
+	        this.refusal = source["refusal"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 	export class TempleReceipt {
 	    patient: string;
 	    index: number;
@@ -955,6 +1015,8 @@ export namespace app {
 	    payer: string;
 	    payerBefore: number;
 	    payerAfter: number;
+	    shares: TempleShare[];
+	    party?: GoldMove;
 	    hpBefore: number;
 	    hpAfter: number;
 	    maxHp: number;
@@ -978,6 +1040,8 @@ export namespace app {
 	        this.payer = source["payer"];
 	        this.payerBefore = source["payerBefore"];
 	        this.payerAfter = source["payerAfter"];
+	        this.shares = this.convertValues(source["shares"], TempleShare);
+	        this.party = this.convertValues(source["party"], GoldMove);
 	        this.hpBefore = source["hpBefore"];
 	        this.hpAfter = source["hpAfter"];
 	        this.maxHp = source["maxHp"];
@@ -985,7 +1049,26 @@ export namespace app {
 	        this.ageAfter = source["ageAfter"];
 	        this.messages = source["messages"];
 	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
+	
 	export class TempleView {
 	    step: string;
 	    message: string;
@@ -1774,6 +1857,7 @@ export namespace main {
 	    action: string;
 	    patient: number;
 	    payer: number;
+	    party: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new TempleRequest(source);
@@ -1784,6 +1868,7 @@ export namespace main {
 	        this.action = source["action"];
 	        this.patient = source["patient"];
 	        this.payer = source["payer"];
+	        this.party = source["party"];
 	    }
 	}
 	

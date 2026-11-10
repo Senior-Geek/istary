@@ -113,6 +113,8 @@ export function SubmitJoinPassword(arg1:string):Promise<main.View>;
 
 export function TempleAction(arg1:main.TempleRequest):Promise<main.View>;
 
+export function TempleQuote(arg1:number,arg2:number):Promise<app.TempleQuote>;
+
 export function TryAgain():Promise<main.View>;
 
 export function TryResumeAgain():Promise<main.View>;

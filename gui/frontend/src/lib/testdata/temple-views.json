@@ -8,6 +8,18 @@
     "message": "",
     "patients": [
      {
+      "index": 1,
+      "name": "BGUI",
+      "class": "FIGHTER",
+      "level": 2,
+      "status": "DEAD",
+      "inParty": true,
+      "kind": "raise",
+      "donation": 500,
+      "refusal": "",
+      "funding": "payer"
+     },
+     {
       "index": 3,
       "name": "DGUI",
       "class": "PRIEST",
@@ -103,7 +115,7 @@
       "slot": 1,
       "name": "BGUI",
       "gold": 100,
-      "refusal": ""
+      "refusal": "BGUI IS NOT OK and cannot tithe."
      },
      {
       "slot": 2,
@@ -134,6 +146,88 @@
    },
    "last": null
   },
+  "quotes": [
+   {
+    "patient": "BGUI",
+    "donation": 500,
+    "payer": "AGUI",
+    "payerGold": 5000,
+    "partyGold": 8140,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "DGUI",
+    "donation": 500,
+    "payer": "AGUI",
+    "payerGold": 5000,
+    "partyGold": 8140,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "PARA",
+    "donation": 300,
+    "payer": "AGUI",
+    "payerGold": 5000,
+    "partyGold": 8140,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "STONE",
+    "donation": 400,
+    "payer": "AGUI",
+    "payerGold": 5000,
+    "partyGold": 8140,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "DEAD",
+    "donation": 500,
+    "payer": "AGUI",
+    "payerGold": 5000,
+    "partyGold": 8140,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "ASHY",
+    "donation": 2000,
+    "payer": "AGUI",
+    "payerGold": 5000,
+    "partyGold": 8140,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "LOSTY",
+    "donation": 0,
+    "payer": "AGUI",
+    "payerGold": 5000,
+    "partyGold": 8140,
+    "mode": "",
+    "shares": null,
+    "refusal": "LOSTY IS LOST"
+   },
+   {
+    "patient": "BELOW",
+    "donation": 250,
+    "payer": "AGUI",
+    "payerGold": 5000,
+    "partyGold": 8140,
+    "mode": "",
+    "shares": null,
+    "refusal": "BELOW is OUT in the maze, not at the castle; only a rescue can bring them back."
+   }
+  ],
   "roster": [
    {
     "index": 0,
@@ -215,10 +309,10 @@
     "class": "FIGHTER",
     "short": "N-FIG",
     "level": 2,
-    "hp": 14,
+    "hp": 0,
     "maxHp": 14,
     "ac": 10,
-    "status": "OK",
+    "status": "DEAD",
     "gold": 100,
     "age": 0,
     "stats": [
@@ -1027,9 +1121,1291 @@
     "class": "N-FIG",
     "level": 2,
     "ac": 10,
+    "hp": 0,
+    "maxHp": 14,
+    "status": "DEAD",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "ac": 10,
     "hp": 14,
     "maxHp": 14,
     "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "ac": 10,
+    "hp": 0,
+    "maxHp": 14,
+    "status": "DEAD",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "error": "",
+  "notice": "",
+  "unsaved": "",
+  "warning": ""
+ },
+ {
+  "case": "quotes: CGUI tithing",
+  "location": "temple",
+  "temple": {
+   "view": {
+    "step": "who",
+    "message": "",
+    "patients": [
+     {
+      "index": 1,
+      "name": "BGUI",
+      "class": "FIGHTER",
+      "level": 2,
+      "status": "DEAD",
+      "inParty": true,
+      "kind": "raise",
+      "donation": 500,
+      "refusal": "",
+      "funding": "payer"
+     },
+     {
+      "index": 3,
+      "name": "DGUI",
+      "class": "PRIEST",
+      "level": 2,
+      "status": "DEAD",
+      "inParty": true,
+      "kind": "raise",
+      "donation": 500,
+      "refusal": "",
+      "funding": "payer"
+     },
+     {
+      "index": 6,
+      "name": "PARA",
+      "class": "FIGHTER",
+      "level": 3,
+      "status": "PARALYZE",
+      "inParty": false,
+      "kind": "cure",
+      "donation": 300,
+      "refusal": "",
+      "funding": "payer"
+     },
+     {
+      "index": 7,
+      "name": "STONE",
+      "class": "FIGHTER",
+      "level": 2,
+      "status": "STONED",
+      "inParty": false,
+      "kind": "cure",
+      "donation": 400,
+      "refusal": "",
+      "funding": "payer"
+     },
+     {
+      "index": 8,
+      "name": "DEAD",
+      "class": "FIGHTER",
+      "level": 2,
+      "status": "DEAD",
+      "inParty": false,
+      "kind": "raise",
+      "donation": 500,
+      "refusal": "",
+      "funding": "payer"
+     },
+     {
+      "index": 9,
+      "name": "ASHY",
+      "class": "FIGHTER",
+      "level": 4,
+      "status": "ASHED",
+      "inParty": false,
+      "kind": "ashes",
+      "donation": 2000,
+      "refusal": "",
+      "funding": "payer"
+     },
+     {
+      "index": 10,
+      "name": "LOSTY",
+      "class": "FIGHTER",
+      "level": 1,
+      "status": "LOST",
+      "inParty": false,
+      "kind": "",
+      "donation": 0,
+      "refusal": "LOSTY IS LOST",
+      "funding": ""
+     },
+     {
+      "index": 11,
+      "name": "BELOW",
+      "class": "FIGHTER",
+      "level": 1,
+      "status": "DEAD",
+      "inParty": false,
+      "kind": "raise",
+      "donation": 250,
+      "refusal": "BELOW is OUT in the maze, not at the castle; only a rescue can bring them back.",
+      "funding": "payer"
+     }
+    ],
+    "payers": [
+     {
+      "slot": 0,
+      "name": "AGUI",
+      "gold": 5000,
+      "refusal": ""
+     },
+     {
+      "slot": 1,
+      "name": "BGUI",
+      "gold": 100,
+      "refusal": "BGUI IS NOT OK and cannot tithe."
+     },
+     {
+      "slot": 2,
+      "name": "CGUI",
+      "gold": 40,
+      "refusal": ""
+     },
+     {
+      "slot": 3,
+      "name": "DGUI",
+      "gold": 3000,
+      "refusal": "DGUI IS NOT OK and cannot tithe."
+     },
+     {
+      "slot": 4,
+      "name": "EGUI",
+      "gold": 0,
+      "refusal": ""
+     },
+     {
+      "slot": 5,
+      "name": "FGUI",
+      "gold": 0,
+      "refusal": ""
+     }
+    ],
+    "partyGold": 8140
+   },
+   "last": null
+  },
+  "quotes": [
+   {
+    "patient": "BGUI",
+    "donation": 500,
+    "payer": "CGUI",
+    "payerGold": 40,
+    "partyGold": 8140,
+    "mode": "party",
+    "shares": [
+     {
+      "slot": 0,
+      "name": "AGUI",
+      "gold": 5000
+     },
+     {
+      "slot": 1,
+      "name": "BGUI",
+      "gold": 100
+     },
+     {
+      "slot": 3,
+      "name": "DGUI",
+      "gold": 3000
+     }
+    ],
+    "refusal": ""
+   },
+   {
+    "patient": "DGUI",
+    "donation": 500,
+    "payer": "CGUI",
+    "payerGold": 40,
+    "partyGold": 8140,
+    "mode": "party",
+    "shares": [
+     {
+      "slot": 0,
+      "name": "AGUI",
+      "gold": 5000
+     },
+     {
+      "slot": 1,
+      "name": "BGUI",
+      "gold": 100
+     },
+     {
+      "slot": 3,
+      "name": "DGUI",
+      "gold": 3000
+     }
+    ],
+    "refusal": ""
+   },
+   {
+    "patient": "PARA",
+    "donation": 300,
+    "payer": "CGUI",
+    "payerGold": 40,
+    "partyGold": 8140,
+    "mode": "party",
+    "shares": [
+     {
+      "slot": 0,
+      "name": "AGUI",
+      "gold": 5000
+     },
+     {
+      "slot": 1,
+      "name": "BGUI",
+      "gold": 100
+     },
+     {
+      "slot": 3,
+      "name": "DGUI",
+      "gold": 3000
+     }
+    ],
+    "refusal": ""
+   },
+   {
+    "patient": "STONE",
+    "donation": 400,
+    "payer": "CGUI",
+    "payerGold": 40,
+    "partyGold": 8140,
+    "mode": "party",
+    "shares": [
+     {
+      "slot": 0,
+      "name": "AGUI",
+      "gold": 5000
+     },
+     {
+      "slot": 1,
+      "name": "BGUI",
+      "gold": 100
+     },
+     {
+      "slot": 3,
+      "name": "DGUI",
+      "gold": 3000
+     }
+    ],
+    "refusal": ""
+   },
+   {
+    "patient": "DEAD",
+    "donation": 500,
+    "payer": "CGUI",
+    "payerGold": 40,
+    "partyGold": 8140,
+    "mode": "party",
+    "shares": [
+     {
+      "slot": 0,
+      "name": "AGUI",
+      "gold": 5000
+     },
+     {
+      "slot": 1,
+      "name": "BGUI",
+      "gold": 100
+     },
+     {
+      "slot": 3,
+      "name": "DGUI",
+      "gold": 3000
+     }
+    ],
+    "refusal": ""
+   },
+   {
+    "patient": "ASHY",
+    "donation": 2000,
+    "payer": "CGUI",
+    "payerGold": 40,
+    "partyGold": 8140,
+    "mode": "party",
+    "shares": [
+     {
+      "slot": 0,
+      "name": "AGUI",
+      "gold": 5000
+     },
+     {
+      "slot": 1,
+      "name": "BGUI",
+      "gold": 100
+     },
+     {
+      "slot": 3,
+      "name": "DGUI",
+      "gold": 3000
+     }
+    ],
+    "refusal": ""
+   },
+   {
+    "patient": "LOSTY",
+    "donation": 0,
+    "payer": "CGUI",
+    "payerGold": 40,
+    "partyGold": 8140,
+    "mode": "",
+    "shares": null,
+    "refusal": "LOSTY IS LOST"
+   },
+   {
+    "patient": "BELOW",
+    "donation": 250,
+    "payer": "CGUI",
+    "payerGold": 40,
+    "partyGold": 8140,
+    "mode": "",
+    "shares": null,
+    "refusal": "BELOW is OUT in the maze, not at the castle; only a rescue can bring them back."
+   }
+  ],
+  "roster": [
+   {
+    "index": 0,
+    "name": "AGUI",
+    "race": "HUMAN",
+    "alignment": "NEUTRAL",
+    "class": "FIGHTER",
+    "short": "N-FIG",
+    "level": 2,
+    "hp": 14,
+    "maxHp": 14,
+    "ac": 10,
+    "status": "OK",
+    "gold": 5000,
+    "age": 0,
+    "stats": [
+     16,
+     0,
+     0,
+     0,
+     12,
+     0
+    ],
+    "xp": 0,
+    "nextXp": 1724,
+    "hasPassword": false,
+    "mageSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxMage": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "priestSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxPriest": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "spells": null,
+    "items": null,
+    "poison": 0,
+    "inMaze": true,
+    "mazeLevel": 0,
+    "legacy": false,
+    "equipNote": "",
+    "inParty": true,
+    "partySlot": 1,
+    "joinRefusal": "** PARTY IS FULL **"
+   },
+   {
+    "index": 1,
+    "name": "BGUI",
+    "race": "HUMAN",
+    "alignment": "NEUTRAL",
+    "class": "FIGHTER",
+    "short": "N-FIG",
+    "level": 2,
+    "hp": 0,
+    "maxHp": 14,
+    "ac": 10,
+    "status": "DEAD",
+    "gold": 100,
+    "age": 0,
+    "stats": [
+     16,
+     0,
+     0,
+     0,
+     12,
+     0
+    ],
+    "xp": 0,
+    "nextXp": 1724,
+    "hasPassword": false,
+    "mageSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxMage": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "priestSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxPriest": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "spells": null,
+    "items": null,
+    "poison": 0,
+    "inMaze": true,
+    "mazeLevel": 0,
+    "legacy": false,
+    "equipNote": "",
+    "inParty": true,
+    "partySlot": 2,
+    "joinRefusal": "** PARTY IS FULL **"
+   },
+   {
+    "index": 2,
+    "name": "CGUI",
+    "race": "HUMAN",
+    "alignment": "NEUTRAL",
+    "class": "THIEF",
+    "short": "N-THI",
+    "level": 2,
+    "hp": 14,
+    "maxHp": 14,
+    "ac": 10,
+    "status": "OK",
+    "gold": 40,
+    "age": 0,
+    "stats": [
+     16,
+     0,
+     0,
+     0,
+     12,
+     0
+    ],
+    "xp": 0,
+    "nextXp": 1551,
+    "hasPassword": false,
+    "mageSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxMage": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "priestSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxPriest": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "spells": null,
+    "items": null,
+    "poison": 0,
+    "inMaze": true,
+    "mazeLevel": 0,
+    "legacy": false,
+    "equipNote": "",
+    "inParty": true,
+    "partySlot": 3,
+    "joinRefusal": "** PARTY IS FULL **"
+   },
+   {
+    "index": 3,
+    "name": "DGUI",
+    "race": "HUMAN",
+    "alignment": "NEUTRAL",
+    "class": "PRIEST",
+    "short": "N-PRI",
+    "level": 2,
+    "hp": 0,
+    "maxHp": 14,
+    "ac": 10,
+    "status": "DEAD",
+    "gold": 3000,
+    "age": 0,
+    "stats": [
+     16,
+     0,
+     0,
+     0,
+     12,
+     0
+    ],
+    "xp": 0,
+    "nextXp": 1810,
+    "hasPassword": false,
+    "mageSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxMage": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "priestSpells": [
+     2,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxPriest": [
+     2,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "spells": [
+     "DIOS",
+     "CALFO"
+    ],
+    "items": null,
+    "poison": 0,
+    "inMaze": true,
+    "mazeLevel": 0,
+    "legacy": false,
+    "equipNote": "",
+    "inParty": true,
+    "partySlot": 4,
+    "joinRefusal": "** PARTY IS FULL **"
+   },
+   {
+    "index": 4,
+    "name": "EGUI",
+    "race": "HUMAN",
+    "alignment": "NEUTRAL",
+    "class": "MAGE",
+    "short": "N-MAG",
+    "level": 2,
+    "hp": 14,
+    "maxHp": 14,
+    "ac": 10,
+    "status": "OK",
+    "gold": 0,
+    "age": 0,
+    "stats": [
+     16,
+     0,
+     0,
+     0,
+     12,
+     0
+    ],
+    "xp": 0,
+    "nextXp": 1896,
+    "hasPassword": false,
+    "mageSpells": [
+     2,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxMage": [
+     2,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "priestSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxPriest": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "spells": [
+     "HALITO",
+     "KATINO"
+    ],
+    "items": null,
+    "poison": 0,
+    "inMaze": true,
+    "mazeLevel": 0,
+    "legacy": false,
+    "equipNote": "",
+    "inParty": true,
+    "partySlot": 5,
+    "joinRefusal": "** PARTY IS FULL **"
+   },
+   {
+    "index": 5,
+    "name": "FGUI",
+    "race": "HUMAN",
+    "alignment": "NEUTRAL",
+    "class": "FIGHTER",
+    "short": "N-FIG",
+    "level": 2,
+    "hp": 14,
+    "maxHp": 14,
+    "ac": 10,
+    "status": "OK",
+    "gold": 0,
+    "age": 0,
+    "stats": [
+     16,
+     0,
+     0,
+     0,
+     12,
+     0
+    ],
+    "xp": 0,
+    "nextXp": 1724,
+    "hasPassword": false,
+    "mageSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxMage": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "priestSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxPriest": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "spells": null,
+    "items": null,
+    "poison": 0,
+    "inMaze": true,
+    "mazeLevel": 0,
+    "legacy": false,
+    "equipNote": "",
+    "inParty": true,
+    "partySlot": 6,
+    "joinRefusal": "** PARTY IS FULL **"
+   },
+   {
+    "index": 6,
+    "name": "PARA",
+    "race": "HUMAN",
+    "alignment": "NEUTRAL",
+    "class": "FIGHTER",
+    "short": "N-FIG",
+    "level": 3,
+    "hp": 12,
+    "maxHp": 30,
+    "ac": 10,
+    "status": "PARALYZE",
+    "gold": 0,
+    "age": 30,
+    "stats": [
+     0,
+     0,
+     0,
+     10,
+     0,
+     0
+    ],
+    "xp": 0,
+    "nextXp": 2972,
+    "hasPassword": false,
+    "mageSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxMage": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "priestSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxPriest": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "spells": null,
+    "items": null,
+    "poison": 0,
+    "inMaze": false,
+    "mazeLevel": 0,
+    "legacy": false,
+    "equipNote": "",
+    "inParty": false,
+    "partySlot": 0,
+    "joinRefusal": "** PARTY IS FULL **"
+   },
+   {
+    "index": 7,
+    "name": "STONE",
+    "race": "HUMAN",
+    "alignment": "NEUTRAL",
+    "class": "FIGHTER",
+    "short": "N-FIG",
+    "level": 2,
+    "hp": 12,
+    "maxHp": 30,
+    "ac": 10,
+    "status": "STONED",
+    "gold": 0,
+    "age": 30,
+    "stats": [
+     0,
+     0,
+     0,
+     10,
+     0,
+     0
+    ],
+    "xp": 0,
+    "nextXp": 1724,
+    "hasPassword": false,
+    "mageSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxMage": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "priestSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxPriest": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "spells": null,
+    "items": null,
+    "poison": 0,
+    "inMaze": false,
+    "mazeLevel": 0,
+    "legacy": false,
+    "equipNote": "",
+    "inParty": false,
+    "partySlot": 0,
+    "joinRefusal": "** PARTY IS FULL **"
+   },
+   {
+    "index": 8,
+    "name": "DEAD",
+    "race": "HUMAN",
+    "alignment": "NEUTRAL",
+    "class": "FIGHTER",
+    "short": "N-FIG",
+    "level": 2,
+    "hp": 0,
+    "maxHp": 30,
+    "ac": 10,
+    "status": "DEAD",
+    "gold": 0,
+    "age": 30,
+    "stats": [
+     0,
+     0,
+     0,
+     10,
+     0,
+     0
+    ],
+    "xp": 0,
+    "nextXp": 1724,
+    "hasPassword": false,
+    "mageSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxMage": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "priestSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxPriest": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "spells": null,
+    "items": null,
+    "poison": 0,
+    "inMaze": false,
+    "mazeLevel": 0,
+    "legacy": false,
+    "equipNote": "",
+    "inParty": false,
+    "partySlot": 0,
+    "joinRefusal": "** PARTY IS FULL **"
+   },
+   {
+    "index": 9,
+    "name": "ASHY",
+    "race": "HUMAN",
+    "alignment": "NEUTRAL",
+    "class": "FIGHTER",
+    "short": "N-FIG",
+    "level": 4,
+    "hp": 0,
+    "maxHp": 30,
+    "ac": 10,
+    "status": "ASHED",
+    "gold": 0,
+    "age": 30,
+    "stats": [
+     0,
+     0,
+     0,
+     10,
+     0,
+     0
+    ],
+    "xp": 0,
+    "nextXp": 5124,
+    "hasPassword": false,
+    "mageSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxMage": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "priestSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxPriest": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "spells": null,
+    "items": null,
+    "poison": 0,
+    "inMaze": false,
+    "mazeLevel": 0,
+    "legacy": false,
+    "equipNote": "",
+    "inParty": false,
+    "partySlot": 0,
+    "joinRefusal": "** PARTY IS FULL **"
+   },
+   {
+    "index": 10,
+    "name": "LOSTY",
+    "race": "HUMAN",
+    "alignment": "NEUTRAL",
+    "class": "FIGHTER",
+    "short": "N-FIG",
+    "level": 1,
+    "hp": 0,
+    "maxHp": 30,
+    "ac": 10,
+    "status": "LOST",
+    "gold": 0,
+    "age": 30,
+    "stats": [
+     0,
+     0,
+     0,
+     10,
+     0,
+     0
+    ],
+    "xp": 0,
+    "nextXp": 1000,
+    "hasPassword": false,
+    "mageSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxMage": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "priestSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxPriest": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "spells": null,
+    "items": null,
+    "poison": 0,
+    "inMaze": false,
+    "mazeLevel": 0,
+    "legacy": false,
+    "equipNote": "",
+    "inParty": false,
+    "partySlot": 0,
+    "joinRefusal": "** PARTY IS FULL **"
+   },
+   {
+    "index": 11,
+    "name": "BELOW",
+    "race": "HUMAN",
+    "alignment": "NEUTRAL",
+    "class": "FIGHTER",
+    "short": "N-FIG",
+    "level": 1,
+    "hp": 0,
+    "maxHp": 30,
+    "ac": 10,
+    "status": "DEAD",
+    "gold": 0,
+    "age": 30,
+    "stats": [
+     0,
+     0,
+     0,
+     10,
+     0,
+     0
+    ],
+    "xp": 0,
+    "nextXp": 1000,
+    "hasPassword": false,
+    "mageSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxMage": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "priestSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxPriest": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "spells": null,
+    "items": null,
+    "poison": 0,
+    "inMaze": true,
+    "mazeLevel": 4,
+    "legacy": false,
+    "equipNote": "",
+    "inParty": false,
+    "partySlot": 0,
+    "joinRefusal": "** PARTY IS FULL **"
+   }
+  ],
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 0,
+    "maxHp": 14,
+    "status": "DEAD",
     "poisoned": false,
     "front": true
    },
@@ -1100,6 +2476,18 @@
     "message": "",
     "patients": [
      {
+      "index": 1,
+      "name": "BGUI",
+      "class": "FIGHTER",
+      "level": 2,
+      "status": "DEAD",
+      "inParty": true,
+      "kind": "raise",
+      "donation": 500,
+      "refusal": "",
+      "funding": "payer"
+     },
+     {
       "index": 3,
       "name": "DGUI",
       "class": "PRIEST",
@@ -1195,7 +2583,7 @@
       "slot": 1,
       "name": "BGUI",
       "gold": 100,
-      "refusal": ""
+      "refusal": "BGUI IS NOT OK and cannot tithe."
      },
      {
       "slot": 2,
@@ -1226,6 +2614,88 @@
    },
    "last": null
   },
+  "quotes": [
+   {
+    "patient": "BGUI",
+    "donation": 500,
+    "payer": "AGUI",
+    "payerGold": 5000,
+    "partyGold": 8140,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "DGUI",
+    "donation": 500,
+    "payer": "AGUI",
+    "payerGold": 5000,
+    "partyGold": 8140,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "PARA",
+    "donation": 300,
+    "payer": "AGUI",
+    "payerGold": 5000,
+    "partyGold": 8140,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "STONE",
+    "donation": 400,
+    "payer": "AGUI",
+    "payerGold": 5000,
+    "partyGold": 8140,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "DEAD",
+    "donation": 500,
+    "payer": "AGUI",
+    "payerGold": 5000,
+    "partyGold": 8140,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "ASHY",
+    "donation": 2000,
+    "payer": "AGUI",
+    "payerGold": 5000,
+    "partyGold": 8140,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "LOSTY",
+    "donation": 0,
+    "payer": "AGUI",
+    "payerGold": 5000,
+    "partyGold": 8140,
+    "mode": "",
+    "shares": null,
+    "refusal": "LOSTY IS LOST"
+   },
+   {
+    "patient": "BELOW",
+    "donation": 250,
+    "payer": "AGUI",
+    "payerGold": 5000,
+    "partyGold": 8140,
+    "mode": "",
+    "shares": null,
+    "refusal": "BELOW is OUT in the maze, not at the castle; only a rescue can bring them back."
+   }
+  ],
   "roster": [
    {
     "index": 0,
@@ -1307,10 +2777,10 @@
     "class": "FIGHTER",
     "short": "N-FIG",
     "level": 2,
-    "hp": 14,
+    "hp": 0,
     "maxHp": 14,
     "ac": 10,
-    "status": "OK",
+    "status": "DEAD",
     "gold": 100,
     "age": 0,
     "stats": [
@@ -2119,9 +3589,9 @@
     "class": "N-FIG",
     "level": 2,
     "ac": 10,
-    "hp": 14,
+    "hp": 0,
     "maxHp": 14,
-    "status": "OK",
+    "status": "DEAD",
     "poisoned": false,
     "front": true
    },
@@ -2192,6 +3662,18 @@
     "message": "",
     "patients": [
      {
+      "index": 1,
+      "name": "BGUI",
+      "class": "FIGHTER",
+      "level": 2,
+      "status": "DEAD",
+      "inParty": true,
+      "kind": "raise",
+      "donation": 500,
+      "refusal": "",
+      "funding": "payer"
+     },
+     {
       "index": 3,
       "name": "DGUI",
       "class": "PRIEST",
@@ -2287,7 +3769,7 @@
       "slot": 1,
       "name": "BGUI",
       "gold": 100,
-      "refusal": ""
+      "refusal": "BGUI IS NOT OK and cannot tithe."
      },
      {
       "slot": 2,
@@ -2318,6 +3800,88 @@
    },
    "last": null
   },
+  "quotes": [
+   {
+    "patient": "BGUI",
+    "donation": 500,
+    "payer": "AGUI",
+    "payerGold": 5000,
+    "partyGold": 8140,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "DGUI",
+    "donation": 500,
+    "payer": "AGUI",
+    "payerGold": 5000,
+    "partyGold": 8140,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "PARA",
+    "donation": 300,
+    "payer": "AGUI",
+    "payerGold": 5000,
+    "partyGold": 8140,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "STONE",
+    "donation": 400,
+    "payer": "AGUI",
+    "payerGold": 5000,
+    "partyGold": 8140,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "DEAD",
+    "donation": 500,
+    "payer": "AGUI",
+    "payerGold": 5000,
+    "partyGold": 8140,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "ASHY",
+    "donation": 2000,
+    "payer": "AGUI",
+    "payerGold": 5000,
+    "partyGold": 8140,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "LOSTY",
+    "donation": 0,
+    "payer": "AGUI",
+    "payerGold": 5000,
+    "partyGold": 8140,
+    "mode": "",
+    "shares": null,
+    "refusal": "LOSTY IS LOST"
+   },
+   {
+    "patient": "BELOW",
+    "donation": 250,
+    "payer": "AGUI",
+    "payerGold": 5000,
+    "partyGold": 8140,
+    "mode": "",
+    "shares": null,
+    "refusal": "BELOW is OUT in the maze, not at the castle; only a rescue can bring them back."
+   }
+  ],
   "roster": [
    {
     "index": 0,
@@ -2399,10 +3963,10 @@
     "class": "FIGHTER",
     "short": "N-FIG",
     "level": 2,
-    "hp": 14,
+    "hp": 0,
     "maxHp": 14,
     "ac": 10,
-    "status": "OK",
+    "status": "DEAD",
     "gold": 100,
     "age": 0,
     "stats": [
@@ -3211,9 +4775,9 @@
     "class": "N-FIG",
     "level": 2,
     "ac": 10,
-    "hp": 14,
+    "hp": 0,
     "maxHp": 14,
-    "status": "OK",
+    "status": "DEAD",
     "poisoned": false,
     "front": true
    },
@@ -3284,6 +4848,18 @@
     "message": "",
     "patients": [
      {
+      "index": 1,
+      "name": "BGUI",
+      "class": "FIGHTER",
+      "level": 2,
+      "status": "DEAD",
+      "inParty": true,
+      "kind": "raise",
+      "donation": 500,
+      "refusal": "",
+      "funding": "payer"
+     },
+     {
       "index": 3,
       "name": "DGUI",
       "class": "PRIEST",
@@ -3379,7 +4955,7 @@
       "slot": 1,
       "name": "BGUI",
       "gold": 100,
-      "refusal": ""
+      "refusal": "BGUI IS NOT OK and cannot tithe."
      },
      {
       "slot": 2,
@@ -3410,6 +4986,88 @@
    },
    "last": null
   },
+  "quotes": [
+   {
+    "patient": "BGUI",
+    "donation": 500,
+    "payer": "AGUI",
+    "payerGold": 5000,
+    "partyGold": 8140,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "DGUI",
+    "donation": 500,
+    "payer": "AGUI",
+    "payerGold": 5000,
+    "partyGold": 8140,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "PARA",
+    "donation": 300,
+    "payer": "AGUI",
+    "payerGold": 5000,
+    "partyGold": 8140,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "STONE",
+    "donation": 400,
+    "payer": "AGUI",
+    "payerGold": 5000,
+    "partyGold": 8140,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "DEAD",
+    "donation": 500,
+    "payer": "AGUI",
+    "payerGold": 5000,
+    "partyGold": 8140,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "ASHY",
+    "donation": 2000,
+    "payer": "AGUI",
+    "payerGold": 5000,
+    "partyGold": 8140,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "LOSTY",
+    "donation": 0,
+    "payer": "AGUI",
+    "payerGold": 5000,
+    "partyGold": 8140,
+    "mode": "",
+    "shares": null,
+    "refusal": "LOSTY IS LOST"
+   },
+   {
+    "patient": "BELOW",
+    "donation": 250,
+    "payer": "AGUI",
+    "payerGold": 5000,
+    "partyGold": 8140,
+    "mode": "",
+    "shares": null,
+    "refusal": "BELOW is OUT in the maze, not at the castle; only a rescue can bring them back."
+   }
+  ],
   "roster": [
    {
     "index": 0,
@@ -3491,10 +5149,10 @@
     "class": "FIGHTER",
     "short": "N-FIG",
     "level": 2,
-    "hp": 14,
+    "hp": 0,
     "maxHp": 14,
     "ac": 10,
-    "status": "OK",
+    "status": "DEAD",
     "gold": 100,
     "age": 0,
     "stats": [
@@ -4303,9 +5961,9 @@
     "class": "N-FIG",
     "level": 2,
     "ac": 10,
-    "hp": 14,
+    "hp": 0,
     "maxHp": 14,
-    "status": "OK",
+    "status": "DEAD",
     "poisoned": false,
     "front": true
    },
@@ -4375,6 +6033,18 @@
     "step": "result",
     "message": "",
     "patients": [
+     {
+      "index": 1,
+      "name": "BGUI",
+      "class": "FIGHTER",
+      "level": 2,
+      "status": "DEAD",
+      "inParty": true,
+      "kind": "raise",
+      "donation": 500,
+      "refusal": "",
+      "funding": "payer"
+     },
      {
       "index": 3,
       "name": "DGUI",
@@ -4459,7 +6129,7 @@
       "slot": 1,
       "name": "BGUI",
       "gold": 100,
-      "refusal": ""
+      "refusal": "BGUI IS NOT OK and cannot tithe."
      },
      {
       "slot": 2,
@@ -4516,6 +6186,78 @@
     "durable": true
    }
   },
+  "quotes": [
+   {
+    "patient": "BGUI",
+    "donation": 500,
+    "payer": "AGUI",
+    "payerGold": 4700,
+    "partyGold": 7840,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "DGUI",
+    "donation": 500,
+    "payer": "AGUI",
+    "payerGold": 4700,
+    "partyGold": 7840,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "STONE",
+    "donation": 400,
+    "payer": "AGUI",
+    "payerGold": 4700,
+    "partyGold": 7840,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "DEAD",
+    "donation": 500,
+    "payer": "AGUI",
+    "payerGold": 4700,
+    "partyGold": 7840,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "ASHY",
+    "donation": 2000,
+    "payer": "AGUI",
+    "payerGold": 4700,
+    "partyGold": 7840,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "LOSTY",
+    "donation": 0,
+    "payer": "AGUI",
+    "payerGold": 4700,
+    "partyGold": 7840,
+    "mode": "",
+    "shares": null,
+    "refusal": "LOSTY IS LOST"
+   },
+   {
+    "patient": "BELOW",
+    "donation": 250,
+    "payer": "AGUI",
+    "payerGold": 4700,
+    "partyGold": 7840,
+    "mode": "",
+    "shares": null,
+    "refusal": "BELOW is OUT in the maze, not at the castle; only a rescue can bring them back."
+   }
+  ],
   "roster": [
    {
     "index": 0,
@@ -4597,10 +6339,10 @@
     "class": "FIGHTER",
     "short": "N-FIG",
     "level": 2,
-    "hp": 14,
+    "hp": 0,
     "maxHp": 14,
     "ac": 10,
-    "status": "OK",
+    "status": "DEAD",
     "gold": 100,
     "age": 0,
     "stats": [
@@ -5409,9 +7151,9 @@
     "class": "N-FIG",
     "level": 2,
     "ac": 10,
-    "hp": 14,
+    "hp": 0,
     "maxHp": 14,
-    "status": "OK",
+    "status": "DEAD",
     "poisoned": false,
     "front": true
    },
@@ -5481,6 +7223,18 @@
     "step": "result",
     "message": "",
     "patients": [
+     {
+      "index": 1,
+      "name": "BGUI",
+      "class": "FIGHTER",
+      "level": 2,
+      "status": "DEAD",
+      "inParty": true,
+      "kind": "raise",
+      "donation": 500,
+      "refusal": "",
+      "funding": "payer"
+     },
      {
       "index": 3,
       "name": "DGUI",
@@ -5565,7 +7319,7 @@
       "slot": 1,
       "name": "BGUI",
       "gold": 100,
-      "refusal": ""
+      "refusal": "BGUI IS NOT OK and cannot tithe."
      },
      {
       "slot": 2,
@@ -5622,6 +7376,78 @@
     "durable": true
    }
   },
+  "quotes": [
+   {
+    "patient": "BGUI",
+    "donation": 500,
+    "payer": "AGUI",
+    "payerGold": 4200,
+    "partyGold": 7340,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "DGUI",
+    "donation": 500,
+    "payer": "AGUI",
+    "payerGold": 4200,
+    "partyGold": 7340,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "STONE",
+    "donation": 400,
+    "payer": "AGUI",
+    "payerGold": 4200,
+    "partyGold": 7340,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "DEAD",
+    "donation": 1000,
+    "payer": "AGUI",
+    "payerGold": 4200,
+    "partyGold": 7340,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "ASHY",
+    "donation": 2000,
+    "payer": "AGUI",
+    "payerGold": 4200,
+    "partyGold": 7340,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "LOSTY",
+    "donation": 0,
+    "payer": "AGUI",
+    "payerGold": 4200,
+    "partyGold": 7340,
+    "mode": "",
+    "shares": null,
+    "refusal": "LOSTY IS LOST"
+   },
+   {
+    "patient": "BELOW",
+    "donation": 250,
+    "payer": "AGUI",
+    "payerGold": 4200,
+    "partyGold": 7340,
+    "mode": "",
+    "shares": null,
+    "refusal": "BELOW is OUT in the maze, not at the castle; only a rescue can bring them back."
+   }
+  ],
   "roster": [
    {
     "index": 0,
@@ -5703,10 +7529,10 @@
     "class": "FIGHTER",
     "short": "N-FIG",
     "level": 2,
-    "hp": 14,
+    "hp": 0,
     "maxHp": 14,
     "ac": 10,
-    "status": "OK",
+    "status": "DEAD",
     "gold": 100,
     "age": 0,
     "stats": [
@@ -6515,9 +8341,9 @@
     "class": "N-FIG",
     "level": 2,
     "ac": 10,
-    "hp": 14,
+    "hp": 0,
     "maxHp": 14,
-    "status": "OK",
+    "status": "DEAD",
     "poisoned": false,
     "front": true
    },
@@ -6587,6 +8413,18 @@
     "step": "result",
     "message": "",
     "patients": [
+     {
+      "index": 1,
+      "name": "BGUI",
+      "class": "FIGHTER",
+      "level": 2,
+      "status": "DEAD",
+      "inParty": true,
+      "kind": "raise",
+      "donation": 500,
+      "refusal": "",
+      "funding": "payer"
+     },
      {
       "index": 3,
       "name": "DGUI",
@@ -6659,7 +8497,7 @@
       "slot": 1,
       "name": "BGUI",
       "gold": 100,
-      "refusal": ""
+      "refusal": "BGUI IS NOT OK and cannot tithe."
      },
      {
       "slot": 2,
@@ -6716,6 +8554,68 @@
     "durable": true
    }
   },
+  "quotes": [
+   {
+    "patient": "BGUI",
+    "donation": 500,
+    "payer": "AGUI",
+    "payerGold": 3200,
+    "partyGold": 6340,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "DGUI",
+    "donation": 500,
+    "payer": "AGUI",
+    "payerGold": 3200,
+    "partyGold": 6340,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "STONE",
+    "donation": 400,
+    "payer": "AGUI",
+    "payerGold": 3200,
+    "partyGold": 6340,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "ASHY",
+    "donation": 2000,
+    "payer": "AGUI",
+    "payerGold": 3200,
+    "partyGold": 6340,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "LOSTY",
+    "donation": 0,
+    "payer": "AGUI",
+    "payerGold": 3200,
+    "partyGold": 6340,
+    "mode": "",
+    "shares": null,
+    "refusal": "LOSTY IS LOST"
+   },
+   {
+    "patient": "BELOW",
+    "donation": 250,
+    "payer": "AGUI",
+    "payerGold": 3200,
+    "partyGold": 6340,
+    "mode": "",
+    "shares": null,
+    "refusal": "BELOW is OUT in the maze, not at the castle; only a rescue can bring them back."
+   }
+  ],
   "roster": [
    {
     "index": 0,
@@ -6797,10 +8697,10 @@
     "class": "FIGHTER",
     "short": "N-FIG",
     "level": 2,
-    "hp": 14,
+    "hp": 0,
     "maxHp": 14,
     "ac": 10,
-    "status": "OK",
+    "status": "DEAD",
     "gold": 100,
     "age": 0,
     "stats": [
@@ -7609,9 +9509,9 @@
     "class": "N-FIG",
     "level": 2,
     "ac": 10,
-    "hp": 14,
+    "hp": 0,
     "maxHp": 14,
-    "status": "OK",
+    "status": "DEAD",
     "poisoned": false,
     "front": true
    },
@@ -7681,6 +9581,18 @@
     "step": "result",
     "message": "",
     "patients": [
+     {
+      "index": 1,
+      "name": "BGUI",
+      "class": "FIGHTER",
+      "level": 2,
+      "status": "DEAD",
+      "inParty": true,
+      "kind": "raise",
+      "donation": 500,
+      "refusal": "",
+      "funding": "payer"
+     },
      {
       "index": 3,
       "name": "DGUI",
@@ -7753,7 +9665,7 @@
       "slot": 1,
       "name": "BGUI",
       "gold": 100,
-      "refusal": ""
+      "refusal": "BGUI IS NOT OK and cannot tithe."
      },
      {
       "slot": 2,
@@ -7810,6 +9722,68 @@
     "durable": true
    }
   },
+  "quotes": [
+   {
+    "patient": "BGUI",
+    "donation": 500,
+    "payer": "AGUI",
+    "payerGold": 1200,
+    "partyGold": 4340,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "DGUI",
+    "donation": 500,
+    "payer": "AGUI",
+    "payerGold": 1200,
+    "partyGold": 4340,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "STONE",
+    "donation": 400,
+    "payer": "AGUI",
+    "payerGold": 1200,
+    "partyGold": 4340,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "ASHY",
+    "donation": 0,
+    "payer": "AGUI",
+    "payerGold": 1200,
+    "partyGold": 4340,
+    "mode": "",
+    "shares": null,
+    "refusal": "ASHY IS LOST"
+   },
+   {
+    "patient": "LOSTY",
+    "donation": 0,
+    "payer": "AGUI",
+    "payerGold": 1200,
+    "partyGold": 4340,
+    "mode": "",
+    "shares": null,
+    "refusal": "LOSTY IS LOST"
+   },
+   {
+    "patient": "BELOW",
+    "donation": 250,
+    "payer": "AGUI",
+    "payerGold": 1200,
+    "partyGold": 4340,
+    "mode": "",
+    "shares": null,
+    "refusal": "BELOW is OUT in the maze, not at the castle; only a rescue can bring them back."
+   }
+  ],
   "roster": [
    {
     "index": 0,
@@ -7891,10 +9865,10 @@
     "class": "FIGHTER",
     "short": "N-FIG",
     "level": 2,
-    "hp": 14,
+    "hp": 0,
     "maxHp": 14,
     "ac": 10,
-    "status": "OK",
+    "status": "DEAD",
     "gold": 100,
     "age": 0,
     "stats": [
@@ -8703,9 +10677,9 @@
     "class": "N-FIG",
     "level": 2,
     "ac": 10,
-    "hp": 14,
+    "hp": 0,
     "maxHp": 14,
-    "status": "OK",
+    "status": "DEAD",
     "poisoned": false,
     "front": true
    },
@@ -8768,13 +10742,25 @@
   "warning": ""
  },
  {
-  "case": "pooled",
+  "case": "party: raise failed",
   "location": "temple",
   "temple": {
    "view": {
     "step": "result",
     "message": "",
     "patients": [
+     {
+      "index": 1,
+      "name": "BGUI",
+      "class": "FIGHTER",
+      "level": 2,
+      "status": "ASHED",
+      "inParty": true,
+      "kind": "ashes",
+      "donation": 1000,
+      "refusal": "",
+      "funding": "payer"
+     },
      {
       "index": 3,
       "name": "DGUI",
@@ -8846,13 +10832,13 @@
      {
       "slot": 1,
       "name": "BGUI",
-      "gold": 4340,
-      "refusal": ""
+      "gold": 0,
+      "refusal": "BGUI IS NOT OK and cannot tithe."
      },
      {
       "slot": 2,
       "name": "CGUI",
-      "gold": 0,
+      "gold": 3840,
       "refusal": ""
      },
      {
@@ -8874,42 +10860,141 @@
       "refusal": ""
      }
     ],
-    "partyGold": 4340
+    "partyGold": 3840
    },
    "last": {
-    "treat": null,
-    "gold": {
-     "names": [
-      "AGUI",
-      "BGUI",
-      "CGUI",
-      "DGUI",
-      "EGUI",
-      "FGUI"
+    "treat": {
+     "patient": "BGUI",
+     "index": 1,
+     "kind": "raise",
+     "statusBefore": "DEAD",
+     "statusAfter": "ASHED",
+     "healed": false,
+     "donation": 500,
+     "payer": "CGUI",
+     "payerBefore": 40,
+     "payerAfter": 3840,
+     "shares": [
+      {
+       "slot": 0,
+       "name": "AGUI",
+       "gold": 1200
+      },
+      {
+       "slot": 1,
+       "name": "BGUI",
+       "gold": 100
+      },
+      {
+       "slot": 3,
+       "name": "DGUI",
+       "gold": 3000
+      }
      ],
-     "before": [
-      1200,
-      100,
-      40,
-      3000,
-      0,
-      0
-     ],
-     "after": [
-      0,
-      4340,
-      0,
-      0,
-      0,
-      0
-     ],
-     "total": 4340,
-     "to": 1
+     "party": {
+      "names": [
+       "AGUI",
+       "BGUI",
+       "CGUI",
+       "DGUI",
+       "EGUI",
+       "FGUI"
+      ],
+      "before": [
+       1200,
+       100,
+       40,
+       3000,
+       0,
+       0
+      ],
+      "after": [
+       0,
+       0,
+       4340,
+       0,
+       0,
+       0
+      ],
+      "total": 4340,
+      "to": 2
+     },
+     "hpBefore": 0,
+     "hpAfter": 0,
+     "maxHp": 14,
+     "ageBefore": 0,
+     "ageAfter": 0,
+     "messages": [
+      "BGUI NEEDS KADORTO NOW"
+     ]
     },
+    "gold": null,
     "saved": true,
     "durable": true
    }
   },
+  "quotes": [
+   {
+    "patient": "BGUI",
+    "donation": 1000,
+    "payer": "CGUI",
+    "payerGold": 3840,
+    "partyGold": 3840,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "DGUI",
+    "donation": 500,
+    "payer": "CGUI",
+    "payerGold": 3840,
+    "partyGold": 3840,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "STONE",
+    "donation": 400,
+    "payer": "CGUI",
+    "payerGold": 3840,
+    "partyGold": 3840,
+    "mode": "payer",
+    "shares": null,
+    "refusal": ""
+   },
+   {
+    "patient": "ASHY",
+    "donation": 0,
+    "payer": "CGUI",
+    "payerGold": 3840,
+    "partyGold": 3840,
+    "mode": "",
+    "shares": null,
+    "refusal": "ASHY IS LOST"
+   },
+   {
+    "patient": "LOSTY",
+    "donation": 0,
+    "payer": "CGUI",
+    "payerGold": 3840,
+    "partyGold": 3840,
+    "mode": "",
+    "shares": null,
+    "refusal": "LOSTY IS LOST"
+   },
+   {
+    "patient": "BELOW",
+    "donation": 250,
+    "payer": "CGUI",
+    "payerGold": 3840,
+    "partyGold": 3840,
+    "mode": "",
+    "shares": null,
+    "refusal": "BELOW is OUT in the maze, not at the castle; only a rescue can bring them back."
+   }
+  ],
   "roster": [
    {
     "index": 0,
@@ -8991,11 +11076,11 @@
     "class": "FIGHTER",
     "short": "N-FIG",
     "level": 2,
-    "hp": 14,
+    "hp": 0,
     "maxHp": 14,
     "ac": 10,
-    "status": "OK",
-    "gold": 4340,
+    "status": "ASHED",
+    "gold": 0,
     "age": 0,
     "stats": [
      16,
@@ -9067,7 +11152,7 @@
     "maxHp": 14,
     "ac": 10,
     "status": "OK",
-    "gold": 0,
+    "gold": 3840,
     "age": 0,
     "stats": [
      16,
@@ -9803,9 +11888,9 @@
     "class": "N-FIG",
     "level": 2,
     "ac": 10,
-    "hp": 14,
+    "hp": 0,
     "maxHp": 14,
-    "status": "OK",
+    "status": "ASHED",
     "poisoned": false,
     "front": true
    },
@@ -9863,18 +11948,30 @@
    }
   ],
   "error": "",
-  "notice": "The party's gold was pooled to BGUI: 4340 GP. Saved.",
+  "notice": "The priests could not raise BGUI, who is now ashes. CGUI tithed 500 GP with the party's gold (4340 GP pooled). Saved.",
   "unsaved": "",
   "warning": ""
  },
  {
-  "case": "cured, NOT saved",
+  "case": "pooled",
   "location": "temple",
   "temple": {
    "view": {
     "step": "result",
     "message": "",
     "patients": [
+     {
+      "index": 1,
+      "name": "BGUI",
+      "class": "FIGHTER",
+      "level": 2,
+      "status": "ASHED",
+      "inParty": true,
+      "kind": "ashes",
+      "donation": 1000,
+      "refusal": "",
+      "funding": "payer"
+     },
      {
       "index": 3,
       "name": "DGUI",
@@ -9884,6 +11981,18 @@
       "inParty": true,
       "kind": "raise",
       "donation": 500,
+      "refusal": "",
+      "funding": "payer"
+     },
+     {
+      "index": 7,
+      "name": "STONE",
+      "class": "FIGHTER",
+      "level": 2,
+      "status": "STONED",
+      "inParty": false,
+      "kind": "cure",
+      "donation": 400,
       "refusal": "",
       "funding": "payer"
      },
@@ -9934,13 +12043,13 @@
      {
       "slot": 1,
       "name": "BGUI",
-      "gold": 3940,
-      "refusal": ""
+      "gold": 0,
+      "refusal": "BGUI IS NOT OK and cannot tithe."
      },
      {
       "slot": 2,
       "name": "CGUI",
-      "gold": 0,
+      "gold": 3840,
       "refusal": ""
      },
      {
@@ -9962,36 +12071,122 @@
       "refusal": ""
      }
     ],
-    "partyGold": 3940
+    "partyGold": 3840
    },
    "last": {
-    "treat": {
-     "patient": "STONE",
-     "index": 7,
-     "kind": "cure",
-     "statusBefore": "STONED",
-     "statusAfter": "OK",
-     "healed": true,
-     "donation": 400,
-     "payer": "BGUI",
-     "payerBefore": 4340,
-     "payerAfter": 3940,
-     "shares": null,
-     "party": null,
-     "hpBefore": 12,
-     "hpAfter": 12,
-     "maxHp": 30,
-     "ageBefore": 1560,
-     "ageAfter": 1610,
-     "messages": [
-      "STONE IS WELL"
-     ]
+    "treat": null,
+    "gold": {
+     "names": [
+      "AGUI",
+      "BGUI",
+      "CGUI",
+      "DGUI",
+      "EGUI",
+      "FGUI"
+     ],
+     "before": [
+      0,
+      0,
+      3840,
+      0,
+      0,
+      0
+     ],
+     "after": [
+      0,
+      0,
+      3840,
+      0,
+      0,
+      0
+     ],
+     "total": 3840,
+     "to": 2
     },
-    "gold": null,
-    "saved": false,
-    "durable": false
+    "saved": true,
+    "durable": true
    }
   },
+  "quotes": [
+   {
+    "patient": "BGUI",
+    "donation": 1000,
+    "payer": "AGUI",
+    "payerGold": 0,
+    "partyGold": 3840,
+    "mode": "party",
+    "shares": [
+     {
+      "slot": 2,
+      "name": "CGUI",
+      "gold": 3840
+     }
+    ],
+    "refusal": ""
+   },
+   {
+    "patient": "DGUI",
+    "donation": 500,
+    "payer": "AGUI",
+    "payerGold": 0,
+    "partyGold": 3840,
+    "mode": "party",
+    "shares": [
+     {
+      "slot": 2,
+      "name": "CGUI",
+      "gold": 3840
+     }
+    ],
+    "refusal": ""
+   },
+   {
+    "patient": "STONE",
+    "donation": 400,
+    "payer": "AGUI",
+    "payerGold": 0,
+    "partyGold": 3840,
+    "mode": "party",
+    "shares": [
+     {
+      "slot": 2,
+      "name": "CGUI",
+      "gold": 3840
+     }
+    ],
+    "refusal": ""
+   },
+   {
+    "patient": "ASHY",
+    "donation": 0,
+    "payer": "AGUI",
+    "payerGold": 0,
+    "partyGold": 3840,
+    "mode": "",
+    "shares": null,
+    "refusal": "ASHY IS LOST"
+   },
+   {
+    "patient": "LOSTY",
+    "donation": 0,
+    "payer": "AGUI",
+    "payerGold": 0,
+    "partyGold": 3840,
+    "mode": "",
+    "shares": null,
+    "refusal": "LOSTY IS LOST"
+   },
+   {
+    "patient": "BELOW",
+    "donation": 250,
+    "payer": "AGUI",
+    "payerGold": 0,
+    "partyGold": 3840,
+    "mode": "",
+    "shares": null,
+    "refusal": "BELOW is OUT in the maze, not at the castle; only a rescue can bring them back."
+   }
+  ],
   "roster": [
    {
     "index": 0,
@@ -10073,11 +12268,11 @@
     "class": "FIGHTER",
     "short": "N-FIG",
     "level": 2,
-    "hp": 14,
+    "hp": 0,
     "maxHp": 14,
     "ac": 10,
-    "status": "OK",
-    "gold": 3940,
+    "status": "ASHED",
+    "gold": 0,
     "age": 0,
     "stats": [
      16,
@@ -10149,7 +12344,1165 @@
     "maxHp": 14,
     "ac": 10,
     "status": "OK",
+    "gold": 3840,
+    "age": 0,
+    "stats": [
+     16,
+     0,
+     0,
+     0,
+     12,
+     0
+    ],
+    "xp": 0,
+    "nextXp": 1551,
+    "hasPassword": false,
+    "mageSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxMage": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "priestSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxPriest": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "spells": null,
+    "items": null,
+    "poison": 0,
+    "inMaze": true,
+    "mazeLevel": 0,
+    "legacy": false,
+    "equipNote": "",
+    "inParty": true,
+    "partySlot": 3,
+    "joinRefusal": "** PARTY IS FULL **"
+   },
+   {
+    "index": 3,
+    "name": "DGUI",
+    "race": "HUMAN",
+    "alignment": "NEUTRAL",
+    "class": "PRIEST",
+    "short": "N-PRI",
+    "level": 2,
+    "hp": 0,
+    "maxHp": 14,
+    "ac": 10,
+    "status": "DEAD",
     "gold": 0,
+    "age": 0,
+    "stats": [
+     16,
+     0,
+     0,
+     0,
+     12,
+     0
+    ],
+    "xp": 0,
+    "nextXp": 1810,
+    "hasPassword": false,
+    "mageSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxMage": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "priestSpells": [
+     2,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxPriest": [
+     2,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "spells": [
+     "DIOS",
+     "CALFO"
+    ],
+    "items": null,
+    "poison": 0,
+    "inMaze": true,
+    "mazeLevel": 0,
+    "legacy": false,
+    "equipNote": "",
+    "inParty": true,
+    "partySlot": 4,
+    "joinRefusal": "** PARTY IS FULL **"
+   },
+   {
+    "index": 4,
+    "name": "EGUI",
+    "race": "HUMAN",
+    "alignment": "NEUTRAL",
+    "class": "MAGE",
+    "short": "N-MAG",
+    "level": 2,
+    "hp": 14,
+    "maxHp": 14,
+    "ac": 10,
+    "status": "OK",
+    "gold": 0,
+    "age": 0,
+    "stats": [
+     16,
+     0,
+     0,
+     0,
+     12,
+     0
+    ],
+    "xp": 0,
+    "nextXp": 1896,
+    "hasPassword": false,
+    "mageSpells": [
+     2,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxMage": [
+     2,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "priestSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxPriest": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "spells": [
+     "HALITO",
+     "KATINO"
+    ],
+    "items": null,
+    "poison": 0,
+    "inMaze": true,
+    "mazeLevel": 0,
+    "legacy": false,
+    "equipNote": "",
+    "inParty": true,
+    "partySlot": 5,
+    "joinRefusal": "** PARTY IS FULL **"
+   },
+   {
+    "index": 5,
+    "name": "FGUI",
+    "race": "HUMAN",
+    "alignment": "NEUTRAL",
+    "class": "FIGHTER",
+    "short": "N-FIG",
+    "level": 2,
+    "hp": 14,
+    "maxHp": 14,
+    "ac": 10,
+    "status": "OK",
+    "gold": 0,
+    "age": 0,
+    "stats": [
+     16,
+     0,
+     0,
+     0,
+     12,
+     0
+    ],
+    "xp": 0,
+    "nextXp": 1724,
+    "hasPassword": false,
+    "mageSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxMage": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "priestSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxPriest": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "spells": null,
+    "items": null,
+    "poison": 0,
+    "inMaze": true,
+    "mazeLevel": 0,
+    "legacy": false,
+    "equipNote": "",
+    "inParty": true,
+    "partySlot": 6,
+    "joinRefusal": "** PARTY IS FULL **"
+   },
+   {
+    "index": 6,
+    "name": "PARA",
+    "race": "HUMAN",
+    "alignment": "NEUTRAL",
+    "class": "FIGHTER",
+    "short": "N-FIG",
+    "level": 3,
+    "hp": 12,
+    "maxHp": 30,
+    "ac": 10,
+    "status": "OK",
+    "gold": 0,
+    "age": 30,
+    "stats": [
+     0,
+     0,
+     0,
+     10,
+     0,
+     0
+    ],
+    "xp": 0,
+    "nextXp": 2972,
+    "hasPassword": false,
+    "mageSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxMage": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "priestSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxPriest": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "spells": null,
+    "items": null,
+    "poison": 0,
+    "inMaze": false,
+    "mazeLevel": 0,
+    "legacy": false,
+    "equipNote": "",
+    "inParty": false,
+    "partySlot": 0,
+    "joinRefusal": "** PARTY IS FULL **"
+   },
+   {
+    "index": 7,
+    "name": "STONE",
+    "race": "HUMAN",
+    "alignment": "NEUTRAL",
+    "class": "FIGHTER",
+    "short": "N-FIG",
+    "level": 2,
+    "hp": 12,
+    "maxHp": 30,
+    "ac": 10,
+    "status": "STONED",
+    "gold": 0,
+    "age": 30,
+    "stats": [
+     0,
+     0,
+     0,
+     10,
+     0,
+     0
+    ],
+    "xp": 0,
+    "nextXp": 1724,
+    "hasPassword": false,
+    "mageSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxMage": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "priestSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxPriest": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "spells": null,
+    "items": null,
+    "poison": 0,
+    "inMaze": false,
+    "mazeLevel": 0,
+    "legacy": false,
+    "equipNote": "",
+    "inParty": false,
+    "partySlot": 0,
+    "joinRefusal": "** PARTY IS FULL **"
+   },
+   {
+    "index": 8,
+    "name": "DEAD",
+    "race": "HUMAN",
+    "alignment": "NEUTRAL",
+    "class": "FIGHTER",
+    "short": "N-FIG",
+    "level": 2,
+    "hp": 30,
+    "maxHp": 30,
+    "ac": 10,
+    "status": "OK",
+    "gold": 0,
+    "age": 30,
+    "stats": [
+     0,
+     0,
+     0,
+     10,
+     0,
+     0
+    ],
+    "xp": 0,
+    "nextXp": 1724,
+    "hasPassword": false,
+    "mageSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxMage": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "priestSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxPriest": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "spells": null,
+    "items": null,
+    "poison": 0,
+    "inMaze": false,
+    "mazeLevel": 0,
+    "legacy": false,
+    "equipNote": "",
+    "inParty": false,
+    "partySlot": 0,
+    "joinRefusal": "** PARTY IS FULL **"
+   },
+   {
+    "index": 9,
+    "name": "ASHY",
+    "race": "HUMAN",
+    "alignment": "NEUTRAL",
+    "class": "FIGHTER",
+    "short": "N-FIG",
+    "level": 4,
+    "hp": 0,
+    "maxHp": 30,
+    "ac": 10,
+    "status": "LOST",
+    "gold": 0,
+    "age": 30,
+    "stats": [
+     0,
+     0,
+     0,
+     10,
+     0,
+     0
+    ],
+    "xp": 0,
+    "nextXp": 5124,
+    "hasPassword": false,
+    "mageSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxMage": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "priestSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxPriest": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "spells": null,
+    "items": null,
+    "poison": 0,
+    "inMaze": false,
+    "mazeLevel": 0,
+    "legacy": false,
+    "equipNote": "",
+    "inParty": false,
+    "partySlot": 0,
+    "joinRefusal": "** PARTY IS FULL **"
+   },
+   {
+    "index": 10,
+    "name": "LOSTY",
+    "race": "HUMAN",
+    "alignment": "NEUTRAL",
+    "class": "FIGHTER",
+    "short": "N-FIG",
+    "level": 1,
+    "hp": 0,
+    "maxHp": 30,
+    "ac": 10,
+    "status": "LOST",
+    "gold": 0,
+    "age": 30,
+    "stats": [
+     0,
+     0,
+     0,
+     10,
+     0,
+     0
+    ],
+    "xp": 0,
+    "nextXp": 1000,
+    "hasPassword": false,
+    "mageSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxMage": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "priestSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxPriest": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "spells": null,
+    "items": null,
+    "poison": 0,
+    "inMaze": false,
+    "mazeLevel": 0,
+    "legacy": false,
+    "equipNote": "",
+    "inParty": false,
+    "partySlot": 0,
+    "joinRefusal": "** PARTY IS FULL **"
+   },
+   {
+    "index": 11,
+    "name": "BELOW",
+    "race": "HUMAN",
+    "alignment": "NEUTRAL",
+    "class": "FIGHTER",
+    "short": "N-FIG",
+    "level": 1,
+    "hp": 0,
+    "maxHp": 30,
+    "ac": 10,
+    "status": "DEAD",
+    "gold": 0,
+    "age": 30,
+    "stats": [
+     0,
+     0,
+     0,
+     10,
+     0,
+     0
+    ],
+    "xp": 0,
+    "nextXp": 1000,
+    "hasPassword": false,
+    "mageSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxMage": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "priestSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxPriest": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "spells": null,
+    "items": null,
+    "poison": 0,
+    "inMaze": true,
+    "mazeLevel": 4,
+    "legacy": false,
+    "equipNote": "",
+    "inParty": false,
+    "partySlot": 0,
+    "joinRefusal": "** PARTY IS FULL **"
+   }
+  ],
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "AGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "BGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 0,
+    "maxHp": 14,
+    "status": "ASHED",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": 2,
+    "name": "CGUI",
+    "class": "N-THI",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": 3,
+    "name": "DGUI",
+    "class": "N-PRI",
+    "level": 2,
+    "ac": 10,
+    "hp": 0,
+    "maxHp": 14,
+    "status": "DEAD",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": 4,
+    "name": "EGUI",
+    "class": "N-MAG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": 5,
+    "name": "FGUI",
+    "class": "N-FIG",
+    "level": 2,
+    "ac": 10,
+    "hp": 14,
+    "maxHp": 14,
+    "status": "OK",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "error": "",
+  "notice": "The party's gold was pooled to CGUI: 3840 GP. Saved.",
+  "unsaved": "",
+  "warning": ""
+ },
+ {
+  "case": "cured, NOT saved",
+  "location": "temple",
+  "temple": {
+   "view": {
+    "step": "result",
+    "message": "",
+    "patients": [
+     {
+      "index": 1,
+      "name": "BGUI",
+      "class": "FIGHTER",
+      "level": 2,
+      "status": "ASHED",
+      "inParty": true,
+      "kind": "ashes",
+      "donation": 1000,
+      "refusal": "",
+      "funding": "payer"
+     },
+     {
+      "index": 3,
+      "name": "DGUI",
+      "class": "PRIEST",
+      "level": 2,
+      "status": "DEAD",
+      "inParty": true,
+      "kind": "raise",
+      "donation": 500,
+      "refusal": "",
+      "funding": "payer"
+     },
+     {
+      "index": 9,
+      "name": "ASHY",
+      "class": "FIGHTER",
+      "level": 4,
+      "status": "LOST",
+      "inParty": false,
+      "kind": "",
+      "donation": 0,
+      "refusal": "ASHY IS LOST",
+      "funding": ""
+     },
+     {
+      "index": 10,
+      "name": "LOSTY",
+      "class": "FIGHTER",
+      "level": 1,
+      "status": "LOST",
+      "inParty": false,
+      "kind": "",
+      "donation": 0,
+      "refusal": "LOSTY IS LOST",
+      "funding": ""
+     },
+     {
+      "index": 11,
+      "name": "BELOW",
+      "class": "FIGHTER",
+      "level": 1,
+      "status": "DEAD",
+      "inParty": false,
+      "kind": "raise",
+      "donation": 250,
+      "refusal": "BELOW is OUT in the maze, not at the castle; only a rescue can bring them back.",
+      "funding": "payer"
+     }
+    ],
+    "payers": [
+     {
+      "slot": 0,
+      "name": "AGUI",
+      "gold": 0,
+      "refusal": ""
+     },
+     {
+      "slot": 1,
+      "name": "BGUI",
+      "gold": 0,
+      "refusal": "BGUI IS NOT OK and cannot tithe."
+     },
+     {
+      "slot": 2,
+      "name": "CGUI",
+      "gold": 3440,
+      "refusal": ""
+     },
+     {
+      "slot": 3,
+      "name": "DGUI",
+      "gold": 0,
+      "refusal": "DGUI IS NOT OK and cannot tithe."
+     },
+     {
+      "slot": 4,
+      "name": "EGUI",
+      "gold": 0,
+      "refusal": ""
+     },
+     {
+      "slot": 5,
+      "name": "FGUI",
+      "gold": 0,
+      "refusal": ""
+     }
+    ],
+    "partyGold": 3440
+   },
+   "last": {
+    "treat": {
+     "patient": "STONE",
+     "index": 7,
+     "kind": "cure",
+     "statusBefore": "STONED",
+     "statusAfter": "OK",
+     "healed": true,
+     "donation": 400,
+     "payer": "CGUI",
+     "payerBefore": 3840,
+     "payerAfter": 3440,
+     "shares": null,
+     "party": null,
+     "hpBefore": 12,
+     "hpAfter": 12,
+     "maxHp": 30,
+     "ageBefore": 1560,
+     "ageAfter": 1610,
+     "messages": [
+      "STONE IS WELL"
+     ]
+    },
+    "gold": null,
+    "saved": false,
+    "durable": false
+   }
+  },
+  "quotes": [
+   {
+    "patient": "BGUI",
+    "donation": 1000,
+    "payer": "AGUI",
+    "payerGold": 0,
+    "partyGold": 3440,
+    "mode": "party",
+    "shares": [
+     {
+      "slot": 2,
+      "name": "CGUI",
+      "gold": 3440
+     }
+    ],
+    "refusal": ""
+   },
+   {
+    "patient": "DGUI",
+    "donation": 500,
+    "payer": "AGUI",
+    "payerGold": 0,
+    "partyGold": 3440,
+    "mode": "party",
+    "shares": [
+     {
+      "slot": 2,
+      "name": "CGUI",
+      "gold": 3440
+     }
+    ],
+    "refusal": ""
+   },
+   {
+    "patient": "ASHY",
+    "donation": 0,
+    "payer": "AGUI",
+    "payerGold": 0,
+    "partyGold": 3440,
+    "mode": "",
+    "shares": null,
+    "refusal": "ASHY IS LOST"
+   },
+   {
+    "patient": "LOSTY",
+    "donation": 0,
+    "payer": "AGUI",
+    "payerGold": 0,
+    "partyGold": 3440,
+    "mode": "",
+    "shares": null,
+    "refusal": "LOSTY IS LOST"
+   },
+   {
+    "patient": "BELOW",
+    "donation": 250,
+    "payer": "AGUI",
+    "payerGold": 0,
+    "partyGold": 3440,
+    "mode": "",
+    "shares": null,
+    "refusal": "BELOW is OUT in the maze, not at the castle; only a rescue can bring them back."
+   }
+  ],
+  "roster": [
+   {
+    "index": 0,
+    "name": "AGUI",
+    "race": "HUMAN",
+    "alignment": "NEUTRAL",
+    "class": "FIGHTER",
+    "short": "N-FIG",
+    "level": 2,
+    "hp": 14,
+    "maxHp": 14,
+    "ac": 10,
+    "status": "OK",
+    "gold": 0,
+    "age": 0,
+    "stats": [
+     16,
+     0,
+     0,
+     0,
+     12,
+     0
+    ],
+    "xp": 0,
+    "nextXp": 1724,
+    "hasPassword": false,
+    "mageSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxMage": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "priestSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxPriest": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "spells": null,
+    "items": null,
+    "poison": 0,
+    "inMaze": true,
+    "mazeLevel": 0,
+    "legacy": false,
+    "equipNote": "",
+    "inParty": true,
+    "partySlot": 1,
+    "joinRefusal": "** PARTY IS FULL **"
+   },
+   {
+    "index": 1,
+    "name": "BGUI",
+    "race": "HUMAN",
+    "alignment": "NEUTRAL",
+    "class": "FIGHTER",
+    "short": "N-FIG",
+    "level": 2,
+    "hp": 0,
+    "maxHp": 14,
+    "ac": 10,
+    "status": "ASHED",
+    "gold": 0,
+    "age": 0,
+    "stats": [
+     16,
+     0,
+     0,
+     0,
+     12,
+     0
+    ],
+    "xp": 0,
+    "nextXp": 1724,
+    "hasPassword": false,
+    "mageSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxMage": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "priestSpells": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "maxPriest": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "spells": null,
+    "items": null,
+    "poison": 0,
+    "inMaze": true,
+    "mazeLevel": 0,
+    "legacy": false,
+    "equipNote": "",
+    "inParty": true,
+    "partySlot": 2,
+    "joinRefusal": "** PARTY IS FULL **"
+   },
+   {
+    "index": 2,
+    "name": "CGUI",
+    "race": "HUMAN",
+    "alignment": "NEUTRAL",
+    "class": "THIEF",
+    "short": "N-THI",
+    "level": 2,
+    "hp": 14,
+    "maxHp": 14,
+    "ac": 10,
+    "status": "OK",
+    "gold": 3440,
     "age": 0,
     "stats": [
      16,
@@ -10885,9 +14238,9 @@
     "class": "N-FIG",
     "level": 2,
     "ac": 10,
-    "hp": 14,
+    "hp": 0,
     "maxHp": 14,
-    "status": "OK",
+    "status": "ASHED",
     "poisoned": false,
     "front": true
    },
@@ -10945,7 +14298,7 @@
    }
   ],
   "error": "Could not save: write \u003csaves\u003e/roster1.json: open \u003csaves\u003e/.roster1.json.tmp-\u003crandom\u003e: permission denied",
-  "notice": "STONE is well again. BGUI tithed 400 GP. It is NOT saved: it exists only in this window until a save succeeds.",
+  "notice": "STONE is well again. CGUI tithed 400 GP. It is NOT saved: it exists only in this window until a save succeeds.",
   "unsaved": "write \u003csaves\u003e/roster1.json: open \u003csaves\u003e/.roster1.json.tmp-\u003crandom\u003e: permission denied",
   "warning": ""
  },
@@ -10957,6 +14310,18 @@
     "step": "result",
     "message": "",
     "patients": [
+     {
+      "index": 1,
+      "name": "BGUI",
+      "class": "FIGHTER",
+      "level": 2,
+      "status": "ASHED",
+      "inParty": true,
+      "kind": "ashes",
+      "donation": 1000,
+      "refusal": "",
+      "funding": "payer"
+     },
      {
       "index": 3,
       "name": "DGUI",
@@ -11016,13 +14381,13 @@
      {
       "slot": 1,
       "name": "BGUI",
-      "gold": 3940,
-      "refusal": ""
+      "gold": 0,
+      "refusal": "BGUI IS NOT OK and cannot tithe."
      },
      {
       "slot": 2,
       "name": "CGUI",
-      "gold": 0,
+      "gold": 3440,
       "refusal": ""
      },
      {
@@ -11044,7 +14409,7 @@
       "refusal": ""
      }
     ],
-    "partyGold": 3940
+    "partyGold": 3440
    },
    "last": {
     "treat": {
@@ -11055,9 +14420,9 @@
      "statusAfter": "OK",
      "healed": true,
      "donation": 400,
-     "payer": "BGUI",
-     "payerBefore": 4340,
-     "payerAfter": 3940,
+     "payer": "CGUI",
+     "payerBefore": 3840,
+     "payerAfter": 3440,
      "shares": null,
      "party": null,
      "hpBefore": 12,
@@ -11074,6 +14439,70 @@
     "durable": true
    }
   },
+  "quotes": [
+   {
+    "patient": "BGUI",
+    "donation": 1000,
+    "payer": "AGUI",
+    "payerGold": 0,
+    "partyGold": 3440,
+    "mode": "party",
+    "shares": [
+     {
+      "slot": 2,
+      "name": "CGUI",
+      "gold": 3440
+     }
+    ],
+    "refusal": ""
+   },
+   {
+    "patient": "DGUI",
+    "donation": 500,
+    "payer": "AGUI",
+    "payerGold": 0,
+    "partyGold": 3440,
+    "mode": "party",
+    "shares": [
+     {
+      "slot": 2,
+      "name": "CGUI",
+      "gold": 3440
+     }
+    ],
+    "refusal": ""
+   },
+   {
+    "patient": "ASHY",
+    "donation": 0,
+    "payer": "AGUI",
+    "payerGold": 0,
+    "partyGold": 3440,
+    "mode": "",
+    "shares": null,
+    "refusal": "ASHY IS LOST"
+   },
+   {
+    "patient": "LOSTY",
+    "donation": 0,
+    "payer": "AGUI",
+    "payerGold": 0,
+    "partyGold": 3440,
+    "mode": "",
+    "shares": null,
+    "refusal": "LOSTY IS LOST"
+   },
+   {
+    "patient": "BELOW",
+    "donation": 250,
+    "payer": "AGUI",
+    "payerGold": 0,
+    "partyGold": 3440,
+    "mode": "",
+    "shares": null,
+    "refusal": "BELOW is OUT in the maze, not at the castle; only a rescue can bring them back."
+   }
+  ],
   "roster": [
    {
     "index": 0,
@@ -11155,11 +14584,11 @@
     "class": "FIGHTER",
     "short": "N-FIG",
     "level": 2,
-    "hp": 14,
+    "hp": 0,
     "maxHp": 14,
     "ac": 10,
-    "status": "OK",
-    "gold": 3940,
+    "status": "ASHED",
+    "gold": 0,
     "age": 0,
     "stats": [
      16,
@@ -11231,7 +14660,7 @@
     "maxHp": 14,
     "ac": 10,
     "status": "OK",
-    "gold": 0,
+    "gold": 3440,
     "age": 0,
     "stats": [
      16,
@@ -11967,9 +15396,9 @@
     "class": "N-FIG",
     "level": 2,
     "ac": 10,
-    "hp": 14,
+    "hp": 0,
     "maxHp": 14,
-    "status": "OK",
+    "status": "ASHED",
     "poisoned": false,
     "front": true
    },
@@ -12040,6 +15469,18 @@
     "message": "",
     "patients": [
      {
+      "index": 1,
+      "name": "BGUI",
+      "class": "FIGHTER",
+      "level": 2,
+      "status": "ASHED",
+      "inParty": true,
+      "kind": "ashes",
+      "donation": 1000,
+      "refusal": "",
+      "funding": "payer"
+     },
+     {
       "index": 9,
       "name": "ASHY",
       "class": "FIGHTER",
@@ -12086,13 +15527,13 @@
      {
       "slot": 1,
       "name": "BGUI",
-      "gold": 3440,
-      "refusal": ""
+      "gold": 0,
+      "refusal": "BGUI IS NOT OK and cannot tithe."
      },
      {
       "slot": 2,
       "name": "CGUI",
-      "gold": 0,
+      "gold": 2940,
       "refusal": ""
      },
      {
@@ -12114,7 +15555,7 @@
       "refusal": ""
      }
     ],
-    "partyGold": 3440
+    "partyGold": 2940
    },
    "last": {
     "treat": {
@@ -12125,9 +15566,9 @@
      "statusAfter": "OK",
      "healed": true,
      "donation": 500,
-     "payer": "BGUI",
-     "payerBefore": 3940,
-     "payerAfter": 3440,
+     "payer": "CGUI",
+     "payerBefore": 3440,
+     "payerAfter": 2940,
      "shares": null,
      "party": null,
      "hpBefore": 0,
@@ -12144,6 +15585,54 @@
     "durable": false
    }
   },
+  "quotes": [
+   {
+    "patient": "BGUI",
+    "donation": 1000,
+    "payer": "AGUI",
+    "payerGold": 0,
+    "partyGold": 2940,
+    "mode": "party",
+    "shares": [
+     {
+      "slot": 2,
+      "name": "CGUI",
+      "gold": 2940
+     }
+    ],
+    "refusal": ""
+   },
+   {
+    "patient": "ASHY",
+    "donation": 0,
+    "payer": "AGUI",
+    "payerGold": 0,
+    "partyGold": 2940,
+    "mode": "",
+    "shares": null,
+    "refusal": "ASHY IS LOST"
+   },
+   {
+    "patient": "LOSTY",
+    "donation": 0,
+    "payer": "AGUI",
+    "payerGold": 0,
+    "partyGold": 2940,
+    "mode": "",
+    "shares": null,
+    "refusal": "LOSTY IS LOST"
+   },
+   {
+    "patient": "BELOW",
+    "donation": 250,
+    "payer": "AGUI",
+    "payerGold": 0,
+    "partyGold": 2940,
+    "mode": "",
+    "shares": null,
+    "refusal": "BELOW is OUT in the maze, not at the castle; only a rescue can bring them back."
+   }
+  ],
   "roster": [
    {
     "index": 0,
@@ -12225,11 +15714,11 @@
     "class": "FIGHTER",
     "short": "N-FIG",
     "level": 2,
-    "hp": 14,
+    "hp": 0,
     "maxHp": 14,
     "ac": 10,
-    "status": "OK",
-    "gold": 3440,
+    "status": "ASHED",
+    "gold": 0,
     "age": 0,
     "stats": [
      16,
@@ -12301,7 +15790,7 @@
     "maxHp": 14,
     "ac": 10,
     "status": "OK",
-    "gold": 0,
+    "gold": 2940,
     "age": 0,
     "stats": [
      16,
@@ -13037,9 +16526,9 @@
     "class": "N-FIG",
     "level": 2,
     "ac": 10,
-    "hp": 14,
+    "hp": 0,
     "maxHp": 14,
-    "status": "OK",
+    "status": "ASHED",
     "poisoned": false,
     "front": true
    },
@@ -13097,7 +16586,7 @@
    }
   ],
   "error": "",
-  "notice": "DGUI is well again. BGUI tithed 500 GP. Saved, but perhaps not durably.",
+  "notice": "DGUI is well again. CGUI tithed 500 GP. Saved, but perhaps not durably.",
   "unsaved": "",
   "warning": "Saved, but the save folder could not be synced (no sync); the last save may not survive a crash or power loss."
  }

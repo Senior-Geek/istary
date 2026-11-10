@@ -77,10 +77,11 @@ export function pickLabel(temple, slot, payer) {
 }
 
 // confirmation is what the screen asks before a treatment: the patient,
-// the donation, who pays and from what, the outcomes and the warnings. ready
-// is false (with why) when the chosen payer's gold, as Go gave it, does not
-// cover the donation; Go refuses such a treatment anyway.
-export function confirmation(temple, index, payer) {
+// the donation, who pays and how, the outcomes and the warnings, from Go's
+// quote for this patient and payer (Session.TempleQuote: "payer" pays
+// alone; "party" means the payer is short and the party's gold together
+// will meet it; a refusal otherwise). Without a quote yet it is not ready.
+export function confirmation(temple, index, payer, quote) {
   const p = (temple?.view?.patients ?? []).find((p) => p.index === index)
   const by = payers(temple).find((x) => x.slot === payer)
   if (!p || !p.kind) return null
@@ -95,19 +96,24 @@ export function confirmation(temple, index, payer) {
     outcomes: outcomes[p.kind],
     charged,
     permanent: p.kind === 'ashes',
-    ready: true,
+    party: false,
+    shares: [],
+    partyGold: 0,
+    ready: false,
     why: '',
   }
-  if (p.refusal) return { ...c, ready: false, why: p.refusal }
-  if (!by) return { ...c, ready: false, why: 'Choose who will tithe: click a party member.' }
-  if (by.refusal) return { ...c, ready: false, why: by.refusal }
-  if (by.gold < p.donation) {
-    const why = p.funding === 'short'
-      ? `${by.name} has ${by.gold} GP, and the party together cannot meet the donation.`
-      : `${by.name} has ${by.gold} GP. Pool the party’s gold to ${by.name} first.`
-    return { ...c, ready: false, why }
+  if (!by) return { ...c, why: 'Choose who will tithe: click a party member.' }
+  if (!quote) return { ...c, why: 'Asking the priests…' }
+  if (quote.refusal) return { ...c, why: quote.refusal }
+  if (quote.mode === 'party') {
+    return {
+      ...c, ready: true, party: true, partyGold: quote.partyGold,
+      shares: (quote.shares ?? []).map((s) => ({ name: s.name, gold: s.gold })),
+      why: `${by.name} has ${quote.payerGold} GP. The entire party’s gold goes into the fund: the other members give all ` +
+        `they carry, the ${quote.donation} GP donation is taken from it, and ${by.name} keeps the rest.`,
+    }
   }
-  return c
+  return { ...c, ready: quote.mode === 'payer' }
 }
 
 // receipt describes the last treatment or pooling and whether it is saved:
@@ -137,9 +143,15 @@ export function receipt(temple) {
     lost: `${t.patient} could not be restored, and is lost forever.`,
   }[mood]
   const years = (w) => Math.floor(w / 52)
+  const party = t.party
+    ? [
+        `The party’s gold went into the fund: ${[...(t.shares ?? []).map((s) => `${s.name} ${s.gold} GP`), `${t.payer}’s own ${t.payerBefore} GP`].join(', ')}; ${t.party.total} GP in all`,
+        `Donation ${t.donation} GP from the fund; ${t.payer} keeps ${t.payerAfter} GP`,
+      ]
+    : [`Donation ${t.donation} GP, tithed by ${t.payer}: ${t.payerBefore} → ${t.payerAfter} GP`]
   const lines = [
     `${condition(t.statusBefore)} → ${condition(t.statusAfter)}`,
-    `Donation ${t.donation} GP, tithed by ${t.payer}: ${t.payerBefore} → ${t.payerAfter} GP`,
+    ...party,
     t.hpAfter !== t.hpBefore ? `Hit points ${t.hpBefore} → ${t.hpAfter} of ${t.maxHp}` : `Hit points ${t.hpAfter} of ${t.maxHp}`,
     t.ageAfter !== t.ageBefore ? `Age ${years(t.ageBefore)} → ${years(t.ageAfter)}` : 'Age unchanged',
   ]

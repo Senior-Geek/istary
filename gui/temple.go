@@ -7,8 +7,9 @@ package main
 // conditions, donations, refusals and funding come from it, so the screen
 // decides nothing; it never shows a chance of success.
 //
-// A treatment is one action: the donation, the treatment and its roll
-// happen together in Go and are saved together, in one atomic write of the
+// A treatment is one action: the party's contribution (when the payer is
+// short and the screen has asked), the donation, the treatment and its
+// roll happen together in Go and are saved together, in one atomic write of the
 // roster, so no treatment is ever half saved and closing the window cannot
 // undo or roll it again. Pooling the party's gold to a payer is one action
 // and one save too. The screen's confirmation is its own and calls nothing,
@@ -33,7 +34,7 @@ import (
 
 // Temple actions (TempleRequest.Action).
 const (
-	TempleActTreat = "treat" // Patient (roster index), Payer (party slot, 0-based)
+	TempleActTreat = "treat" // Patient (roster index), Payer (party slot, 0-based), Party (the party's gold if the payer is short)
 	TempleActPool  = "pool"  // Payer: give that member every other member's gold (Pool Gold)
 )
 
@@ -42,6 +43,10 @@ type TempleRequest struct {
 	Action  string `json:"action"`
 	Patient int    `json:"patient"`
 	Payer   int    `json:"payer"`
+	// Party lets the party contribute when the payer is short and the
+	// party's gold together covers the donation (TempleQuote "party",
+	// Player's Guide p.33); the screen sets it only after asking.
+	Party bool `json:"party"`
 }
 
 // TemplePanel is the Temple for the front end: the controller's TempleView
@@ -81,7 +86,7 @@ func (s *Session) TempleAction(r TempleRequest) View {
 	switch r.Action {
 	case TempleActTreat:
 		var t *app.TempleReceipt
-		if t, err = c.Treat(r.Patient, r.Payer, false); err == nil {
+		if t, err = c.Treat(r.Patient, r.Payer, r.Party); err == nil {
 			last = &TempleLast{Treat: t}
 		}
 	case TempleActPool:
@@ -105,6 +110,22 @@ func (s *Session) TempleAction(r TempleRequest) View {
 	return s.view(errors.Join(err, saveErr))
 }
 
+// TempleQuote says how the donation for the roster character at patient
+// would be met with payer tithing: the payer alone, the party's gold
+// together, or a refusal (app.TempleQuote). It changes nothing and draws
+// no random number.
+func (s *Session) TempleQuote(patient, payer int) (app.TempleQuote, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.startErr != nil {
+		return app.TempleQuote{}, s.startErr
+	}
+	if err := s.templeRefusal(); err != nil {
+		return app.TempleQuote{}, err
+	}
+	return s.ctrl.TempleQuote(patient, payer)
+}
+
 // templeRefusal is why no Temple action can be taken now, or nil.
 func (s *Session) templeRefusal() error {
 	if err := s.navigationRefusal(); err != nil {
@@ -118,14 +139,17 @@ func (s *Session) templeRefusal() error {
 
 // templeNotice says what was done, and whether it is saved.
 func templeNotice(l *TempleLast) string {
-	var did string
+	var did, with string
+	if t := l.Treat; t != nil && t.Party != nil {
+		with = fmt.Sprintf(" with the party's gold (%d GP pooled)", t.Party.Total)
+	}
 	switch t := l.Treat; {
 	case t != nil && t.Healed:
-		did = fmt.Sprintf("%s is well again. %s tithed %d GP.", t.Patient, t.Payer, t.Donation)
+		did = fmt.Sprintf("%s is well again. %s tithed %d GP%s.", t.Patient, t.Payer, t.Donation, with)
 	case t != nil && t.StatusAfter == "ASHED":
-		did = fmt.Sprintf("The priests could not raise %s, who is now ashes. %s tithed %d GP.", t.Patient, t.Payer, t.Donation)
+		did = fmt.Sprintf("The priests could not raise %s, who is now ashes. %s tithed %d GP%s.", t.Patient, t.Payer, t.Donation, with)
 	case t != nil:
-		did = fmt.Sprintf("%s could not be restored and is lost forever. %s tithed %d GP.", t.Patient, t.Payer, t.Donation)
+		did = fmt.Sprintf("%s could not be restored and is lost forever. %s tithed %d GP%s.", t.Patient, t.Payer, t.Donation, with)
 	case l.Gold != nil:
 		did = poolWords(l.Gold)
 	}

@@ -35,7 +35,19 @@
   })
   const by = $derived(payer)
   const tither = $derived(members.find((p) => p.slot === by))
-  const ask = $derived(chosen >= 0 ? confirmation(temple, chosen, by) : null)
+  // Go's quote for the patient being confirmed and the payer, asked again
+  // whenever either, or the Temple's state, changes.
+  let quote = $state(null)
+  $effect(() => {
+    const index = chosen, payerSlot = by
+    void temple
+    quote = null
+    if (index < 0 || payerSlot < 0) return
+    let stale = false
+    S.TempleQuote(index, payerSlot).then((q) => { if (!stale) quote = q }, (e) => { if (!stale) quote = { refusal: String(e) } })
+    return () => { stale = true }
+  })
+  const ask = $derived(chosen >= 0 ? confirmation(temple, chosen, by, quote) : null)
   const last = $derived(receipt(temple))
   const partyShown = $derived(view.settings?.partyVisible ?? true)
 
@@ -47,9 +59,9 @@
   }
   const cancel = () => { chosen = -1 }
   async function confirm() {
-    const index = chosen
+    const index = chosen, party = !!ask?.party
     chosen = -1
-    await act({ action: 'treat', patient: index, payer: by })
+    await act({ action: 'treat', patient: index, payer: by, party })
   }
   // Escape cancels the confirmation (and does not leave the Temple).
   function onkey(e) {
@@ -96,9 +108,16 @@
         <ul class="outcomes">{#each ask.outcomes as o (o)}<li>{o}</li>{/each}</ul>
         {#if ask.permanent}<p class="warn">If this fails, {ask.patient} is lost forever: no donation, spell or rescue can bring them back.</p>{/if}
         <p class="muted">{ask.charged}</p>
-        {#if !ask.ready}<p class="why">{ask.why}</p>{/if}
+        {#if ask.party}
+          <div class="party">
+            <p><b>The party contributes.</b> {ask.why}</p>
+            <ul>{#each ask.shares as sh (sh.name)}<li>{sh.name} gives {sh.gold} GP</li>{/each}
+              <li>{ask.payer} gives {ask.payerGold} GP</li></ul>
+            <p>The fund: <b>{ask.partyGold} GP</b>; the donation: <b>{ask.donation} GP</b>.</p>
+          </div>
+        {:else if !ask.ready}<p class="why">{ask.why}</p>{/if}
         <div class="row">
-          <button class="primary" disabled={busy || !ask.ready} onclick={confirm}>Pay {ask.donation} GP and pray</button>
+          <button class="primary" disabled={busy || !ask.ready} onclick={confirm}>{ask.party ? `Use the party’s gold: pay ${ask.donation} GP and pray` : `Pay ${ask.donation} GP and pray`}</button>
           <button bind:this={cancelButton} disabled={busy} onclick={cancel}>Cancel</button>
         </div>
       </div>
@@ -165,6 +184,8 @@
   .ask .warn { color: var(--error); font-weight: 600; }
   .ask .why { color: var(--gold); }
   .ask .outcomes { margin: 0; padding-left: 18px; }
+  .ask .party { border-top: 1px solid var(--line); padding-top: 4px; display: grid; gap: 2px; }
+  .ask .party ul { margin: 0; padding-left: 18px; columns: 2 160px; }
   .receipt { padding: 6px 10px; border-radius: 4px; font-size: 13px; border-left: 3px solid; }
   .receipt .status { font-weight: 600; font-size: 12px; margin-left: 6px; }
   .receipt ul { margin: 4px 0 0; padding-left: 18px; columns: 2 220px; }

@@ -43,36 +43,44 @@ test('patients: Go’s list, treatable exactly when Go gives no refusal; the LOS
   assert.deepEqual([lost.lost, lost.treatable, lost.condition, lost.donation], [true, false, 'Lost', null])
 })
 
+// quote is Go's recorded quote for name in case v (paid by the case's payer).
+const quote = (v, name) => v.quotes[v.temple.view.patients.findIndex((p) => p.name === name)]
+
 test('the risk is worded by kind, never as a chance', () => {
   const v = at('patients')
   for (const [name, kind] of [['PARA', 'cure'], ['DEAD', 'raise'], ['ASHY', 'ashes']]) {
-    const c = confirmation(v.temple, idx(v, name), defaultPayer(v.temple))
+    const c = confirmation(v.temple, idx(v, name), 0, quote(v, name))
     assert.equal(c.kind, kind)
     assert.equal(c.risk, risks[kind])
     assert.equal(c.charged, charged)
     assert.equal(c.permanent, kind === 'ashes')
     for (const s of [c.risk, ...c.outcomes]) assert.doesNotMatch(s, /\d+ ?%|chance of|odds/i)
   }
-  assert.doesNotMatch(JSON.stringify(v.temple.view), /chance|percent|threshold/i, 'Go sends no chance')
+  assert.doesNotMatch(JSON.stringify(v.temple.view) + JSON.stringify(v.quotes), /chance|percent|threshold/i, 'Go sends no chance')
 })
 
-test('the confirmation names patient, condition, donation and payer; ready only when Go’s gold covers it', () => {
+test('the confirmation follows Go’s quote: the payer alone, the party’s gold, or Go’s refusal', () => {
   const v = at('patients')
-  const payer = defaultPayer(v.temple)
-  assert.equal(payers(v.temple)[payer].name, 'AGUI')
-  const c = confirmation(v.temple, idx(v, 'PARA'), payer)
-  assert.deepEqual([c.patient, c.condition, c.donation, c.payer, c.ready], ['PARA', 'Paralysed', 300, 'AGUI', true])
-  const poor = confirmation(v.temple, idx(v, 'PARA'), 2)
-  assert.equal(poor.ready, false)
-  assert.match(poor.why, /Pool the party’s gold to CGUI first/)
-  const dead = confirmation(v.temple, idx(v, 'PARA'), 3)
-  assert.equal(dead.ready, false)
-  assert.equal(dead.why, 'DGUI IS NOT OK and cannot tithe.')
-  const out = confirmation(v.temple, idx(v, 'BELOW'), payer)
+  assert.equal(payers(v.temple)[defaultPayer(v.temple)].name, 'AGUI')
+  const c = confirmation(v.temple, idx(v, 'PARA'), 0, quote(v, 'PARA'))
+  assert.deepEqual([c.patient, c.condition, c.donation, c.payer, c.ready, c.party], ['PARA', 'Paralysed', 300, 'AGUI', true, false])
+  // CGUI (40 GP) tithing: the party's gold meets it; each member's share is Go's.
+  const w = at('quotes: CGUI tithing')
+  const q = quote(w, 'PARA')
+  assert.equal(q.mode, 'party')
+  const p = confirmation(w.temple, idx(w, 'PARA'), 2, q)
+  assert.deepEqual([p.ready, p.party, p.payer, p.donation, p.partyGold], [true, true, 'CGUI', 300, q.partyGold])
+  assert.deepEqual(p.shares, q.shares.map((s) => ({ name: s.name, gold: s.gold })))
+  assert.match(p.why, /entire party’s gold goes into the fund/)
+  // Go's refusals, and no quote yet: not ready.
+  assert.equal(confirmation(v.temple, idx(v, 'PARA'), 0, null).ready, false)
+  const refused = confirmation(v.temple, idx(v, 'PARA'), 0, { refusal: 'CHEAP APOSTATES! OUT!' })
+  assert.deepEqual([refused.ready, refused.why], [false, 'CHEAP APOSTATES! OUT!'])
+  const out = confirmation(v.temple, idx(v, 'BELOW'), 0, quote(v, 'BELOW'))
   assert.equal(out.ready, false)
   assert.match(out.why, /OUT in the maze/)
   const gone = at('ashes lost')
-  assert.equal(confirmation(gone.temple, idx(gone, 'ASHY'), payer), null, 'the LOST: nothing to confirm')
+  assert.equal(confirmation(gone.temple, idx(gone, 'ASHY'), 0, quote(gone, 'ASHY')), null, 'the LOST: nothing to confirm')
 })
 
 test('the party bar chooses a payer Go allows', () => {
@@ -96,6 +104,12 @@ test('receipts: restrained words for each outcome; the donation, HP and age as G
   const lost = receipt(at('ashes lost').temple)
   assert.equal(lost.title, 'ASHY could not be restored, and is lost forever.')
   assert.ok(lost.lines.includes('Ashes → Lost'))
+  const party = receipt(at('party: raise failed').temple)
+  const t2 = at('party: raise failed').temple.last.treat
+  assert.equal(party.mood, 'ashes')
+  assert.ok(party.lines.some((l) => l.startsWith('The party’s gold went into the fund: ') && t2.shares.every((s) => l.includes(`${s.name} ${s.gold} GP`)) &&
+    l.includes(`CGUI’s own ${t2.payerBefore} GP`) && l.endsWith(`${t2.party.total} GP in all`)), party.lines)
+  assert.ok(party.lines.includes(`Donation ${t2.donation} GP from the fund; CGUI keeps ${t2.payerAfter} GP`))
   const pooled = receipt(at('pooled').temple)
   assert.equal(pooled.lines.length, at('pooled').temple.last.gold.names.length)
 })

@@ -222,6 +222,10 @@ export function TempleAction(arg1) {
   return window['go']['main']['Session']['TempleAction'](arg1);
 }
 
+export function TempleQuote(arg1, arg2) {
+  return window['go']['main']['Session']['TempleQuote'](arg1, arg2);
+}
+
 export function TryAgain() {
   return window['go']['main']['Session']['TryAgain']();
 }

@@ -186,16 +186,20 @@ func TestTempleFailedSaveRetried(t *testing.T) {
 }
 
 type templeCase struct {
-	Case     string          `json:"case"`
-	Location string          `json:"location"`
-	Temple   *TemplePanel    `json:"temple"`
-	Roster   []CharacterView `json:"roster"`
-	PartyBar []PartyBarSlot  `json:"partyBar"`
-	Error    string          `json:"error"`
-	Notice   string          `json:"notice"`
-	Unsaved  string          `json:"unsaved"`
-	Warning  string          `json:"warning"`
+	Case     string            `json:"case"`
+	Location string            `json:"location"`
+	Temple   *TemplePanel      `json:"temple"`
+	Quotes   []app.TempleQuote `json:"quotes"` // for each patient, paid by slot quotePayer`
+	Roster   []CharacterView   `json:"roster"`
+	PartyBar []PartyBarSlot    `json:"partyBar"`
+	Error    string            `json:"error"`
+	Notice   string            `json:"notice"`
+	Unsaved  string            `json:"unsaved"`
+	Warning  string            `json:"warning"`
 }
+
+// quotePayer is the payer the fixture's quotes are for.
+var quotePayer = 0
 
 // TestTempleViewFixture records real views at the Temple, one for each
 // state and outcome the Temple screen draws, for the page's tests
@@ -205,13 +209,24 @@ func TestTempleViewFixture(t *testing.T) {
 	var cases []json.RawMessage
 	s, dir := templeSession(t)
 	add := func(name string, v View) {
-		raw, _ := json.Marshal(templeCase{name, v.Location, v.Temple, v.Roster, v.PartyBar, v.Error, v.Notice, v.Unsaved, v.Warning})
+		var quotes []app.TempleQuote
+		if v.Temple != nil {
+			for _, p := range v.Temple.View.Patients {
+				q, _ := s.TempleQuote(p.Index, quotePayer)
+				quotes = append(quotes, q)
+			}
+		}
+		raw, _ := json.Marshal(templeCase{name, v.Location, v.Temple, quotes, v.Roster, v.PartyBar, v.Error, v.Notice, v.Unsaved, v.Warning})
 		cases = append(cases, raw)
 	}
 	treat := func(name string, payer int) View {
 		return s.TempleAction(TempleRequest{Action: TempleActTreat, Patient: templeIndex(s, name), Payer: payer})
 	}
+	s.ctrl.Game.Town.Party.Members[1].Status, s.ctrl.Game.Town.Party.Members[1].HP = engine.Dead, 0 // BGUI, for the party's gold
 	add("patients", s.State())
+	quotePayer = 2
+	add("quotes: CGUI tithing", s.State())
+	quotePayer = 0
 	add("refused: out in the maze", treat("BELOW", 0))
 	add("refused: payer not OK", treat("PARA", 3))
 	add("refused: short", treat("PARA", 2))
@@ -223,11 +238,15 @@ func TestTempleViewFixture(t *testing.T) {
 	add("ashes raised", treat("DEAD", 0))
 	rand.Seed(rollSeed(func(r int) bool { return r > 70 }))
 	add("ashes lost", treat("ASHY", 0))
-	add("pooled", s.TempleAction(TempleRequest{Action: TempleActPool, Payer: 1}))
+	quotePayer = 2 // CGUI, 40 GP: the party contributes
+	rand.Seed(rollSeed(func(r int) bool { return r > 80 }))
+	add("party: raise failed", s.TempleAction(TempleRequest{Action: TempleActTreat, Patient: templeIndex(s, "BGUI"), Payer: 2, Party: true}))
+	quotePayer = 0
+	add("pooled", s.TempleAction(TempleRequest{Action: TempleActPool, Payer: 2}))
 	if os.Geteuid() != 0 {
 		os.Chmod(dir, 0o555)
 		rand.Seed(1)
-		v := treat("STONE", 1)
+		v := treat("STONE", 2)
 		os.Chmod(dir, 0o755)
 		tidy := func(msg string) string {
 			msg = strings.ReplaceAll(msg, "/private"+dir, "<saves>")
@@ -245,7 +264,7 @@ func TestTempleViewFixture(t *testing.T) {
 		return &engine.NotDurableError{Err: errors.New("no sync")}
 	}
 	rand.Seed(rollSeed(func(r int) bool { return r <= 80 }))
-	add("raised, not durable", treat("DGUI", 1))
+	add("raised, not durable", treat("DGUI", 2))
 	saveGame = (*app.Controller).Save
 	s.shutdown()
 
@@ -263,5 +282,55 @@ func TestTempleViewFixture(t *testing.T) {
 	}
 	if !bytes.Equal(got, want) {
 		t.Fatal("temple-views.json is out of date (run with ISTARY_UPDATE_FIXTURES=1)")
+	}
+}
+
+// The party's contribution in the GUI: offered by the quote, refused
+// without the party, one save with it; a failed save retried moves no gold
+// twice and rolls nothing again; the party short changes nothing.
+func TestTempleWithThePartysGold(t *testing.T) {
+	s, dir := templeSession(t)
+	g := s.ctrl.Game
+	m := g.Town.Party.Members
+	ashy := templeIndex(s, "ASHY")   // 500 x 4
+	q, err := s.TempleQuote(ashy, 2) // CGUI, 40 GP
+	if err != nil || q.Mode != "party" || q.Donation != 2000 || len(q.Shares) != 3 {
+		t.Fatalf("quote: %+v %v", q, err)
+	}
+	if v, wrote := templeAct(t, s, dir, TempleRequest{Action: TempleActTreat, Patient: ashy, Payer: 2}); wrote || v.Error != "CHEAP APOSTATES! OUT!" {
+		t.Errorf("without the party: %q", v.Error)
+	}
+	total := q.PartyGold
+	os.Chmod(dir, 0o555)
+	t.Cleanup(func() { os.Chmod(dir, 0o755) })
+	rand.Seed(rollSeed(func(r int) bool { return r <= 70 }))
+	v := s.TempleAction(TempleRequest{Action: TempleActTreat, Patient: ashy, Payer: 2, Party: true})
+	tr := v.Temple.Last.Treat
+	if v.Unsaved == "" || v.Temple.Last.Saved || tr == nil || tr.Party == nil || !tr.Healed || m[2].Gold != total-2000 || m[0].Gold != 0 || m[3].Gold != 0 ||
+		!strings.Contains(v.Notice, "with the party's gold") {
+		t.Fatalf("with the party, NOT saved: %q %+v", v.Unsaved, v.Temple.Last)
+	}
+	snap, _ := json.Marshal(g.Town.Roster.Characters)
+	os.Chmod(dir, 0o755)
+	rand.Seed(5)
+	v = s.SaveNow()
+	next := rand.Int63()
+	rand.Seed(5)
+	now, _ := json.Marshal(g.Town.Roster.Characters)
+	if next != rand.Int63() || v.Unsaved != "" || !v.Temple.Last.Saved || !bytes.Equal(snap, now) {
+		t.Fatalf("saved again: %+v", v.Temple.Last)
+	}
+	mustMatchDisk(t, s, dir, "saved again")
+	r := reopened(t, s, dir)
+	if got := r.ctrl.Game.Town.Party.Members[2].Gold; got != total-2000 {
+		t.Errorf("a restart finds %d GP, want %d", got, total-2000)
+	}
+	// The party short: refused with the party too, nothing written.
+	for _, mm := range m {
+		mm.Gold = 0
+	}
+	s.ctrl.Save()
+	if v, wrote := templeAct(t, s, dir, TempleRequest{Action: TempleActTreat, Patient: templeIndex(s, "STONE"), Payer: 0, Party: true}); wrote || v.Error != "CHEAP APOSTATES! OUT!" {
+		t.Errorf("the party short: %q", v.Error)
 	}
 }
