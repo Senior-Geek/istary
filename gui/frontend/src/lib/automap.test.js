@@ -3,7 +3,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { drawing, edge, door, arrow, wrap, feature, mapKey, symbols, INSET, facingTurn } from './automap.js'
+import { drawing, edge, door, arrow, wrap, feature, mapKey, symbols, INSET, facingTurn, BADGE, CLIP } from './automap.js'
 
 const cases = JSON.parse(readFileSync(new URL('./testdata/map-views.json', import.meta.url)))
 const at = (name) => {
@@ -57,9 +57,26 @@ test('a door is marked in the middle of its wall', () => {
   assert.ok(near((d.door.x1 + d.door.x2) / 2, (d.x1 + d.x2) / 2) && near((d.door.y1 + d.door.y2) / 2, (d.y1 + d.y2) / 2))
 })
 
+test('the squares the party has stood on, and only those, get a floor', () => {
+  for (const c of cases) {
+    for (const v of [c.full, c.local]) {
+      const d = drawing(v)
+      assert.deepEqual(d.floors, v.visited.map((q) => ({ x: q.col, y: q.row })), c.case)
+      assert.equal(d.floor.match(/M/g)?.length ?? 0, v.visited.length)
+      for (const f of d.floors) assert.ok(f.x >= 0 && f.x < v.size && f.y >= 0 && f.y < v.size)
+    }
+    // The party's own square is always one.
+    assert.ok(c.local.visited.some((q) => q.row === 3 && q.col === 3), c.case)
+  }
+  assert.deepEqual(at('entrance').full.visited, [{ row: 19, col: 0 }])
+  assert.ok(cases.some((c) => c.full.visited.length > 1), 'a recording with a walk')
+})
+
 test('features sit at the centre of their squares with their own symbols', () => {
   for (const c of cases) {
     for (const f of [...c.full.features, ...c.local.features]) {
+      if (c.local.party && f.row === 3 && f.col === 3 && c.local.features.includes(f)) continue // under the party: below
+      if (c.full.party && f.row === c.full.party.row && f.col === c.full.party.col) continue
       const s = feature(f)
       assert.ok(s, f.kind)
       assert.equal(s.x, f.col + 0.5)
@@ -71,6 +88,56 @@ test('features sit at the centre of their squares with their own symbols', () =>
   const e = at('entrance')
   assert.deepEqual(e.full.features, [{ row: 19, col: 0, kind: 'stairs-up' }])
   assert.deepEqual(e.local.features, [{ row: 3, col: 3, kind: 'stairs-up' }])
+})
+
+// The distance from point (px, py) to the segment a..b.
+const toSegment = ([px, py], [ax, ay], [bx, by]) => {
+  const dx = bx - ax, dy = by - ay
+  const t = Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / (dx * dx + dy * dy)))
+  return Math.hypot(px - ax - t * dx, py - ay - t * dy)
+}
+// The arrow's outline as drawn: its points turned about its centre.
+const outline = (a) => {
+  const t = a.turn * Math.PI / 180
+  return a.points.split(' ').map((p) => p.split(',').map(Number)).map(([x, y]) => [
+    a.cx + (x - a.cx) * Math.cos(t) - (y - a.cy) * Math.sin(t), a.cy + (x - a.cx) * Math.sin(t) + (y - a.cy) * Math.cos(t)])
+}
+
+test('a feature under the party moves to a badge clear of the arrow, inside its square, whichever way it faces', () => {
+  const e = drawing(at('entrance').local)
+  assert.equal(e.features.length, 1)
+  assert.equal(e.features[0].badge, true)
+  assert.equal(e.features[0].kind, 'stairs-up')
+  for (const facing of ['N', 'E', 'S', 'W']) {
+    for (const v of [at('entrance').local, at('entrance').full]) {
+      const d = drawing({ ...v, party: { ...v.party, facing } })
+      const f = d.features.find((f) => f.badge)
+      assert.ok(f, facing)
+      const pts = outline(d.party)
+      const clear = Math.min(...pts.map((p, i) => toSegment([f.x, f.y], p, pts[(i + 1) % pts.length])))
+      assert.ok(clear >= BADGE.radius, `${facing}: badge ${clear.toFixed(3)} from the arrow`)
+      const col = v.party.col, row = v.party.row
+      assert.ok(f.x - BADGE.radius >= col && f.x + BADGE.radius <= col + 1 && f.y - BADGE.radius >= row && f.y + BADGE.radius <= row + 1, facing)
+      assert.equal(f.path, symbols['stairs-up'].path)
+    }
+  }
+  // Away from the party a feature keeps its full size at the centre.
+  const away = drawing({ ...at('entrance').local, party: { ...at('entrance').local.party, row: 2 } })
+  assert.deepEqual([away.features[0].x, away.features[0].y, away.features[0].scale, away.features[0].badge], [3.5, 3.5, 1, false])
+})
+
+test('a door on the minimap’s outer wall is drawn whole', () => {
+  // The door mark is 0.2 wide across its wall's line.
+  const half = 0.1
+  assert.ok(CLIP >= half)
+  let n = 0
+  for (const c of cases) {
+    for (const w of drawing(c.local).walls.filter((w) => w.door)) {
+      for (const v of [w.door.x1, w.door.x2, w.door.y1, w.door.y2]) assert.ok(v >= 0 && v <= c.local.size)
+      if ([w.x1, w.y1].some((v) => v === 0) || [w.x1, w.y1].some((v) => v === c.local.size)) n++
+    }
+  }
+  assert.ok(n > 0, 'a recording with a door on the outer wall')
 })
 
 test('the party’s arrow is at its square’s centre, turned its way; the minimap keeps it centred', () => {

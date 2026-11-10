@@ -842,9 +842,24 @@ export namespace app {
 	        this.oneWay = source["oneWay"];
 	    }
 	}
+	export class MapSquare {
+	    row: number;
+	    col: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new MapSquare(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.row = source["row"];
+	        this.col = source["col"];
+	    }
+	}
 	export class LocalMapView {
 	    level: number;
 	    size: number;
+	    visited: MapSquare[];
 	    walls: MapWall[];
 	    features: MapFeature[];
 	    party: MapParty;
@@ -859,6 +874,7 @@ export namespace app {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.level = source["level"];
 	        this.size = source["size"];
+	        this.visited = this.convertValues(source["visited"], MapSquare);
 	        this.walls = this.convertValues(source["walls"], MapWall);
 	        this.features = this.convertValues(source["features"], MapFeature);
 	        this.party = this.convertValues(source["party"], MapParty);
@@ -886,10 +902,12 @@ export namespace app {
 	}
 	
 	
+	
 	export class MapView {
 	    level: number;
 	    levels: number[];
 	    size: number;
+	    visited: MapSquare[];
 	    walls: MapWall[];
 	    wraps: MapWall[];
 	    features: MapFeature[];
@@ -904,6 +922,7 @@ export namespace app {
 	        this.level = source["level"];
 	        this.levels = source["levels"];
 	        this.size = source["size"];
+	        this.visited = this.convertValues(source["visited"], MapSquare);
 	        this.walls = this.convertValues(source["walls"], MapWall);
 	        this.wraps = this.convertValues(source["wraps"], MapWall);
 	        this.features = this.convertValues(source["features"], MapFeature);

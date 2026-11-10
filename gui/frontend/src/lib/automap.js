@@ -50,7 +50,20 @@ export const symbols = {
 // draw yet (teleporters, chutes, special squares, rescue markers).
 export function feature(f) {
   const s = symbols[f.kind]
-  return s ? { ...s, kind: f.kind, x: f.col + 0.5, y: f.row + 0.5 } : null
+  return s ? { ...s, kind: f.kind, x: f.col + 0.5, y: f.row + 0.5, scale: 1, badge: false } : null
+}
+
+// BADGE is where a feature's symbol goes when the party stands on its
+// square: shrunk on a dark disc in the square's corner ahead and to the
+// party's right, clear of the arrow whichever way it faces.
+export const BADGE = { offset: 0.285, scale: 0.6, radius: 0.21 }
+
+// underParty moves a feature's symbol out from under the party's arrow.
+export function underParty(f, party) {
+  const t = (facingTurn[party.facing] ?? 0) * Math.PI / 180
+  const [ax, ay] = [BADGE.offset, -BADGE.offset] // ahead-right when facing north
+  const dx = ax * Math.cos(t) - ay * Math.sin(t), dy = ax * Math.sin(t) + ay * Math.cos(t)
+  return { ...f, x: f.x + dx, y: f.y + dy, scale: BADGE.scale, badge: true }
 }
 
 // wrap marks a way across the level's edge, at the square it leaves from:
@@ -67,6 +80,11 @@ export function wrap(w) {
   }
 }
 
+// CLIP is how far past the minimap's window its drawing may run, so the
+// marks on the window's outer walls (a door's, the wall's own line) are
+// drawn whole.
+export const CLIP = 0.14
+
 // drawing turns a map view (local or full) into what the SVG draws.
 export function drawing(view) {
   if (!view) return null
@@ -77,10 +95,18 @@ export function drawing(view) {
   const seams = []
   if (view.northEdge >= 0) seams.push({ x1: 0, y1: view.northEdge, x2: view.size, y2: view.northEdge })
   if (view.westEdge >= 0) seams.push({ x1: view.westEdge, y1: 0, x2: view.westEdge, y2: view.size })
+  const p = view.party
+  const features = (view.features ?? []).map((f) => {
+    const s = feature(f)
+    return s && p && f.row === p.row && f.col === p.col ? underParty(s, p) : s
+  }).filter(Boolean)
   return {
     size: view.size,
+    floors: (view.visited ?? []).map((q) => ({ x: q.col, y: q.row })),
+    // The same squares as one shape, so neighbours meet without a seam.
+    floor: (view.visited ?? []).map((q) => `M${q.col},${q.row}h1v1h-1z`).join(''),
     walls,
-    features: (view.features ?? []).map(feature).filter(Boolean),
+    features,
     wraps: (view.wraps ?? []).map(wrap),
     seams,
     party: view.party ? arrow(view.party) : null,

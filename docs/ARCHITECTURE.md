@@ -906,11 +906,16 @@ full map of a level (F10), drawn from one record in Go.
   20x20 frame, with `Wraps` where a seen way crosses the edge. Both decide
   each boundary alike: seen from one side, or alike from both, one wall;
   seen differently, each side's own wall, `OneWay`, drawn inside its square.
-  Reading either changes nothing and draws no random number.
+  Both list the `Visited` squares (the record's own, nothing more), which
+  the maps shade faintly. Reading either changes nothing and draws no
+  random number.
 - **Bridge:** `View.Minimap` on an expedition; `Session.Automap(level)`
   (read-only); `SetMinimapVisible` (a kept setting, on by default).
-- **Screen:** `MapSvg.svelte` draws both (green walls, yellow doors, stairs
-  and elevator symbols, the white arrow); `AutomapPopup.svelte` is the full
+- **Screen:** `MapSvg.svelte` draws both (a faint floor on visited squares,
+  green walls, yellow doors, stairs and elevator symbols, the white arrow; a
+  symbol under the party moves to a small badge in the square's corner, and
+  the minimap draws a little past its window so doors on its outer walls
+  are whole); `AutomapPopup.svelte` is the full
   map in the same window. F10 or Escape closes it, and no key reaches the
   maze while it is open (`lib/automap.js` `mapKey`).
 - **Tests:** `engine/place_test.go` (all 4,000 squares both ways, the

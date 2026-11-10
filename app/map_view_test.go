@@ -35,6 +35,9 @@ func TestMapsAtTheEntrance(t *testing.T) {
 	if m.Party == nil || *m.Party != (MapParty{Row: 19, Col: 0, Facing: "N", Place: "L1:R19:C0"}) {
 		t.Fatalf("party %+v", m.Party)
 	}
+	if !reflect.DeepEqual(m.Visited, []MapSquare{{19, 0}}) || !reflect.DeepEqual(lv.Visited, []MapSquare{{LocalRadius, LocalRadius}}) {
+		t.Fatalf("visited %+v %+v", m.Visited, lv.Visited)
+	}
 	if _, err := c.Map(3); err != ErrNoMap {
 		t.Fatalf("an unexplored level: %v", err)
 	}
@@ -245,6 +248,27 @@ func TestLocalAndFullMapsAgree(t *testing.T) {
 			dr := ((p.Row-here.Row)%20 + 20 + LocalRadius) % 20
 			dc := ((p.Col-here.Col)%20 + 20 + LocalRadius) % 20
 			return dr < lv.Size && dc < lv.Size
+		}
+		// The visited squares are the record's, on both maps.
+		rec := c.Game.Exploration.Level(here.Level)
+		fullVisited := map[engine.Place]bool{}
+		for _, q := range full.Visited {
+			fullVisited[engine.Place{Level: here.Level, Row: q.Row, Col: q.Col}] = true
+		}
+		localVisited := map[engine.Place]bool{}
+		for _, q := range lv.Visited {
+			localVisited[abs(q.Row, q.Col)] = true
+		}
+		for r := 0; r < 20; r++ {
+			for col := 0; col < 20; col++ {
+				p := engine.Place{Level: here.Level, Row: r, Col: col}
+				if fullVisited[p] != rec.Visited[r][col] || inWindow(p) && localVisited[p] != rec.Visited[r][col] {
+					t.Fatalf("at %v the maps' visited squares differ from the record at %v", here, p)
+				}
+			}
+		}
+		if len(localVisited) != len(lv.Visited) || !localVisited[here] {
+			t.Fatalf("at %v the minimap's visited squares %+v", here, lv.Visited)
 		}
 		dirOf := map[string]engine.Direction{"N": engine.North, "E": engine.East, "S": engine.South, "W": engine.West}
 		key := func(p engine.Place, w MapWall) string {

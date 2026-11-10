@@ -40,6 +40,12 @@ type MapFeature struct {
 	Kind string `json:"kind"`
 }
 
+// MapSquare is a square of a map, in the map's own frame.
+type MapSquare struct {
+	Row int `json:"row"`
+	Col int `json:"col"`
+}
+
 // MapParty is the party on a map: its square in the map's frame, its
 // facing, and where that is in L:R:C.
 type MapParty struct {
@@ -55,6 +61,7 @@ type MapView struct {
 	Level    int          `json:"level"`  // L
 	Levels   []int        `json:"levels"` // the levels with anything seen
 	Size     int          `json:"size"`
+	Visited  []MapSquare  `json:"visited"` // the squares the party has stood on
 	Walls    []MapWall    `json:"walls"`
 	Wraps    []MapWall    `json:"wraps"` // seen ways across the level's edge, at the square they leave from
 	Features []MapFeature `json:"features"`
@@ -69,6 +76,7 @@ type MapView struct {
 type LocalMapView struct {
 	Level     int          `json:"level"`
 	Size      int          `json:"size"`
+	Visited   []MapSquare  `json:"visited"`
 	Walls     []MapWall    `json:"walls"`
 	Features  []MapFeature `json:"features"`
 	Party     MapParty     `json:"party"`
@@ -148,10 +156,13 @@ func (c *Controller) Map(l int) (MapView, error) {
 	if m == nil {
 		return MapView{}, ErrNoMap
 	}
-	v := MapView{Level: l, Levels: e.LevelsSeen(), Size: engine.MazeSize, Walls: []MapWall{}, Wraps: []MapWall{}, Features: []MapFeature{}}
+	v := MapView{Level: l, Levels: e.LevelsSeen(), Size: engine.MazeSize, Visited: []MapSquare{}, Walls: []MapWall{}, Wraps: []MapWall{}, Features: []MapFeature{}}
 	for r := 0; r < engine.MazeSize; r++ {
 		for col := 0; col < engine.MazeSize; col++ {
 			p := engine.Place{Level: l, Row: r, Col: col}
+			if m.Visited[r][col] {
+				v.Visited = append(v.Visited, MapSquare{Row: r, Col: col})
+			}
 			if k := m.Features[r][col]; k != "" {
 				v.Features = append(v.Features, MapFeature{Row: r, Col: col, Kind: k})
 			}
@@ -196,7 +207,7 @@ func (c *Controller) LocalMap() (LocalMapView, bool) {
 		return LocalMapView{}, false
 	}
 	size := 2*LocalRadius + 1
-	v := LocalMapView{Level: here.Level, Size: size, Walls: []MapWall{}, Features: []MapFeature{},
+	v := LocalMapView{Level: here.Level, Size: size, Visited: []MapSquare{}, Walls: []MapWall{}, Features: []MapFeature{},
 		Party:     MapParty{Row: LocalRadius, Col: LocalRadius, Facing: g.Facing.Letter(), Place: here.String()},
 		NorthEdge: -1, WestEdge: -1}
 	// at is the square at window row i and column j; window places by square.
@@ -236,6 +247,9 @@ func (c *Controller) LocalMap() (LocalMapView, bool) {
 	for i := 0; i < size; i++ {
 		for j := 0; j < size; j++ {
 			p := at(i-LocalRadius, j-LocalRadius)
+			if m.Visited[p.Row][p.Col] {
+				v.Visited = append(v.Visited, MapSquare{Row: i, Col: j})
+			}
 			if k := m.Features[p.Row][p.Col]; k != "" {
 				v.Features = append(v.Features, MapFeature{Row: i, Col: j, Kind: k})
 			}
