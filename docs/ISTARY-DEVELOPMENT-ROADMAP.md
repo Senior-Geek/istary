@@ -274,8 +274,9 @@ characters.
 - **Rescue:** a rescue expedition brings OUT characters back, end to end in
   the GUI.
 - **No map unless enabled:** no map is shown unless the automap enhancement
-  is enabled (D9). *M-1 (2026-11-10) shows the GUI's explored-only minimap
-  by default, per its brief; pending confirmation against D9.*
+  is enabled (D9). *Amended at M-1 acceptance (2026-11-10): until the
+  Classic/Enhanced switch exists (M9), the GUI's explored-only minimap and
+  F10 full map stay available, the minimap on by default.*
 
 ## M7 — Combat and chests in the GUI
 
@@ -324,7 +325,9 @@ decided by then.
 - **Settings:** campaign settings, each option documented in
   `docs/RULES.md`.
 - **First enhancements,** by decision. Candidates:
-  - automap (D9);
+  - automap (D9, amended at M-1): the switch gives the minimap and the full
+    map each its own setting; Classic defaults both off, Enhanced both on,
+    and the player may turn either on or off;
   - showing monster identities.
 
 **Depends on:** M8 (preferred) or M4 for the framework alone.
