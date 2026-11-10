@@ -92,6 +92,11 @@ type GameState struct {
 	// a section of another version, kept and written back unchanged.
 	Expedition      *Expedition
 	OtherExpedition json.RawMessage
+	// Exploration is what the player has seen of the maze (explore.go), for
+	// the GUI's maps; nil when nothing has been. OtherExploration is a saved
+	// section this version cannot use, kept and written back unchanged.
+	Exploration      *Exploration
+	OtherExploration json.RawMessage
 }
 
 // Phase tracks which part of the game the player is in.

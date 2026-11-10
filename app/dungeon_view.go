@@ -13,7 +13,6 @@ package app
 // never draw from the game's random numbers, leaves it out.
 
 import (
-	"github.com/Senior-Geek/istary/data"
 	"github.com/Senior-Geek/istary/engine"
 )
 
@@ -171,91 +170,14 @@ func (c *Controller) dungeonParty() []DungeonMemberView {
 	return out
 }
 
-// corridor walks ahead as the Classic view draws (Pascal DRAWMAZE): five
-// squares with light (three with QUICK plot), two without, stopping at a
-// dark square or the first wall or door in front.
+// corridor is the corridor ahead as the Classic view draws it: the
+// engine's Sight, which the exploration record reads too.
 func (c *Controller) corridor() ([]CorridorView, bool) {
-	g := c.Game
-	if g.MazeLevel < 0 || g.MazeLevel >= len(g.Scenario.Mazes.Levels) {
-		return nil, false
-	}
-	level := &g.Scenario.Mazes.Levels[g.MazeLevel]
-	light := g.LightLevel > 0
-	depth := 2
-	if light {
-		depth = 5
-		if g.QuickPlot {
-			depth = 3
-		}
-	}
-	shown := func(w data.WallType) string {
-		switch w {
-		case data.WallOpen:
-			return "open"
-		case data.WallDoor:
-			return "door"
-		case data.WallHidden:
-			if light {
-				return "door"
-			}
-		}
-		return "wall"
-	}
+	sight, dark := c.Game.Sight()
 	var out []CorridorView
-	x, y := g.PlayerX, g.PlayerY
-	for ; depth > 0; depth-- {
-		if level.Cells[y][x].Type == data.SqDark {
-			return out, true
-		}
-		sq := CorridorView{
-			Left:  shown(wallAt(level, x, y, g.Facing, 0, g.Facing.TurnLeft())),
-			Right: shown(wallAt(level, x, y, g.Facing, 0, g.Facing.TurnRight())),
-			Front: shown(wallAt(level, x, y, g.Facing, 0, g.Facing)),
-		}
-		if sq.Left == "open" {
-			sq.LeftAhead = shown(wallAt(level, x, y, g.Facing, -1, g.Facing))
-		}
-		if sq.Right == "open" {
-			sq.RightAhead = shown(wallAt(level, x, y, g.Facing, 1, g.Facing))
-		}
-		out = append(out, sq)
-		if sq.Front != "open" {
-			break
-		}
-		x, y = shift(x, y, g.Facing, 0, 1)
+	for _, sq := range sight {
+		out = append(out, CorridorView{Left: sq.Left, Right: sq.Right, Front: sq.Front,
+			LeftAhead: sq.LeftAhead, RightAhead: sq.RightAhead})
 	}
-	return out, false
-}
-
-// shift moves right and forward relative to facing, wrapping at the edge
-// (Pascal SHFTPOS; north is Y+1).
-func shift(x, y int, facing engine.Direction, right, forward int) (int, int) {
-	switch facing {
-	case engine.North:
-		x, y = x+right, y+forward
-	case engine.East:
-		x, y = x+forward, y-right
-	case engine.South:
-		x, y = x-right, y-forward
-	case engine.West:
-		x, y = x-forward, y+right
-	}
-	return (x%20 + 20) % 20, (y%20 + 20) % 20
-}
-
-// wallAt is the wall on side dir of the square right squares to the right.
-func wallAt(level *data.MazeLevel, x, y int, facing engine.Direction, right int, dir engine.Direction) data.WallType {
-	x, y = shift(x, y, facing, right, 0)
-	cell := level.Cells[y][x]
-	switch dir {
-	case engine.North:
-		return cell.N
-	case engine.East:
-		return cell.E
-	case engine.South:
-		return cell.S
-	case engine.West:
-		return cell.W
-	}
-	return data.WallWall
+	return out, dark
 }

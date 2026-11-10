@@ -14,6 +14,9 @@ type SaveState struct {
 	// Expedition is the optional expedition section (expedition.go). Absent
 	// when no expedition is under way.
 	Expedition json.RawMessage `json:"expedition,omitempty"`
+	// Exploration is the optional exploration section (explore.go). Absent
+	// when nothing of the maze has been recorded.
+	Exploration json.RawMessage `json:"exploration,omitempty"`
 }
 
 // saveDirOverride replaces the default save directory when set. The terminal
@@ -87,9 +90,14 @@ func (g *GameState) Save() error {
 	if err != nil {
 		return fmt.Errorf("marshal expedition: %w", err)
 	}
+	explored, err := g.explorationSection()
+	if err != nil {
+		return fmt.Errorf("marshal exploration: %w", err)
+	}
 	state := SaveState{
-		Roster:     g.Town.Roster.Characters,
-		Expedition: section,
+		Roster:      g.Town.Roster.Characters,
+		Expedition:  section,
+		Exploration: explored,
 	}
 	// The party list is the castle party: members of a saved expedition are
 	// listed in its section only.
@@ -145,6 +153,7 @@ func (g *GameState) Load() error {
 	if err := g.loadExpedition(state.Expedition); err != nil {
 		return fmt.Errorf("parse %s: %w", path, err)
 	}
+	g.loadExploration(state.Exploration)
 
 	// Backfill MaxMageSpells/MaxPriestSpells for saves from before these fields existed
 	// Also migrate legacy Equipment[8]+Inventory[] to flat Items model
