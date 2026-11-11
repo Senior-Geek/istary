@@ -83,9 +83,17 @@ func savedWords(saved, durable bool) string {
 }
 
 // equipRefusal is why nobody can equip in town now, or nil: during an
-// expedition or practice, or while a character is being created.
+// expedition or practice, or while a character is being created; and at
+// Boltac's while he waits for an answer (UX-2: the Trading Post equips
+// beside his counter, and his question is about an item as it is worn).
 func (s *Session) equipRefusal() error {
-	return s.navigationRefusal()
+	if err := s.navigationRefusal(); err != nil {
+		return err
+	}
+	if v, err := s.ctrl.ShopView(); err == nil && asking(v) {
+		return errAnswerBoltac
+	}
+	return nil
 }
 
 // equipNote is equipRefusal in words for the sheet, or "".

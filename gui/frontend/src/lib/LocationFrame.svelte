@@ -23,6 +23,13 @@
   //   actions   snippet: the place's actions, under the destinations (optional)
   //   aside     snippet beside the nav, e.g. a map (optional)
   //   children  the place's wider content (optional)
+  //   fill      the place fills the window without scrolling the page
+  //             (UX-2, Boltac's): the body does not scroll, the artwork is
+  //             shorter, and the content takes the rest of the height and
+  //             scrolls inside itself (optional)
+  //   partyAlways  the party bar is always shown here, whatever the Hide
+  //             party setting, and the toggle is not offered (UX-2,
+  //             Boltac's: the bar is how the customer is chosen) (optional)
   //   pick, onpick, current
   //             the party bar's picking (PartyBar): what a click on a member
   //             does here, and the member worked with (optional; Boltac's)
@@ -31,25 +38,27 @@
   import PartyBar from './PartyBar.svelte'
   import { title, back, destinations } from './navigation.js'
 
-  let { view, busy = false, call, onopen, scene, actions, aside, children, pick, onpick, current = -1 } = $props()
+  let { view, busy = false, call, onopen, scene, actions, aside, children, pick, onpick, current = -1, fill = false, partyAlways = false } = $props()
 
   const here = $derived(title(view.location))
   const way = $derived(back(view))
   const ways = $derived(destinations(view))
-  const partyShown = $derived(view.settings?.partyVisible ?? true)
+  const partyShown = $derived(partyAlways || (view.settings?.partyVisible ?? true))
 
   const go = (dest) => call(S.Navigate, dest)
 </script>
 
-<div class="frame" class:with-aside={!!aside} data-location={view.location}>
+<div class="frame" class:with-aside={!!aside} class:fill data-location={view.location}>
   <header class="head">
     <h2 class="title">{here}</h2>
     {#if way}
       <button class="back" disabled={busy || !way.open} onclick={() => call(S.ReturnToCastle)}
         title="Back to the Castle (Esc)">← {way.label} <kbd>Esc</kbd></button>
     {/if}
-    <button class="toggle" aria-pressed={partyShown} disabled={busy}
-      onclick={() => call(S.SetPartyVisible, !partyShown)}>{partyShown ? 'Hide party' : 'Show party'}</button>
+    {#if !partyAlways}
+      <button class="toggle" aria-pressed={partyShown} disabled={busy}
+        onclick={() => call(S.SetPartyVisible, !partyShown)}>{partyShown ? 'Hide party' : 'Show party'}</button>
+    {/if}
     {#if way?.note}<p class="why head-why">{way.note}</p>{/if}
   </header>
 
@@ -132,6 +141,11 @@
   nav button { width: 100%; text-align: left; margin: 0; }
   .why { color: var(--muted); font-size: 11px; padding: 2px 2px 4px; }
   .actions { margin: 0; padding: 10px 12px; }
+  /* Fill: the content row takes what the head, the artwork row and the
+     party bar leave, and scrolls inside itself; the page does not. */
+  .frame.fill .body { overflow: hidden; grid-template-rows: auto minmax(0, 1fr); }
+  .frame.fill .scene-area { height: clamp(120px, calc((100vw - 380px) * 0.5625), 30vh); }
+  .frame.fill .content-area { align-self: stretch; height: 100%; min-height: 0; }
   @media (max-height: 640px) { .scene-area { max-height: 30vh; } }
   @media (max-width: 699px) {
     .body, .frame.with-aside .body {
@@ -139,5 +153,7 @@
       grid-template-areas: "scene" "nav" "aside" "content";
     }
     .scene-area { height: auto; aspect-ratio: 21 / 9; max-height: 30vh; }
+    .frame.fill .body { overflow-y: auto; grid-template-rows: none; }
+    .frame.fill .content-area { height: auto; }
   }
 </style>

@@ -119,10 +119,32 @@ func (s *Session) navigate(dest string) error {
 	}
 	for _, p := range places {
 		if p.name == dest {
-			return c.GoTo(p.loc)
+			if err := c.GoTo(p.loc); err != nil {
+				return err
+			}
+			if dest == "trading" {
+				s.serveFirst()
+			}
+			return nil
 		}
 	}
 	return errNotAnExit
+}
+
+// serveFirst brings the first party member Boltac would serve to the
+// counter, on arriving at Boltac's (UX-2): the page opens on the Buy tab
+// for them, with no "WHO WILL ENTER" screen first. Who may be served is
+// the counter's own rule (ShopEnter: any party member, whatever their
+// condition, as in the original). With nobody to serve the counter stays
+// at "WHO WILL ENTER", and the page says why. It writes nothing: choosing
+// the customer changes no character.
+func (s *Session) serveFirst() {
+	c := s.ctrl
+	for slot, m := range c.Game.Town.Party.Members {
+		if m != nil && c.ShopEnter(slot) == nil {
+			return
+		}
+	}
 }
 
 // ReturnView is the way back to the Castle from a town place (the frame's
