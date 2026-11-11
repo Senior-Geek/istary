@@ -314,7 +314,8 @@ the maze and Camp:
 
 The view shows nothing the maze screen does not: no position, facing or
 floor (only DUMAPIC tells those), no map, nothing past the light, no
-encounter state. (The maps of M-1 are separate views, below.) The corridor
+encounter state. (The maps of M-1 and UX-1's coordinate readout,
+`View.Position`, are separate views, below.) The corridor
 itself is the engine's `GameState.Sight()` (`engine/sight.go`), which the
 exploration record reads too. A hidden door is a wall without light and a door with it.
 The Classic view also lets one flicker into view one draw in six without
@@ -918,6 +919,11 @@ full map of a level (F10), drawn from one record in Go.
   legacy characters with no `Stranded` record are never marked. `Map`
   also offers a level where characters lie but nothing was explored, with
   its markers alone. Nothing is saved for them.
+- **Coordinates (UX-1, `design/ux1/UX-1.md`):** `Controller.Position`
+  is the party's L:R:C and facing, in the maze, at Camp and in combat, and
+  nothing elsewhere; `Stranded` is its square's marker count. `View.Position`
+  carries it to the dungeon screen's header and its "N stranded adventurers
+  here" line under the view. Inspect's button is Inspect / Rescue.
 - **Bridge:** `View.Minimap` on an expedition; `Session.Automap(level)`
   (read-only); `SetMinimapVisible` (a kept setting, on by default).
 - **Screen:** `MapSvg.svelte` draws both (a faint floor on visited squares,

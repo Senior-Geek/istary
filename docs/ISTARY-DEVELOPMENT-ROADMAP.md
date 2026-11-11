@@ -262,7 +262,10 @@ characters.
 - **Rendering spike:** maze rendering from engine visibility data, using the
   technology and treatment chosen at or after the presentation checkpoint.
 - **Maze and Camp:** movement and keyboard controls, status, Camp, and the
-  stairs back to the castle.
+  stairs back to the castle. *UX-1 (2026-11-11): the party's L:R:C and
+  facing in the maze's and Camp's header, Inspect / Rescue with a line when
+  someone lies on the party's square, and an equipment check before
+  setting out (`design/ux1/UX-1.md`).*
 - **OUT handling:** OUT characters are shown as such in the roster, can be
   recovered by a rescue party, and disbanding behaves as in the terminal.
   *R-1 (2026-11-10): a party that can no longer go on stays stranded on its
