@@ -190,7 +190,7 @@ after the last block. No timers or random numbers in the controller.
 | `Advance() (PlaybackStep, error)` | Releases the next block (silent blocks too) and moves the display cursor (`MessageIndex`) to it. After the last block it returns `Done` and changes nothing. `ErrAwaitingChoice` while HAMAN's boon prompt is open |
 | `RevealedEvents()` | The round's events released so far, and none beyond |
 | `ChooseBoon(n)` | Answers HAMAN or MAHAMAN's boon prompt (Wiz 2/3). `Advance` plays up to the block that shows the prompt and waits there (`ErrAwaitingChoice`); `CombatView` lists the boons (`Boons`) only once that block is on screen |
-| `LeaveCombat()` | After the victory or defeat screen: victory to the maze, defeat to the castle ("YOUR PARTY HAS PERISHED IN THE MAZE..."). The PAUSE2 wait before it is the front end's (M5d) |
+| `LeaveCombat()` | After the victory or defeat screen: victory to the maze; defeat leaves the party stranded on its square and the player in the castle with no party ("YOUR PARTY HAS PERISHED IN THE MAZE...", R-1, `design/r1/STRANDED-PARTIES.md`). A victory after which no one can act is stranded the same way. The PAUSE2 wait before it is the front end's (M5d) |
 | `EndRound() (RoundOutcome, error)` | Only after `Advance` has returned `Done` (`ErrPlaybackUnfinished` before, even with the last block on screen): drops the frozen round display and decides `RoundEscaped` (back to the maze, "THE PARTY FLED!"), `RoundVictory` (the chest, or the rewards), `RoundDefeated`, or `RoundContinues` (engine `BeginNextRound`: groups compacted, formation re-sorted, orders cleared, then order entry) |
 
 States: `CombatInit` → (`StartCombat`) `CombatChoose` or `CombatExecute`;
@@ -931,13 +931,22 @@ in the saved game, through the same dungeon, combat and chest operations.
   injuries, spells spent, experience, gold and items are kept. A failed
   save is in `View.Unsaved` until one succeeds; the action is never
   repeated, the next successful save writes it.
-- **The end:** only in the castle: the stairs, or the engine's defeat,
-  which returns the dead party there. It cannot be abandoned.
+- **The end:** the stairs, or a party that can no longer go on (in combat,
+  or from a pit, chute, OUCH, SOLID ROCK or poison). That party stays
+  stranded on its square (R-1, `engine.StrandParty`,
+  `design/r1/STRANDED-PARTIES.md`); the player is in the castle with no
+  party, saved in the same action. It cannot be abandoned.
+- **Stranded characters** stay in the roster with their square
+  (`Character.Stranded`, L:R:C, shown as "stranded ... at L1:R5:C3"). They
+  cannot join a party or be treated, renamed, deleted or equipped in town.
+  Inspect finds them on their square; P)ICK UP waits for R-2.
 - **A restart during an expedition** resumes it (M6b-2): every save
   carries the expedition's checkpoint (`app.Controller.Checkpoint`, the
   last safe point), and on start `Resume` puts it back exactly. An
   encounter that was under way is over, nothing more awarded; changes it
   had made outside the characters (a teleporter, an alarm) are kept. A
+  saved party that cannot go on (the app closed on the defeat screen) is
+  stranded at the checkpoint before anything else (R-1, D-R). A
   saved expedition that cannot be resumed is kept and shown
   (`View.Recovery`), with `ReturnExpeditionToCastle`.
 - **While the party is out** the Tavern, the Training Grounds, rename,

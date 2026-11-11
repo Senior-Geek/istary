@@ -265,6 +265,10 @@ characters.
   stairs back to the castle.
 - **OUT handling:** OUT characters are shown as such in the roster, can be
   recovered by a rescue party, and disbanding behaves as in the terminal.
+  *R-1 (2026-11-10): a party that can no longer go on stays stranded on its
+  square, saved and shown with its L:R:C (`design/r1/STRANDED-PARTIES.md`).
+  Next: R-2, P)ICK UP and the rescue itself; R-3, rescue markers and
+  presentation.*
 
 **Depends on:** M5 and M2 Part B.
 **Acceptance:**

@@ -188,6 +188,11 @@ of its own; this is recorded in the decision log.
 
 ## 6. Defeated and abandoned parties, and rescue (D-D; M6b-4 design)
 
+*Superseded for defeat by R-1 (`../r1/STRANDED-PARTIES.md`): the position is
+kept in a new optional `Stranded` field in L:R:C, not in the legacy
+`MazeLevel`/`MazeX`/`MazeY`, whose level 0 cannot be told from the castle.
+Rescue (below) is R-2.*
+
 **Proposed:** use the engine's own per-character fields, which the existing
 I)NSPECT and P)ICK UP already read. No new save structure is needed.
 
