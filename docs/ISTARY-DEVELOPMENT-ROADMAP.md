@@ -267,8 +267,9 @@ characters.
   recovered by a rescue party, and disbanding behaves as in the terminal.
   *R-1 (2026-11-10): a party that can no longer go on stays stranded on its
   square, saved and shown with its L:R:C (`design/r1/STRANDED-PARTIES.md`).
-  Next: R-2, P)ICK UP and the rescue itself; R-3, rescue markers and
-  presentation.*
+  R-2 (2026-11-10): rescue expeditions find the stranded in their area
+  and take them home one at a time within the six places
+  (`design/r2/RESCUE.md`). Next: R-3, rescue markers and presentation.*
 
 **Depends on:** M5 and M2 Part B.
 **Acceptance:**

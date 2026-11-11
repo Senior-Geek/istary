@@ -280,13 +280,13 @@ terminal's. A step can end in combat (`PhaseCombat`).
 
 | Operation | Effect |
 |---|---|
-| `EnterMaze()` | Edge of Town M)AZE: Camp at the entrance (floor 1, 0,0, facing north), fight zones set. `ErrPartyEmpty` without a party |
+| `EnterMaze()` | Edge of Town M)AZE: Camp at the entrance (floor 1, 0,0, facing north), fight zones set. `ErrPartyEmpty` without a party; `ErrNoOneCanGoOn` when no one in the party can act (R-2: the incapacitated may come along only with someone who can) |
 | `LeaveCamp()` | Camp L)EAVE; at the stairs the question is asked at once. Only from Camp's menu (`ErrWrongState` while one of Camp's screens is open) |
 | `Forward()`, `TurnLeft()`, `TurnRight()`, `Kick()`, `Camp()`, `Inspect()` | One maze command (F, L, R, K, C, I). Refused with `ErrPromptPending` while the maze waits for an answer |
 | `ContinueMessage()` | [RET] on a message: next page, or dismiss (then an item, a search question or a return to the castle may follow, as in the terminal) |
 | `Answer(yes)` | The stairs or a search question (Y/N). Y on the stairs up returns to the castle |
 | `PressButton(n)` | Button n (1 is A). `ErrInvalidChoice` outside A to the last button |
-| `PickUp()`, `LeaveInspect()` | Inspect's P)ICK UP and L)EAVE |
+| `PickUp(n)`, `LeaveInspect()` | Inspect's P)ICK UP of the n-th character found (from 1), and L)EAVE. Inspect lists everyone stranded in the party's area (`engine.GameState.FindStranded`; R-2, `design/r2/RESCUE.md`); `DungeonView.Inspect` gives each with the room left. A full party is refused (`YOUR PARTY HAS 6; NAME STAYS HERE.`), a number not on the list is `ErrInvalidChoice`; either way nothing changes. The terminal asks `GET WHO (0=EXIT) >` |
 
 `HandleKey` routes all maze keys, Camp's L and Edge of Town's M to these
 (all of Camp since M6b-3A, below); the rest of the Edge of Town is still the
@@ -939,7 +939,12 @@ in the saved game, through the same dungeon, combat and chest operations.
 - **Stranded characters** stay in the roster with their square
   (`Character.Stranded`, L:R:C, shown as "stranded ... at L1:R5:C3"). They
   cannot join a party or be treated, renamed, deleted or equipped in town.
-  Inspect finds them on their square; P)ICK UP waits for R-2.
+- **Rescue (R-2, `design/r2/RESCUE.md`):** Inspect finds the stranded
+  anywhere in the party's area (the squares it could walk to through open
+  walls), and P)ICK UP takes them one at a time while the party has room
+  (six, the incapacitated included). A pickup is one action, saved with the
+  expedition. The rescued travel with the party as they are; home, they are
+  in the castle party, stranded nowhere.
 - **A restart during an expedition** resumes it (M6b-2): every save
   carries the expedition's checkpoint (`app.Controller.Checkpoint`, the
   last safe point), and on start `Resume` puts it back exactly. An

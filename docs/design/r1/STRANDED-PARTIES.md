@@ -1,10 +1,10 @@
 # R-1: dungeon defeat and stranded parties
 
-Status: **implemented on `r1-stranded-parties`, awaiting acceptance.**
-Decision D-D (2026-11-07) said a defeated party stays in the maze for a
-rescue. R-1 makes that true and keeps it true across saves and restarts.
-Rescue itself (P)ICK UP, R-2) and its presentation (markers, R-3) come
-later.
+Status: **released in `v0.6.0-stranded`.** Decision D-D (2026-11-07) said
+a defeated party stays in the maze for a rescue. R-1 makes that true and
+keeps it true across saves and restarts. Rescue itself (I)NSPECT and P)ICK
+UP) is R-2: `../r2/RESCUE.md`, which corrects §7 below. Its presentation
+(markers) is R-3.
 
 ## 1. What happened before R-1
 
@@ -51,10 +51,11 @@ Invariants:
   `StrandParty` empties the party, and the GUI drops the expedition section
   in the same save.
 - **Condition, items, gold, experience, age and spells are untouched.**
-- **The legacy fields are never written.** `MazeLevel`, `MazeX` and
-  `MazeY` (the original's LOSTXYL) are read only for characters an older
-  version left out with no `Stranded` record (Camp D)ISBAND, #26), and only
-  as before.
+- **The legacy fields are never written** except to clear them. `MazeLevel`,
+  `MazeX` and `MazeY` (the original's LOSTXYL) are read only for characters
+  an older version left out with no `Stranded` record (Camp D)ISBAND, #26),
+  and only as before; R-2's P)ICK UP clears them, as the original's PICKUP
+  clears LOSTXYL.
 - **`Character.OutOfCastle()`** is the castle's one test for `** OUT **`:
   `Stranded != nil || InMaze || MazeLevel != 0`. A character stranded on
   L1 has `MazeLevel` 0 and is still out.
@@ -129,29 +130,29 @@ Practice expeditions strand only their copies, which are discarded.
 
 ## 7. Inspect, Pick Up and R-2
 
-- **Inspect** finds a stranded character when `Stranded` is the party's
-  square (L:R:C, so it is exact at the edges and after one-way walls).
-  Characters with no record are found by the legacy fields, as before.
-- **P)ICK UP is refused** when Inspect found a stranded character
-  (`ErrPickUpStranded`, and the terminal key does nothing). Today's P)ICK
-  UP frees everyone found, even those it has no room for (#27), and never
-  clears a square. It would bring stranded characters back to the castle
-  without a rescue, or leave them in the party still marked stranded.
+*Superseded by R-2 (`../r2/RESCUE.md`).* As R-1 left them: Inspect found a
+stranded character only on their own square, and P)ICK UP refused stranded
+characters, because it freed everyone found, even those it had no room for
+(#27). R-2 replaces both: Inspect searches the party's area, and P)ICK UP
+takes one character at a time while there is room.
 
-R-2 needs:
+R-1 listed six needs for R-2. Their outcome:
 
-1. a P)ICK UP that takes only those who fit and leaves the rest stranded
-   (#27);
-2. clearing `Stranded` for those taken, and keeping `InMaze` set while they
-   are in the party;
-3. checkpoints and `Resume` for a party carrying the rescued;
-4. what reaching the castle does for them (Temple, Tavern);
-5. a rule for SOLID ROCK: a party stranded on a rock square is DEAD on a
-   square that kills anyone who steps on it. The original sets MAZELEV to
-   -99 there, so its bodies could never be found. R-1 keeps the square and
-   the DEAD condition and does not decide whether they can be rescued;
-6. Camp D)ISBAND (#26), which should then write `Stranded` too (the GUI
-   still refuses it).
+1. A P)ICK UP that takes only those who fit: **done** (R-2).
+2. Clearing `Stranded` for those taken, `InMaze` kept while out: **done**.
+3. Checkpoints and `Resume` for a party carrying the rescued: **done**.
+4. What reaching the castle does for them: **done** (`GameState.PartyHome`).
+5. SOLID ROCK. **Correction:** this section said "The original sets
+   MAZELEV to -99 there, so its bodies could never be found". That is
+   wrong. In the reconstructed Pascal, ROCKWATE sets MAZELEV to -99 and
+   NEWMAZE then turns any level below 0 into level 1 and goes to the
+   entrance's Camp: the original's square sends the party back to the first
+   level, at the same X and Y, unharmed. Only Camp MALOR into rock makes a
+   party LOST. Istary's square kills instead (kept for now, R-2 decision
+   Q3), and its bodies are found from any square joined to it by open
+   walls. No scenario of Wizardry I-III has the square.
+6. Camp D)ISBAND (#26) writing `Stranded`: **deferred** past R-2 (decision
+   Q2); the GUI still refuses it.
 
 ## 8. Limitations
 
