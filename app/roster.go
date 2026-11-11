@@ -38,7 +38,7 @@ func (c *Controller) ClearRoster() error {
 // empty ("NAME CANNOT BE EMPTY") and must not match any roster name,
 // including the character's own ("NAME ALREADY IN USE"). Not available
 // during creation, nor for a character out on a saved expedition (the
-// expedition refers to its members by name).
+// expedition refers to its members by name) or stranded in the maze (R-1).
 func (c *Controller) RenameCharacter(index int, newName string) error {
 	if c.Game.Phase == engine.PhaseCreation {
 		return ErrWrongState
@@ -49,6 +49,9 @@ func (c *Controller) RenameCharacter(index int, newName string) error {
 	}
 	if c.Game.OnExpedition(roster[index].Name) {
 		return ErrOnExpedition
+	}
+	if roster[index].IsStranded() {
+		return ErrStranded
 	}
 	newName = strings.ToUpper(strings.TrimSpace(newName))
 	if newName == "" {

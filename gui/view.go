@@ -133,7 +133,8 @@ type CharacterView struct {
 	Items        []ItemView `json:"items"`
 	Poison       int        `json:"poison"`
 	InMaze       bool       `json:"inMaze"`
-	MazeLevel    int        `json:"mazeLevel"` // 1-based when lost in the maze
+	MazeLevel    int        `json:"mazeLevel"`          // 1-based when lost in the maze
+	Stranded     string     `json:"stranded,omitempty"` // L:R:C where a defeated party left them (R-1), or ""
 	Legacy       bool       `json:"legacy"`
 
 	// Party membership comes from the party list (app.InParty), never from
@@ -289,10 +290,21 @@ func mazeLevel(ch *engine.Character, inParty bool) int {
 	if inParty {
 		return 0
 	}
+	if ch.Stranded != nil {
+		return ch.Stranded.Level
+	}
 	if ch.InMaze || ch.MazeLevel != 0 {
 		return ch.MazeLevel + 1
 	}
 	return 0
+}
+
+// strandedAt is where ch was stranded, in L:R:C, or "".
+func strandedAt(ch *engine.Character) string {
+	if ch.Stranded == nil {
+		return ""
+	}
+	return ch.Stranded.String()
 }
 
 var stepNames = map[engine.CreationStep]string{
@@ -449,6 +461,7 @@ func characterView(g *engine.GameState, ch *engine.Character) CharacterView {
 		Poison:       ch.PoisonAmt,
 		InMaze:       ch.InMaze,
 		MazeLevel:    mazeLevel(ch, inParty),
+		Stranded:     strandedAt(ch),
 		Legacy:       ch.IsLegacy,
 		InParty:      inParty,
 		PartySlot:    app.PartySlot(g.Town, ch) + 1,

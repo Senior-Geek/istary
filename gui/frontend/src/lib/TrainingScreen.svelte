@@ -204,7 +204,7 @@
                 <td class="num">{ch.ac}</td><td>{ch.status}</td>
                 <td class="num narrow-hide">{ch.gold}</td><td class="num narrow-hide">{ch.age}</td>
                 {#each ch.stats as v}<td class="num">{v}</td>{/each}
-                <td>{#if ch.inParty}<span class="inparty">#{ch.partySlot}</span>{:else if ch.mazeLevel}<span class="muted">maze {ch.mazeLevel}</span>{/if}</td>
+                <td>{#if ch.inParty}<span class="inparty">#{ch.partySlot}</span>{:else if ch.stranded}<span class="muted" title="Stranded in the maze by a defeated party">stranded {ch.stranded}</span>{:else if ch.mazeLevel}<span class="muted">maze {ch.mazeLevel}</span>{/if}</td>
               </tr>
             {/each}
           </tbody>

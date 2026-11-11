@@ -160,12 +160,22 @@ func combatTick(g *engine.GameState) {
 func fightToTheEnd(t *testing.T, g *engine.GameState, d *driver) string {
 	t.Helper()
 	var out strings.Builder
-	party := func() string {
+	// The characters who fought: after a defeat they are no longer a party
+	// but stay in the maze (R-1), and the trace's end still shows them.
+	fought := append([]*engine.Character(nil), g.Town.Party.Members...)
+	list := func(members []*engine.Character) string {
 		var parts []string
-		for _, m := range g.Town.Party.Members {
+		for _, m := range members {
 			parts = append(parts, fmt.Sprintf("%s %d/%d %v", m.Name, m.HP, m.MaxHP, m.Status))
 		}
 		return strings.Join(parts, "; ")
+	}
+	// fought follows the formation as it is re-sorted between rounds.
+	party := func() string {
+		if len(g.Town.Party.Members) > 0 {
+			fought = append(fought[:0], g.Town.Party.Members...)
+		}
+		return list(g.Town.Party.Members)
 	}
 	c := g.Combat
 	for _, grp := range c.Groups {
@@ -205,8 +215,21 @@ func fightToTheEnd(t *testing.T, g *engine.GameState, d *driver) string {
 		}
 	}
 	fmt.Fprintf(&out, "end: phase=%d town=%q maze=%q\n", g.Phase, g.Town.Message, g.MazeMessage)
-	fmt.Fprintf(&out, "party: %s\n", party())
-	for _, m := range g.Town.Party.Members {
+	if g.Phase == engine.PhaseTown {
+		// Defeated: stranded where they fought, no longer a castle party.
+		if len(g.Town.Party.Members) != 0 {
+			t.Errorf("defeated, yet the castle party is %s", party())
+		}
+		for _, m := range fought {
+			if m.Stranded == nil || !m.InMaze {
+				t.Errorf("defeated, yet %s is not stranded (InMaze %v)", m.Name, m.InMaze)
+			}
+		}
+	} else {
+		party()
+	}
+	fmt.Fprintf(&out, "party: %s\n", list(fought))
+	for _, m := range fought {
 		fmt.Fprintf(&out, "  %s xp=%d gold=%d items=%d\n", m.Name, m.XP, m.Gold, m.ItemCount)
 	}
 	return out.String()

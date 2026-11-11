@@ -89,7 +89,7 @@ func (c *Controller) mazeKey(k Key) {
 			if ch == 'l' || ch == 'L' {
 				game.MazeInspecting = false
 				game.MazeInspectFound = nil
-			} else if (ch == 'p' || ch == 'P') && len(game.MazeInspectFound) > 0 {
+			} else if (ch == 'p' || ch == 'P') && len(game.MazeInspectFound) > 0 && !anyStranded(game.MazeInspectFound) {
 				// P)ICK UP — from p-code SPECIALS CLP 5:
 				// Add found characters back to party (if room)
 				for _, c := range game.MazeInspectFound {
@@ -414,6 +414,7 @@ func (c *Controller) mazeKey(k Key) {
 		// Search roster for characters lost at current position
 		// From p-code proc 40 (IC 82-292): loops all roster chars,
 		// checks INMAZE flag and position match
+		here, onSquare := game.Place()
 		for _, c := range game.Town.Roster.Characters {
 			if c == nil || c.Status == engine.Lost {
 				continue
@@ -426,8 +427,17 @@ func (c *Controller) mazeKey(k Key) {
 					break
 				}
 			}
-			if !inParty && c.InMaze && c.MazeLevel == game.MazeLevel &&
-				c.MazeX == game.PlayerX && c.MazeY == game.PlayerY {
+			if inParty || !c.InMaze {
+				continue
+			}
+			// A stranded character is found on their square (R-1); one an
+			// older version left out with no square (Camp D)ISBAND, #26) by
+			// the legacy LOSTXYL fields, as before.
+			if c.Stranded != nil {
+				if onSquare && *c.Stranded == here {
+					game.MazeInspectFound = append(game.MazeInspectFound, c)
+				}
+			} else if c.MazeLevel == game.MazeLevel && c.MazeX == game.PlayerX && c.MazeY == game.PlayerY {
 				game.MazeInspectFound = append(game.MazeInspectFound, c)
 			}
 		}
@@ -464,6 +474,15 @@ func (c *Controller) mazeKey(k Key) {
 					}
 				}
 			}
+		}
+
+		// R-1 (decision D-C): a step after which no one can go on (a pit, a
+		// chute, an OUCH square, SOLID ROCK, poison) leaves the party
+		// stranded on the square it ended on, after the chute or teleporter
+		// that moved it. Nothing more happens: no encounter.
+		if game.Phase == engine.PhaseMaze && !engine.PartyCanContinue(game.Town.Party.Members) {
+			game.StrandParty()
+			return
 		}
 
 		// Pascal RUNMAIN (RUNNER2.TEXT lines 616-624): encounter triggers
@@ -750,9 +769,9 @@ func checkSquare(game *engine.GameState) {
 				m.Status = engine.Dead
 			}
 		}
-		// Return to castle (death sequence)
-		game.Phase = engine.PhaseTown
-		game.Town.Location = engine.Castle
+		// The party is now stranded on this square, as after any step that
+		// leaves no one able to go on (mazeKey, R-1); it is no longer carried
+		// to the castle.
 		return
 	case data.SqSpinner:
 		// Pascal SPECSQAR SPINNER: randomize direction
@@ -818,4 +837,17 @@ func ouchyDamage(game *engine.GameState, cell *data.MazeCell) {
 			m.Status = engine.Dead
 		}
 	}
+}
+
+// anyStranded reports whether any of found was stranded by a defeated party
+// (R-1). P)ICK UP does not take them yet: it frees everyone it finds, even
+// those it has no room for (#27), which would bring stranded characters
+// back to the castle without a rescue. Picking them up comes with R-2.
+func anyStranded(found []*engine.Character) bool {
+	for _, c := range found {
+		if c.IsStranded() {
+			return true
+		}
+	}
+	return false
 }

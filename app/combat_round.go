@@ -126,8 +126,11 @@ func (c *Controller) LeaveInPeace() error {
 }
 
 // LeaveCombat leaves combat after the victory or defeat screen: victory
-// returns to the maze, defeat to the castle with "YOUR PARTY HAS PERISHED IN
-// THE MAZE...". The pause before it (PAUSE2) is the front end's.
+// returns to the maze; defeat leaves the party stranded where it fought
+// (engine.StrandParty, R-1) and the player in the castle with "YOUR PARTY
+// HAS PERISHED IN THE MAZE...". A victory after which no one can go on (a
+// chest's trap) strands the party the same way. The pause before it
+// (PAUSE2) is the front end's.
 func (c *Controller) LeaveCombat() error {
 	g := c.Game
 	cs := g.Combat
@@ -136,15 +139,15 @@ func (c *Controller) LeaveCombat() error {
 	}
 	switch cs.Phase {
 	case engine.CombatVictory:
+		if !engine.PartyCanContinue(g.Town.Party.Members) {
+			return c.strand()
+		}
 		g.Combat = nil
 		g.Phase = engine.PhaseMaze
 		g.MazeMessage = ""
 		g.MazeMessage2 = ""
 	case engine.CombatDefeat:
-		g.Combat = nil
-		g.Phase = engine.PhaseTown
-		g.Town.Location = engine.Castle
-		g.Town.Message = "YOUR PARTY HAS PERISHED IN THE MAZE..."
+		return c.strand()
 	default:
 		return ErrNotEnding
 	}
@@ -321,13 +324,19 @@ func (c *Controller) EndRound() (RoundOutcome, error) {
 		}
 		return RoundVictory, nil
 	}
-	for _, m := range game.Town.Party.Members {
-		if m != nil && m.IsAlive() {
-			cs.BeginNextRound(game)
-			cs.CurrentActor = c.firstActor()
-			return RoundContinues, nil
-		}
+	if engine.PartyCanContinue(game.Town.Party.Members) {
+		cs.BeginNextRound(game)
+		cs.CurrentActor = c.firstActor()
+		return RoundContinues, nil
 	}
 	cs.Phase = engine.CombatDefeat
 	return RoundDefeated, nil
+}
+
+// strand ends the expedition of a party that cannot go on: its members stay
+// on its square (engine.StrandParty, R-1). With no party left to strand it
+// changes nothing.
+func (c *Controller) strand() error {
+	_, _, err := c.Game.StrandParty()
+	return err
 }

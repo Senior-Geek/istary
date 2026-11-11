@@ -1385,14 +1385,9 @@ func (cs *CombatState) executeMonsterSlot(slot int, game *GameState) {
 	}
 }
 
-// allPartyDead returns true if all party members are dead.
+// allPartyDead returns true if no party member can act (PartyCanContinue).
 func (cs *CombatState) allPartyDead(party []*Character) bool {
-	for _, m := range party {
-		if m != nil && m.IsAlive() {
-			return false
-		}
-	}
-	return true
+	return !PartyCanContinue(party)
 }
 
 // executeMonsterSpell handles a monster casting a spell at the party.

@@ -117,10 +117,15 @@ type Character struct {
 	SpellKnown [50]bool `json:"spell_known,omitempty"`
 
 	// Dungeon position — from TCHAR offset 0x20 (INMAZE) and 0xC6 (LOSTXYL)
-	InMaze    bool `json:"in_maze,omitempty"`    // TCHAR.INMAZE: true if character is in the maze
-	MazeLevel int  `json:"maze_level,omitempty"` // LOSTXYL: which dungeon level (0-based)
-	MazeX     int  `json:"maze_x,omitempty"`     // LOSTXYL: X position
-	MazeY     int  `json:"maze_y,omitempty"`     // LOSTXYL: Y position
+	InMaze    bool `json:"in_maze,omitempty"`    // TCHAR.INMAZE: set on joining a party, and while out in the maze
+	MazeLevel int  `json:"maze_level,omitempty"` // LOSTXYL: legacy, never written by Istary (stranded.go)
+	MazeX     int  `json:"maze_x,omitempty"`     // LOSTXYL: legacy, never written
+	MazeY     int  `json:"maze_y,omitempty"`     // LOSTXYL: legacy, never written
+
+	// Stranded is the square, in L:R:C, where this character was left when
+	// their party could not go on (R-1, stranded.go). It is the one record of
+	// where they are; nil when they are not stranded.
+	Stranded *Place `json:"stranded,omitempty"`
 
 	// Poison — from TCHAR LOSTXYL variant offset 0xC6
 	PoisonAmt int `json:"poison_amt,omitempty"` // HP lost per step while poisoned

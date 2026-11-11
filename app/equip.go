@@ -97,6 +97,9 @@ func (c *Controller) townChar(index int) (*engine.Character, error) {
 	if g.OnExpedition(roster[index].Name) {
 		return nil, ErrOnExpedition
 	}
+	if roster[index].IsStranded() {
+		return nil, ErrStranded
+	}
 	return roster[index], nil
 }
 

@@ -136,8 +136,9 @@ func (c *Controller) memberRefusal(ch *engine.Character) string {
 	if InParty(town, ch) {
 		return fmt.Sprintf("%s IS ALREADY IN THE PARTY!", ch.Name)
 	}
-	if ch.InMaze || ch.MazeLevel != 0 {
-		// Pascal line 170-172: INMAZE or LOSTXYL.LOCATION[3] <> 0
+	if ch.OutOfCastle() {
+		// Pascal line 170-172: INMAZE or LOSTXYL.LOCATION[3] <> 0; or
+		// stranded (R-1)
 		return "** OUT **"
 	}
 	if c.Game.Scenario.ScenarioNum == 3 && !ch.IsLegacy {

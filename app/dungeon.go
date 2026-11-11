@@ -123,6 +123,9 @@ func (c *Controller) PickUp() error {
 	if c.mazePrompt() == "inspect" && len(c.Game.MazeInspectFound) == 0 {
 		return ErrInvalidChoice
 	}
+	if c.mazePrompt() == "inspect" && anyStranded(c.Game.MazeInspectFound) {
+		return ErrPickUpStranded
+	}
 	return c.prompted(Rune('P'), "inspect")
 }
 

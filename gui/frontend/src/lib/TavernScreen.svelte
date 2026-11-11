@@ -92,7 +92,7 @@
                   <button class="small join" disabled={busy}
                     onclick={(e) => { e.stopPropagation(); call(S.JoinParty, ch.index) }}>Join</button>
                 {:else}
-                  <span class="muted refusal" title={ch.joinRefusal}>{hint(ch.joinRefusal)}</span>
+                  <span class="muted refusal" title={ch.joinRefusal}>{hint(ch.joinRefusal)}{#if ch.stranded}{' '}· stranded {ch.stranded}{/if}</span>
                 {/if}
               </td>
             </tr>

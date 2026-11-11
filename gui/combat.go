@@ -139,8 +139,8 @@ func (s *Session) PracticeEncounter(withChest bool) View {
 //
 // A real expedition plays the saved game, which is saved after every
 // action, whatever happened (as the terminal saves after every key). It is
-// over when the game is back in town: by the stairs, or with the engine's
-// defeat (the dead party is returned to the castle).
+// over when the game is back in town: by the stairs, or when no one can go
+// on (the party is stranded in the maze, R-1).
 func (s *Session) combatDo(action func() error) View {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -157,6 +157,8 @@ func (s *Session) combatDo(action func() error) View {
 		if g := s.ctrl.Game; g.Phase == engine.PhaseTown {
 			s.real = false
 			switch {
+			case g.Town.Message == engine.StrandMessage:
+				s.notice = strandedNotice(g)
 			case g.Town.Message != "":
 				s.notice = g.Town.Message + " The expedition is over."
 			case g.MazeMessage != "":
@@ -190,6 +192,13 @@ func (s *Session) combatDo(action func() error) View {
 		}
 	}
 	return s.view(err)
+}
+
+// strandedNotice says how an expedition ended when its party was stranded
+// (engine.StrandParty): where the characters remain, and that they have not
+// come back.
+func strandedNotice(g *engine.GameState) string {
+	return g.Town.Message + " " + g.Town.Message2 + " The expedition is over; the characters remain in the maze, not in the castle."
 }
 
 // anyAlive reports whether any party member is alive.

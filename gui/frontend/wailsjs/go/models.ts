@@ -1361,6 +1361,7 @@ export namespace main {
 	    poison: number;
 	    inMaze: boolean;
 	    mazeLevel: number;
+	    stranded?: string;
 	    legacy: boolean;
 	    equipNote: string;
 	    inParty: boolean;
@@ -1399,6 +1400,7 @@ export namespace main {
 	        this.poison = source["poison"];
 	        this.inMaze = source["inMaze"];
 	        this.mazeLevel = source["mazeLevel"];
+	        this.stranded = source["stranded"];
 	        this.legacy = source["legacy"];
 	        this.equipNote = source["equipNote"];
 	        this.inParty = source["inParty"];

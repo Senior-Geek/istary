@@ -100,9 +100,24 @@ func TestCombatLeaveCombat(t *testing.T) {
 	}
 	c2, _ := combatController(t, 1)
 	c2.Game.Combat.Phase = engine.CombatDefeat
+	// A defeat with someone still able to act is refused, changing nothing
+	// (R-1: only a party that cannot go on is stranded).
+	if err := c2.LeaveCombat(); err == nil || c2.Game.Phase != engine.PhaseCombat || c2.Game.Town.Party.Size() == 0 {
+		t.Fatalf("defeat with the party standing: %v phase %v", err, c2.Game.Phase)
+	}
+	party := append([]*engine.Character(nil), c2.Game.Town.Party.Members...)
+	for _, m := range party {
+		m.Status = engine.Dead
+	}
+	here, _ := c2.Game.Place()
 	if err := c2.LeaveCombat(); err != nil || c2.Game.Phase != engine.PhaseTown || c2.Game.Town.Location != engine.Castle ||
-		c2.Game.Town.Message != "YOUR PARTY HAS PERISHED IN THE MAZE..." {
+		c2.Game.Town.Message != "YOUR PARTY HAS PERISHED IN THE MAZE..." || c2.Game.Combat != nil || c2.Game.Town.Party.Size() != 0 {
 		t.Fatalf("defeat: %v phase %v %q", err, c2.Game.Phase, c2.Game.Town.Message)
+	}
+	for _, m := range party {
+		if m.Stranded == nil || *m.Stranded != here || !m.InMaze {
+			t.Fatalf("%s after defeat: stranded %v in maze %v, want %v", m.Name, m.Stranded, m.InMaze, here)
+		}
 	}
 }
 

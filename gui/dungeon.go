@@ -12,8 +12,8 @@ package main
 //
 // A real expedition (M6b-1) takes the party itself, in the saved game, and
 // saves after every action: injuries, spells spent, experience, gold and
-// items are kept. It ends only in the castle: by the stairs, or with the
-// engine's defeat, which returns the dead party there.
+// items are kept. It ends by the stairs, or when no one can go on: then the
+// party stays stranded in the maze (R-1) and the player is in the castle.
 //
 // Each save carries the expedition's checkpoint (M6b-2, app.Controller.
 // Checkpoint): the last safe point, in the same atomic write as the roster.
@@ -131,6 +131,14 @@ func (s *Session) resume() {
 	interrupted := e.Interrupted
 	if err := s.ctrl.Resume(s.pristine); err != nil {
 		s.problem = err.Error()
+		return
+	}
+	if g.Phase == engine.PhaseTown {
+		// No one could go on: the party is stranded where it was (R-1, D-R).
+		s.notice = "Istary closed after the party was defeated. " + strandedNotice(g)
+		if err := s.checkpoint(); err == nil {
+			s.save()
+		}
 		return
 	}
 	s.real = true

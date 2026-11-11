@@ -105,6 +105,13 @@ func (c *Controller) templeNameKey(k Key) {
 			return
 		}
 
+		// R-1: a character stranded in the maze is not at the Temple.
+		if found.IsStranded() {
+			town.Message = found.Name + " IS OUT"
+			town.InputBuf = ""
+			return
+		}
+
 		// Check if character is OK — from p-code proc 28 (IC 397-416)
 		if found.Status == engine.OK {
 			town.Message = found.Name + " IS OK"

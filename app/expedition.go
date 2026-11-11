@@ -131,7 +131,9 @@ func (c *Controller) Checkpoint(pristine *data.Scenario) (*engine.Expedition, er
 }
 
 // Resume puts the saved expedition (Game.Expedition) back: the party from
-// the roster, the special squares, and the maze or Camp at the checkpoint.
+// the roster, the special squares, and the maze or Camp at the checkpoint;
+// or, when no one in the party can go on, leaves it stranded there, with
+// the game in the castle.
 // An interrupted encounter is over: the party stands where the checkpoint
 // left it, with the encounter's messages cleared as leaving combat does.
 // Nothing is replayed and no random number is drawn. The game must be in
@@ -148,6 +150,9 @@ func (c *Controller) Resume(pristine *data.Scenario) error {
 	members, found, err := c.checkExpedition(e)
 	if err != nil {
 		return err
+	}
+	if _, onSquare := engine.PlaceOf(len(g.Scenario.Mazes.Levels), e.Where.Level, e.Where.X, e.Where.Y); !onSquare && !engine.PartyCanContinue(members) {
+		return &ExpeditionProblem{"no one in the party can go on, and it is not on a square of the maze to be left on"}
 	}
 	if err := engine.RestoreSquares(pristine, g.Scenario, e.Squares); err != nil {
 		return &ExpeditionProblem{err.Error()}
@@ -195,6 +200,18 @@ func (c *Controller) Resume(pristine *data.Scenario) error {
 	if e.Interrupted != "" {
 		// As LeaveCombat after a victory: the encounter's messages go.
 		g.MazeMessage, g.MazeMessage2 = "", ""
+	}
+	// R-1 (decision D-R): a party that cannot go on (an encounter saved
+	// after its defeat was decided, or an older save's dead party left
+	// walking, #28) is stranded at the checkpoint's square before anything
+	// else can happen, as LeaveCombat would have done. The checkpoint holds
+	// no random state, so doing this again after a restart gives the same
+	// result.
+	if !engine.PartyCanContinue(members) {
+		if err := c.strand(); err != nil {
+			return err
+		}
+		g.Expedition = nil // over: its members are stranded, not out on it
 	}
 	return nil
 }

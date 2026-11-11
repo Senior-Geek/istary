@@ -351,7 +351,7 @@ func RiteCanPerform(c *Character) string {
 	if c.IsLegacy {
 		return "THIS CHARACTER IS ALREADY A LEGACY!"
 	}
-	if c.InMaze || c.MazeLevel != 0 || c.Status >= Dead {
+	if c.OutOfCastle() || c.Status >= Dead {
 		return "YOUR CHARACTER MUST BE ALIVE\nAND IN THE CASTLE TO BE ABLE\nTO GENERATE A LEGACY."
 	}
 	return ""
@@ -396,6 +396,7 @@ func RiteApply(c *Character) {
 	c.MazeLevel = 0
 	c.MazeX = 0
 	c.MazeY = 0
+	c.Stranded = nil
 	c.PoisonAmt = 0
 
 	// ADJATTR(attr, -3): for negative adj, random 0..abs(adj), 50% chance of negation.

@@ -64,7 +64,7 @@ func (c *Controller) patientRefusal(ch *engine.Character) string {
 		return ch.Name + " IS OK"
 	case c.Game.OnExpedition(ch.Name):
 		return fmt.Sprintf("%s is out on an expedition, not at the castle.", ch.Name)
-	case !InParty(c.Game.Town, ch) && (ch.InMaze || ch.MazeLevel != 0):
+	case !InParty(c.Game.Town, ch) && ch.OutOfCastle():
 		return fmt.Sprintf("%s is OUT in the maze, not at the castle; only a rescue can bring them back.", ch.Name)
 	}
 	return ""

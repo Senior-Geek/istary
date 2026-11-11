@@ -28,3 +28,13 @@ func (r *Refusal) Error() string { return r.Message }
 // saved expedition: the expedition refers to its members by name, and their
 // roster entry is their only record.
 var ErrOnExpedition = &Refusal{Message: "** OUT ON AN EXPEDITION **"}
+
+// ErrStranded refuses castle actions (renaming, deleting, equipping) on a
+// character stranded in the maze by a defeated party (R-1): they are not at
+// the castle.
+var ErrStranded = &Refusal{Message: "** OUT IN THE MAZE **"}
+
+// ErrPickUpStranded refuses P)ICK UP when Inspect found characters stranded
+// by a defeated party: carrying them out comes with rescue (R-2), and the
+// present P)ICK UP would free those it has no room for (#27).
+var ErrPickUpStranded = &Refusal{Message: "THEY CANNOT BE CARRIED OUT YET; THEY STAY HERE."}
