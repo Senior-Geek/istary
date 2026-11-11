@@ -205,7 +205,10 @@ through `app.Controller`, without behaviour changes.
 
 **Recruit → Select Team → Equip → Recover → Develop**
 
-- **Boltac's:** buy, sell, identify, uncurse.
+- **Boltac's:** buy, sell, identify, uncurse. *UX-2 (2026-11-11): the
+  first party member is served on arrival, the party bar picks the customer,
+  and a Selected Character panel equips beside the counter
+  (`design/ux2/UX-2.md`).*
 - **Player profile actions:** equip, drop, trade and read spell books, as
   allowed for the location.
 - **Inn:** rooms, paced healing, level-up results.
