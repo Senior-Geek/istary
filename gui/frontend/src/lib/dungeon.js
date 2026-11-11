@@ -71,18 +71,24 @@ export const actions = {
   continue: { label: 'Continue', hint: '↵', keys: ['Enter', ' '] },
   yes: { label: 'Yes', hint: 'Y', keys: ['y'] },
   no: { label: 'No', hint: 'N', keys: ['n'] },
-  'pick-up': { label: 'Pick up', hint: 'P', keys: ['p'] },
+  'pick-up': { label: 'Pick up', hint: '1-9', keys: [] }, // one character at a time: a digit, or its button
   leave: { label: 'Leave', hint: 'L', keys: ['l'] },
   'leave-camp': { label: 'Leave camp', hint: 'L', keys: ['l'] },
 }
 
 // keyAction maps a key press to one of the view's open actions, or null.
-// At the buttons, a letter presses that button.
+// At the buttons, a letter presses that button; at Inspect, a digit picks
+// up that character (Inspect.found[].n), if the party has room.
 export function keyAction(key, dungeon) {
   const open = dungeon?.actions ?? []
   if (open.includes('button')) {
     const i = (dungeon.buttons ?? []).indexOf(key.toUpperCase())
     return i >= 0 ? { action: 'button', button: i + 1 } : null
+  }
+  if (open.includes('pick-up') && /^[1-9]$/.test(key)) {
+    const n = Number(key)
+    const f = dungeon.inspect?.found?.find((x) => x.n === n)
+    return f?.canPick ? { action: 'pick-up', button: n } : null
   }
   const k = key.length === 1 ? key.toLowerCase() : key
   const action = open.find((a) => actions[a]?.keys.includes(k))

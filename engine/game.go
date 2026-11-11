@@ -80,7 +80,9 @@ type GameState struct {
 	ButtonCount    int  // number of buttons on current square (0 = not at buttons)
 	WaitButton     bool // true = waiting for button input (A-X or Return)
 	MazeInspecting   bool         // true = showing I)NSPECT search screen (SPECIALS proc 38)
-	MazeInspectFound []*Character // characters found at current square during INSPECT
+	MazeInspectFound []*Character // characters INSPECT found from the party's square, not yet picked up (rescue.go)
+	MazePicking      bool         // P)ICK UP's "GET WHO (0=EXIT) >" prompt is open (terminal)
+	MazePickBuf      string       // the number typed at GET WHO, when more than nine are found
 	MazeDelayInput   bool         // true = waiting for delay value input (T)IME)
 	MazeDelayBuf     string       // numeric input buffer for delay
 	MazeDelay        int          // animation delay value (1-5000, from global 7)

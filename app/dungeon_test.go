@@ -357,7 +357,7 @@ func TestPromptAnswersCheckTheirPrompt(t *testing.T) {
 	}
 	c.Game.WaitButton, c.Game.ButtonCount = false, 0
 	must(t, c.Inspect())
-	if err := c.PickUp(); !errors.Is(err, ErrInvalidChoice) {
+	if err := c.PickUp(1); !errors.Is(err, ErrInvalidChoice) {
 		t.Fatalf("pick up with nobody found: %v", err)
 	}
 	must(t, c.LeaveInspect())

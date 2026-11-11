@@ -12,7 +12,7 @@ import (
 // terminal-only.
 
 // MaxPartySize is the most characters a party can hold.
-const MaxPartySize = 6
+const MaxPartySize = engine.MaxPartySize
 
 // FrontRowSize is how many leading party slots form the front row; only
 // they can melee (FIGHT) in combat.

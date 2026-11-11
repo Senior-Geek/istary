@@ -19,16 +19,17 @@ import (
 type DungeonView struct {
 	Phase    string              `json:"phase"` // "camp", "maze", "combat", "town" or "other"
 	Party    []DungeonMemberView `json:"party"`
-	Corridor []CorridorView      `json:"corridor"` // nearest first; empty in the dark
-	Dark     bool                `json:"dark"`     // the view ends in a dark square
-	Viewport []string            `json:"viewport"` // text in the view: "OUCH!", "IT'S VERY" / "DARK HERE"
-	Lines    []string            `json:"lines"`    // the message area
-	More     bool                `json:"more"`     // a long message has more pages ([RET] FOR MORE)
-	Prompt   string              `json:"prompt"`   // what the maze waits for: "", "messages", "stairs", "search", "buttons", "inspect", "map", "delay"
-	Buttons  []string            `json:"buttons"`  // the buttons to press ("A", "B", ...)
-	Found    []string            `json:"found"`    // Inspect: characters found here
-	Spells   []string            `json:"spells"`   // LIGHT and PROTECT, as on the maze screen
-	Actions  []string            `json:"actions"`  // operations open now (the Act names)
+	Corridor []CorridorView      `json:"corridor"`          // nearest first; empty in the dark
+	Dark     bool                `json:"dark"`              // the view ends in a dark square
+	Viewport []string            `json:"viewport"`          // text in the view: "OUCH!", "IT'S VERY" / "DARK HERE"
+	Lines    []string            `json:"lines"`             // the message area
+	More     bool                `json:"more"`              // a long message has more pages ([RET] FOR MORE)
+	Prompt   string              `json:"prompt"`            // what the maze waits for: "", "messages", "stairs", "search", "buttons", "inspect", "map", "delay"
+	Buttons  []string            `json:"buttons"`           // the buttons to press ("A", "B", ...)
+	Found    []string            `json:"found"`             // Inspect: names of the characters found in the party's area
+	Inspect  *InspectView        `json:"inspect,omitempty"` // Inspect: who was found, and the room for them
+	Spells   []string            `json:"spells"`            // LIGHT and PROTECT, as on the maze screen
+	Actions  []string            `json:"actions"`           // operations open now (the Act names)
 }
 
 // DungeonMemberView is one party member as the maze screen lists them.
@@ -41,6 +42,25 @@ type DungeonMemberView struct {
 	MaxHP    int    `json:"maxHp"`
 	Status   string `json:"status"`
 	Poisoned bool   `json:"poisoned"`
+}
+
+// InspectView is the Inspect screen (R-2): each character found in the
+// party's area, and how many more the party has room for. It says nothing
+// of where they lie: the maze view never gives positions.
+type InspectView struct {
+	Found []FoundView `json:"found"`
+	Room  int         `json:"room"` // more characters the party can take (6 - its size)
+}
+
+// FoundView is one character found by Inspect.
+type FoundView struct {
+	N       int    `json:"n"` // from 1: PickUp(N) takes this character
+	Name    string `json:"name"`
+	Class   string `json:"class"` // alignment and class ("G-FIG")
+	Level   int    `json:"level"`
+	Status  string `json:"status"`
+	CanPick bool   `json:"canPick"`
+	Refusal string `json:"refusal,omitempty"` // why not, when CanPick is false
 }
 
 // CorridorView is one square of the corridor ahead: its walls to the left,
@@ -133,10 +153,17 @@ func (c *Controller) DungeonView() DungeonView {
 			v.Buttons = append(v.Buttons, string(rune('A'+i)))
 		}
 	case "inspect":
-		for _, ch := range g.MazeInspectFound {
+		v.Inspect = &InspectView{Found: []FoundView{}, Room: c.RescueRoom()}
+		for i, ch := range g.MazeInspectFound {
 			v.Found = append(v.Found, ch.Name)
+			f := FoundView{N: i + 1, Name: ch.Name, Class: engine.AlignClass(ch.Alignment, ch.Class),
+				Level: ch.Level, Status: ch.Status.String(), CanPick: v.Inspect.Room > 0}
+			if !f.CanPick {
+				f.Refusal = partyFullRefusal(ch).Message
+			}
+			v.Inspect.Found = append(v.Inspect.Found, f)
 		}
-		if len(v.Found) > 0 {
+		if len(v.Found) > 0 && v.Inspect.Room > 0 {
 			v.Actions = append(v.Actions, ActPickUp)
 		}
 		v.Actions = append(v.Actions, ActLeave)

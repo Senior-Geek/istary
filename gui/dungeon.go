@@ -84,9 +84,16 @@ func (s *Session) realRefusal() error {
 		return errExpeditionSaved
 	case g.Phase != engine.PhaseTown || len(g.Town.Party.Members) == 0:
 		return errNoParty
+	case !engine.PartyCanContinue(g.Town.Party.Members):
+		return errNoOneCanGoOn
 	}
 	return nil
 }
+
+// errNoOneCanGoOn refuses setting out when no one in the party can act
+// (app.ErrNoOneCanGoOn): the incapacitated must be taken to the Temple, or
+// led by someone who can.
+var errNoOneCanGoOn = errors.New("No one in the party can go on. Take them to the Temple, or add someone who can lead them.")
 
 // errNoParty refuses setting out with no party (the original's Edge of
 // Town offers M)AZE only to a party).
@@ -202,7 +209,8 @@ func (s *Session) TryResumeAgain() View {
 }
 
 // DungeonAction performs one of the dungeon view's actions (app.Act...).
-// button is the button to press (1 is A) for "button".
+// button is the button to press (1 is A) for "button", and the number of
+// the found character (Inspect.Found[].N) for "pick-up".
 func (s *Session) DungeonAction(action string, button int) View {
 	return s.onPractice(func(c *app.Controller) error {
 		if !s.expedition && !s.real {
@@ -230,7 +238,7 @@ func (s *Session) DungeonAction(action string, button int) View {
 		case app.ActButton:
 			return c.PressButton(button)
 		case app.ActPickUp:
-			return c.PickUp()
+			return c.PickUp(button)
 		case app.ActLeave:
 			return c.LeaveInspect()
 		case app.ActLeaveCamp:

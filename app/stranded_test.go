@@ -609,63 +609,6 @@ func TestStrandedCharactersAreNotInTheCastle(t *testing.T) {
 	}
 }
 
-// Inspect finds stranded characters on their own square only, by their
-// record (not the legacy fields, which say L1 (0,0) for everyone); P)ICK
-// UP refuses them until rescue is designed (R-2), changing nothing.
-func TestInspectFindsStrandedCharactersAndPickUpWaits(t *testing.T) {
-	seed(22)
-	c, fallen := walkers(t)
-	g := c.Game
-	trap(c, 0, 4, 4, data.SqPit)
-	stepOnto(t, c, 0, 4, 4)
-	here := place(c, 0, 4, 4)
-	mustBeStranded(t, c, fallen, nil, here)
-
-	rescuers := explorers(t).Game.Town.Party.Members
-	for _, m := range rescuers {
-		m.Name = "R" + m.Name
-		g.Town.Roster.Add(m)
-	}
-	g.Town.Party.Members = rescuers
-	g.Town.Location = engine.EdgeOfTown
-	must(t, c.EnterMaze())
-	must(t, c.LeaveCamp())
-	must(t, c.Answer(false))
-	g.MazeMessage, g.MazeMessage2 = "", ""
-
-	// At the entrance (the legacy fields' square): nobody.
-	must(t, c.Inspect())
-	if len(g.MazeInspectFound) != 0 {
-		t.Fatalf("found %d at the entrance", len(g.MazeInspectFound))
-	}
-	must(t, c.LeaveInspect())
-
-	g.PlayerX, g.PlayerY = 4, 4
-	must(t, c.Inspect())
-	if len(g.MazeInspectFound) != 6 {
-		t.Fatalf("found %d on the square", len(g.MazeInspectFound))
-	}
-	before := records(t, fallen)
-	if err := c.PickUp(); !errors.Is(err, ErrPickUpStranded) {
-		t.Fatalf("pick up: %v", err)
-	}
-	c.HandleKey(Rune('P')) // the terminal's key: refused the same way
-	if g.Town.Party.Size() != 6 || !g.MazeInspecting {
-		t.Fatalf("party %d inspecting %v", g.Town.Party.Size(), g.MazeInspecting)
-	}
-	mustBeStrandedStill(t, fallen, before, here)
-	must(t, c.LeaveInspect())
-}
-
-func mustBeStrandedStill(t *testing.T, chars []*engine.Character, before []string, here engine.Place) {
-	t.Helper()
-	for i, m := range chars {
-		if m.Stranded == nil || *m.Stranded != here || !m.InMaze || record(t, m) != before[i] {
-			t.Fatalf("%s: stranded %v in maze %v", m.Name, m.Stranded, m.InMaze)
-		}
-	}
-}
-
 // Stranded characters are saved and loaded with their squares, once each;
 // the castle party stays empty. A second save and load changes nothing.
 // (27, 34)

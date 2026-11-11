@@ -4,6 +4,9 @@
   // keeps no maze state. The picture is a simple wireframe of the corridor
   // Go describes, not the Classic renderer.
   //
+  // Inspect (R-2) lists each character found in the party's area, with a
+  // Pick up button (keys 1-9) while the party has room, or the reason not.
+  //
   // The maps (M-1): the minimap (view.minimap, Go's squares around the
   // party) sits in the corner of the view while walking, unless hidden
   // (a saved setting); Map or F10 opens the full map of the explored level
@@ -110,7 +113,23 @@
     {#each lines as l, i (i)}<p>{l}</p>{/each}
     {#if d.more}<p class="muted">[RET] FOR MORE</p>{/if}
     {#if d.prompt === 'inspect'}
-      <p>{d.found?.length ? 'FOUND: ' + d.found.join(', ') : 'LOOKING... NO ONE IS HERE.'}</p>
+      {#if d.inspect?.found?.length}
+        <p class="muted small">FOUND · room in the party for {d.inspect.room}</p>
+        <ul class="found" aria-label="Characters found">
+          {#each d.inspect.found as f (f.name)}
+            <li>
+              <span>{f.n}) {f.name} · {f.class} · LEVEL {f.level} · {f.status}</span>
+              {#if f.canPick}
+                <button disabled={busy} onclick={() => act('pick-up', f.n)}>Pick up{#if f.n <= 9} <kbd>{f.n}</kbd>{/if}</button>
+              {:else}
+                <span class="muted small">{f.refusal}</span>
+              {/if}
+            </li>
+          {/each}
+        </ul>
+      {:else}
+        <p>LOOKING... NO ONE IS HERE.</p>
+      {/if}
     {/if}
   </section>
 
@@ -134,7 +153,7 @@
       </div>
     {:else}
       <div class="row">
-        {#each open as a (a)}
+        {#each open.filter((a) => a !== 'pick-up') as a (a)}
           <button class:primary={a === open[0]} disabled={busy} onclick={() => act(a)}>{actions[a]?.label ?? a} <kbd>{actions[a]?.hint}</kbd></button>
         {/each}
       </div>
@@ -192,5 +211,9 @@
   .pad, .row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
   kbd { font: 600 11px ui-monospace, Menlo, monospace; border: 1px solid var(--line); border-radius: 3px; padding: 0 4px; }
   .small { font-size: 11px; }
+  /* Inspect's finds: one line each, scrolling if the area holds many. */
+  .found { list-style: none; margin: 4px auto; padding: 0; max-height: 168px; overflow-y: auto; max-width: 640px; }
+  .found li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 2px 6px; color: #f2c14e; }
+  .found li button { padding: 1px 8px; }
   .partyarea { border-top: 1px solid var(--line); padding-top: 8px; }
 </style>

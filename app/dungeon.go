@@ -118,20 +118,6 @@ func (c *Controller) PressButton(n int) error {
 	return c.prompted(Rune('A'+rune(n-1)), "buttons")
 }
 
-// PickUp takes the characters Inspect found into the party.
-func (c *Controller) PickUp() error {
-	if c.mazePrompt() == "inspect" && len(c.Game.MazeInspectFound) == 0 {
-		return ErrInvalidChoice
-	}
-	if c.mazePrompt() == "inspect" && anyStranded(c.Game.MazeInspectFound) {
-		return ErrPickUpStranded
-	}
-	return c.prompted(Rune('P'), "inspect")
-}
-
-// LeaveInspect leaves the Inspect screen.
-func (c *Controller) LeaveInspect() error { return c.prompted(Rune('L'), "inspect") }
-
 // EnterMaze takes the party from the Edge of Town into the maze, to Camp at
 // the entrance (EDGE OF TOWN M)AZE).
 func (c *Controller) EnterMaze() error {
@@ -141,6 +127,12 @@ func (c *Controller) EnterMaze() error {
 	}
 	if g.Town.Party.Size() == 0 {
 		return ErrPartyEmpty
+	}
+	if !engine.PartyCanContinue(g.Town.Party.Members) {
+		// A castle party may hold the incapacitated (rescued and brought
+		// back, decision Q8), but someone must be able to lead them.
+		g.Town.Message = ErrNoOneCanGoOn.Message
+		return ErrNoOneCanGoOn
 	}
 	g.Phase = engine.PhaseCamp
 	g.MazeLevel = 0

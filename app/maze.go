@@ -84,24 +84,7 @@ func (c *Controller) mazeKey(k Key) {
 	// I)NSPECT dungeon screen — from SPECIALS proc 38:
 	// P)ICK UP (if characters found) or L)EAVE
 	if game.MazeInspecting {
-		if k.Kind == KeyRune {
-			ch := k.Rune
-			if ch == 'l' || ch == 'L' {
-				game.MazeInspecting = false
-				game.MazeInspectFound = nil
-			} else if (ch == 'p' || ch == 'P') && len(game.MazeInspectFound) > 0 && !anyStranded(game.MazeInspectFound) {
-				// P)ICK UP — from p-code SPECIALS CLP 5:
-				// Add found characters back to party (if room)
-				for _, c := range game.MazeInspectFound {
-					c.InMaze = false
-					if len(game.Town.Party.Members) < 6 {
-						game.Town.Party.Members = append(game.Town.Party.Members, c)
-					}
-				}
-				game.MazeInspecting = false
-				game.MazeInspectFound = nil
-			}
-		}
+		c.mazeInspectKey(k)
 		return
 	}
 
@@ -131,11 +114,7 @@ func (c *Controller) mazeKey(k Key) {
 				// Pascal BCK2SHOP: MAZELEV := 0; XGOTO := XNEWMAZE.
 				if game.MazePendingBack2Shop {
 					game.MazePendingBack2Shop = false
-					for _, m := range game.Town.Party.Members {
-						if m != nil {
-							m.InMaze = false
-						}
-					}
+					game.PartyHome()
 					game.MazeMessage = ""
 					game.Phase = engine.PhaseTown
 					game.Town.Location = engine.Castle
@@ -295,11 +274,7 @@ func (c *Controller) mazeKey(k Key) {
 			if cell != nil && cell.Type == data.SqStairs {
 				if cell.DestLevel == 0 {
 					// Stairs up to castle — Pascal does NOT cure poison on return
-					for _, m := range game.Town.Party.Members {
-						if m != nil {
-							m.InMaze = false
-						}
-					}
+					game.PartyHome()
 					game.Phase = engine.PhaseTown
 					game.Town.Location = engine.Castle
 					game.Town.Message = ""
@@ -406,41 +381,14 @@ func (c *Controller) mazeKey(k Key) {
 		game.MazeMessage2 = ""
 		game.MazeDelayInput = true
 		game.MazeDelayBuf = ""
-	case 'I': // I)NSPECT — from p-code SPECIALS proc 38: search current dungeon square
-		// Full separate screen: "LOOKING...", then "FOUND:" + search results
-		// Searches for lost characters at current (x,y,level)
+	case 'I': // I)NSPECT — from p-code SPECIALS proc 38: search the area
+		// Full separate screen: "LOOKING...", then "FOUND:" + search results:
+		// the characters lost in the party's area (EXPLROOM, LOOKLOST), by
+		// GameState.FindStranded (R-2).
 		game.MazeInspecting = true
-		game.MazeInspectFound = nil
-		// Search roster for characters lost at current position
-		// From p-code proc 40 (IC 82-292): loops all roster chars,
-		// checks INMAZE flag and position match
-		here, onSquare := game.Place()
-		for _, c := range game.Town.Roster.Characters {
-			if c == nil || c.Status == engine.Lost {
-				continue
-			}
-			// Characters in the party are not "lost" in the dungeon
-			inParty := false
-			for _, m := range game.Town.Party.Members {
-				if m == c {
-					inParty = true
-					break
-				}
-			}
-			if inParty || !c.InMaze {
-				continue
-			}
-			// A stranded character is found on their square (R-1); one an
-			// older version left out with no square (Camp D)ISBAND, #26) by
-			// the legacy LOSTXYL fields, as before.
-			if c.Stranded != nil {
-				if onSquare && *c.Stranded == here {
-					game.MazeInspectFound = append(game.MazeInspectFound, c)
-				}
-			} else if c.MazeLevel == game.MazeLevel && c.MazeX == game.PlayerX && c.MazeY == game.PlayerY {
-				game.MazeInspectFound = append(game.MazeInspectFound, c)
-			}
-		}
+		game.MazeInspectFound = game.FindStranded()
+		game.MazePicking, game.MazePickBuf = false, ""
+		game.MazeMessage = ""
 	case 'M': // Map view
 		game.ShowMap = true
 		game.MapScrollX = 0
@@ -761,7 +709,15 @@ func checkSquare(game *engine.GameState) {
 		game.MazeMessage = "OUCH!"
 		ouchyDamage(game, cell)
 	case data.SqRockwater:
-		// Pascal SPECSQAR ROCKWATE: instant death — MAZELEV := -99
+		// Istary's SOLID ROCK square: everyone still able to act dies (kept
+		// for now, decision Q3 of R-2). This is not the original's rule. In
+		// the reconstructed Pascal, SPECSQAR ROCKWATE sets MAZELEV := -99 and
+		// goes to NEWMAZE, which turns any level below 0 into level 1 and
+		// goes to the entrance's Camp (XEQUIP6): the party is put back on
+		// the first level, at the same X and Y, in Camp, unharmed (RUNNER2,
+		// UTILITIE; docs/design/r2/RESCUE.md). No scenario of Wizardry I-III
+		// has such a square. Bodies left here are found, and picked up, from
+		// any square joined to it by open walls (rescue.go).
 		game.MazeMessage = "SOLID ROCK!"
 		for _, m := range game.Town.Party.Members {
 			if m != nil && m.IsAlive() {
@@ -837,17 +793,4 @@ func ouchyDamage(game *engine.GameState, cell *data.MazeCell) {
 			m.Status = engine.Dead
 		}
 	}
-}
-
-// anyStranded reports whether any of found was stranded by a defeated party
-// (R-1). P)ICK UP does not take them yet: it frees everyone it finds, even
-// those it has no room for (#27), which would bring stranded characters
-// back to the castle without a rescue. Picking them up comes with R-2.
-func anyStranded(found []*engine.Character) bool {
-	for _, c := range found {
-		if c.IsStranded() {
-			return true
-		}
-	}
-	return false
 }

@@ -17,12 +17,15 @@ package engine
 //     is.)
 //   - A stranded character is in no party and on no saved expedition.
 //   - Condition, items, gold and experience are left exactly as they were.
-//   - MazeLevel, MazeX and MazeY (the original's LOSTXYL) are never written:
-//     their level was 1-based in the original and 0-based here, so a 0
-//     could mean the castle or the first level. They are read only for
-//     characters an older version left out with no Stranded record (Camp
-//     D)ISBAND, finding #26), exactly as before.
+//   - MazeLevel, MazeX and MazeY (the original's LOSTXYL) are never written
+//     but to clear them: their level was 1-based in the original and
+//     0-based here, so a 0 could mean the castle or the first level. They
+//     are read only for characters an older version left out with no
+//     Stranded record (Camp D)ISBAND, finding #26), exactly as before, and
+//     cleared when such a character is picked up (rescue.go).
 //   - Old saves have no Stranded record and none is ever made up for them.
+//   - A rescue (rescue.go) clears Stranded as the character joins the
+//     party; a stranded character is never in a party.
 
 import "errors"
 

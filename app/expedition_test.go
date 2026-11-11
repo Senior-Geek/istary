@@ -161,7 +161,7 @@ func expeditionStep(t *testing.T, c *Controller, pick *rand.Rand) {
 			c.PressButton(1 + pick.Intn(g.ButtonCount))
 		case "inspect":
 			if pick.Intn(2) == 0 {
-				c.PickUp()
+				c.PickUp(1)
 			}
 			c.LeaveInspect()
 		default:

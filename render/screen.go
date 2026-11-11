@@ -300,19 +300,39 @@ func (s *Screen) RenderCamp(game *engine.GameState) {
 func (s *Screen) RenderMaze(game *engine.GameState) {
 	s.Clear()
 
-	// I)NSPECT dungeon square — full separate screen (no sixel)
+	// I)NSPECT dungeon square — full separate screen (no sixel): every
+	// character found in the party's area, numbered for P)ICK UP's
+	// "GET WHO (0=EXIT) >" (SPECIALS LOOKLOST, PICKUP; R-2), the room left
+	// in the party, the last pick's message, and the options or the prompt.
 	if game.MazeInspecting {
 		s.ClearSixelTransition()
 		s.DrawString(0, 0, styleNormal, "FOUND:")
 		if len(game.MazeInspectFound) == 0 {
-			s.DrawString(0, 5, styleNormal, "** NO ONE **")
-			s.DrawString(0, 20, styleNormal, "OPTIONS: L)EAVE")
-		} else {
-			for i, c := range game.MazeInspectFound {
-				s.DrawString(0, 5+i, styleNormal, fmt.Sprintf("%s LEVEL %d %s %s (%s)",
-					c.Name, c.Level, c.Race, c.Class, c.Status))
+			s.DrawString(0, 2, styleNormal, "** NO ONE **")
+		}
+		for i, c := range game.MazeInspectFound { // at most 19: a roster holds 20
+			if i >= 19 {
+				break
 			}
-			s.DrawString(0, 20, styleNormal, "OPTIONS: P)ICK UP, L)EAVE")
+			// 40 columns: number, name, level, alignment-class, condition.
+			s.DrawString(0, 1+i, styleNormal, fmt.Sprintf("%d) %-15s %2d %s %s",
+				i+1, c.Name, c.Level, engine.AlignClass(c.Alignment, c.Class), c.Status))
+		}
+		room := engine.MaxPartySize - game.Town.Party.Size()
+		if room < 0 {
+			room = 0
+		}
+		s.DrawString(0, 20, styleNormal, fmt.Sprintf("ROOM IN THE PARTY FOR %d", room))
+		if game.MazeMessage != "" {
+			s.DrawString(0, 21, styleNormal, game.MazeMessage)
+		}
+		switch {
+		case game.MazePicking:
+			s.DrawString(0, 22, styleNormal, "GET WHO (0=EXIT) >"+game.MazePickBuf)
+		case len(game.MazeInspectFound) > 0:
+			s.DrawString(0, 22, styleNormal, "OPTIONS: P)ICK UP, L)EAVE")
+		default:
+			s.DrawString(0, 22, styleNormal, "OPTIONS: L)EAVE")
 		}
 		s.Show()
 		return

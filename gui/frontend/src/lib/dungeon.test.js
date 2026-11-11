@@ -50,6 +50,18 @@ test('keys only perform open actions', () => {
   assert.equal(keyAction('f', null), null)
 })
 
+test('at Inspect a digit picks up that character, only while there is room', () => {
+  const found = [{ n: 1, name: 'A', canPick: true }, { n: 2, name: 'B', canPick: true }]
+  const d = { actions: ['pick-up', 'leave'], inspect: { found, room: 2 } }
+  assert.deepEqual(keyAction('2', d), { action: 'pick-up', button: 2 })
+  assert.equal(keyAction('3', d), null)
+  assert.equal(keyAction('0', d), null)
+  assert.equal(keyAction('p', d), null)
+  assert.deepEqual(keyAction('l', d), { action: 'leave', button: 0 })
+  const full = { actions: ['leave'], inspect: { found: found.map((f) => ({ ...f, canPick: false })), room: 0 } }
+  assert.equal(keyAction('1', full), null)
+})
+
 test('at the buttons a letter presses that button and nothing else works', () => {
   const d = { actions: ['button'], buttons: ['A', 'B', 'C'] }
   assert.deepEqual(keyAction('b', d), { action: 'button', button: 2 })

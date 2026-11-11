@@ -34,7 +34,8 @@ var ErrOnExpedition = &Refusal{Message: "** OUT ON AN EXPEDITION **"}
 // the castle.
 var ErrStranded = &Refusal{Message: "** OUT IN THE MAZE **"}
 
-// ErrPickUpStranded refuses P)ICK UP when Inspect found characters stranded
-// by a defeated party: carrying them out comes with rescue (R-2), and the
-// present P)ICK UP would free those it has no room for (#27).
-var ErrPickUpStranded = &Refusal{Message: "THEY CANNOT BE CARRIED OUT YET; THEY STAY HERE."}
+// ErrNoOneCanGoOn refuses setting out with a party in which no one can act
+// (all DEAD, ASHED, PARALYZED or STONED, as a rescued party may come back):
+// it would be stranded at the entrance. Taking the incapacitated along with
+// someone who can act is allowed, as the original allows it.
+var ErrNoOneCanGoOn = &Refusal{Message: "NO ONE IN THE PARTY CAN GO ON."}

@@ -70,10 +70,35 @@ func (s *Session) practiceGame() (*engine.GameState, error) {
 	// Practice starts from the player's map; what it shows is discarded
 	// with the practice game.
 	pg.Exploration, pg.OtherExploration = g.Exploration.Clone(), g.OtherExploration
-	for _, m := range g.Town.Party.Members {
+	// Practice works on copies of the whole roster, so that a practice
+	// rescue finds (copies of) the stranded (R-2, decision Q7); the party is
+	// the copies of its members. The copies are discarded with the game.
+	copies := map[*engine.Character]*engine.Character{}
+	clone := func(m *engine.Character) (*engine.Character, error) {
+		if cp, ok := copies[m]; ok {
+			return cp, nil
+		}
 		cp, err := cloneCharacter(m)
 		if err != nil {
 			return nil, fmt.Errorf("copy %s: %w", m.Name, err)
+		}
+		copies[m] = cp
+		return cp, nil
+	}
+	for _, m := range g.Town.Roster.Characters {
+		if m == nil {
+			continue
+		}
+		cp, err := clone(m)
+		if err != nil {
+			return nil, err
+		}
+		pg.Town.Roster.Characters = append(pg.Town.Roster.Characters, cp)
+	}
+	for _, m := range g.Town.Party.Members {
+		cp, err := clone(m)
+		if err != nil {
+			return nil, err
 		}
 		pg.Town.Party.Members = append(pg.Town.Party.Members, cp)
 	}
@@ -91,6 +116,8 @@ func (s *Session) practiceRefusal() error {
 		return errExpeditionOut
 	case g.Phase != engine.PhaseTown || len(g.Town.Party.Members) == 0:
 		return errNoParty
+	case !engine.PartyCanContinue(g.Town.Party.Members):
+		return errNoOneCanGoOn
 	}
 	return nil
 }

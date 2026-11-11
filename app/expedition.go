@@ -179,7 +179,11 @@ func (c *Controller) Resume(pristine *data.Scenario) error {
 	}
 	g.MazePendingBack2Shop, g.MazePendingTryGet, g.MazeTryGetItem = w.Back2Shop, w.TryGet, w.TryGetItem
 	g.WaitButton, g.ButtonCount = w.WaitButton, w.ButtonCount
-	g.MazeInspecting, g.MazeInspectFound = w.Inspecting, found
+	g.MazeInspecting, g.MazeInspectFound = w.Inspecting, nil
+	g.MazePicking, g.MazePickBuf = false, ""
+	if w.Inspecting {
+		g.MazeInspectFound = revalidateFound(g, found)
+	}
 	g.ShowMap, g.MazeDelayInput, g.MazeDelayBuf = false, false, ""
 
 	town := g.Town
@@ -251,6 +255,11 @@ func (c *Controller) checkExpedition(e *engine.Expedition) (members, found []*en
 		if err != nil {
 			return nil, nil, err
 		}
+		if ch.IsStranded() {
+			// Contradictory: a member out with the party and also left in
+			// the maze (R-2: a character picked up is never still stranded).
+			return nil, nil, &ExpeditionProblem{fmt.Sprintf("%s is listed in the party but stranded at %s", name, *ch.Stranded)}
+		}
 		members = append(members, ch)
 	}
 	w := e.Where
@@ -277,12 +286,14 @@ func (c *Controller) checkExpedition(e *engine.Expedition) (members, found []*en
 	if e.Interrupted != "" && e.Interrupted != InterruptedCombat && e.Interrupted != InterruptedChest {
 		return nil, nil, &ExpeditionProblem{fmt.Sprintf("unknown interruption %q", e.Interrupted)}
 	}
+	// The Inspect screen's finds are only a list on the screen: one that
+	// no longer stands (a name not on the roster, or someone picked up
+	// since) is dropped, not a problem. Resume checks the rest against the
+	// maze (revalidateFound).
 	for _, name := range w.InspectFound {
-		ch, err := byName(name)
-		if err != nil {
-			return nil, nil, err
+		if ch, err := byName(name); err == nil {
+			found = append(found, ch)
 		}
-		found = append(found, ch)
 	}
 	if cs := w.Camp; cs != nil {
 		if w.Phase != "camp" {
@@ -425,4 +436,22 @@ func (c *Controller) ReturnExpeditionToCastle() error {
 	g.Town.Party.Members = append(g.Town.Party.Members, back...)
 	g.Expedition, g.OtherExpedition = nil, nil
 	return nil
+}
+
+// revalidateFound keeps, in their saved order and once each, the saved
+// Inspect finds that the party, as restored, still finds from where it
+// stands (engine.GameState.FindStranded); stale entries are dropped.
+func revalidateFound(g *engine.GameState, saved []*engine.Character) []*engine.Character {
+	here := map[*engine.Character]bool{}
+	for _, ch := range g.FindStranded() {
+		here[ch] = true
+	}
+	var out []*engine.Character
+	for _, ch := range saved {
+		if here[ch] {
+			out = append(out, ch)
+			delete(here, ch)
+		}
+	}
+	return out
 }

@@ -32,7 +32,7 @@ func actionOps(c *Controller) map[string]func() error {
 		ActForward: c.Forward, ActLeft: c.TurnLeft, ActRight: c.TurnRight, ActKick: c.Kick,
 		ActCamp: c.Camp, ActInspect: c.Inspect, ActContinue: c.ContinueMessage,
 		ActYes: func() error { return c.Answer(true) }, ActNo: func() error { return c.Answer(false) },
-		ActButton: func() error { return c.PressButton(1) }, ActPickUp: c.PickUp,
+		ActButton: func() error { return c.PressButton(1) }, ActPickUp: func() error { return c.PickUp(1) },
 		ActLeave: c.LeaveInspect, ActLeaveCamp: c.LeaveCamp,
 	}
 }
@@ -45,6 +45,7 @@ func TestDungeonViewAlongRandomWalks(t *testing.T) {
 	allowed := map[string]bool{}
 	for _, k := range []string{"phase", "party", "corridor", "dark", "viewport", "lines", "more", "prompt", "buttons", "found", "spells", "actions",
 		"slot", "name", "class", "ac", "hp", "maxHp", "status", "poisoned",
+		"inspect", "room", "n", "level", "canPick", "refusal",
 		"left", "right", "front", "leftAhead", "rightAhead"} {
 		allowed[k] = true
 	}

@@ -386,9 +386,9 @@ func handleMalorInput(game *engine.GameState, k Key) {
 		// Level 0 at (0,0) = back to castle
 		if newLevel == 0 && newX == 0 && newY == 0 {
 			town.Message = "TELEPORTED TO CASTLE"
+			game.PartyHome()
 			for _, m := range town.Party.Members {
 				if m != nil {
-					m.InMaze = false
 					m.PoisonAmt = 0
 				}
 			}
