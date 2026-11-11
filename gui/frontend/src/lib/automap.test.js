@@ -3,7 +3,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { drawing, edge, door, arrow, wrap, feature, mapKey, symbols, INSET, facingTurn, BADGE, CLIP } from './automap.js'
+import { drawing, edge, door, arrow, wrap, feature, mapKey, symbols, INSET, facingTurn, BADGE, CLIP, marker, strandedLabel, MARKER } from './automap.js'
 
 const cases = JSON.parse(readFileSync(new URL('./testdata/map-views.json', import.meta.url)))
 const at = (name) => {
@@ -215,4 +215,115 @@ test('F10 opens and closes the full map, Escape closes it, and no other key gets
     assert.equal(mapKey(k, true), 'block', k)
     assert.equal(mapKey(k, false), null, k)
   }
+})
+
+// Stranded markers (R-3).
+
+test('one marker a square, with the count of those who lie there, at its centre', () => {
+  const full = drawing(at('L1 stranded').full)
+  assert.deepEqual(full.stranded.map((m) => [m.place, m.count, m.characters.map((c) => c.name)]), [
+    ['L1:R5:C8', 1, ['EVER']],
+    ['L1:R18:C1', 3, ['ANNE', 'BRAM', 'CASS']],
+    ['L1:R19:C0', 1, ['DUNN']],
+  ])
+  const far = full.stranded[0]
+  assert.deepEqual([far.x, far.y, far.scale, far.badge], [8.5, 5.5, 1, false])
+  assert.equal(strandedLabel(full.stranded[1]), 'L1:R18:C1 — 3 stranded')
+  assert.deepEqual(full.stranded[1].characters.map((c) => c.condition), ['DEAD', 'PARALYZED', 'ASHES'])
+})
+
+test('the LOST and those with no certain square are never marked', () => {
+  for (const c of cases) {
+    for (const v of [c.full, c.local]) {
+      for (const m of v.stranded) {
+        assert.ok(!m.characters.some((ch) => ['GONE', 'OLDE'].includes(ch.name)), c.case)
+        assert.equal(m.count, m.characters.length)
+        assert.ok(m.characters.every((ch) => ch.condition !== 'LOST'))
+      }
+    }
+  }
+})
+
+test('a marker shows nothing of the maze around it', () => {
+  // Without its markers a map is drawn exactly as before: no floor, wall,
+  // feature or way across the edge comes with them.
+  for (const c of cases.filter((c) => c.full.stranded.length)) {
+    for (const v of [c.full, c.local]) {
+      const a = drawing(v), b = drawing({ ...v, stranded: [] })
+      assert.deepEqual({ ...a, stranded: [] }, b, c.case)
+    }
+  }
+  // The far marker's square and its neighbours were never explored.
+  const v = at('L1 stranded').full
+  for (const [r, col] of [[5, 8], [4, 8], [6, 8], [5, 7], [5, 9]]) {
+    assert.ok(!v.visited.some((q) => q.row === r && q.col === col), `R${r}:C${col} visited`)
+    assert.ok(!v.walls.some((w) => w.row === r && w.col === col), `R${r}:C${col} has walls`)
+    assert.ok(!v.features.some((f) => f.row === r && f.col === col), `R${r}:C${col} has a feature`)
+  }
+})
+
+test('other levels’ markers are only on their own level’s map', () => {
+  assert.deepEqual(at('L1 stranded').full.stranded.map((m) => m.place.split(':')[0]), ['L1', 'L1', 'L1'])
+  assert.deepEqual(at('L2 stranded').full.stranded.map((m) => m.place), ['L2:R7:C12'])
+  assert.ok(at('L1 stranded').full.levels.includes(2), 'level 2 can be chosen')
+})
+
+test('a marker under the party moves to a badge clear of the arrow and of a feature’s badge', () => {
+  const v = at('L1 stranded')
+  for (const facing of ['N', 'E', 'S', 'W']) {
+    for (const view of [v.local, v.full]) {
+      const d = drawing({ ...view, party: { ...view.party, facing } })
+      const m = d.stranded.find((m) => m.badge)
+      assert.ok(m, facing)
+      assert.equal(m.place, 'L1:R19:C0')
+      const pts = outline(d.party)
+      const clear = Math.min(...pts.map((p, i) => toSegment([m.x, m.y], p, pts[(i + 1) % pts.length])))
+      assert.ok(clear >= MARKER.radius, `${facing}: marker ${clear.toFixed(3)} from the arrow`)
+      const { row, col } = view.party
+      assert.ok(m.x - MARKER.radius >= col && m.x + MARKER.radius <= col + 1 && m.y - MARKER.radius >= row && m.y + MARKER.radius <= row + 1, facing)
+      const f = d.features.find((f) => f.badge)
+      assert.ok(f, 'the stairs share the square')
+      assert.ok(Math.hypot(f.x - m.x, f.y - m.y) >= BADGE.radius + MARKER.radius, `${facing}: badges overlap`)
+    }
+  }
+})
+
+test('the party is drawn after the markers, so a marker never covers it', () => {
+  const src = readFileSync(new URL('./MapSvg.svelte', import.meta.url), 'utf8')
+  assert.ok(src.indexOf('d.stranded as m') < src.indexOf('{#if d.party}'))
+  // The marker's shapes are declared inside the <svg>: a snippet declared
+  // outside it would make them HTML elements, which draw nothing.
+  assert.ok(src.indexOf('<svg') < src.indexOf('{#snippet mark'))
+})
+
+test('the minimap and the full map agree on the markers they both show', () => {
+  let compared = 0
+  for (const c of cases) {
+    const m = /^L(\d+):R(\d+):C(\d+)$/.exec(c.local.party.place)
+    const pr = +m[2], pc = +m[3]
+    const inWindow = (r, col) => {
+      const dr = ((r - pr) % 20 + 30) % 20 - 10, dc = ((col - pc) % 20 + 30) % 20 - 10
+      return Math.abs(dr) <= 3 && Math.abs(dc) <= 3 ? [dr + 3, dc + 3] : null
+    }
+    const local = new Map(c.local.stranded.map((s) => [s.place, s]))
+    for (const s of c.full.stranded) {
+      const pos = inWindow(s.row, s.col)
+      if (!pos) {
+        assert.ok(!local.has(s.place), `${c.case}: ${s.place} should be outside the minimap`)
+        continue
+      }
+      const l = local.get(s.place)
+      assert.ok(l, `${c.case}: ${s.place} missing from the minimap`)
+      assert.deepEqual([l.row, l.col], pos)
+      assert.deepEqual(l.characters, s.characters)
+      compared++
+    }
+    assert.ok(c.local.stranded.every((s) => c.full.stranded.some((f) => f.place === s.place)), c.case)
+  }
+  assert.ok(compared >= 3, `only ${compared}`)
+})
+
+test('marker places a marker given by hand', () => {
+  const m = marker({ row: 2, col: 4, place: 'L3:R2:C4', count: 2, characters: [] }, { row: 0, col: 0, facing: 'N' })
+  assert.deepEqual([m.x, m.y, m.badge, m.label], [4.5, 2.5, false, 'L3:R2:C4 — 2 stranded'])
 })
