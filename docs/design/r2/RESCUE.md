@@ -211,7 +211,6 @@ full or nobody is left. `testdata/screens_rescue.golden` pins the screen.
   castle landing now uses `PartyHome`.
 - **A pit or other square hurts carried members** who are not dead, as for
   any member; that is the existing square rule.
-- **R-3** needs: where stranded parties lie, for markers (`Character.Stranded`
-  is the record; the maze view deliberately gives no positions, so markers
-  need their own decision on what the player may see); any presentation of
-  the Inspect screen beyond the plain list.
+- **R-3** (`design/r3/RESCUE-VISIBILITY.md`) marks where the stranded lie
+  on the maps, from `Character.Stranded` (the maze view still gives no
+  positions), and adds conditions and progress to the Inspect screen.

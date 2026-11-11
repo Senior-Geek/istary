@@ -909,6 +909,15 @@ full map of a level (F10), drawn from one record in Go.
   Both list the `Visited` squares (the record's own, nothing more), which
   the maps shade faintly. Reading either changes nothing and draws no
   random number.
+- **Stranded markers (R-3, `design/r3/RESCUE-VISIBILITY.md`):** both
+  views list `Stranded`, one `MapStranded` per square where characters lie
+  (place, count, each name and condition). They come from
+  `engine.GameState.StrandedSites`, which reads the characters' `Stranded`
+  records and the same exclusions as Inspect, never the exploration. A
+  marker reveals no geometry and marks nothing explored. The LOST and
+  legacy characters with no `Stranded` record are never marked. `Map`
+  also offers a level where characters lie but nothing was explored, with
+  its markers alone. Nothing is saved for them.
 - **Bridge:** `View.Minimap` on an expedition; `Session.Automap(level)`
   (read-only); `SetMinimapVisible` (a kept setting, on by default).
 - **Screen:** `MapSvg.svelte` draws both (a faint floor on visited squares,
@@ -916,7 +925,10 @@ full map of a level (F10), drawn from one record in Go.
   symbol under the party moves to a small badge in the square's corner, and
   the minimap draws a little past its window so doors on its outer walls
   are whole); `AutomapPopup.svelte` is the full
-  map in the same window. F10 or Escape closes it, and no key reaches the
+  map in the same window. Stranded markers are red diamonds with their
+  count, drawn under the arrow (a corner badge on the party's own square).
+  The full map lists the level's markers beside it, and a click on a
+  marker, or Enter or Space on its line, shows who lies there. F10 or Escape closes it, and no key reaches the
   maze while it is open (`lib/automap.js` `mapKey`).
 - **Tests:** `engine/place_test.go` (all 4,000 squares both ways, the
   entrance, wrapping), `engine/explore_test.go`, `app/map_view_test.go`
@@ -944,7 +956,11 @@ in the saved game, through the same dungeon, combat and chest operations.
   walls), and P)ICK UP takes them one at a time while the party has room
   (six, the incapacitated included). A pickup is one action, saved with the
   expedition. The rescued travel with the party as they are; home, they are
-  in the castle party, stranded nowhere.
+  in the castle party, stranded nowhere. R-3
+  (`design/r3/RESCUE-VISIBILITY.md`) marks where the stranded lie on the
+  maps and shows the rescue's progress on Inspect: the party's size and
+  room, who else is here, how many lie elsewhere, and the members who
+  cannot act, each with a condition label (`app.ConditionLabel`).
 - **A restart during an expedition** resumes it (M6b-2): every save
   carries the expedition's checkpoint (`app.Controller.Checkpoint`, the
   last safe point), and on start `Resume` puts it back exactly. An

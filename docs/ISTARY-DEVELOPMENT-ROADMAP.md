@@ -269,7 +269,10 @@ characters.
   square, saved and shown with its L:R:C (`design/r1/STRANDED-PARTIES.md`).
   R-2 (2026-11-10): rescue expeditions find the stranded in their area
   and take them home one at a time within the six places
-  (`design/r2/RESCUE.md`). Next: R-3, rescue markers and presentation.*
+  (`design/r2/RESCUE.md`). R-3 (2026-11-11): the maps mark where the
+  stranded lie, from their own records and revealing nothing else, and
+  Inspect shows each one's condition and the rescue's progress
+  (`design/r3/RESCUE-VISIBILITY.md`).*
 
 **Depends on:** M5 and M2 Part B.
 **Acceptance:**
