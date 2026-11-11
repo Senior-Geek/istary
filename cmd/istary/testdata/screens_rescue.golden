@@ -1,0 +1,150 @@
+=== inspect, three found
+FOUND:
+1) FALLEN1          3 N-FIG DEAD
+2) FALLEN2          4 N-FIG PARALYZE
+3) FALLEN3          5 N-FIG ASHED
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ROOM IN THE PARTY FOR 2
+
+OPTIONS: P)ICK UP, L)EAVE
+
+=== get who
+FOUND:
+1) FALLEN1          3 N-FIG DEAD
+2) FALLEN2          4 N-FIG PARALYZE
+3) FALLEN3          5 N-FIG ASHED
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ROOM IN THE PARTY FOR 2
+
+GET WHO (0=EXIT) >
+
+=== not on the list
+FOUND:
+1) FALLEN1          3 N-FIG DEAD
+2) FALLEN2          4 N-FIG PARALYZE
+3) FALLEN3          5 N-FIG ASHED
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ROOM IN THE PARTY FOR 2
+
+GET WHO (0=EXIT) >
+
+=== FALLEN2 picked up
+FOUND:
+1) FALLEN1          3 N-FIG DEAD
+2) FALLEN3          5 N-FIG ASHED
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ROOM IN THE PARTY FOR 1
+FALLEN2 JOINS THE PARTY.
+GET WHO (0=EXIT) >
+
+=== party full: the prompt closes
+FOUND:
+1) FALLEN3          5 N-FIG ASHED
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ROOM IN THE PARTY FOR 0
+FALLEN1 JOINS THE PARTY.
+OPTIONS: P)ICK UP, L)EAVE
+
+=== you have 6
+FOUND:
+1) FALLEN3          5 N-FIG ASHED
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ROOM IN THE PARTY FOR 0
+YOU HAVE 6
+OPTIONS: P)ICK UP, L)EAVE
+
