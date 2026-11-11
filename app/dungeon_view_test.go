@@ -46,6 +46,8 @@ func TestDungeonViewAlongRandomWalks(t *testing.T) {
 	for _, k := range []string{"phase", "party", "corridor", "dark", "viewport", "lines", "more", "prompt", "buttons", "found", "spells", "actions",
 		"slot", "name", "class", "ac", "hp", "maxHp", "status", "poisoned",
 		"inspect", "room", "n", "level", "canPick", "refusal",
+		// R-3's rescue progress: counts and conditions, never a position.
+		"size", "picked", "elsewhere", "carried", "condition",
 		"left", "right", "front", "leftAhead", "rightAhead"} {
 		allowed[k] = true
 	}

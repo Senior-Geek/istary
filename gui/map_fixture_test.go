@@ -90,6 +90,28 @@ func TestMapViewFixture(t *testing.T) {
 	record("L2 west edge", 1, 0, 3, engine.West)
 	record("L2 stairs", 1, 12, 7, engine.West)
 
+	// Where stranded characters lie (R-3), from their own records: three on
+	// one square in the minimap's window, one under the party, one far off
+	// on L1 (the full map only), one on L2 (its own map only), and a LOST
+	// character and one left out by an older version, who are never marked.
+	strand := func(name string, st engine.Status, p *engine.Place) *engine.Character {
+		ch := engine.NewCharacter(name, engine.Human, engine.Fighter, engine.Good)
+		ch.Status, ch.InMaze, ch.Stranded = st, true, p
+		g.Town.Roster.Characters = append(g.Town.Roster.Characters, ch)
+		return ch
+	}
+	strand("ANNE", engine.Dead, &engine.Place{Level: 1, Row: 18, Col: 1})
+	strand("BRAM", engine.Paralyzed, &engine.Place{Level: 1, Row: 18, Col: 1})
+	strand("CASS", engine.Ashed, &engine.Place{Level: 1, Row: 18, Col: 1})
+	strand("DUNN", engine.Stoned, &engine.Place{Level: 1, Row: 19, Col: 0})
+	strand("EVER", engine.Dead, &engine.Place{Level: 1, Row: 5, Col: 8})
+	strand("FALK", engine.Paralyzed, &engine.Place{Level: 2, Row: 7, Col: 12})
+	strand("GONE", engine.Lost, &engine.Place{Level: 1, Row: 17, Col: 2})
+	old := strand("OLDE", engine.Dead, nil)
+	old.MazeLevel, old.MazeX, old.MazeY = 0, 2, 2
+	record("L1 stranded", 0, 0, 0, engine.East)
+	record("L2 stranded", 1, 12, 11, engine.South)
+
 	// The recording must cover what the maps draw.
 	has := map[string]bool{}
 	for _, mc := range cases {
@@ -121,10 +143,21 @@ func TestMapViewFixture(t *testing.T) {
 			has["local west edge"] = true
 		}
 		has["facing "+mc.Local.Party.Facing] = true
+		for _, m := range mc.Full.Stranded {
+			has["stranded"] = true
+			if m.Count > 1 {
+				has["stranded together"] = true
+			}
+		}
+		for _, m := range mc.Local.Stranded {
+			if m.Row == mc.Local.Party.Row && m.Col == mc.Local.Party.Col {
+				has["stranded under the party"] = true
+			}
+		}
 	}
 	for _, k := range []string{"full wall", "full door", "full one way", "wrap open", "wrap one way", "local one way", "local wall", "local door",
 		"local north edge", "local west edge", engine.FeatureStairsUp, engine.FeatureStairsDown, engine.FeatureElevator,
-		"facing N", "facing E", "facing S", "facing W"} {
+		"facing N", "facing E", "facing S", "facing W", "stranded", "stranded together", "stranded under the party"} {
 		if !has[k] {
 			t.Errorf("the recording has no %s", k)
 		}

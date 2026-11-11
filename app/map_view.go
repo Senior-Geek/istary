@@ -6,6 +6,13 @@ package app
 // draw, where a one-way wall lies, which connections cross the level's
 // edge, where the party stands and which way it faces.
 //
+// The maps also mark where stranded characters lie (R-3): one marker a
+// square, from the characters' own records (engine.StrandedSites), never
+// from the exploration. A marker reveals that square's place and who lies
+// there, nothing else: no wall, door, feature or floor around it, and no
+// square is marked explored. Characters with no certain square (an older
+// version's legacy fields) and the LOST are never marked.
+//
 // The maps are an enhancement (decision D9): DungeonView, the Classic maze
 // screen, still shows no position; these views are separate.
 //
@@ -17,6 +24,7 @@ package app
 
 import (
 	"errors"
+	"slices"
 
 	"github.com/Senior-Geek/istary/engine"
 )
@@ -46,6 +54,25 @@ type MapSquare struct {
 	Col int `json:"col"`
 }
 
+// MapStranded is a square where stranded characters lie (R-3), in the
+// map's own frame: one marker however many lie there.
+type MapStranded struct {
+	Row        int             `json:"row"`
+	Col        int             `json:"col"`
+	Place      string          `json:"place"` // L:R:C
+	Count      int             `json:"count"`
+	Characters []CharacterNote `json:"characters"` // in roster order
+}
+
+// CharacterNote is a character as the maps and Inspect note them: who,
+// and their condition (ConditionLabel), which picking up never changes.
+type CharacterNote struct {
+	Name      string `json:"name"`
+	Class     string `json:"class"` // alignment and class ("G-FIG")
+	Level     int    `json:"level"`
+	Condition string `json:"condition"`
+}
+
 // MapParty is the party on a map: its square in the map's frame, its
 // facing, and where that is in L:R:C.
 type MapParty struct {
@@ -58,14 +85,15 @@ type MapParty struct {
 // MapView is one whole level as explored (the automap): a fixed 20x20
 // frame, R0 at the top and C0 at the left, never moved or repeated.
 type MapView struct {
-	Level    int          `json:"level"`  // L
-	Levels   []int        `json:"levels"` // the levels with anything seen
-	Size     int          `json:"size"`
-	Visited  []MapSquare  `json:"visited"` // the squares the party has stood on
-	Walls    []MapWall    `json:"walls"`
-	Wraps    []MapWall    `json:"wraps"` // seen ways across the level's edge, at the square they leave from
-	Features []MapFeature `json:"features"`
-	Party    *MapParty    `json:"party"` // nil when the party is not on this level
+	Level    int           `json:"level"`  // L
+	Levels   []int         `json:"levels"` // the levels with anything seen
+	Size     int           `json:"size"`
+	Visited  []MapSquare   `json:"visited"` // the squares the party has stood on
+	Walls    []MapWall     `json:"walls"`
+	Wraps    []MapWall     `json:"wraps"` // seen ways across the level's edge, at the square they leave from
+	Features []MapFeature  `json:"features"`
+	Stranded []MapStranded `json:"stranded"` // where stranded characters lie on this level
+	Party    *MapParty     `json:"party"`    // nil when the party is not on this level
 }
 
 // LocalMapView is the squares around the party (the minimap), north up: a
@@ -74,21 +102,23 @@ type MapView struct {
 // WestEdge, when not -1, are the window row and column whose top or left
 // side is the level's edge (where R0 or C0 begins).
 type LocalMapView struct {
-	Level     int          `json:"level"`
-	Size      int          `json:"size"`
-	Visited   []MapSquare  `json:"visited"`
-	Walls     []MapWall    `json:"walls"`
-	Features  []MapFeature `json:"features"`
-	Party     MapParty     `json:"party"`
-	NorthEdge int          `json:"northEdge"`
-	WestEdge  int          `json:"westEdge"`
+	Level     int           `json:"level"`
+	Size      int           `json:"size"`
+	Visited   []MapSquare   `json:"visited"`
+	Walls     []MapWall     `json:"walls"`
+	Features  []MapFeature  `json:"features"`
+	Stranded  []MapStranded `json:"stranded"` // in the window
+	Party     MapParty      `json:"party"`
+	NorthEdge int           `json:"northEdge"`
+	WestEdge  int           `json:"westEdge"`
 }
 
 // LocalRadius is how many squares the minimap shows on each side of the
 // party.
 const LocalRadius = 3
 
-// ErrNoMap is returned when there is no explored level to show.
+// ErrNoMap is returned when there is no level to show: none explored and
+// no one stranded.
 var ErrNoMap = errors.New("nothing of the maze has been explored")
 
 var sideNames = [4]string{"N", "E", "S", "W"}
@@ -137,26 +167,39 @@ func crosses(p engine.Place, d engine.Direction) bool {
 	return p.Col == engine.MazeSize-1
 }
 
-// Map returns explored level l (L, from 1) as the automap draws it; 0 is
-// the party's level, or else the first level explored. It reads the game
-// and changes nothing.
+// Map returns level l (L, from 1) as the automap draws it: what has been
+// explored of it and where stranded characters lie on it; 0 is the party's
+// level, or else the first level there is anything to show. A level where
+// characters lie is shown even if nothing of it was explored: its markers
+// alone. It reads the game and changes nothing.
 func (c *Controller) Map(l int) (MapView, error) {
 	g := c.Game
 	e := g.Exploration
+	sites := g.StrandedSites()
+	levels := mapLevels(e, sites)
 	here, onMaze := partyPlace(g)
 	if l == 0 {
 		switch {
-		case onMaze && e.Level(here.Level) != nil:
+		case onMaze && slices.Contains(levels, here.Level):
 			l = here.Level
-		case len(e.LevelsSeen()) > 0:
-			l = e.LevelsSeen()[0]
+		case len(levels) > 0:
+			l = levels[0]
+		}
+	}
+	if !slices.Contains(levels, l) {
+		return MapView{}, ErrNoMap
+	}
+	v := MapView{Level: l, Levels: levels, Size: engine.MazeSize, Visited: []MapSquare{}, Walls: []MapWall{}, Wraps: []MapWall{}, Features: []MapFeature{},
+		Stranded: []MapStranded{}}
+	for _, s := range sites {
+		if s.Place.Level == l {
+			v.Stranded = append(v.Stranded, mapStranded(s, s.Place.Row, s.Place.Col))
 		}
 	}
 	m := e.Level(l)
 	if m == nil {
-		return MapView{}, ErrNoMap
+		m = &engine.LevelMap{} // nothing seen: the markers alone
 	}
-	v := MapView{Level: l, Levels: e.LevelsSeen(), Size: engine.MazeSize, Visited: []MapSquare{}, Walls: []MapWall{}, Wraps: []MapWall{}, Features: []MapFeature{}}
 	for r := 0; r < engine.MazeSize; r++ {
 		for col := 0; col < engine.MazeSize; col++ {
 			p := engine.Place{Level: l, Row: r, Col: col}
@@ -207,7 +250,7 @@ func (c *Controller) LocalMap() (LocalMapView, bool) {
 		return LocalMapView{}, false
 	}
 	size := 2*LocalRadius + 1
-	v := LocalMapView{Level: here.Level, Size: size, Visited: []MapSquare{}, Walls: []MapWall{}, Features: []MapFeature{},
+	v := LocalMapView{Level: here.Level, Size: size, Visited: []MapSquare{}, Walls: []MapWall{}, Features: []MapFeature{}, Stranded: []MapStranded{},
 		Party:     MapParty{Row: LocalRadius, Col: LocalRadius, Facing: g.Facing.Letter(), Place: here.String()},
 		NorthEdge: -1, WestEdge: -1}
 	// at is the square at window row i and column j; window places by square.
@@ -238,6 +281,11 @@ func (c *Controller) LocalMap() (LocalMapView, bool) {
 			if p.Col == 0 && j > 0 {
 				v.WestEdge = j
 			}
+		}
+	}
+	for _, s := range g.StrandedSites() {
+		if pos, ok := where[s.Place]; ok {
+			v.Stranded = append(v.Stranded, mapStranded(s, pos[0], pos[1]))
 		}
 	}
 	m := g.Exploration.Level(here.Level)
@@ -282,6 +330,28 @@ func (c *Controller) LocalMap() (LocalMapView, bool) {
 		}
 	}
 	return v, true
+}
+
+// mapLevels lists the levels a map can show: those explored and those where
+// stranded characters lie, in order.
+func mapLevels(e *engine.Exploration, sites []engine.StrandedSite) []int {
+	levels := e.LevelsSeen()
+	for _, s := range sites {
+		if !slices.Contains(levels, s.Place.Level) {
+			levels = append(levels, s.Place.Level)
+		}
+	}
+	slices.Sort(levels)
+	return levels
+}
+
+// mapStranded is the marker for site s at (row, col) in a map's frame.
+func mapStranded(s engine.StrandedSite, row, col int) MapStranded {
+	v := MapStranded{Row: row, Col: col, Place: s.Place.String(), Count: len(s.Characters), Characters: []CharacterNote{}}
+	for _, ch := range s.Characters {
+		v.Characters = append(v.Characters, noteOf(ch))
+	}
+	return v
 }
 
 // partyPlace is where the party stands in the maze (in it, at Camp or in

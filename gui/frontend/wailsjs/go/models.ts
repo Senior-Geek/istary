@@ -108,6 +108,24 @@ export namespace app {
 		    return a;
 		}
 	}
+	export class CharacterNote {
+	    name: string;
+	    class: string;
+	    level: number;
+	    condition: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new CharacterNote(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.class = source["class"];
+	        this.level = source["level"];
+	        this.condition = source["condition"];
+	    }
+	}
 	export class ChestMemberView {
 	    slot: number;
 	    name: string;
@@ -529,6 +547,7 @@ export namespace app {
 	    class: string;
 	    level: number;
 	    status: string;
+	    condition: string;
 	    canPick: boolean;
 	    refusal?: string;
 	
@@ -543,6 +562,7 @@ export namespace app {
 	        this.class = source["class"];
 	        this.level = source["level"];
 	        this.status = source["status"];
+	        this.condition = source["condition"];
 	        this.canPick = source["canPick"];
 	        this.refusal = source["refusal"];
 	    }
@@ -550,6 +570,10 @@ export namespace app {
 	export class InspectView {
 	    found: FoundView[];
 	    room: number;
+	    size: number;
+	    picked: boolean;
+	    elsewhere: number;
+	    carried: CharacterNote[];
 	
 	    static createFrom(source: any = {}) {
 	        return new InspectView(source);
@@ -559,6 +583,10 @@ export namespace app {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.found = this.convertValues(source["found"], FoundView);
 	        this.room = source["room"];
+	        this.size = source["size"];
+	        this.picked = source["picked"];
+	        this.elsewhere = source["elsewhere"];
+	        this.carried = this.convertValues(source["carried"], CharacterNote);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -866,6 +894,44 @@ export namespace app {
 	        this.place = source["place"];
 	    }
 	}
+	export class MapStranded {
+	    row: number;
+	    col: number;
+	    place: string;
+	    count: number;
+	    characters: CharacterNote[];
+	
+	    static createFrom(source: any = {}) {
+	        return new MapStranded(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.row = source["row"];
+	        this.col = source["col"];
+	        this.place = source["place"];
+	        this.count = source["count"];
+	        this.characters = this.convertValues(source["characters"], CharacterNote);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 	export class MapFeature {
 	    row: number;
 	    col: number;
@@ -922,6 +988,7 @@ export namespace app {
 	    visited: MapSquare[];
 	    walls: MapWall[];
 	    features: MapFeature[];
+	    stranded: MapStranded[];
 	    party: MapParty;
 	    northEdge: number;
 	    westEdge: number;
@@ -937,6 +1004,7 @@ export namespace app {
 	        this.visited = this.convertValues(source["visited"], MapSquare);
 	        this.walls = this.convertValues(source["walls"], MapWall);
 	        this.features = this.convertValues(source["features"], MapFeature);
+	        this.stranded = this.convertValues(source["stranded"], MapStranded);
 	        this.party = this.convertValues(source["party"], MapParty);
 	        this.northEdge = source["northEdge"];
 	        this.westEdge = source["westEdge"];
@@ -963,6 +1031,7 @@ export namespace app {
 	
 	
 	
+	
 	export class MapView {
 	    level: number;
 	    levels: number[];
@@ -971,6 +1040,7 @@ export namespace app {
 	    walls: MapWall[];
 	    wraps: MapWall[];
 	    features: MapFeature[];
+	    stranded: MapStranded[];
 	    party?: MapParty;
 	
 	    static createFrom(source: any = {}) {
@@ -986,6 +1056,7 @@ export namespace app {
 	        this.walls = this.convertValues(source["walls"], MapWall);
 	        this.wraps = this.convertValues(source["wraps"], MapWall);
 	        this.features = this.convertValues(source["features"], MapFeature);
+	        this.stranded = this.convertValues(source["stranded"], MapStranded);
 	        this.party = this.convertValues(source["party"], MapParty);
 	    }
 	

@@ -6,6 +6,9 @@
   //
   // Inspect (R-2) lists each character found in the party's area, with a
   // Pick up button (keys 1-9) while the party has room, or the reason not.
+  // R-3 adds each one's condition (Condition), and the rescue's progress as
+  // Go reads it (inspect.js): the party's size and room, who else is here,
+  // how many are known to lie elsewhere, and the members who cannot act.
   //
   // The maps (M-1): the minimap (view.minimap, Go's squares around the
   // party) sits in the corner of the view while walking, unless hidden
@@ -22,6 +25,8 @@
   import { viewBox, scene, points, actions, keyAction, expeditionTag } from './dungeon.js'
   import CampScreen from './CampScreen.svelte'
   import { pickLabel, placeMark } from './camp.js'
+  import Condition from './Condition.svelte'
+  import { progress } from './inspect.js'
   import MapSvg from './MapSvg.svelte'
   import AutomapPopup from './AutomapPopup.svelte'
   import { mapKey } from './automap.js'
@@ -29,6 +34,7 @@
   let { view, busy = false, call } = $props()
 
   const d = $derived(view.dungeon)
+  const p = $derived(progress(d.inspect))
   const partyShown = $derived(view.settings?.partyVisible ?? true)
   const open = $derived(d.actions ?? [])
   const shapes = $derived(scene(d.corridor ?? []))
@@ -84,7 +90,7 @@
     {/if}
   </header>
 
-  <div class="middle" class:maze={!inCamp}>
+  <div class="middle" class:maze={!inCamp} class:inspecting={d.prompt === 'inspect'}>
   {#if inCamp}
     <CampScreen bind:this={campScreen} {view} {busy} {call} />
   {:else}
@@ -113,12 +119,12 @@
     {#each lines as l, i (i)}<p>{l}</p>{/each}
     {#if d.more}<p class="muted">[RET] FOR MORE</p>{/if}
     {#if d.prompt === 'inspect'}
+      <p class="muted small progress">{p.party}</p>
       {#if d.inspect?.found?.length}
-        <p class="muted small">FOUND · room in the party for {d.inspect.room}</p>
         <ul class="found" aria-label="Characters found">
           {#each d.inspect.found as f (f.name)}
             <li>
-              <span>{f.n}) {f.name} · {f.class} · LEVEL {f.level} · {f.status}</span>
+              <span class="who">{f.n}) {f.name} · {f.class} · LEVEL {f.level} <Condition label={f.condition} /></span>
               {#if f.canPick}
                 <button disabled={busy} onclick={() => act('pick-up', f.n)}>Pick up{#if f.n <= 9} <kbd>{f.n}</kbd>{/if}</button>
               {:else}
@@ -127,8 +133,13 @@
             </li>
           {/each}
         </ul>
-      {:else}
-        <p>LOOKING... NO ONE IS HERE.</p>
+      {/if}
+      <p class:muted={!!d.inspect?.found?.length}>{p.here}{#if p.elsewhere}<span class="muted small">{' · ' + p.elsewhere}</span>{/if}</p>
+      {#if d.inspect?.carried?.length}
+        <div class="carried muted small">
+          <span>In the party, unable to act:</span>
+          {#each d.inspect.carried as ch (ch.name)}<span class="who">{ch.name} <Condition label={ch.condition} /></span>{/each}
+        </div>
       {/if}
     {/if}
   </section>
@@ -182,7 +193,11 @@
      (the maze, or Camp) fits between them or scrolls. */
   .dungeon { position: relative; display: grid; gap: 12px; height: 100%; min-height: 0; grid-template-rows: auto minmax(0, 1fr) auto; }
   .middle { min-height: 0; overflow-y: auto; display: grid; gap: 12px; align-content: start; }
-  .middle.maze { grid-template-rows: minmax(150px, 1fr) auto auto; align-content: stretch; }
+  /* The messages and commands take what they need (Inspect's list scrolls
+     within its own height); the view gives way, down to 150px. */
+  .middle.maze { grid-template-rows: minmax(150px, 1fr) max-content max-content; align-content: stretch; }
+  .middle.maze > section { margin-top: 0; }
+  .middle.maze.inspecting { grid-template-rows: minmax(110px, 1fr) max-content max-content; }
   .bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .bar h2 { margin: 0; }
   .spacer { flex: 1; }
@@ -215,5 +230,8 @@
   .found { list-style: none; margin: 4px auto; padding: 0; max-height: 168px; overflow-y: auto; max-width: 640px; }
   .found li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 2px 6px; color: #f2c14e; }
   .found li button { padding: 1px 8px; }
+  .who { display: inline-flex; align-items: center; gap: 6px; }
+  .progress { margin-bottom: 0; }
+  .carried { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px 8px; margin: 4px auto 0; max-width: 640px; }
   .partyarea { border-top: 1px solid var(--line); padding-top: 8px; }
 </style>

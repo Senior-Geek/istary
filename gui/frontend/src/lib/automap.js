@@ -47,7 +47,8 @@ export const symbols = {
 }
 
 // feature places a feature's symbol, or null for a kind the maps do not
-// draw yet (teleporters, chutes, special squares, rescue markers).
+// draw yet (teleporters, chutes, special squares). Where stranded
+// characters lie is a marker of its own (marker), not a feature.
 export function feature(f) {
   const s = symbols[f.kind]
   return s ? { ...s, kind: f.kind, x: f.col + 0.5, y: f.row + 0.5, scale: 1, badge: false } : null
@@ -65,6 +66,38 @@ export function underParty(f, party) {
   const dx = ax * Math.cos(t) - ay * Math.sin(t), dy = ax * Math.sin(t) + ay * Math.cos(t)
   return { ...f, x: f.x + dx, y: f.y + dy, scale: BADGE.scale, badge: true }
 }
+
+// MARKER is the stranded marker's size: a diamond of this half-width at
+// the centre of its square, and when the party stands there, shrunk on a
+// disc in the corner ahead and to the party's left: the arrow's tail fills
+// the corners behind it, and a feature's badge takes the one ahead-right,
+// so neither covers the arrow nor the other.
+export const MARKER = { half: 0.3, scale: 0.62, radius: 0.21 }
+
+// marker places a square's stranded marker (Go's app.MapStranded): one
+// whatever the count, the count shown when more than one lie there.
+export function marker(m, party) {
+  const out = {
+    place: m.place, count: m.count, characters: m.characters ?? [],
+    x: m.col + 0.5, y: m.row + 0.5, scale: 1, badge: false,
+    label: strandedLabel(m),
+  }
+  if (party && party.row === m.row && party.col === m.col) {
+    const t = (facingTurn[party.facing] ?? 0) * Math.PI / 180
+    const [ax, ay] = [-BADGE.offset, -BADGE.offset] // ahead-left when facing north
+    out.x += ax * Math.cos(t) - ay * Math.sin(t)
+    out.y += ax * Math.sin(t) + ay * Math.cos(t)
+    out.scale = MARKER.scale
+    out.badge = true
+  }
+  return out
+}
+
+// diamond is the marker's outline, centred on (0, 0) before its scale.
+export const diamond = `0,${-MARKER.half} ${MARKER.half},0 0,${MARKER.half} ${-MARKER.half},0`
+
+// strandedLabel is a marker's line: "L1:R11:C5 — 3 stranded".
+export const strandedLabel = (m) => `${m.place} — ${m.count} stranded`
 
 // wrap marks a way across the level's edge, at the square it leaves from:
 // a chevron just outside the frame, pointing out.
@@ -109,6 +142,7 @@ export function drawing(view) {
     features,
     wraps: (view.wraps ?? []).map(wrap),
     seams,
+    stranded: (view.stranded ?? []).map((m) => marker(m, p)),
     party: view.party ? arrow(view.party) : null,
   }
 }

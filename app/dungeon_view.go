@@ -13,6 +13,8 @@ package app
 // never draw from the game's random numbers, leaves it out.
 
 import (
+	"strings"
+
 	"github.com/Senior-Geek/istary/engine"
 )
 
@@ -47,20 +49,32 @@ type DungeonMemberView struct {
 // InspectView is the Inspect screen (R-2): each character found in the
 // party's area, and how many more the party has room for. It says nothing
 // of where they lie: the maze view never gives positions.
+//
+// The rest is the rescue's progress (R-3), all read from the game as it
+// stands, so it is the same after a restart: who else is known to lie in
+// the maze, and who in the party cannot act. Whether a member was picked
+// up or started out with the party is recorded nowhere, so the view does
+// not say; it says only how each member is.
 type InspectView struct {
-	Found []FoundView `json:"found"`
-	Room  int         `json:"room"` // more characters the party can take (6 - its size)
+	Found     []FoundView     `json:"found"`
+	Room      int             `json:"room"`      // more characters the party can take (6 - its size)
+	Size      int             `json:"size"`      // the party's members, the incapacitated included
+	Picked    bool            `json:"picked"`    // the message is a pickup's ("NAME JOINS THE PARTY.")
+	Elsewhere int             `json:"elsewhere"` // known to lie in the maze, but not found from here
+	Carried   []CharacterNote `json:"carried"`   // party members who cannot act, as they are
 }
 
 // FoundView is one character found by Inspect.
 type FoundView struct {
-	N       int    `json:"n"` // from 1: PickUp(N) takes this character
-	Name    string `json:"name"`
-	Class   string `json:"class"` // alignment and class ("G-FIG")
-	Level   int    `json:"level"`
-	Status  string `json:"status"`
-	CanPick bool   `json:"canPick"`
-	Refusal string `json:"refusal,omitempty"` // why not, when CanPick is false
+	N      int    `json:"n"` // from 1: PickUp(N) takes this character
+	Name   string `json:"name"`
+	Class  string `json:"class"` // alignment and class ("G-FIG")
+	Level  int    `json:"level"`
+	Status string `json:"status"`
+	// Condition is the status as Inspect names it (ConditionLabel).
+	Condition string `json:"condition"`
+	CanPick   bool   `json:"canPick"`
+	Refusal   string `json:"refusal,omitempty"` // why not, when CanPick is false
 }
 
 // CorridorView is one square of the corridor ahead: its walls to the left,
@@ -153,11 +167,11 @@ func (c *Controller) DungeonView() DungeonView {
 			v.Buttons = append(v.Buttons, string(rune('A'+i)))
 		}
 	case "inspect":
-		v.Inspect = &InspectView{Found: []FoundView{}, Room: c.RescueRoom()}
+		v.Inspect = c.inspectView()
 		for i, ch := range g.MazeInspectFound {
 			v.Found = append(v.Found, ch.Name)
 			f := FoundView{N: i + 1, Name: ch.Name, Class: engine.AlignClass(ch.Alignment, ch.Class),
-				Level: ch.Level, Status: ch.Status.String(), CanPick: v.Inspect.Room > 0}
+				Level: ch.Level, Status: ch.Status.String(), Condition: ConditionLabel(ch.Status), CanPick: v.Inspect.Room > 0}
 			if !f.CanPick {
 				f.Refusal = partyFullRefusal(ch).Message
 			}
@@ -207,4 +221,28 @@ func (c *Controller) corridor() ([]CorridorView, bool) {
 			LeftAhead: sq.LeftAhead, RightAhead: sq.RightAhead})
 	}
 	return out, dark
+}
+
+// inspectView is the Inspect screen's progress, before its found list.
+func (c *Controller) inspectView() *InspectView {
+	g := c.Game
+	v := &InspectView{Found: []FoundView{}, Room: c.RescueRoom(), Size: g.Town.Party.Size(),
+		Picked: strings.HasSuffix(g.MazeMessage, joinsTheParty), Carried: []CharacterNote{}}
+	here := map[*engine.Character]bool{}
+	for _, ch := range g.MazeInspectFound {
+		here[ch] = true
+	}
+	for _, s := range g.StrandedSites() {
+		for _, ch := range s.Characters {
+			if !here[ch] {
+				v.Elsewhere++
+			}
+		}
+	}
+	for _, m := range g.Town.Party.Members {
+		if m != nil && !m.IsAlive() {
+			v.Carried = append(v.Carried, noteOf(m))
+		}
+	}
+	return v
 }

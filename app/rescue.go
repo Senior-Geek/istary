@@ -13,6 +13,36 @@ import (
 	"github.com/Senior-Geek/istary/engine"
 )
 
+// Conditions (R-3), as the maps and Inspect name them: the original's
+// status words, written out in full where it shortened them. Every front
+// end shows the word, so a condition never depends on a colour alone.
+var conditionLabels = [...]string{
+	engine.OK:        "OK",
+	engine.Asleep:    "ASLEEP",
+	engine.Afraid:    "AFRAID",
+	engine.Paralyzed: "PARALYZED",
+	engine.Stoned:    "STONED",
+	engine.Dead:      "DEAD",
+	engine.Ashed:     "ASHES",
+	engine.Lost:      "LOST",
+}
+
+// ConditionLabel names condition s for the maps and Inspect.
+func ConditionLabel(s engine.Status) string {
+	if int(s) >= 0 && int(s) < len(conditionLabels) {
+		return conditionLabels[s]
+	}
+	return s.String()
+}
+
+// noteOf is ch as the maps and Inspect note a character.
+func noteOf(ch *engine.Character) CharacterNote {
+	return CharacterNote{Name: ch.Name, Class: engine.AlignClass(ch.Alignment, ch.Class), Level: ch.Level, Condition: ConditionLabel(ch.Status)}
+}
+
+// joinsTheParty ends the message after a pickup ("NAME JOINS THE PARTY.").
+const joinsTheParty = " JOINS THE PARTY."
+
 // PartyFullMessage is the refusal when the party has six members
 // (the original's "YOU HAVE 6").
 const PartyFullMessage = "YOU HAVE 6"
@@ -83,7 +113,7 @@ func (c *Controller) pickUp(n int) (*engine.Character, error) {
 		return nil, &Refusal{Message: ch.Name + " IS NOT HERE."}
 	}
 	g.MazeInspectFound = append(append([]*engine.Character(nil), found[:n-1]...), found[n:]...)
-	g.MazeMessage = ch.Name + " JOINS THE PARTY."
+	g.MazeMessage = ch.Name + joinsTheParty
 	return ch, nil
 }
 

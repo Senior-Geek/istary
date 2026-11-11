@@ -20,7 +20,9 @@ package engine
 //     HP, items, gold, experience, age and spells stay as they are.
 
 import (
+	"cmp"
 	"errors"
+	"slices"
 
 	"github.com/Senior-Geek/istary/data"
 )
@@ -103,15 +105,8 @@ func (g *GameState) FindStranded() []*Character {
 	if !ok {
 		return nil
 	}
-	away := map[string]bool{} // out on a saved expedition: not lost here
-	for _, n := range g.ExpeditionMembers() {
-		away[n] = true
-	}
 	var found []*Character
-	for _, c := range g.Town.Roster.Characters {
-		if c == nil || c.Status == Lost || !c.InMaze || g.inParty(c) || away[c.Name] {
-			continue
-		}
+	for _, c := range g.outInTheMaze() {
 		if c.Stranded != nil {
 			level, x, y := c.Stranded.Internal()
 			if c.Stranded.Valid(len(g.Scenario.Mazes.Levels)) && level == g.MazeLevel && area[x][y] {
@@ -122,6 +117,65 @@ func (g *GameState) FindStranded() []*Character {
 		}
 	}
 	return found
+}
+
+// outInTheMaze lists, in roster order, the characters who may lie in the
+// maze for a rescue: out of the castle (InMaze), not LOST, not in the party
+// and not on a saved expedition. Where they lie is for the caller to read.
+func (g *GameState) outInTheMaze() []*Character {
+	away := map[string]bool{} // out on a saved expedition: not lost here
+	for _, n := range g.ExpeditionMembers() {
+		away[n] = true
+	}
+	var out []*Character
+	for _, c := range g.Town.Roster.Characters {
+		if c == nil || c.Status == Lost || !c.InMaze || g.inParty(c) || away[c.Name] {
+			continue
+		}
+		out = append(out, c)
+	}
+	return out
+}
+
+// StrandedSite is a square where stranded characters lie (R-3): one map
+// marker, however many lie there.
+type StrandedSite struct {
+	Place      Place        // a square of a maze level, in L:R:C
+	Characters []*Character // in roster order
+}
+
+// StrandedSites lists the squares where characters are known to lie, in
+// order of level, row and column (R-3): the squares their Stranded records
+// name, which only StrandParty writes, when the expedition that left them
+// there ended. The characters are those FindStranded could find, so a
+// marker and Inspect never disagree about who lies where. Characters an
+// older version left out with no Stranded record are not placed: their
+// legacy fields cannot say for certain which level they mean (stranded.go),
+// and Inspect still finds them on the very square, as before. The LOST,
+// the party and those on a saved expedition are never placed. It reads the
+// roster only: the player's map (Exploration) and RescueArea are not
+// touched, and nothing changes.
+func (g *GameState) StrandedSites() []StrandedSite {
+	levels := len(g.Scenario.Mazes.Levels)
+	at := map[Place]int{}
+	var sites []StrandedSite
+	for _, c := range g.outInTheMaze() {
+		if c.Stranded == nil || c.Stranded.IsCastle() || !c.Stranded.Valid(levels) {
+			continue
+		}
+		p := *c.Stranded
+		i, ok := at[p]
+		if !ok {
+			i = len(sites)
+			at[p] = i
+			sites = append(sites, StrandedSite{Place: p})
+		}
+		sites[i].Characters = append(sites[i].Characters, c)
+	}
+	slices.SortFunc(sites, func(a, b StrandedSite) int {
+		return cmp.Or(cmp.Compare(a.Place.Level, b.Place.Level), cmp.Compare(a.Place.Row, b.Place.Row), cmp.Compare(a.Place.Col, b.Place.Col))
+	})
+	return sites
 }
 
 func (g *GameState) inParty(c *Character) bool {

@@ -7,13 +7,25 @@
   // edge runs through the window. It draws lib/automap.js's drawing of
   // Go's map view and decides nothing.
   //
+  // Where stranded characters lie (R-3) is a red diamond, one a square,
+  // with the count inside when more than one lie there; drawn under the
+  // party's arrow, and moved to a corner badge on the party's own square.
+  // On the full map a marker can be clicked (onselect); the map's list
+  // beside it does the same from the keyboard.
+  //
   // Props:
-  //   view   app.LocalMapView or app.MapView
-  //   full   the full map (frame and edge chevrons) rather than the minimap
-  //   label  the accessible name
-  import { drawing, CLIP, BADGE } from './automap.js'
+  //   view      app.LocalMapView or app.MapView
+  //   full      the full map (frame and edge chevrons) rather than the minimap
+  //   label     the accessible name
+  //   selected  the place (L:R:C) of the marker chosen, if any
+  //   onselect  (place) => void   a marker was clicked
+  import { drawing, CLIP, BADGE, MARKER, diamond } from './automap.js'
 
-  let { view, full = false, label = 'Map' } = $props()
+  let { view, full = false, label = 'Map', selected = '', onselect = null } = $props()
+
+  // A marker is drawn larger on the full map, whose squares are smaller,
+  // so its count can be read; a badge keeps its size, clear of the arrow.
+  const grow = (m) => (full && !m.badge ? m.scale * 1.4 : m.scale)
 
   const d = $derived(drawing(view))
   const pad = $derived(full ? 0.7 : CLIP)
@@ -22,6 +34,12 @@
 
 {#if d}
   <svg viewBox={box} class="map" class:full role="img" aria-label={label}>
+    <!-- A marker's drawing; declared inside the svg, so it is drawn as SVG. -->
+    {#snippet mark(m)}
+      <title>{m.label}</title>
+      <polygon points={diamond} />
+      {#if m.count > 1}<text y="0.02">{m.count}</text>{:else}<circle class="dot" r="0.07" />{/if}
+    {/snippet}
     <defs><clipPath id="window-{full ? 'full' : 'local'}"><rect x={-CLIP} y={-CLIP} width={d.size + 2 * CLIP} height={d.size + 2 * CLIP} /></clipPath></defs>
     {#if full}<rect class="frame" x="0" y="0" width={d.size} height={d.size} />{/if}
     <g clip-path={full ? null : `url(#window-local)`}>
@@ -34,6 +52,18 @@
       {#each d.features as f, i (i)}
         {#if f.badge}<circle class="badge" cx={f.x} cy={f.y} r={BADGE.radius} />{/if}
         <path class="feature {f.cls}" class:badged={f.badge} transform="translate({f.x} {f.y}) scale({f.scale})" d={f.path}><title>{f.label}</title></path>
+      {/each}
+      {#each d.stranded as m (m.place)}
+        {#if m.badge}<circle class="badge" cx={m.x} cy={m.y} r={MARKER.radius} />{/if}
+        {#if onselect}
+          <g class="stranded pick" class:selected={m.place === selected} transform="translate({m.x} {m.y}) scale({grow(m)})"
+            role="button" tabindex="-1" aria-label={m.label} onclick={() => onselect(m.place)}
+            onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') onselect(m.place) }}>
+            {@render mark(m)}
+          </g>
+        {:else}
+          <g class="stranded" transform="translate({m.x} {m.y}) scale({grow(m)})">{@render mark(m)}</g>
+        {/if}
       {/each}
       {#if d.party}
         <polygon class="party" points={d.party.points} transform="rotate({d.party.turn} {d.party.cx} {d.party.cy})" />
@@ -59,4 +89,9 @@
   .party { fill: #fff; stroke: #000; stroke-width: 0.03; }
   .wrap { fill: none; stroke: #4fd16a; stroke-width: 0.08; stroke-linecap: round; stroke-linejoin: round; }
   .wrap.door { stroke: #f2c14e; }
+  .stranded polygon { fill: #5a1712; stroke: #ff7a6b; stroke-width: 0.06; stroke-linejoin: round; }
+  .stranded text { fill: #fff; font: 700 0.38px ui-monospace, Menlo, monospace; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+  .stranded .dot { fill: #ff7a6b; }
+  .stranded.pick { cursor: pointer; outline: none; }
+  .stranded.selected polygon { stroke: #fff; stroke-width: 0.09; }
 </style>
