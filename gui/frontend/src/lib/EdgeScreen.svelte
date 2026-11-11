@@ -17,13 +17,37 @@
   let practiceChest = $state(false) // practice encounter with a chest
   const real = $derived(view.departures?.real ?? '')
   const practice = $derived(view.departures?.practice ?? '')
+  const caution = $derived(view.readiness?.line ?? '')
+  let checking = $state(false) // the equipment check is shown; nothing is sent yet
+
+  function enter() {
+    if (caution && !checking) checking = true
+    else {
+      checking = false
+      call(S.RealExpedition)
+    }
+  }
+  function backToTown() {
+    checking = false
+    call(S.Navigate, 'castle')
+  }
 </script>
 
 <LocationFrame {view} {busy} {call} {onopen}>
   {#snippet actions()}
     <div class="group">
-      <button class="primary wide" disabled={busy || !!real} onclick={() => call(S.RealExpedition)}>Enter the maze</button>
+      <button class="primary wide" disabled={busy || !!real || checking} onclick={enter}>Enter the maze</button>
       {#if real}<span class="why">{real}</span>{/if}
+      {#if checking && caution && !real}
+        <div class="check-equipment" role="alertdialog" aria-label="Equipment check">
+          <p>{caution}</p>
+          <p class="why">Items carried but not equipped do not count. A member's sheet (the party list) equips what they carry; Boltac's sells the rest.</p>
+          <div class="choices">
+            <button class="primary" disabled={busy} onclick={enter}>Continue into maze</button>
+            <button disabled={busy} onclick={backToTown}>Return to town</button>
+          </div>
+        </div>
+      {/if}
     </div>
     <div class="group practice">
       <div class="tag">Practice · Istary only · nothing is kept</div>
@@ -54,6 +78,10 @@
   .wide { width: 100%; text-align: left; margin: 0; }
   .practice { border: 1px dashed #444; border-radius: 6px; padding: 6px 8px; }
   .tag { font-size: 11px; color: var(--notice); text-transform: uppercase; letter-spacing: 0.05em; }
+  .check-equipment { border: 1px solid var(--notice); border-radius: 6px; padding: 6px 8px; display: grid; gap: 4px; }
+  .check-equipment p { margin: 0; }
+  .choices { display: flex; gap: 6px; flex-wrap: wrap; }
+  .choices button { margin: 0; }
   .check { margin: 0; }
   .check input { margin: 0 4px 0 0; }
   .why { color: var(--muted); font-size: 11px; }

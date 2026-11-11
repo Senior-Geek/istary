@@ -10,6 +10,11 @@
   // Go reads it (inspect.js): the party's size and room, who else is here,
   // how many are known to lie elsewhere, and the members who cannot act.
   //
+  // The party's coordinates and facing (UX-1, view.position: Go's L:R:C,
+  // the maps' own) stand in the header, in the maze and, larger, at Camp.
+  // When characters lie on the party's square (its map marker's count), a
+  // line under the view says so and points to Inspect / Rescue.
+  //
   // The maps (M-1): the minimap (view.minimap, Go's squares around the
   // party) sits in the corner of the view while walking, unless hidden
   // (a saved setting); Map or F10 opens the full map of the explored level
@@ -30,6 +35,7 @@
   import MapSvg from './MapSvg.svelte'
   import AutomapPopup from './AutomapPopup.svelte'
   import { mapKey } from './automap.js'
+  import { where, whereTitle, strandedHint } from './position.js'
 
   let { view, busy = false, call } = $props()
 
@@ -77,6 +83,12 @@
 <div class="dungeon">
   <header class="bar">
     <h2>{d.phase === 'camp' ? 'Camp' : 'The maze'}</h2>
+    {#if view.position}
+      <span class="where" class:prominent={d.phase === 'camp'} title={whereTitle(view.position)}
+        aria-label="Position: {whereTitle(view.position)}">{where(view.position)}</span>
+    {:else}
+      <span class="where unknown" title={whereTitle(null)}>position unknown</span>
+    {/if}
     <span class="tag" class:real={view.real}>{expeditionTag(view)}</span>
     {#each d.spells ?? [] as s (s)}<span class="tag spell">{s}</span>{/each}
     <div class="spacer"></div>
@@ -118,6 +130,9 @@
   <section class="messages" aria-live="polite">
     {#each lines as l, i (i)}<p>{l}</p>{/each}
     {#if d.more}<p class="muted">[RET] FOR MORE</p>{/if}
+    {#if d.phase === 'maze' && d.prompt === '' && strandedHint(view.position)}
+      <p class="hint">{strandedHint(view.position)} — Inspect / Rescue <kbd>I</kbd></p>
+    {/if}
     {#if d.prompt === 'inspect'}
       <p class="muted small progress">{p.party}</p>
       {#if d.inspect?.found?.length}
@@ -200,6 +215,9 @@
   .middle.maze.inspecting { grid-template-rows: minmax(110px, 1fr) max-content max-content; }
   .bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .bar h2 { margin: 0; }
+  .where { font: 600 13px ui-monospace, Menlo, monospace; color: var(--accent); border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px; white-space: nowrap; }
+  .where.prominent { font-size: 17px; padding: 2px 10px; border-color: var(--accent); }
+  .where.unknown { color: var(--muted); font-weight: 400; }
   .spacer { flex: 1; }
   .tag { font-size: 11px; border: 1px solid var(--line); border-radius: 9px; padding: 1px 8px; color: var(--muted); }
   .tag.spell { color: #f2c14e; border-color: #6b5a2c; }
@@ -222,6 +240,7 @@
   .messages { min-height: 52px; font-family: ui-monospace, Menlo, monospace; text-align: center; }
   .messages p { margin: 2px 0; color: #f2c14e; }
   .messages p.muted { color: var(--muted); }
+  .messages p.hint { color: #ff8a7a; font-size: 13px; }
   .commands { display: grid; gap: 8px; justify-items: center; }
   .pad, .row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
   kbd { font: 600 11px ui-monospace, Menlo, monospace; border: 1px solid var(--line); border-radius: 3px; padding: 0 4px; }

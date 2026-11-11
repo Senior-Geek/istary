@@ -1079,6 +1079,44 @@ export namespace app {
 		}
 	}
 	
+	export class PositionView {
+	    place: string;
+	    level: number;
+	    row: number;
+	    col: number;
+	    facing: string;
+	    stranded: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new PositionView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.place = source["place"];
+	        this.level = source["level"];
+	        this.row = source["row"];
+	        this.col = source["col"];
+	        this.facing = source["facing"];
+	        this.stranded = source["stranded"];
+	    }
+	}
+	export class ReadinessNote {
+	    slot: number;
+	    name: string;
+	    problems: string[];
+	
+	    static createFrom(source: any = {}) {
+	        return new ReadinessNote(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.slot = source["slot"];
+	        this.name = source["name"];
+	        this.problems = source["problems"];
+	    }
+	}
 	export class ShopOffer {
 	    item: number;
 	    name: string;
@@ -1955,6 +1993,38 @@ export namespace main {
 	        this.front = source["front"];
 	    }
 	}
+	export class ReadinessView {
+	    notes: app.ReadinessNote[];
+	    line: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new ReadinessView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.notes = this.convertValues(source["notes"], app.ReadinessNote);
+	        this.line = source["line"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 	export class ReturnView {
 	    open: boolean;
 	    note: string;
@@ -2187,6 +2257,7 @@ export namespace main {
 	    return?: ReturnView;
 	    settings: SettingsView;
 	    departures: DeparturesView;
+	    readiness?: ReadinessView;
 	    party: PartySlotView[];
 	    partyAlignment: string;
 	    partyMax: number;
@@ -2196,6 +2267,7 @@ export namespace main {
 	    practiceChest: boolean;
 	    dungeon?: app.DungeonView;
 	    minimap?: app.LocalMapView;
+	    position?: app.PositionView;
 	    camp?: CampPanel;
 	    expedition: boolean;
 	    real: boolean;
@@ -2233,6 +2305,7 @@ export namespace main {
 	        this.return = this.convertValues(source["return"], ReturnView);
 	        this.settings = this.convertValues(source["settings"], SettingsView);
 	        this.departures = this.convertValues(source["departures"], DeparturesView);
+	        this.readiness = this.convertValues(source["readiness"], ReadinessView);
 	        this.party = this.convertValues(source["party"], PartySlotView);
 	        this.partyAlignment = source["partyAlignment"];
 	        this.partyMax = source["partyMax"];
@@ -2242,6 +2315,7 @@ export namespace main {
 	        this.practiceChest = source["practiceChest"];
 	        this.dungeon = this.convertValues(source["dungeon"], app.DungeonView);
 	        this.minimap = this.convertValues(source["minimap"], app.LocalMapView);
+	        this.position = this.convertValues(source["position"], app.PositionView);
 	        this.camp = this.convertValues(source["camp"], CampPanel);
 	        this.expedition = source["expedition"];
 	        this.real = source["real"];

@@ -42,6 +42,9 @@ type View struct {
 	// Departures says which departures from the Edge of Town are open, or
 	// why not (edge.go).
 	Departures DeparturesView `json:"departures"`
+	// Readiness is the party's equipment check (UX-1), a caution the Edge
+	// of Town shows before Enter the maze; nil elsewhere (readiness.go).
+	Readiness *ReadinessView `json:"readiness"`
 
 	// Party (Gilgamesh's Tavern).
 	Party          []PartySlotView `json:"party"`
@@ -60,7 +63,10 @@ type View struct {
 	Dungeon *app.DungeonView `json:"dungeon"`
 	// Minimap (Screen "dungeon", M-1): the explored squares around the
 	// party, or nil. View.Settings says whether the page shows it.
-	Minimap    *app.LocalMapView `json:"minimap"`
+	Minimap *app.LocalMapView `json:"minimap"`
+	// Position (Screen "dungeon", UX-1): where the party stands and faces,
+	// for the maze's and Camp's readout, or nil off the maze's squares.
+	Position   *app.PositionView `json:"position"`
 	Camp       *CampPanel        `json:"camp"`       // in Camp: its screen and the party's sheets
 	Expedition bool              `json:"expedition"` // an expedition (practice or real) is under way (any screen)
 	Real       bool              `json:"real"`       // it is the real, saved expedition, not practice
@@ -346,6 +352,9 @@ func (s *Session) view(err error) View {
 			dv := c.DungeonView()
 			v.Screen, v.Dungeon = "dungeon", &dv
 			v.Minimap = s.minimap()
+			if pv, ok := c.Position(); ok {
+				v.Position = &pv
+			}
 			if c.Game.Phase == engine.PhaseCamp {
 				v.Camp = campPanel(c)
 			}
@@ -356,6 +365,7 @@ func (s *Session) view(err error) View {
 	v.Return = s.returnView()
 	v.Settings = s.settingsView()
 	v.Departures = s.departures()
+	v.Readiness = s.readiness()
 	v.Shop = s.shopPanel()
 	v.Inn = s.innPanel()
 	v.Gold = s.goldPanel()

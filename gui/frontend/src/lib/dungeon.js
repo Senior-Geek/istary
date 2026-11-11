@@ -67,7 +67,7 @@ export const actions = {
   right: { label: 'Right', hint: 'R →', keys: ['r', 'd', 'ArrowRight'] },
   kick: { label: 'Kick', hint: 'K', keys: ['k'] },
   camp: { label: 'Camp', hint: 'C', keys: ['c'] },
-  inspect: { label: 'Inspect', hint: 'I', keys: ['i'] },
+  inspect: { label: 'Inspect / Rescue', hint: 'I', keys: ['i'] }, // UX-1: Inspect is where stranded characters are picked up
   continue: { label: 'Continue', hint: '↵', keys: ['Enter', ' '] },
   yes: { label: 'Yes', hint: 'Y', keys: ['y'] },
   no: { label: 'No', hint: 'N', keys: ['n'] },
