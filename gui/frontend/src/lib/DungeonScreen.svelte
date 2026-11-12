@@ -22,7 +22,7 @@
   //   call   (fn, ...args) => Promise   runs a Session method and stores the new view
   import * as S from '../../wailsjs/go/main/Session.js'
   import PartyBar from './PartyBar.svelte'
-  import { viewBox, scene, points, actions, keyAction, expeditionTag } from './dungeon.js'
+  import { viewBox, scene, points, actions, keyAction, expeditionTag, suggested } from './dungeon.js'
   import CampScreen from './CampScreen.svelte'
   import { pickLabel, placeMark } from './camp.js'
   import Condition from './Condition.svelte'
@@ -165,7 +165,7 @@
     {:else}
       <div class="row">
         {#each open.filter((a) => a !== 'pick-up') as a (a)}
-          <button class:primary={a === open[0]} disabled={busy} onclick={() => act(a)}>{actions[a]?.label ?? a} <kbd>{actions[a]?.hint}</kbd></button>
+          <button class:primary={a === suggested(d)} disabled={busy} onclick={() => act(a)}>{actions[a]?.label ?? a} <kbd>{actions[a]?.hint}</kbd></button>
         {/each}
       </div>
     {/if}

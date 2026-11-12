@@ -150,18 +150,26 @@ func (s *Session) resume() {
 	}
 	s.real = true
 	s.ctrl.Explore() // an old save has no map: only what is seen from here
+	what := ""
 	switch interrupted {
 	case app.InterruptedCombat:
-		s.notice = "Istary closed during an encounter. The party is back in the maze where it stood; the encounter is over and its unclaimed rewards are lost."
+		what = "Istary closed during an encounter: it is over, and its unclaimed rewards are lost. "
 	case app.InterruptedChest:
-		s.notice = "Istary closed while the party dealt with a chest. The party is back in the maze where it stood; the chest and its rewards are lost."
-	default:
-		s.notice = "The expedition resumes where it was last saved."
+		what = "Istary closed while the party dealt with a chest: the chest and its rewards are lost. "
 	}
+	s.notice = "Your party has returned to the dungeon. " + what + resumedStranded
+	s.resumed = s.notice
 	if err := s.checkpoint(); err == nil {
 		s.save() // record that the encounter, if any, is over
 	}
 }
+
+// The resumed expedition's notice (View.NoticeTitle): where the party
+// stands is the dungeon's own; the stranded stay where they were recorded.
+const (
+	resumedTitle    = "EXPEDITION RESUMED"
+	resumedStranded = "Stranded adventurers remain at their recorded locations."
+)
 
 // ReturnExpeditionToCastle ends a saved expedition that cannot be resumed:
 // its party joins the castle party, as a restart left it before

@@ -621,6 +621,7 @@ export namespace app {
 	    inspect?: InspectView;
 	    spells: string[];
 	    actions: string[];
+	    default?: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new DungeonView(source);
@@ -641,6 +642,7 @@ export namespace app {
 	        this.inspect = this.convertValues(source["inspect"], InspectView);
 	        this.spells = source["spells"];
 	        this.actions = source["actions"];
+	        this.default = source["default"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -2173,6 +2175,7 @@ export namespace main {
 	    error: string;
 	    message: string;
 	    notice: string;
+	    title: string;
 	    screen: string;
 	    roster: CharacterView[];
 	    creation?: CreationView;
@@ -2219,6 +2222,7 @@ export namespace main {
 	        this.error = source["error"];
 	        this.message = source["message"];
 	        this.notice = source["notice"];
+	        this.title = source["title"];
 	        this.screen = source["screen"];
 	        this.roster = this.convertValues(source["roster"], CharacterView);
 	        this.creation = this.convertValues(source["creation"], CreationView);

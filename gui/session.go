@@ -26,6 +26,7 @@ type Session struct {
 	saveDir  string
 	startErr error  // fatal startup problem shown instead of the UI
 	notice   string // one-shot confirmation shown after an action
+	resumed  string // the notice of a resumed expedition, headed EXPEDITION RESUMED while it is shown
 
 	// practice is the practice encounter's or expedition's controller: a
 	// separate, never-saved game with copies of the party. nil when none.

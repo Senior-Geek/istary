@@ -125,6 +125,7 @@ label span { display: inline-block; width: 150px; color: var(--muted); }
 .banner { padding: 8px 12px; border-radius: 4px; margin-top: 12px; }
 .banner.error { background: #3a1d1b; color: var(--error); }
 .banner.notice { background: #1b2a3a; color: var(--notice); }
+.banner .title { display: block; letter-spacing: 0.06em; margin-bottom: 2px; }
 .banner.message { background: #1e2a1e; color: var(--accent); }
 
 .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }

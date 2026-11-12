@@ -142,6 +142,7 @@ func (c *Controller) EnterMaze() error {
 	g.MazeMessage = ""
 	g.MazeMessage2 = ""
 	g.InitFightMap()
+	c.arrived(arrivedByStairs) // down the stairs from the castle
 	return nil
 }
 

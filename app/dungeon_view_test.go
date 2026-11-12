@@ -48,6 +48,8 @@ func TestDungeonViewAlongRandomWalks(t *testing.T) {
 		"inspect", "room", "n", "level", "canPick", "refusal",
 		// R-3's rescue progress: counts and conditions, never a position.
 		"size", "picked", "elsewhere", "carried", "condition",
+		// The stairs' suggested answer: how the party came, never where.
+		"default",
 		"left", "right", "front", "leftAhead", "rightAhead"} {
 		allowed[k] = true
 	}

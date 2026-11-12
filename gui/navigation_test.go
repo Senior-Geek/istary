@@ -63,7 +63,7 @@ func navigate(t *testing.T, s *Session, dir, dest string) View {
 // sameView reports whether two views are the same apart from the last
 // action's error and notice.
 func sameView(a, b View) bool {
-	a.Error, a.Notice, b.Error, b.Notice = "", "", "", ""
+	a.Error, a.Notice, a.Title, b.Error, b.Notice, b.Title = "", "", "", "", "", ""
 	return reflect.DeepEqual(a, b)
 }
 

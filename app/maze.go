@@ -283,6 +283,7 @@ func (c *Controller) mazeKey(k Key) {
 					game.PlayerX = cell.DestX
 					game.PlayerY = cell.DestY
 					game.InitFightMap()
+					c.arrived(arrivedByStairs) // off the stairs just taken
 				}
 			}
 			game.MazeMessage = ""
@@ -402,6 +403,7 @@ func (c *Controller) mazeKey(k Key) {
 
 	// Only check special squares, apply poison, and roll encounters after actual movement
 	if moved {
+		c.arrived(arrivedWalking) // before the square's effect, which may move the party on
 		checkSquare(game)
 
 		// Pascal UPDATEHP (RUNNER2.TEXT lines 398-436):
