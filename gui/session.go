@@ -12,7 +12,6 @@ import (
 	"github.com/Senior-Geek/istary/app"
 	"github.com/Senior-Geek/istary/data"
 	"github.com/Senior-Geek/istary/engine"
-	"github.com/Senior-Geek/istary/scenarios/wiz1"
 )
 
 // Session is the object bound to the Svelte front end. Every method locks
@@ -85,6 +84,18 @@ type Session struct {
 	// when the folder could not be locked.
 	lock     *saveLock
 	lockNote string
+
+	// root is the folder the window opened: locked, and holding the
+	// window's settings. In a library window (games.go) it holds the game
+	// slots and saveDir is the open game's slot folder; otherwise saveDir
+	// is root itself, one game.
+	root    string
+	library bool
+	// slot is the open game's slot (games.go), 0 when none is open or the
+	// window is not a library; replacing is the slot whose replacement
+	// awaits confirmation.
+	slot      int
+	replacing int
 }
 
 // NewSession loads Wizardry I and the roster from saveDir. saveDir must not
@@ -103,7 +114,20 @@ var errNotStarted = errors.New("Istary is starting.")
 // runs the program to generate its bindings (wails build, wails dev), and
 // that run must not lock, resume or save anything.
 func unopenedSession(saveDir string) *Session {
-	return &Session{saveDir: saveDir, startErr: errNotStarted}
+	return &Session{saveDir: saveDir, root: saveDir, startErr: errNotStarted}
+}
+
+// unopenedLibrary returns a window on the game slots in root (games.go),
+// not yet opened: it opens on game selection, with no game open.
+func unopenedLibrary(root string) *Session {
+	return &Session{saveDir: root, root: root, library: true, startErr: errNotStarted}
+}
+
+// NewLibrary opens the game slots in root, on game selection.
+func NewLibrary(root string) *Session {
+	s := unopenedLibrary(root)
+	s.start()
+	return s
 }
 
 // start opens the save folder: lock, load and resume.
@@ -118,11 +142,11 @@ func (s *Session) open() error {
 	if err != nil {
 		return err
 	}
-	if filepath.Clean(s.saveDir) == filepath.Clean(terminalDir) {
+	if filepath.Clean(s.root) == filepath.Clean(terminalDir) {
 		return fmt.Errorf("refusing to use the terminal game's save directory %s", terminalDir)
 	}
 	if s.lock == nil {
-		lock, err := lockSaveFolder(s.saveDir)
+		lock, err := lockSaveFolder(s.root)
 		switch {
 		case errors.Is(err, errLockUnsupported):
 			s.lockNote = "This save folder cannot be locked, so make sure no other Istary window uses it."
@@ -131,19 +155,24 @@ func (s *Session) open() error {
 		}
 		s.lock = lock
 	}
-	engine.SetSaveDir(s.saveDir)
-
-	scenario, err := wiz1.Load()
-	if err != nil {
-		return fmt.Errorf("load Wizardry I data: %w", err)
-	}
-	pristine, err := wiz1.Load()
-	if err != nil {
-		return fmt.Errorf("load Wizardry I data: %w", err)
-	}
-	s.scenario, s.pristine = scenario, pristine
 	s.loadSettings()
-	return s.reload()
+	if s.library {
+		s.forgetGame() // game selection first
+		return nil
+	}
+	return s.loadGame(s.saveDir)
+}
+
+// closed reports whether there is no game to act on: the window has not
+// opened its folder, or no game is open (games.go).
+func (s *Session) closed() bool { return s.startErr != nil || s.ctrl == nil }
+
+// closedErr is why there is no game to act on.
+func (s *Session) closedErr() error {
+	if s.startErr != nil {
+		return s.startErr
+	}
+	return errNoGameOpen
 }
 
 // shutdown releases the save folder (on quitting). The session cannot be used
@@ -194,7 +223,7 @@ func (s *Session) reload() error {
 func (s *Session) do(action func() error) View {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if s.startErr != nil {
+	if s.closed() {
 		return s.view(nil)
 	}
 	s.notice = ""
@@ -246,7 +275,7 @@ func (s *Session) save() error {
 func (s *Session) SaveNow() View {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if s.startErr != nil {
+	if s.closed() {
 		return s.view(nil)
 	}
 	s.notice = ""
@@ -289,7 +318,7 @@ func (s *Session) State() View {
 func (s *Session) ReloadRoster() View {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if s.startErr != nil {
+	if s.closed() {
 		return s.view(nil)
 	}
 	s.notice = ""

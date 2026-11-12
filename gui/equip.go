@@ -33,7 +33,7 @@ type EquipRequest struct {
 func (s *Session) EquipAction(r EquipRequest) View {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if s.startErr != nil {
+	if s.closed() {
 		return s.view(nil)
 	}
 	s.notice = ""

@@ -1,8 +1,8 @@
 package main
 
 // The window's own settings (Castle-0 C0-3): preferences of this window,
-// not of the game. They live in gui-settings.json in the save folder,
-// beside the roster but never in it: no save, checkpoint, backup, reset or
+// not of the game. They live in gui-settings.json in the folder the window
+// opened (the library, games.go), the same for every game and never in one: no save, checkpoint, backup, reset or
 // restore reads or writes them, and the roster file never holds them.
 // Writes are atomic, like the save (engine.WriteFileAtomic). A missing
 // file means the defaults; a damaged one is left as it is, the defaults
@@ -41,7 +41,7 @@ type SettingsView struct {
 }
 
 func (s *Session) settingsPath() string {
-	return filepath.Join(s.saveDir, settingsFile)
+	return filepath.Join(s.root, settingsFile)
 }
 
 // loadSettings reads the settings file: the defaults if there is none, and

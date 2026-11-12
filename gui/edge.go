@@ -46,7 +46,7 @@ var errUnsavedLeave = errors.New("The last action is not saved yet. Istary tries
 func (s *Session) LeaveGame() View {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if s.startErr != nil {
+	if s.closed() {
 		return s.view(nil)
 	}
 	s.notice = ""

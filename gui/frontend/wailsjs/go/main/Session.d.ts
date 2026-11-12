@@ -19,6 +19,10 @@ export function CancelCreation():Promise<main.View>;
 
 export function CancelJoin():Promise<main.View>;
 
+export function CancelReplaceGame():Promise<main.View>;
+
+export function ChangeGame():Promise<main.View>;
+
 export function ChestAction(arg1:string,arg2:number):Promise<main.View>;
 
 export function ChestContinue():Promise<main.View>;
@@ -53,6 +57,10 @@ export function CombatStart():Promise<main.View>;
 
 export function Confirm(arg1:boolean):Promise<main.View>;
 
+export function ConfirmReplaceGame(arg1:number):Promise<main.View>;
+
+export function ContinueGame(arg1:number):Promise<main.View>;
+
 export function DeleteCharacter(arg1:string,arg2:string):Promise<main.View>;
 
 export function DungeonAction(arg1:string,arg2:number):Promise<main.View>;
@@ -62,6 +70,8 @@ export function EquipAction(arg1:main.EquipRequest):Promise<main.View>;
 export function FinishStats():Promise<main.View>;
 
 export function GoldAction(arg1:main.GoldRequest):Promise<main.View>;
+
+export function ImportEarlierGame(arg1:number):Promise<main.View>;
 
 export function InnAction(arg1:main.InnRequest):Promise<main.View>;
 
@@ -77,6 +87,8 @@ export function ListBackups():Promise<Array<main.BackupInfo>>;
 
 export function Navigate(arg1:string):Promise<main.View>;
 
+export function NewGame(arg1:number):Promise<main.View>;
+
 export function PracticeEncounter(arg1:boolean):Promise<main.View>;
 
 export function PracticeExpedition():Promise<main.View>;
@@ -88,6 +100,8 @@ export function ReloadRoster():Promise<main.View>;
 export function RemovePoint(arg1:number):Promise<main.View>;
 
 export function RenameCharacter(arg1:number,arg2:string):Promise<main.View>;
+
+export function ReplaceGame(arg1:number):Promise<main.View>;
 
 export function ResetRoster():Promise<main.View>;
 

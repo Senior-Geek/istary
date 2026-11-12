@@ -72,7 +72,7 @@ var errNoTempleAction = errors.New("The Temple has no such service.")
 func (s *Session) TempleAction(r TempleRequest) View {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if s.startErr != nil {
+	if s.closed() {
 		return s.view(nil)
 	}
 	s.notice = ""
@@ -117,8 +117,8 @@ func (s *Session) TempleAction(r TempleRequest) View {
 func (s *Session) TempleQuote(patient, payer int) (app.TempleQuote, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if s.startErr != nil {
-		return app.TempleQuote{}, s.startErr
+	if s.closed() {
+		return app.TempleQuote{}, s.closedErr()
 	}
 	if err := s.templeRefusal(); err != nil {
 		return app.TempleQuote{}, err

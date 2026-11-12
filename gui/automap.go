@@ -24,8 +24,8 @@ var errNoMapYet = errors.New("Nothing of the maze has been explored yet.")
 func (s *Session) Automap(l int) (app.MapView, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if s.startErr != nil {
-		return app.MapView{}, s.startErr
+	if s.closed() {
+		return app.MapView{}, s.closedErr()
 	}
 	c := s.active()
 	if c == nil {

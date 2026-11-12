@@ -17,6 +17,7 @@
   import TradingScreen from './lib/TradingScreen.svelte'
   import InnScreen from './lib/InnScreen.svelte'
   import TempleScreen from './lib/TempleScreen.svelte'
+  import GamesScreen from './lib/GamesScreen.svelte'
 
   let view = $state(null)
   let busy = $state(false)
@@ -37,7 +38,7 @@
 
   const sel = $derived(view?.roster?.find((ch) => ch.index === selected))
   // Town and the dungeon (with Camp) fill the window, the party bar in view.
-  const shell = $derived(view && !view.fatal && view.screen !== 'combat')
+  const shell = $derived(view && !view.fatal && view.screen !== 'combat' && view.screen !== 'games')
 
   const select = (index) => { selected = selected === index ? -1 : index }
   const open = (index) => { selected = index }
@@ -103,7 +104,9 @@
         {#if view.settings?.note}<div class="banner error">{view.settings.note}</div>{/if}
       </div>
 
-      {#if view.screen === 'combat' && view.combat}
+      {#if view.screen === 'games' && view.games}
+        <GamesScreen {view} {busy} {call} />
+      {:else if view.screen === 'combat' && view.combat}
         <CombatScreen {view} {busy} {call} />
       {:else if view.screen === 'dungeon' && view.dungeon}
         <div class="place"><DungeonScreen {view} {busy} {call} /></div>

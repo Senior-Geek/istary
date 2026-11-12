@@ -208,7 +208,7 @@ func (s *Session) ReturnExpeditionToCastle() View {
 func (s *Session) TryResumeAgain() View {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if s.startErr != nil {
+	if s.closed() {
 		return s.view(nil)
 	}
 	s.notice = ""

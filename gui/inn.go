@@ -76,7 +76,7 @@ var (
 func (s *Session) InnAction(r InnRequest) View {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if s.startErr != nil {
+	if s.closed() {
 		return s.view(nil)
 	}
 	s.notice = ""
@@ -112,8 +112,8 @@ func (s *Session) InnAction(r InnRequest) View {
 func (s *Session) InnQuote(room, weeks int) (app.InnQuote, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if s.startErr != nil {
-		return app.InnQuote{}, s.startErr
+	if s.closed() {
+		return app.InnQuote{}, s.closedErr()
 	}
 	if err := s.innRefusal(); err != nil {
 		return app.InnQuote{}, err

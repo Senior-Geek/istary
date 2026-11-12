@@ -19,8 +19,9 @@ import (
 //go:embed all:frontend/dist
 var assets embed.FS
 
-// guiSaveDir is where the GUI keeps its roster: $ISTARY_SAVE_DIR if set,
-// otherwise ~/Library/Application Support/Istary/dev-saves. It is never the
+// guiSaveDir is where the GUI keeps its games (games.go): $ISTARY_SAVE_DIR
+// if set, otherwise ~/Library/Application Support/Istary/dev-saves, the
+// folder that held the single save of earlier versions. It is never the
 // terminal game's ~/.config/wizardry.
 func guiSaveDir() string {
 	if dir := os.Getenv("ISTARY_SAVE_DIR"); dir != "" {
@@ -36,7 +37,7 @@ func guiSaveDir() string {
 func main() {
 	// The save folder is opened when the window starts (OnStartup), not
 	// here: Wails also runs this program to generate bindings.
-	session := unopenedSession(guiSaveDir())
+	session := unopenedLibrary(guiSaveDir())
 
 	err := wails.Run(&options.App{
 		Title:     "Istary",

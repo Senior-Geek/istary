@@ -70,7 +70,7 @@ var (
 func (s *Session) Navigate(dest string) View {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if s.startErr != nil {
+	if s.closed() {
 		return s.view(nil)
 	}
 	s.notice = ""
@@ -183,7 +183,7 @@ func (s *Session) returnView() *ReturnView {
 func (s *Session) ReturnToCastle() View {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if s.startErr != nil {
+	if s.closed() {
 		return s.view(nil)
 	}
 	s.notice = ""

@@ -34,6 +34,14 @@ export function CancelJoin() {
   return window['go']['main']['Session']['CancelJoin']();
 }
 
+export function CancelReplaceGame() {
+  return window['go']['main']['Session']['CancelReplaceGame']();
+}
+
+export function ChangeGame() {
+  return window['go']['main']['Session']['ChangeGame']();
+}
+
 export function ChestAction(arg1, arg2) {
   return window['go']['main']['Session']['ChestAction'](arg1, arg2);
 }
@@ -102,6 +110,14 @@ export function Confirm(arg1) {
   return window['go']['main']['Session']['Confirm'](arg1);
 }
 
+export function ConfirmReplaceGame(arg1) {
+  return window['go']['main']['Session']['ConfirmReplaceGame'](arg1);
+}
+
+export function ContinueGame(arg1) {
+  return window['go']['main']['Session']['ContinueGame'](arg1);
+}
+
 export function DeleteCharacter(arg1, arg2) {
   return window['go']['main']['Session']['DeleteCharacter'](arg1, arg2);
 }
@@ -120,6 +136,10 @@ export function FinishStats() {
 
 export function GoldAction(arg1) {
   return window['go']['main']['Session']['GoldAction'](arg1);
+}
+
+export function ImportEarlierGame(arg1) {
+  return window['go']['main']['Session']['ImportEarlierGame'](arg1);
 }
 
 export function InnAction(arg1) {
@@ -150,6 +170,10 @@ export function Navigate(arg1) {
   return window['go']['main']['Session']['Navigate'](arg1);
 }
 
+export function NewGame(arg1) {
+  return window['go']['main']['Session']['NewGame'](arg1);
+}
+
 export function PracticeEncounter(arg1) {
   return window['go']['main']['Session']['PracticeEncounter'](arg1);
 }
@@ -172,6 +196,10 @@ export function RemovePoint(arg1) {
 
 export function RenameCharacter(arg1, arg2) {
   return window['go']['main']['Session']['RenameCharacter'](arg1, arg2);
+}
+
+export function ReplaceGame(arg1) {
+  return window['go']['main']['Session']['ReplaceGame'](arg1);
 }
 
 export function ResetRoster() {

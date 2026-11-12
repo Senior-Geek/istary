@@ -28,7 +28,7 @@ type BackupInfo struct {
 func (s *Session) ListBackups() []BackupInfo {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if s.startErr != nil {
+	if s.closed() {
 		return nil
 	}
 	entries, err := os.ReadDir(s.backupDir())

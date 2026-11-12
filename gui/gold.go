@@ -38,7 +38,7 @@ type GoldReceipt struct {
 func (s *Session) GoldAction(r GoldRequest) View {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if s.startErr != nil {
+	if s.closed() {
 		return s.view(nil)
 	}
 	s.notice, s.goldLast = "", nil

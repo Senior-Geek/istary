@@ -1776,6 +1776,96 @@ export namespace main {
 	        this.reason = source["reason"];
 	    }
 	}
+	export class LegacyView {
+	    saved: string;
+	    characters: number;
+	    party: string[];
+	    expedition: string[];
+	    depth: number;
+	    stranded: number;
+	    problem: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new LegacyView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.saved = source["saved"];
+	        this.characters = source["characters"];
+	        this.party = source["party"];
+	        this.expedition = source["expedition"];
+	        this.depth = source["depth"];
+	        this.stranded = source["stranded"];
+	        this.problem = source["problem"];
+	    }
+	}
+	export class SlotView {
+	    slot: number;
+	    state: string;
+	    saved: string;
+	    created: string;
+	    imported: boolean;
+	    characters: number;
+	    party: string[];
+	    expedition: string[];
+	    depth: number;
+	    stranded: number;
+	    problem: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new SlotView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.slot = source["slot"];
+	        this.state = source["state"];
+	        this.saved = source["saved"];
+	        this.created = source["created"];
+	        this.imported = source["imported"];
+	        this.characters = source["characters"];
+	        this.party = source["party"];
+	        this.expedition = source["expedition"];
+	        this.depth = source["depth"];
+	        this.stranded = source["stranded"];
+	        this.problem = source["problem"];
+	    }
+	}
+	export class GamesView {
+	    slots: SlotView[];
+	    legacy?: LegacyView;
+	    replacing: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new GamesView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.slots = this.convertValues(source["slots"], SlotView);
+	        this.legacy = this.convertValues(source["legacy"], LegacyView);
+	        this.replacing = source["replacing"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 	export class GoldReceipt {
 	    move?: app.GoldMove;
 	    saved: boolean;
@@ -1912,6 +2002,7 @@ export namespace main {
 	        this.weeks = source["weeks"];
 	    }
 	}
+	
 	
 	export class OrderRequest {
 	    slot: number;
@@ -2152,6 +2243,7 @@ export namespace main {
 	        this.yes = source["yes"];
 	    }
 	}
+	
 	export class TempleLast {
 	    treat?: app.TempleReceipt;
 	    gold?: app.GoldMove;
@@ -2259,6 +2351,8 @@ export namespace main {
 	    partyBar: PartyBarSlot[];
 	    return?: ReturnView;
 	    settings: SettingsView;
+	    games?: GamesView;
+	    game: number;
 	    departures: DeparturesView;
 	    readiness?: ReadinessView;
 	    party: PartySlotView[];
@@ -2308,6 +2402,8 @@ export namespace main {
 	        this.partyBar = this.convertValues(source["partyBar"], PartyBarSlot);
 	        this.return = this.convertValues(source["return"], ReturnView);
 	        this.settings = this.convertValues(source["settings"], SettingsView);
+	        this.games = this.convertValues(source["games"], GamesView);
+	        this.game = source["game"];
 	        this.departures = this.convertValues(source["departures"], DeparturesView);
 	        this.readiness = this.convertValues(source["readiness"], ReadinessView);
 	        this.party = this.convertValues(source["party"], PartySlotView);

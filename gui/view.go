@@ -19,7 +19,7 @@ type View struct {
 	Message    string          `json:"message"` // in-game prompt text (e.g. "create it?")
 	Notice     string          `json:"notice"`  // confirmation of the last action
 	Title      string          `json:"title"`   // the notice's heading: "EXPEDITION RESUMED" just after a saved expedition is put back
-	Screen     string          `json:"screen"`  // "roster", "confirmCreate", "creation", "combat" or "dungeon"
+	Screen     string          `json:"screen"`  // "games", "roster", "confirmCreate", "creation", "combat" or "dungeon"
 	Roster     []CharacterView `json:"roster"`
 	Creation   *CreationView   `json:"creation"`
 	Races      []string        `json:"races"`
@@ -39,6 +39,11 @@ type View struct {
 
 	// Settings are the window's own preferences (settings.go).
 	Settings SettingsView `json:"settings"`
+
+	// Games is game selection (Screen "games", games.go), while no game
+	// is open; nil otherwise. Game is the open game's slot, 0 if none.
+	Games *GamesView `json:"games"`
+	Game  int        `json:"game"`
 
 	// Departures says which departures from the Edge of Town are open, or
 	// why not (edge.go).
@@ -343,6 +348,13 @@ func (s *Session) view(err error) View {
 		v.Fatal = s.startErr.Error()
 		return v
 	}
+	if s.ctrl == nil {
+		// Game selection: no game is open (games.go).
+		v.Screen, v.Error, v.Games = "games", errorText(err), s.gamesView()
+		v.Warning, v.Settings = s.lockNote, s.settingsView()
+		return v
+	}
+	v.Game = s.slot
 	v.Error = errorText(err)
 	v.Unsaved = s.unsaved
 	v.Warning = strings.TrimSpace(s.uncertain + " " + s.lockNote)

@@ -171,7 +171,7 @@ func (s *Session) PracticeEncounter(withChest bool) View {
 func (s *Session) combatDo(action func() error) View {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if s.startErr != nil {
+	if s.closed() {
 		return s.view(nil)
 	}
 	s.notice = ""

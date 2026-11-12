@@ -57,8 +57,11 @@
       {#if practice}<span class="why">{practice}</span>{/if}
     </div>
     <div class="group">
+      {#if view.game}
+        <button class="wide" disabled={busy} onclick={() => call(S.ChangeGame)}>Change game</button>
+      {/if}
       <button class="wide" disabled={busy} onclick={() => call(S.LeaveGame)}>Leave the game</button>
-      <span class="why">Everything is saved as it happens.</span>
+      <span class="why">Everything is saved as it happens{#if view.game}; this is game {view.game}{/if}.</span>
     </div>
   {/snippet}
 
