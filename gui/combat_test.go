@@ -29,6 +29,14 @@ func partySession(t *testing.T, weak bool) (*Session, string) {
 func alignedPartySession(t *testing.T, weak bool, align engine.Alignment) (*Session, string) {
 	t.Helper()
 	s, dir := newTestSession(t)
+	fillParty(t, s, weak, align)
+	return s, dir
+}
+
+// fillParty puts six adventurers on s's roster and in its party, joined
+// through the Tavern as the GUI does, and leaves them at the Edge of Town.
+func fillParty(t *testing.T, s *Session, weak bool, align engine.Alignment) {
+	t.Helper()
 	var chars []*engine.Character
 	for i, cls := range []engine.Class{engine.Fighter, engine.Fighter, engine.Thief, engine.Priest, engine.Mage, engine.Fighter} {
 		ch := engine.NewCharacter(string(rune('A'+i))+"GUI", engine.Human, cls, align)
@@ -60,7 +68,6 @@ func alignedPartySession(t *testing.T, weak bool, align engine.Alignment) (*Sess
 	if n := len(s.State().Party); n != 6 {
 		t.Fatalf("party of %d", n)
 	}
-	return s, dir
 }
 
 // drive plays a practice encounter as a front end would: it reads only the

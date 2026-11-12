@@ -1,0 +1,505 @@
+[
+ {
+  "case": "no games",
+  "screen": "games",
+  "error": "",
+  "games": {
+   "slots": [
+    {
+     "slot": 1,
+     "state": "empty",
+     "saved": "",
+     "created": "",
+     "imported": false,
+     "characters": 0,
+     "party": null,
+     "expedition": null,
+     "depth": 0,
+     "stranded": 0,
+     "problem": ""
+    },
+    {
+     "slot": 2,
+     "state": "empty",
+     "saved": "",
+     "created": "",
+     "imported": false,
+     "characters": 0,
+     "party": null,
+     "expedition": null,
+     "depth": 0,
+     "stranded": 0,
+     "problem": ""
+    },
+    {
+     "slot": 3,
+     "state": "empty",
+     "saved": "",
+     "created": "",
+     "imported": false,
+     "characters": 0,
+     "party": null,
+     "expedition": null,
+     "depth": 0,
+     "stranded": 0,
+     "problem": ""
+    },
+    {
+     "slot": 4,
+     "state": "empty",
+     "saved": "",
+     "created": "",
+     "imported": false,
+     "characters": 0,
+     "party": null,
+     "expedition": null,
+     "depth": 0,
+     "stranded": 0,
+     "problem": ""
+    },
+    {
+     "slot": 5,
+     "state": "empty",
+     "saved": "",
+     "created": "",
+     "imported": false,
+     "characters": 0,
+     "party": null,
+     "expedition": null,
+     "depth": 0,
+     "stranded": 0,
+     "problem": ""
+    },
+    {
+     "slot": 6,
+     "state": "empty",
+     "saved": "",
+     "created": "",
+     "imported": false,
+     "characters": 0,
+     "party": null,
+     "expedition": null,
+     "depth": 0,
+     "stranded": 0,
+     "problem": ""
+    }
+   ],
+   "legacy": null,
+   "replacing": 0
+  },
+  "saveDir": "/saves"
+ },
+ {
+  "case": "an earlier save",
+  "screen": "games",
+  "error": "",
+  "games": {
+   "slots": [
+    {
+     "slot": 1,
+     "state": "empty",
+     "saved": "",
+     "created": "",
+     "imported": false,
+     "characters": 0,
+     "party": null,
+     "expedition": null,
+     "depth": 0,
+     "stranded": 0,
+     "problem": ""
+    },
+    {
+     "slot": 2,
+     "state": "empty",
+     "saved": "",
+     "created": "",
+     "imported": false,
+     "characters": 0,
+     "party": null,
+     "expedition": null,
+     "depth": 0,
+     "stranded": 0,
+     "problem": ""
+    },
+    {
+     "slot": 3,
+     "state": "empty",
+     "saved": "",
+     "created": "",
+     "imported": false,
+     "characters": 0,
+     "party": null,
+     "expedition": null,
+     "depth": 0,
+     "stranded": 0,
+     "problem": ""
+    },
+    {
+     "slot": 4,
+     "state": "empty",
+     "saved": "",
+     "created": "",
+     "imported": false,
+     "characters": 0,
+     "party": null,
+     "expedition": null,
+     "depth": 0,
+     "stranded": 0,
+     "problem": ""
+    },
+    {
+     "slot": 5,
+     "state": "empty",
+     "saved": "",
+     "created": "",
+     "imported": false,
+     "characters": 0,
+     "party": null,
+     "expedition": null,
+     "depth": 0,
+     "stranded": 0,
+     "problem": ""
+    },
+    {
+     "slot": 6,
+     "state": "empty",
+     "saved": "",
+     "created": "",
+     "imported": false,
+     "characters": 0,
+     "party": null,
+     "expedition": null,
+     "depth": 0,
+     "stranded": 0,
+     "problem": ""
+    }
+   ],
+   "legacy": {
+    "saved": "2026-11-01 12:00",
+    "characters": 3,
+    "party": [
+     "ALDA",
+     "BRAN"
+    ],
+    "expedition": null,
+    "depth": 0,
+    "stranded": 0,
+    "problem": ""
+   },
+   "replacing": 0
+  },
+  "saveDir": "/saves"
+ },
+ {
+  "case": "games of every kind",
+  "screen": "games",
+  "error": "",
+  "games": {
+   "slots": [
+    {
+     "slot": 1,
+     "state": "game",
+     "saved": "2026-11-12 10:00",
+     "created": "2026-11-10 09:00",
+     "imported": false,
+     "characters": 3,
+     "party": [],
+     "expedition": [
+      "DORN",
+      "EVA"
+     ],
+     "depth": 2,
+     "stranded": 1,
+     "problem": ""
+    },
+    {
+     "slot": 2,
+     "state": "game",
+     "saved": "2026-11-12 10:00",
+     "created": "2026-11-10 09:00",
+     "imported": true,
+     "characters": 3,
+     "party": [
+      "ALDA",
+      "BRAN"
+     ],
+     "expedition": null,
+     "depth": 0,
+     "stranded": 0,
+     "problem": ""
+    },
+    {
+     "slot": 3,
+     "state": "game",
+     "saved": "2026-11-12 10:00",
+     "created": "2026-11-10 09:00",
+     "imported": false,
+     "characters": 0,
+     "party": [],
+     "expedition": null,
+     "depth": 0,
+     "stranded": 0,
+     "problem": ""
+    },
+    {
+     "slot": 4,
+     "state": "empty",
+     "saved": "",
+     "created": "",
+     "imported": false,
+     "characters": 0,
+     "party": null,
+     "expedition": null,
+     "depth": 0,
+     "stranded": 0,
+     "problem": ""
+    },
+    {
+     "slot": 5,
+     "state": "damaged",
+     "saved": "2026-11-12 10:00",
+     "created": "",
+     "imported": false,
+     "characters": 0,
+     "party": null,
+     "expedition": null,
+     "depth": 0,
+     "stranded": 0,
+     "problem": "the save cannot be read"
+    },
+    {
+     "slot": 6,
+     "state": "empty",
+     "saved": "",
+     "created": "",
+     "imported": false,
+     "characters": 0,
+     "party": null,
+     "expedition": null,
+     "depth": 0,
+     "stranded": 0,
+     "problem": ""
+    }
+   ],
+   "legacy": {
+    "saved": "2026-11-01 12:00",
+    "characters": 0,
+    "party": null,
+    "expedition": null,
+    "depth": 0,
+    "stranded": 0,
+    "problem": "the save cannot be read"
+   },
+   "replacing": 0
+  },
+  "saveDir": "/saves"
+ },
+ {
+  "case": "replacing game 3",
+  "screen": "games",
+  "error": "",
+  "games": {
+   "slots": [
+    {
+     "slot": 1,
+     "state": "game",
+     "saved": "2026-11-12 10:00",
+     "created": "2026-11-10 09:00",
+     "imported": false,
+     "characters": 3,
+     "party": [],
+     "expedition": [
+      "DORN",
+      "EVA"
+     ],
+     "depth": 2,
+     "stranded": 1,
+     "problem": ""
+    },
+    {
+     "slot": 2,
+     "state": "game",
+     "saved": "2026-11-12 10:00",
+     "created": "2026-11-10 09:00",
+     "imported": true,
+     "characters": 3,
+     "party": [
+      "ALDA",
+      "BRAN"
+     ],
+     "expedition": null,
+     "depth": 0,
+     "stranded": 0,
+     "problem": ""
+    },
+    {
+     "slot": 3,
+     "state": "game",
+     "saved": "2026-11-12 10:00",
+     "created": "2026-11-10 09:00",
+     "imported": false,
+     "characters": 0,
+     "party": [],
+     "expedition": null,
+     "depth": 0,
+     "stranded": 0,
+     "problem": ""
+    },
+    {
+     "slot": 4,
+     "state": "empty",
+     "saved": "",
+     "created": "",
+     "imported": false,
+     "characters": 0,
+     "party": null,
+     "expedition": null,
+     "depth": 0,
+     "stranded": 0,
+     "problem": ""
+    },
+    {
+     "slot": 5,
+     "state": "damaged",
+     "saved": "2026-11-12 10:00",
+     "created": "",
+     "imported": false,
+     "characters": 0,
+     "party": null,
+     "expedition": null,
+     "depth": 0,
+     "stranded": 0,
+     "problem": "the save cannot be read"
+    },
+    {
+     "slot": 6,
+     "state": "empty",
+     "saved": "",
+     "created": "",
+     "imported": false,
+     "characters": 0,
+     "party": null,
+     "expedition": null,
+     "depth": 0,
+     "stranded": 0,
+     "problem": ""
+    }
+   ],
+   "legacy": {
+    "saved": "2026-11-01 12:00",
+    "characters": 0,
+    "party": null,
+    "expedition": null,
+    "depth": 0,
+    "stranded": 0,
+    "problem": "the save cannot be read"
+   },
+   "replacing": 3
+  },
+  "saveDir": "/saves"
+ },
+ {
+  "case": "continuing a damaged game",
+  "screen": "games",
+  "error": "Game 5 cannot be continued: the save cannot be read. It is left as it is.",
+  "games": {
+   "slots": [
+    {
+     "slot": 1,
+     "state": "game",
+     "saved": "2026-11-12 10:00",
+     "created": "2026-11-10 09:00",
+     "imported": false,
+     "characters": 3,
+     "party": [],
+     "expedition": [
+      "DORN",
+      "EVA"
+     ],
+     "depth": 2,
+     "stranded": 1,
+     "problem": ""
+    },
+    {
+     "slot": 2,
+     "state": "game",
+     "saved": "2026-11-12 10:00",
+     "created": "2026-11-10 09:00",
+     "imported": true,
+     "characters": 3,
+     "party": [
+      "ALDA",
+      "BRAN"
+     ],
+     "expedition": null,
+     "depth": 0,
+     "stranded": 0,
+     "problem": ""
+    },
+    {
+     "slot": 3,
+     "state": "game",
+     "saved": "2026-11-12 10:00",
+     "created": "2026-11-10 09:00",
+     "imported": false,
+     "characters": 0,
+     "party": [],
+     "expedition": null,
+     "depth": 0,
+     "stranded": 0,
+     "problem": ""
+    },
+    {
+     "slot": 4,
+     "state": "empty",
+     "saved": "",
+     "created": "",
+     "imported": false,
+     "characters": 0,
+     "party": null,
+     "expedition": null,
+     "depth": 0,
+     "stranded": 0,
+     "problem": ""
+    },
+    {
+     "slot": 5,
+     "state": "damaged",
+     "saved": "2026-11-12 10:00",
+     "created": "",
+     "imported": false,
+     "characters": 0,
+     "party": null,
+     "expedition": null,
+     "depth": 0,
+     "stranded": 0,
+     "problem": "the save cannot be read"
+    },
+    {
+     "slot": 6,
+     "state": "empty",
+     "saved": "",
+     "created": "",
+     "imported": false,
+     "characters": 0,
+     "party": null,
+     "expedition": null,
+     "depth": 0,
+     "stranded": 0,
+     "problem": ""
+    }
+   ],
+   "legacy": {
+    "saved": "2026-11-01 12:00",
+    "characters": 0,
+    "party": null,
+    "expedition": null,
+    "depth": 0,
+    "stranded": 0,
+    "problem": "the save cannot be read"
+   },
+   "replacing": 0
+  },
+  "saveDir": "/saves"
+ }
+]
