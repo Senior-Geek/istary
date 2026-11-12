@@ -131,3 +131,24 @@ func TestReturningToTheEntranceSuggestsGoingHome(t *testing.T) {
 		t.Fatalf("stranded %v, were %v", got, stranded)
 	}
 }
+
+// With no one stranded, a resumed expedition is headed as ever but says
+// nothing of stranded adventurers; a new expedition is not headed at all.
+func TestAResumeWithNoOneStrandedSaysNothingOfThem(t *testing.T) {
+	rand.Seed(5)
+	s, dir := partySession(t, false)
+	walkTo(t, s, "edge")
+	if v := s.RealExpedition(); v.Error != "" || v.Title != "" || v.Notice != "" {
+		t.Fatalf("setting out: %q %q %q", v.Error, v.Title, v.Notice)
+	}
+	s.DungeonAction(app.ActLeaveCamp, 0)
+	s.DungeonAction(app.ActNo, 0)
+	if sites := s.ctrl.Game.StrandedSites(); len(sites) != 0 {
+		t.Fatalf("stranded already: %v", sitesOf(s.ctrl.Game))
+	}
+	r := reopened(t, s, dir)
+	defer r.shutdown()
+	if v := r.State(); !v.Real || v.Title != "EXPEDITION RESUMED" || v.Notice != "Your party has returned to the dungeon." {
+		t.Fatalf("resumed with %q %q", v.Title, v.Notice)
+	}
+}

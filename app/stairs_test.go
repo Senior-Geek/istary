@@ -3,19 +3,17 @@ package app
 import (
 	"testing"
 
+	"github.com/Senior-Geek/istary/data"
 	"github.com/Senior-Geek/istary/engine"
 )
 
 // stairsAsked checks the maze asks about the stairs (going up or down, as
-// the square says, unless going is ""), with both answers open and want
-// suggested. Leaving Camp on stairs between floors names them by whether
-// they lead to the castle (LeaveCamp), not by where they lead, so after
-// Camp there the direction is not checked.
+// the square says), with both answers open and want suggested.
 func stairsAsked(t *testing.T, c *Controller, when, going, want string) {
 	t.Helper()
 	g := c.Game
 	v := c.DungeonView()
-	if v.Prompt != "stairs" || (going != "" && g.MazeMessage != "STAIRS GOING "+going+".") || len(v.Actions) != 2 || v.Actions[0] != ActYes || v.Actions[1] != ActNo {
+	if v.Prompt != "stairs" || g.MazeMessage != "STAIRS GOING "+going+"." || len(v.Actions) != 2 || v.Actions[0] != ActYes || v.Actions[1] != ActNo {
 		t.Fatalf("%s: L%d (%d,%d) prompt %q %q actions %v", when, g.MazeLevel+1, g.PlayerX, g.PlayerY, v.Prompt, g.MazeMessage, v.Actions)
 	}
 	if v.Default != want {
@@ -150,7 +148,7 @@ func TestStairsBetweenFloorsFollowTheDirectionOfTravel(t *testing.T) {
 	must(t, c.Answer(true))
 	standingAt(t, c, "down on floor 2", 1, 12, 7) // the stairs taken ask nothing on arrival
 	campAndLeave(t, c)
-	stairsAsked(t, c, "arrived by the stairs up", "", ActNo)
+	stairsAsked(t, c, "arrived by the stairs up", "UP", ActNo)
 	must(t, c.Answer(false))
 	standingAt(t, c, "staying on floor 2", 1, 12, 7)
 
@@ -191,5 +189,57 @@ func TestStairsSuggestYesWhenArrivalIsUnknown(t *testing.T) {
 	c.Game.PlayerX, c.Game.PlayerY = 12, 7
 	r := New(c.Game)
 	campAndLeave(t, r)
-	stairsAsked(t, r, "restarted", "", ActYes)
+	stairsAsked(t, r, "restarted", "UP", ActYes)
+}
+
+// #39: leaving Camp on any staircase names it as a step onto it does, up
+// when it leads above the floor, and yes still takes the party exactly
+// where the staircase leads: to the castle, or the destination square.
+func TestLeavingCampNamesEveryStaircaseAsAStepDoes(t *testing.T) {
+	seed(1)
+	c := inMaze(t)
+	g := c.Game
+	stairs := 0
+	for level, lv := range g.Scenario.Mazes.Levels {
+		for y := 0; y < 20; y++ {
+			for x := 0; x < 20; x++ {
+				cell := lv.Cells[y][x]
+				if cell.Type != data.SqStairs {
+					continue
+				}
+				stairs++
+				if g.Phase == engine.PhaseTown {
+					must(t, c.EnterMaze())
+					must(t, c.LeaveCamp())
+					must(t, c.Answer(false))
+				}
+				g.MazeLevel, g.PlayerX, g.PlayerY = level, x, y
+				g.InitFightMap()
+				checkSquare(g) // a step's own naming of the square
+				stepped := g.MazeMessage
+				must(t, c.Answer(false))
+				campAndLeave(t, c)
+				going := "DOWN"
+				if cell.DestLevel < level+1 {
+					going = "UP"
+				}
+				if g.MazeMessage != stepped || g.MazeMessage != "STAIRS GOING "+going+"." {
+					t.Fatalf("L%d (%d,%d) to L%d: after Camp %q, stepping on %q", level+1, x, y, cell.DestLevel, g.MazeMessage, stepped)
+				}
+				must(t, c.Answer(true))
+				if cell.DestLevel == 0 {
+					if g.Phase != engine.PhaseTown || g.Town.Location != engine.Castle {
+						t.Fatalf("L%d (%d,%d): yes went to %v %v, not the castle", level+1, x, y, g.Phase, g.Town.Location)
+					}
+					continue
+				}
+				if g.Phase != engine.PhaseMaze || g.MazeLevel != cell.DestLevel-1 || g.PlayerX != cell.DestX || g.PlayerY != cell.DestY {
+					t.Fatalf("L%d (%d,%d): yes went to L%d (%d,%d), not L%d (%d,%d)", level+1, x, y, g.MazeLevel+1, g.PlayerX, g.PlayerY, cell.DestLevel, cell.DestX, cell.DestY)
+				}
+			}
+		}
+	}
+	if stairs < 10 {
+		t.Fatalf("only %d staircases", stairs)
+	}
 }
