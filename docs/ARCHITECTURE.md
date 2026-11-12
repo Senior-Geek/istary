@@ -1006,7 +1006,11 @@ order or number of random draws. Game logic must stay on one goroutine.
 `~/.config/wizardry/roster<N>.json` (the upstream directory name is kept for
 compatibility). `engine.SetSaveDir` redirects saves for other front ends; the
 GUI uses `~/Library/Application Support/Istary/dev-saves` and refuses the
-terminal directory. The legacy `~/.config/wizardry/wiz<N>/roster.json` is still
+terminal directory. Since UX-3A that folder is a library of six game slots
+(`gui/games.go`, `design/ux3/UX-3A.md`): each `games/slot-N/` holds one
+game's `roster1.json` in this format, its `backups/` and a `game.json`
+record; the earlier single `roster1.json` beside them is offered for import
+and never written. The legacy `~/.config/wizardry/wiz<N>/roster.json` is still
 read. The format is pinned by `engine/testdata/save_roster1.golden.json`.
 
 The file holds the roster, the castle party's names and, while a GUI
@@ -1033,7 +1037,8 @@ of another version or scenario, or one that cannot be read, is kept and
 written back unchanged, and nothing is recorded over it.
 
 **One window per folder (M6b-2).** The GUI holds an advisory `flock` on
-`istary.lock` in its save folder (`gui/lock.go`).
+`istary.lock` in its save folder (`gui/lock.go`), the library folder since
+UX-3A.
 - **A second window:** refuses to start and changes nothing.
 - **Release:** the kernel releases the lock when the process ends, a crash
   included, so it can't go stale.

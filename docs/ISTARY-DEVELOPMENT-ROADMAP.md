@@ -320,7 +320,9 @@ characters.
 decided by then.
 
 - **Remaining features:** Utilities equivalents (rename, backup and
-  restore), and any D3 features adopted into Classic.
+  restore), and any D3 features adopted into Classic. *UX-3A (2026-11-12):
+  six independent game slots, New Game / Continue / Replace, and import of
+  the earlier single save (`design/ux3/UX-3A.md`).*
 - **Compatibility audit:** close or explicitly defer every "Not
   investigated" row.
 - **Playtest:** a guided playtest against the Hawkwind walkthrough

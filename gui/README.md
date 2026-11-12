@@ -54,8 +54,13 @@ bottom, shown or hidden with Hide party.
   alignment, stick once worn: only Boltac can remove them.
 - **Gilgamesh's Tavern:** form the party: Join, Remove, and the password;
   Divvy gold shares the party's gold evenly.
-- **The Edge of Town:** Enter the maze; practice (Istary only); Leave the
-  game; the way to the Training Grounds and to Settings.
+- **Game selection** (UX-3A): Istary opens on six game slots, each its own
+  adventure. New game in an empty slot, Continue a saved one, or Replace
+  it (asked twice; the old game is moved aside, not deleted). A game saved
+  by an earlier Istary is offered for import into an empty slot; the
+  original is left as it was.
+- **The Edge of Town:** Enter the maze; practice (Istary only); Change game;
+  Leave the game; the way to the Training Grounds and to Settings.
 - **The Training Grounds:** the roster (click a character for its sheet,
   where it can be renamed or deleted) and character creation.
 - **Settings:** the save folder, Reload, Reset roster and Restore roster.
@@ -117,12 +122,14 @@ only renders `View` (see `view.go`) and calls `Session` methods
 ## Saves
 
 The window's own preferences (whether the party bar is shown) are kept in
-`gui-settings.json` beside the roster, never in it. A damaged file is left
+`gui-settings.json` in the save folder, never in a game. A damaged file is left
 alone and the defaults are used until a setting is changed.
 
 The GUI never uses the terminal game's `~/.config/wizardry`. It saves to
 `~/Library/Application Support/Istary/dev-saves`, or to `$ISTARY_SAVE_DIR`
-when set, and refuses to start if pointed at the terminal directory.
+when set, and refuses to start if pointed at the terminal directory. Each
+game is in `games/slot-N/` there (`docs/design/ux3/UX-3A.md`); the window's
+preferences and lock stay in the folder itself.
 
 ## Build and run (macOS)
 
