@@ -311,6 +311,11 @@ the maze and Camp:
   go with it.
 - **Spells:** LIGHT and PROTECT, as on the maze screen.
 - **Actions:** the operations open now (the `Act...` names).
+- **Default:** at the stairs only, the answer the screen highlights:
+  `no` when the party came off the stairs onto the square (down from the
+  castle, or off a staircase taken), otherwise `yes`. It tells how the
+  party came, never where; it is kept in the controller, not saved, and no
+  key takes it (`app/stairs.go`, `design/mazenav/MAZE-NAVIGATION.md`).
 
 The view shows nothing the maze screen does not: no position, facing or
 floor (only DUMAPIC tells those), no map, nothing past the light, no
@@ -980,6 +985,8 @@ in the saved game, through the same dungeon, combat and chest operations.
   had made outside the characters (a teleporter, an alarm) are kept. A
   saved party that cannot go on (the app closed on the defeat screen) is
   stranded at the checkpoint before anything else (R-1, D-R). A
+  resumed expedition's notice is headed EXPEDITION RESUMED (`View.Title`)
+  until the next action; a new one has no heading. A
   saved expedition that cannot be resumed is kept and shown
   (`View.Recovery`), with `ReturnExpeditionToCastle`.
 - **While the party is out** the Tavern, the Training Grounds, rename,

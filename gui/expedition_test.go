@@ -118,9 +118,16 @@ func restart(t *testing.T, s *Session, dir string, when string) *Session {
 		if inCombat && !strings.Contains(v.Notice, "unclaimed rewards are lost") && !strings.Contains(v.Notice, "chest and its rewards are lost") {
 			t.Fatalf("%s: notice %q", when, v.Notice)
 		}
+		if v.Title != resumedTitle || !strings.HasPrefix(v.Notice, "Your party has returned to the dungeon.") ||
+			strings.HasSuffix(v.Notice, resumedStranded) != (len(rg.StrandedSites()) > 0) {
+			t.Fatalf("%s: resumed with %q %q", when, v.Title, v.Notice)
+		}
 	default:
 		if r.real || v.Screen != "roster" || v.Expedition || rg.Phase != engine.PhaseTown {
 			t.Fatalf("%s: after restart: screen %q expedition %v phase %v", when, v.Screen, v.Expedition, rg.Phase)
+		}
+		if v.Title != "" {
+			t.Fatalf("%s: in town headed %q", when, v.Title)
 		}
 	}
 	if got := partyStanding(rg); !slices.Equal(got, want) {

@@ -99,7 +99,7 @@
         {/if}
         <!-- At Boltac's and the Inn the receipt says it, saved or not, and at
              the Tavern the gold's. -->
-        {#if view.notice && !view.shop?.last && !view.inn?.last && !view.gold && !view.temple?.last}<div class="banner notice">{view.notice}</div>{/if}
+        {#if view.notice && !view.shop?.last && !view.inn?.last && !view.gold && !view.temple?.last}<div class="banner notice">{#if view.title}<strong class="title">{view.title}</strong>{/if}{view.notice}</div>{/if}
         {#if view.settings?.note}<div class="banner error">{view.settings.note}</div>{/if}
       </div>
 

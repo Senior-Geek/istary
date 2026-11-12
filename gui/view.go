@@ -18,6 +18,7 @@ type View struct {
 	Error      string          `json:"error"`   // validation or refusal from the last action
 	Message    string          `json:"message"` // in-game prompt text (e.g. "create it?")
 	Notice     string          `json:"notice"`  // confirmation of the last action
+	Title      string          `json:"title"`   // the notice's heading: "EXPEDITION RESUMED" just after a saved expedition is put back
 	Screen     string          `json:"screen"`  // "roster", "confirmCreate", "creation", "combat" or "dungeon"
 	Roster     []CharacterView `json:"roster"`
 	Creation   *CreationView   `json:"creation"`
@@ -334,6 +335,9 @@ func (s *Session) view(err error) View {
 		NameMax:    app.MaxNameLength,
 		Screen:     "roster",
 		Notice:     s.notice,
+	}
+	if s.notice != "" && s.notice == s.resumed {
+		v.Title = resumedTitle
 	}
 	if s.startErr != nil {
 		v.Fatal = s.startErr.Error()

@@ -32,6 +32,7 @@ type DungeonView struct {
 	Inspect  *InspectView        `json:"inspect,omitempty"` // Inspect: who was found, and the room for them
 	Spells   []string            `json:"spells"`            // LIGHT and PROTECT, as on the maze screen
 	Actions  []string            `json:"actions"`           // operations open now (the Act names)
+	Default  string              `json:"default,omitempty"` // the stairs' suggested answer, ActYes or ActNo (stairs.go); never taken by itself
 }
 
 // DungeonMemberView is one party member as the maze screen lists them.
@@ -161,6 +162,9 @@ func (c *Controller) DungeonView() DungeonView {
 		v.Actions = []string{ActContinue}
 	case "stairs", "search":
 		v.Actions = []string{ActYes, ActNo}
+		if v.Prompt == "stairs" {
+			v.Default = c.stairsDefault()
+		}
 	case "buttons":
 		v.Actions = []string{ActButton}
 		for i := 0; i < g.ButtonCount; i++ {

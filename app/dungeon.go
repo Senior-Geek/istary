@@ -142,6 +142,7 @@ func (c *Controller) EnterMaze() error {
 	g.MazeMessage = ""
 	g.MazeMessage2 = ""
 	g.InitFightMap()
+	c.arrived(arrivedByStairs) // down the stairs from the castle
 	return nil
 }
 
@@ -167,10 +168,11 @@ func (c *Controller) LeaveCamp() error {
 	}
 	g.Town.Message = ""
 	g.Phase = engine.PhaseMaze
-	// Check if at stairs (0,0) — original shows "STAIRS GOING UP" immediately
+	// On stairs the question is asked at once, named as a step onto them
+	// names it (checkSquare): up when they lead above this floor (#39).
 	cell := g.CurrentCell()
 	if cell != nil && cell.Type == data.SqStairs {
-		if cell.DestLevel == 0 {
+		if cell.DestLevel < g.MazeLevel+1 {
 			g.MazeMessage = "STAIRS GOING UP."
 		} else {
 			g.MazeMessage = "STAIRS GOING DOWN."

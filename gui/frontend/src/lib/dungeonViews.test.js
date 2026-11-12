@@ -4,7 +4,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { scene, actions, keyAction, near } from './dungeon.js'
+import { scene, actions, keyAction, near, suggested } from './dungeon.js'
 import { ranks } from './combat.js'
 
 const views = JSON.parse(readFileSync(new URL('./testdata/dungeon-views.json', import.meta.url)))
@@ -61,4 +61,26 @@ test('the party strip shows everyone in formation order', () => {
     const r = ranks(v.party)
     assert.deepEqual([...r.front, ...r.back].map((m) => m.slot), v.party.map((m) => m.slot))
   }
+})
+
+test('the stairs suggest the answer Go gives, both ways, and no key takes it', () => {
+  const stairs = views.filter((v) => v.prompt === 'stairs')
+  assert.deepEqual(new Set(stairs.map((v) => v.default)), new Set(['yes', 'no']))
+  for (const v of views) {
+    if (v.prompt === 'stairs') {
+      assert.deepEqual(v.actions, ['yes', 'no'])
+      assert.equal(suggested(v), v.default)
+      for (const key of ['Enter', ' ']) assert.equal(keyAction(key, v), null, key)
+    } else {
+      assert.equal(v.default, undefined, v.prompt)
+      assert.equal(suggested(v), (v.actions ?? [])[0])
+    }
+  }
+})
+
+test('the maze screen highlights the suggestion; the banner heads a notice with its title', () => {
+  const dungeon = readFileSync(new URL('./DungeonScreen.svelte', import.meta.url), 'utf8')
+  assert.match(dungeon, /class:primary=\{a === suggested\(d\)\}/)
+  const app = readFileSync(new URL('../App.svelte', import.meta.url), 'utf8')
+  assert.match(app, /<div class="banner notice">\{#if view\.title\}<strong class="title">\{view\.title\}<\/strong>\{\/if\}\{view\.notice\}<\/div>/)
 })

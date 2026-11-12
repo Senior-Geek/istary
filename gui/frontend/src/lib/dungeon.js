@@ -76,6 +76,11 @@ export const actions = {
   'leave-camp': { label: 'Leave camp', hint: 'L', keys: ['l'] },
 }
 
+// suggested is the answer the screen highlights: the stairs' own (Go's
+// DungeonView.Default, by how the party came to them), otherwise the first
+// open action. Only highlighted; no key takes it.
+export const suggested = (dungeon) => dungeon?.default || (dungeon?.actions ?? [])[0]
+
 // keyAction maps a key press to one of the view's open actions, or null.
 // At the buttons, a letter presses that button; at Inspect, a digit picks
 // up that character (Inspect.found[].n), if the party has room.

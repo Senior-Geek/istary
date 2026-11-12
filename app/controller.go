@@ -17,6 +17,10 @@ type Controller struct {
 
 	// Beep, if set, is called when the game beeps (a step into a wall).
 	Beep func()
+
+	// arrival is how the party came to the square it stands on, for the
+	// stairs' suggested answer (stairs.go). It is not saved.
+	arrival arrival
 }
 
 // New returns a controller for the given game session.
