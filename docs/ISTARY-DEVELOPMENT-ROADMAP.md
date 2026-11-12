@@ -272,7 +272,10 @@ characters.
   (`design/r2/RESCUE.md`). R-3 (2026-11-11): the maps mark where the
   stranded lie, from their own records and revealing nothing else, and
   Inspect shows each one's condition and the rescue's progress
-  (`design/r3/RESCUE-VISIBILITY.md`).*
+  (`design/r3/RESCUE-VISIBILITY.md`). Maze navigation follow-up
+  (2026-11-11): a resumed expedition is headed EXPEDITION RESUMED, and the
+  stairs suggest an answer by how the party arrived, without taking it
+  (`design/mazenav/MAZE-NAVIGATION.md`).*
 
 **Depends on:** M5 and M2 Part B.
 **Acceptance:**
