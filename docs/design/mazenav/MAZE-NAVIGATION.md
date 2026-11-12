@@ -26,7 +26,7 @@ or terminal behaviour changes.
   says GOING UP only for the stairs to the castle and GOING DOWN for every
   other staircase, so floor 2's stairs up read STAIRS GOING DOWN after Camp.
   A step onto the same square says GOING UP (`checkSquare` compares the
-  destination with the floor). Reported, not corrected here.
+  destination with the floor). Reported, then fixed on approval (below).
 
 ## Decisions (2026-11-11)
 
@@ -50,9 +50,19 @@ or terminal behaviour changes.
    saved expedition back (`View.Title`, `gui/dungeon.go` `resume`): "Your
    party has returned to the dungeon. Stranded adventurers remain at their
    recorded locations." An encounter or chest that was interrupted adds its
-   sentence between the two. It is informational: no button, and it goes
+   sentence between the two. The stranded sentence appears only while
+   someone lies stranded on a recorded square (`StrandedSites`, as the maps
+   mark them); otherwise the notice ends after the first sentences. It is informational: no button, and it goes
    with the next action. It names no square and shows nothing the party
    has not seen. A new expedition, a rescue included, has no heading.
+
+## Corrections on acceptance (2026-11-12)
+
+- **#39 fixed:** `LeaveCamp` names a staircase as a step onto it does
+  (`DestLevel` above the floor: GOING UP). Where the stairs lead is
+  unchanged. Before the fix the new test failed with "L2 (12,7) to L1:
+  after Camp STAIRS GOING DOWN., stepping on STAIRS GOING UP.".
+- **The stranded sentence is conditional**, as in decision 4.
 
 ## Where
 
@@ -75,6 +85,12 @@ or terminal behaviour changes.
   square, the dungeon view and the stranded unchanged, and its entrance
   then suggests Yes; returning to the entrance suggests Yes and Yes goes
   home with the stranded left where they lie.
+- `app/stairs_test.go` `TestLeavingCampNamesEveryStaircaseAsAStepDoes`
+  (#39): every staircase of the scenario, left from Camp, is named as a
+  step names it, and yes goes to the castle or its destination square.
+- `gui/mazenav_test.go` `TestAResumeWithNoOneStrandedSaysNothingOfThem`:
+  a resume with no one stranded is headed and ends "Your party has
+  returned to the dungeon."; a new expedition is not headed.
 - `gui/expedition_test.go` `restart`: every restart of the expedition walks
   now also checks the heading (and none in town).
 - `gui/camp_test.go`: the Camp restart comparison allows the one thing a
