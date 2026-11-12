@@ -26,6 +26,7 @@ import (
 	"errors"
 	"fmt"
 	"path/filepath"
+	"strings"
 
 	"github.com/Senior-Geek/istary/app"
 	"github.com/Senior-Geek/istary/engine"
@@ -157,15 +158,19 @@ func (s *Session) resume() {
 	case app.InterruptedChest:
 		what = "Istary closed while the party dealt with a chest: the chest and its rewards are lost. "
 	}
-	s.notice = "Your party has returned to the dungeon. " + what + resumedStranded
+	s.notice = strings.TrimSpace("Your party has returned to the dungeon. " + what)
+	if len(g.StrandedSites()) > 0 {
+		s.notice += " " + resumedStranded
+	}
 	s.resumed = s.notice
 	if err := s.checkpoint(); err == nil {
 		s.save() // record that the encounter, if any, is over
 	}
 }
 
-// The resumed expedition's notice (View.NoticeTitle): where the party
-// stands is the dungeon's own; the stranded stay where they were recorded.
+// The resumed expedition's notice (View.Title): where the party stands is
+// the dungeon's own; the stranded sentence only while someone lies stranded
+// on a recorded square (engine.StrandedSites, as the maps mark them).
 const (
 	resumedTitle    = "EXPEDITION RESUMED"
 	resumedStranded = "Stranded adventurers remain at their recorded locations."

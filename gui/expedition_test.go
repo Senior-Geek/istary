@@ -118,7 +118,8 @@ func restart(t *testing.T, s *Session, dir string, when string) *Session {
 		if inCombat && !strings.Contains(v.Notice, "unclaimed rewards are lost") && !strings.Contains(v.Notice, "chest and its rewards are lost") {
 			t.Fatalf("%s: notice %q", when, v.Notice)
 		}
-		if v.Title != resumedTitle || !strings.HasPrefix(v.Notice, "Your party has returned to the dungeon. ") || !strings.HasSuffix(v.Notice, resumedStranded) {
+		if v.Title != resumedTitle || !strings.HasPrefix(v.Notice, "Your party has returned to the dungeon.") ||
+			strings.HasSuffix(v.Notice, resumedStranded) != (len(rg.StrandedSites()) > 0) {
 			t.Fatalf("%s: resumed with %q %q", when, v.Title, v.Notice)
 		}
 	default:
