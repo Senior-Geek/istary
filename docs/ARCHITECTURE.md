@@ -437,6 +437,12 @@ the Castle (Player's Guide pp.22, 36, 38).
   in Istary's window yet"; Boltac's is open for a party since M8-3), and `PartyBar`: the six positions of
   the party being played (the practice copies during practice), empty ones
   included, with level, HP, status and poison.
+- **Boltac's layout (UX-2, `design/ux2/UX-2.md`):** arriving serves the
+  first party member (`serveFirst`); the frame's `fill` layout keeps the
+  page from scrolling; the merchandise list and the Selected Character
+  panel (the customer's roster entry, equipping by `EquipAction`) scroll on
+  their own; the party bar is always shown there and is the customer
+  picker. Equipping is refused while Boltac waits for an answer.
 - **Settings** is the window's own, not a game location: a session flag
   while the game stands at the Edge of Town, cleared by any other move.
 - **Never saved:** the town location is not in the save, so `Navigate`

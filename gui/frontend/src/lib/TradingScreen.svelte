@@ -2,7 +2,22 @@
   // Boltac's Trading Post (M8-4), in the location frame. The customer is
   // chosen from the party bar (or, with the party hidden, the list here)
   // and is marked there; the tabs show what Boltac sells and what the
-  // customer carries, from Go's view.shop only. Every price, fee, stock
+  // customer carries, from Go's view.shop only.
+  //
+  // UX-2: the frame fills the window without scrolling the page (its fill
+  // layout). Under the artwork, the merchandise: the tabs and Boltac's
+  // words stay put and only the list scrolls. Beside it, under the
+  // Actions, the Selected Character panel (SelectedCharacter): the
+  // customer's gold, AC, carrying and items, equipped apart from carried,
+  // with the character sheet's Equip and Take off. The Actions keep only
+  // the shop's own: Pool party gold and Leave the counter. No sheet opens
+  // here; the party bar only chooses the customer.
+  //
+  // Arriving serves the first party member (Go, Session.serveFirst), so
+  // the page opens on the Buy tab with a customer. The party bar is always
+  // shown here (the frame's partyAlways) and is the one way to change the
+  // customer. After Leave the counter, it waits for a click on the bar;
+  // with nobody to serve, it says why and offers the way back. Every price, fee, stock
   // and refusal is Go's (lib/shop.js): a button is enabled exactly when Go
   // gives no refusal, and a disabled one says Go's reason. The tabs and the
   // item lines are the page's own; only the buttons call Go
@@ -16,7 +31,8 @@
   //   onopen  (rosterIndex) => void      open a party member's sheet
   import * as S from '../../wailsjs/go/main/Session.js'
   import LocationFrame from './LocationFrame.svelte'
-  import { tabs, rows, amountLabel, empty, boltac, customer, question, pickLabel, receipt } from './shop.js'
+  import SelectedCharacter from './SelectedCharacter.svelte'
+  import { tabs, rows, amountLabel, empty, boltac, customer, question, pickLabel, receipt, selected } from './shop.js'
 
   let { view, busy = false, call, onopen } = $props()
 
@@ -28,45 +44,34 @@
   const asks = $derived(question(shop))
   const last = $derived(receipt(shop))
   const lines = $derived(rows(shop, tab))
-  const partyShown = $derived(view.settings?.partyVisible ?? true)
   const members = $derived((view.partyBar ?? []).filter((p) => p.name))
-  const sheet = $derived(who ? view.partyBar?.[who.slot]?.index ?? -1 : -1)
+  const ch = $derived(selected(view))
 
   const act = (request) => call(S.ShopAction, request)
   const enter = (slot) => act({ action: 'enter', slot })
+  const equip = (n, on) => call(S.EquipAction, { index: ch.index, n, equip: on })
 </script>
 
-<LocationFrame {view} {busy} {call} {onopen} pick={(slot) => pickLabel(shop, slot)} onpick={enter} current={who?.slot ?? -1}>
+<LocationFrame {view} {busy} {call} {onopen} fill partyAlways pick={(slot) => pickLabel(shop, slot)} onpick={enter} current={who?.slot ?? -1}>
   {#snippet actions()}
     {#if who}
-      <div class="customer" aria-label="Customer">
-        <div class="who"><b>{who.name}</b> <span class="muted">{who.class}</span></div>
-        <dl>
-          <dt>Gold</dt><dd>{who.gold} GP</dd>
-          <dt>Carrying</dt><dd>{who.items} of 8 · room for {who.room}</dd>
-        </dl>
-        <div class="row">
-          {#if sheet >= 0}<button class="small" disabled={busy} onclick={() => onopen?.(sheet)}>Character sheet</button>{/if}
-          <button class="small" disabled={busy || !!asks} onclick={() => act({ action: 'pool' })}
-            title={asks ? 'Answer Boltac first' : `Give ${who.name} every other party member's gold (Pool Gold)`}>Pool party gold</button>
-          <button class="small" disabled={busy || !!asks} onclick={() => act({ action: 'leave-customer' })}
-            title={asks ? 'Answer Boltac first' : 'Back to WHO WILL ENTER'}>Leave the counter</button>
-        </div>
+      <div class="row">
+        <button class="small" disabled={busy || !!asks} onclick={() => act({ action: 'pool' })}
+          title={asks ? 'Answer Boltac first' : `Give ${who.name} every other party member's gold (Pool Gold)`}>Pool party gold</button>
+        <button class="small" disabled={busy || !!asks} onclick={() => act({ action: 'leave-customer' })}
+          title={asks ? 'Answer Boltac first' : 'Back to WHO WILL ENTER'}>Leave the counter</button>
       </div>
+    {:else if members.length}
+      <p class="lead">Nobody is at the counter.</p>
+      <p class="muted">Click a party member below to serve them.</p>
     {:else}
-      <p class="lead">Welcome to the Trading Post. Who will enter?</p>
-      <p class="muted">{partyShown ? 'Click a party member below.' : 'Choose a party member:'}</p>
-    {/if}
-    {#if !partyShown && !asks}
-      <div class="members">
-        {#each members as p (p.slot)}
-          <button class="small" class:current={who?.slot === p.slot - 1} disabled={busy || !pickLabel(shop, p.slot - 1)}
-            onclick={() => enter(p.slot - 1)}>{p.slot}. {p.name}</button>
-        {/each}
-      </div>
+      <p class="lead">Boltac serves only a party.</p>
+      <p class="muted">Nobody in the party can be served. Form a party at Gilgamesh's Tavern first.</p>
+      <button class="small" disabled={busy || !view.return?.open} onclick={() => call(S.ReturnToCastle)}>Back to the Castle</button>
     {/if}
   {/snippet}
 
+  <div class="counter-layout">
   <section class="shop">
     <!-- The counter stays in view while the list scrolls: the tabs, what
          Boltac said or asks, and the last transaction. -->
@@ -76,10 +81,6 @@
           <button role="tab" class="tab" aria-selected={tab === t.key} class:on={tab === t.key}
             onclick={() => { tab = t.key }}>{t.label}</button>
         {/each}
-        {#if who}
-          <span class="who-line" aria-label="Customer at the counter"><b>{who.name}</b> {who.class} ·
-            <b>{who.gold}</b> GP · room for <b>{who.room}</b></span>
-        {/if}
       </div>
       {#if asks?.kind === 'buy'}
         <div class="banner message ask" role="alertdialog" aria-label="Boltac asks">
@@ -152,19 +153,20 @@
       <p class="muted">{empty(shop, tab)}</p>
     {/if}
   </section>
+  <SelectedCharacter {ch} {busy} locked={asks ? 'Answer Boltac first.' : ''} onequip={equip} />
+  </div>
 </LocationFrame>
 
 <style>
   .lead { margin: 0 0 4px; }
-  .customer { display: grid; gap: 4px; }
-  .customer .who b { color: var(--accent); font-size: 15px; }
-  dl { display: grid; grid-template-columns: auto 1fr; gap: 1px 10px; margin: 0; font-size: 13px; }
-  dt { color: var(--muted); }
-  dd { margin: 0; font-variant-numeric: tabular-nums; }
-  .members { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
-  .members button.current { background: var(--selected); color: var(--text); }
-  .counter { position: sticky; top: 0; z-index: 1; background: var(--panel); padding: 10px 0 6px; margin-top: -10px;
-    border-bottom: 1px solid var(--line); display: grid; gap: 6px; }
+  .row { display: flex; flex-wrap: wrap; gap: 6px; }
+  /* The merchandise and the Selected Character panel share the height
+     under the artwork, in the frame's columns: each scrolls inside. */
+  .counter-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, 300px); gap: 12px 16px;
+    height: 100%; min-height: 0; }
+  .counter-layout > :global(*) { min-height: 0; }
+  /* The counter stays put; only the list under it scrolls. */
+  .counter { padding: 0 0 6px; border-bottom: 1px solid var(--line); display: grid; gap: 6px; }
   .ask { margin: 0; color: var(--text); }
   .ask p { margin: 0 0 6px; }
   .boltac { margin: 0; color: var(--gold); }
@@ -178,16 +180,15 @@
   .receipt.notDurable .status { color: var(--gold); }
   .receipt.unsaved { background: #3a1d1b; border-color: var(--error); }
   .receipt.unsaved .status { color: var(--error); }
-  .shop { margin-top: 0; padding: 10px 12px; }
+  .shop { margin: 0; padding: 10px 12px; display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 6px; min-height: 0; height: 100%; box-sizing: border-box; }
   .tabs { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
-  .who-line { margin-left: auto; font-size: 12px; color: var(--muted); }
-  .who-line b { color: var(--text); font-weight: 600; }
   .tab { margin: 0; }
   .tab.on { background: var(--selected); color: var(--text); }
-  .tablewrap { overflow-x: auto; }
+  .tablewrap { overflow: auto; min-height: 0; }
+  .tablewrap thead th { position: sticky; top: 0; background: var(--panel); z-index: 1; }
   table.lines td { vertical-align: top; }
-  /* A line brought into view stops below the counter, not under it. */
-  table.lines tbody tr { scroll-margin-top: 150px; }
+  /* A line brought into view stops below the column heads. */
+  table.lines tbody tr { scroll-margin-top: 30px; }
   td.name { min-width: 150px; }
   td.name .mark { display: inline-block; margin-left: 6px; padding: 0 5px; border-radius: 3px; font-size: 10px;
     text-transform: uppercase; letter-spacing: 0.04em; background: var(--card); color: var(--muted); }

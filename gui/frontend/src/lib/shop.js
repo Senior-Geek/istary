@@ -151,3 +151,23 @@ export function receipt(shop) {
   if (!r.durable) return { tone: 'notDurable', did, lines, status: 'Saved, but perhaps not durably (see the warning above)' }
   return { tone: 'saved', did, lines, status: 'Saved' }
 }
+
+// selected is the customer's character (Go's CharacterView, from
+// view.roster) for the Selected Character panel (UX-2), or null when
+// nobody is at the counter. The customer is a party member: the party bar
+// gives their roster index.
+export function selected(view) {
+  const c = customer(view?.shop)
+  if (!c) return null
+  const index = view.partyBar?.find((p) => p.slot === c.slot + 1)?.index
+  return view.roster?.find((ch) => ch.index === index) ?? null
+}
+
+// wornAndCarried splits a character's items into the equipped and the
+// carried, each in item order. Each keeps its place in the character's
+// items as pos (from 1), a key that holds even when equipping is closed
+// and Go leaves the items unnumbered (n 0).
+export function wornAndCarried(ch) {
+  const items = (ch?.items ?? []).map((it, i) => ({ ...it, pos: i + 1 }))
+  return { worn: items.filter((it) => it.equipped), carried: items.filter((it) => !it.equipped) }
+}

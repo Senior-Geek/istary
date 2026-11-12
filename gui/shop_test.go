@@ -43,7 +43,15 @@ func shopSession(t *testing.T) (*Session, string) {
 	if err := s.ctrl.Save(); err != nil {
 		t.Fatal(err)
 	}
-	walkTo(t, s, "trading")
+	v := walkTo(t, s, "trading")
+	// Arriving serves the first party member (UX-2). These tests begin at
+	// "WHO WILL ENTER", as Leave the counter leaves it.
+	if v.Shop == nil || v.Shop.View.Customer != 0 || v.Shop.View.Step != "main" {
+		t.Fatalf("arriving at Boltac's: %+v", v.Shop)
+	}
+	if v := s.ShopAction(ShopRequest{Action: ShopActLeaveCustomer}); v.Error != "" || v.Shop.View.Step != "who" {
+		t.Fatalf("leaving the counter: %q %+v", v.Error, v.Shop)
+	}
 	return s, dir
 }
 
@@ -259,7 +267,8 @@ func TestShopTransactions(t *testing.T) {
 		t.Fatal("the receipt is gone")
 	}
 	walkTo(t, s, "castle")
-	if v = walkTo(t, s, "trading"); v.Shop.Last != nil || v.Shop.View.Step != "who" {
+	// It starts with the first party member at the counter (UX-2).
+	if v = walkTo(t, s, "trading"); v.Shop.Last != nil || v.Shop.View.Step != "main" || v.Shop.View.Customer != 0 {
 		t.Fatalf("a new visit: %+v", v.Shop)
 	}
 }
@@ -553,10 +562,32 @@ type shopCase struct {
 	Notice   string         `json:"notice"`
 	Unsaved  string         `json:"unsaved"`
 	Warning  string         `json:"warning"`
+	// Customer is the customer's own entry in the roster (View.Roster),
+	// for the Selected Character panel (UX-2); nil at "who".
+	Customer *CharacterView `json:"customer"`
 }
 
 func shopCaseOf(name string, v View) shopCase {
-	return shopCase{name, v.Location, v.Shop, v.PartyBar, v.FrontRow, v.Return, v.Error, v.Notice, v.Unsaved, v.Warning}
+	return shopCase{name, v.Location, v.Shop, v.PartyBar, v.FrontRow, v.Return, v.Error, v.Notice, v.Unsaved, v.Warning, customerOf(v)}
+}
+
+// customerOf is the roster entry of the customer at Boltac's counter, as
+// the page finds it (the party bar's roster index), or nil.
+func customerOf(v View) *CharacterView {
+	if v.Shop == nil || v.Shop.View.Customer < 0 {
+		return nil
+	}
+	for _, p := range v.PartyBar {
+		if p.Slot != v.Shop.View.Customer+1 {
+			continue
+		}
+		for i := range v.Roster {
+			if v.Roster[i].Index == p.Index {
+				return &v.Roster[i]
+			}
+		}
+	}
+	return nil
 }
 
 // TestShopViewFixture records real views at Boltac's, one for each state
@@ -626,6 +657,19 @@ func TestShopViewFixture(t *testing.T) {
 	saveGame = (*app.Controller).Save
 	s.ShopAction(ShopRequest{Action: ShopActEnter, Slot: 3})
 	add("priest: pooled", s.ShopAction(ShopRequest{Action: ShopActPool}))
+	// UX-2: equipping beside the counter, from the Selected Character panel.
+	v := s.ShopAction(ShopRequest{Action: ShopActEnter, Slot: 0})
+	fighter := customerOf(v)
+	n := 0
+	for _, it := range fighter.Items {
+		if !it.Equipped && it.Kind == "weapon" && it.EquipRefusal == "" {
+			n = it.N
+		}
+	}
+	if n == 0 {
+		t.Fatalf("the fighter has nothing to equip: %+v", fighter.Items)
+	}
+	add("fighter: equipped at the counter", s.EquipAction(EquipRequest{Index: fighter.Index, N: n, Equip: true}))
 	s.shutdown()
 
 	got, _ := json.MarshalIndent(cases, "", " ")

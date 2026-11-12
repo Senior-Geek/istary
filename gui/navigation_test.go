@@ -677,6 +677,14 @@ func TestReturnFromEveryStepOfBoltacs(t *testing.T) {
 			if v := navigate(t, s, dir, "trading"); v.Error != "" || v.Location != "trading" || v.Return == nil || !v.Return.Open {
 				t.Fatalf("into Boltac's: %q at %q, return %+v", v.Error, v.Location, v.Return)
 			}
+			// Arriving serves the first party member (UX-2); each step is
+			// reached from "WHO WILL ENTER", as after Leave the counter.
+			if c, _ := s.ctrl.ShopView(); c.Step != "main" || c.Customer != 0 {
+				t.Fatalf("arriving: step %q, customer %d", c.Step, c.Customer)
+			}
+			if err := s.ctrl.ShopLeaveCustomer(); err != nil {
+				t.Fatal(err)
+			}
 			if err := st.to(s.ctrl); err != nil {
 				t.Fatal(err)
 			}
