@@ -682,6 +682,11 @@ func TestNoGameOpenActsOnNothing(t *testing.T) {
 	if exists(filepath.Join(root, gamesDir)) || exists(filepath.Join(root, saveFile)) {
 		t.Fatal("a game was written")
 	}
+	fine(t, s.NewGame(1))
+	walkTo(t, s, "edge")
+	if v := fine(t, s.ChangeGame()); v.SaveDir != root {
+		t.Fatalf("game selection names %s, not the save folder %s", v.SaveDir, root)
+	}
 }
 
 // The window's settings belong to the window: kept in the library folder,
