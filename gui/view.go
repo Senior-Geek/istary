@@ -350,7 +350,7 @@ func (s *Session) view(err error) View {
 	}
 	if s.ctrl == nil {
 		// Game selection: no game is open (games.go).
-		v.Screen, v.Error, v.Games = "games", errorText(err), s.gamesView()
+		v.Screen, v.Error, v.Games, v.SaveDir = "games", errorText(err), s.gamesView(), s.root
 		v.Warning, v.Settings = s.lockNote, s.settingsView()
 		return v
 	}

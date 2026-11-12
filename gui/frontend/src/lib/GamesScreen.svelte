@@ -35,7 +35,7 @@
 
   {#if games.legacy}
     <div class="legacy" class:bad={!!games.legacy.problem}>
-      <b>A game saved by an earlier Istary</b> (saved {games.legacy.saved})
+      <div><b>A game saved by an earlier Istary</b> <span class="muted">saved {games.legacy.saved}</span></div>
       {#if games.legacy.problem}
         <span>cannot be imported: {games.legacy.problem}. It is left as it is.</span>
       {:else}
@@ -55,7 +55,7 @@
         <div class="body">
           {#if slot.state === 'game'}
             {#each summary(slot) as line}<div>{line}</div>{/each}
-            <div class="muted">Saved {slot.saved}{#if slot.created} · begun {slot.created}{/if}</div>
+            <div class="muted">Saved {slot.saved}{#if slot.created}{' · begun '}{slot.created}{/if}</div>
           {:else if slot.state === 'damaged'}
             <div class="problem">This game cannot be opened: {slot.problem}. It is left as it is.</div>
           {:else}
@@ -80,7 +80,7 @@
 </section>
 
 <style>
-  .games { max-width: 900px; margin: 0 auto; padding: 4px 8px 12px; }
+  .games { max-width: 900px; padding: 4px 8px 12px; }
   header h2 { margin: 0 0 2px; font-size: 18px; }
   header p { margin: 0 0 10px; }
   .legacy { border: 1px solid var(--notice); border-radius: 6px; padding: 6px 10px; margin-bottom: 10px; display: grid; gap: 2px; }
