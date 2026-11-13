@@ -1,19 +1,24 @@
 # The regression gate
 
 `scripts/gate.sh` is the check a branch passes before it is merged or
-released. It tests every commit on the branch alone, then the branch's tip
-in full, and reports one result.
+released. It tests the branch's tip in full, and with `--per-commit` every
+commit on the branch alone first, and reports one result. It is the third and
+most thorough of Istary's testing levels; see [TESTING.md](TESTING.md) for
+the faster two and for when the gate is mandatory.
 
 ## Running it
 
 ```sh
-scripts/gate.sh BASE [CANDIDATE]
+scripts/gate.sh [--per-commit] BASE [CANDIDATE]
 scripts/gate.sh main g1-regression-gate
+scripts/gate.sh --per-commit main g1-regression-gate
 ```
 
 - **BASE:** the commit the work starts from, usually `main` or the last
   release tag.
 - **CANDIDATE:** the commit to gate. It defaults to `HEAD`.
+- **`--per-commit`:** also test every commit after BASE alone, before the
+  candidate. Without it, only the candidate is tested.
 - BASE must be a proper ancestor of CANDIDATE. A ref that names nothing,
   looks like an option or is ambiguous (a branch and a tag with one name)
   is refused; use `refs/heads/NAME` or `refs/tags/NAME` instead.
@@ -28,7 +33,7 @@ stashes, resets, cleans or checks anything out in your checkout.
 Each commit is checked out in its own temporary worktree, outside the
 repository. Your checkout is never built in or changed.
 
-**Each commit after BASE, alone:**
+**Each commit after BASE, alone (with `--per-commit` only):**
 
 - root `go vet ./...` and `go test ./engine ./cmd/istary ./app`;
 - GUI `go vet ./...` and `go test ./...`;
@@ -67,9 +72,9 @@ It checks for these before starting and names any that is missing:
 
 ## Time and timeouts
 
-A full run takes about two and a half hours. The root race tests alone take
-about 65 minutes (the `app` package), and each commit tested alone takes
-about 6 to 8 minutes.
+A full run takes about two hours: the candidate's checks alone. The root
+race tests take about 65 minutes of that (the `app` package). With
+`--per-commit`, each commit tested alone adds about 8 to 9 minutes.
 
 - **Every stage** has a limit, `GATE_STAGE_TIMEOUT` seconds (default 3600).
 - **The root race tests** have `GATE_ROOT_RACE_TIMEOUT` seconds (default

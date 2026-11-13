@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# The regression gate (docs/REGRESSION-GATE.md): every commit after BASE up
-# to CANDIDATE alone (root vet and tests, GUI vet and tests, frontend
-# tests), then CANDIDATE in full (vet, tests, shuffled order, the build,
-# race, the GUI module, the frontend, fixture regeneration and the Wails
-# build). Each commit is checked out in its own temporary worktree, so the
-# checkout the gate is run from is never built in or changed.
+# The regression gate (docs/REGRESSION-GATE.md): CANDIDATE in full (vet,
+# tests, shuffled order, the build, race, the GUI module, the frontend,
+# fixture regeneration and the Wails build), and with --per-commit first
+# every commit after BASE up to CANDIDATE alone (root vet and tests, GUI vet
+# and tests, frontend tests). Each commit is checked out in its own temporary
+# worktree, so the checkout the gate is run from is never built in or changed.
 #
-#   scripts/gate.sh BASE [CANDIDATE]     e.g. scripts/gate.sh main g1-regression-gate
+#   scripts/gate.sh [--per-commit] BASE [CANDIDATE]     e.g. scripts/gate.sh main g1-regression-gate
 #
 # CANDIDATE defaults to HEAD. BASE must be a proper ancestor of CANDIDATE.
 # Run it from a clean checkout of Istary on macOS (Apple silicon). The exit
@@ -24,7 +24,7 @@
 
 set -u -o pipefail
 
-usage() { echo "usage: scripts/gate.sh BASE [CANDIDATE]   (see docs/REGRESSION-GATE.md)"; }
+usage() { echo "usage: scripts/gate.sh [--per-commit] BASE [CANDIDATE]   (see docs/REGRESSION-GATE.md)"; }
 
 # --- Results -----------------------------------------------------------------
 
@@ -117,7 +117,8 @@ summary() {
   say "== summary"
   say "  base:       ${BASE_SHA:-?}"
   say "  candidate:  ${CAND_SHA:-?}"
-  say "  commits:    $COMMITS_TESTED of $COMMITS_TOTAL tested alone"
+  if [ -n "$PER_COMMIT" ]; then say "  commits:    $COMMITS_TESTED of $COMMITS_TOTAL tested alone"
+  else say "  commits:    the candidate only, $COMMITS_TOTAL commits after the base (--per-commit tests each alone)"; fi
   say "  tip checks: $TIP_DONE"
   say "  stages run: $STAGES"
   if [ -n "$FAILED_STAGE" ]; then say "  failed:     $FAILED_STAGE ($FAILED_RESULT)"; else say "  failed:     none"; fi
@@ -213,6 +214,8 @@ check() {
 
 # --- Arguments --------------------------------------------------------------------
 
+PER_COMMIT=""
+[ "${1:-}" = "--per-commit" ] && { PER_COMMIT=1; shift; }
 if [ $# -lt 1 ] || [ $# -gt 2 ] || [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
   usage
   [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ] && exit 0
@@ -324,6 +327,8 @@ say "== Istary regression gate"
 say "  repository: $ROOT ($START_BRANCH at $START_HEAD)"
 say "  base:       $BASE = $BASE_SHA"
 say "  candidate:  $CANDIDATE = $CAND_SHA ($COMMITS_TOTAL commits)"
+if [ -n "$PER_COMMIT" ]; then say "  mode:       every commit alone, then the candidate in full (--per-commit)"
+else say "  mode:       the candidate in full (--per-commit also tests each commit alone)"; fi
 say "  platform:   $os/$arch; $(go version | cut -d' ' -f3); node $(node --version); wails $("$WAILS" version 2>/dev/null | head -1)"
 say "  timeouts:   ${STAGE_TIMEOUT}s a stage, ${RACE_TIMEOUT}s root race"
 say "  logs:       $LOG_DIR"
@@ -348,6 +353,7 @@ drop_worktree() {
 # --- Each commit alone ----------------------------------------------------------------------
 
 i=0
+[ -n "$PER_COMMIT" ] || COMMITS=""
 for c in $COMMITS; do
   i=$((i + 1))
   wt="$WT_DIR/wt-$c"

@@ -131,12 +131,16 @@ setup() {
 }
 
 # gate ARGS...: run the gate in REPO with the stubs; sets RC. Extra
-# environment comes from ENV (an array of NAME=VALUE).
+# environment comes from ENV (an array of NAME=VALUE). The tests run it with
+# --per-commit, its exhaustive mode, unless MODE is "tip" (the default mode).
 ENV=()
+MODE=per-commit
 gate() {
+  local mode=()
+  [ "$MODE" = tip ] || mode=(--per-commit)
   (cd "$REPO" && env -i HOME="$HOME" PATH="$STUB_PATH:$SYS" TMPDIR="$TMP" \
     REAL_GIT="$REAL_GIT" STUB_LOG="$T/calls" STUB_PIDS="$T/pids" WAILS="$STUB_PATH/wails" \
-    GATE_LOG_DIR="$LOGS" ${ENV[@]+"${ENV[@]}"} bash "$GATE" "$@") >"$OUT" 2>&1
+    GATE_LOG_DIR="$LOGS" ${ENV[@]+"${ENV[@]}"} bash "$GATE" ${mode[@]+"${mode[@]}"} "$@") >"$OUT" 2>&1
   RC=$?
 }
 
@@ -415,7 +419,7 @@ interrupt() {
   # A background job ignores SIGINT; perl restores the default before the gate starts.
   (cd "$REPO" && exec perl -e '$SIG{INT} = "DEFAULT"; exec @ARGV' env -i HOME="$HOME" PATH="$STUB_PATH:$SYS" \
     TMPDIR="$TMP" REAL_GIT="$REAL_GIT" STUB_LOG="$T/calls" STUB_PIDS="$T/pids" WAILS="$STUB_PATH/wails" GATE_LOG_DIR="$LOGS" \
-    "${ENV[@]}" bash "$GATE" base feature) >"$OUT" 2>&1 &
+    "${ENV[@]}" bash "$GATE" --per-commit base feature) >"$OUT" 2>&1 &
   local pid=$!
   if ! wait_started; then fail "the stage never started"; kill -9 "$pid"; wait "$pid"; pass_case; return; fi
   kill -"$sig" "$pid"
@@ -474,7 +478,45 @@ t_logdir() {
   pass_case
 }
 
-for t in pass pipeline build dependency dirty refs ancestry worktree stage timeout interrupt cleanup fixtures logdir; do
+# The default mode: the candidate in full, no commit alone; the same
+# result, cleanup and checks of the checkout.
+t_tip() {
+  setup tip || return
+  MODE=tip; ENV=(); gate base feature; MODE=per-commit
+  expect_rc 0
+  expect_out "== RESULT: PASS"
+  expect_out "mode:       the candidate in full"
+  expect_out "commits:    the candidate only, 2 commits after the base"
+  expect_out "tip checks: all"
+  expect_no_out "== commit 1/"
+  local c tip
+  tip=$("$REAL_GIT" -C "$REPO" rev-parse feature)
+  for c in $("$REAL_GIT" -C "$REPO" rev-list base..feature^); do not_called "wt-$c|"; done
+  for s in "|go test ./... -count=1" "|go test ./... -count=1 -shuffle=on" "|make build" "|go test -race ./... -count=1 -timeout 9000s" \
+    "/gui|go test -race ./... -count=1 -timeout 3600s" "/gui|go test . -count=1" "|go test ./cmd/istary -count=1 -update" \
+    "/gui|wails build -platform darwin/arm64" "/gui|codesign --verify --verbose build/bin/Istary.app"; do
+    called "wt-$tip$s"
+  done
+  expect_clean
+  pass_case
+  # A failing stage fails it the same way.
+  setup tip-fail || return
+  MODE=tip; ENV=(STUB_FAIL="go test -race ./... -count=1 -timeout 9000s"); gate base feature; MODE=per-commit
+  expect_rc 1
+  expect_out "tip: root race"
+  expect_out "== RESULT: FAIL"
+  not_called "wails build"
+  expect_clean
+  pass_case
+  # And the usage names the option.
+  setup tip-usage || return
+  MODE=tip; ENV=(); gate; MODE=per-commit
+  expect_rc 2
+  expect_out "usage: scripts/gate.sh [--per-commit] BASE [CANDIDATE]"
+  pass_case
+}
+
+for t in pass pipeline build dependency dirty refs ancestry worktree stage timeout interrupt cleanup fixtures logdir tip; do
   wanted "$t" && "t_$t"
 done
 echo
