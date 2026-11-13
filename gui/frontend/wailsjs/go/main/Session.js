@@ -122,6 +122,10 @@ export function DeleteCharacter(arg1, arg2) {
   return window['go']['main']['Session']['DeleteCharacter'](arg1, arg2);
 }
 
+export function DiscardCreation() {
+  return window['go']['main']['Session']['DiscardCreation']();
+}
+
 export function DungeonAction(arg1, arg2) {
   return window['go']['main']['Session']['DungeonAction'](arg1, arg2);
 }
@@ -172,6 +176,10 @@ export function Navigate(arg1) {
 
 export function NewGame(arg1) {
   return window['go']['main']['Session']['NewGame'](arg1);
+}
+
+export function PickClass(arg1) {
+  return window['go']['main']['Session']['PickClass'](arg1);
 }
 
 export function PracticeEncounter(arg1) {

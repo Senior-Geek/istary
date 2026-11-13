@@ -414,6 +414,35 @@ func (s *Session) ChooseClass(class int) View {
 	return s.do(func() error { return s.ctrl.ChooseClass(engine.Class(class)) })
 }
 
+// PickClass chooses a class from the bonus-point step itself (UX-3B: one
+// screen for the points and the class). It is FinishStats and ChooseClass
+// in one request, the controller's own steps and rules: every point spent,
+// a class these statistics and this alignment allow. If the class is
+// refused, the character is back at the bonus points as it was, so the
+// points can still be moved.
+func (s *Session) PickClass(class int) View {
+	return s.do(func() error {
+		c := s.ctrl
+		if err := c.FinishStats(); err != nil {
+			return err
+		}
+		if err := c.ChooseClass(engine.Class(class)); err != nil {
+			if back := c.CreationBack(); back != nil {
+				return errors.Join(err, back)
+			}
+			return err
+		}
+		return nil
+	})
+}
+
+// DiscardCreation discards the character being created, at any step, and
+// stays at the Training Grounds (the controller's AbandonCreation; ← Castle
+// does the same and then leaves).
+func (s *Session) DiscardCreation() View {
+	return s.do(func() error { return s.ctrl.AbandonCreation() })
+}
+
 func (s *Session) Back() View {
 	return s.do(func() error { return s.ctrl.CreationBack() })
 }

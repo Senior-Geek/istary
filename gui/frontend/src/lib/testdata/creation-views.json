@@ -1,0 +1,1893 @@
+[
+ {
+  "case": "confirming",
+  "screen": "confirmCreate",
+  "message": "THAT CHARACTER DOES NOT EXIST. DO YOU WANT TO CREATE IT?",
+  "error": "",
+  "creation": null,
+  "statNames": [
+   "STRENGTH",
+   "I.Q.",
+   "PIETY",
+   "VITALITY",
+   "AGILITY",
+   "LUCK"
+  ],
+  "classes": [
+   "FIGHTER",
+   "MAGE",
+   "PRIEST",
+   "THIEF",
+   "BISHOP",
+   "SAMURAI",
+   "LORD",
+   "NINJA"
+  ],
+  "races": [
+   "HUMAN",
+   "ELF",
+   "DWARF",
+   "GNOME",
+   "HOBBIT"
+  ],
+  "alignments": [
+   "GOOD",
+   "NEUTRAL",
+   "EVIL"
+  ]
+ },
+ {
+  "case": "password",
+  "screen": "creation",
+  "message": "",
+  "error": "",
+  "creation": {
+   "step": "password",
+   "name": "RECORD",
+   "hasPassword": false,
+   "race": "",
+   "alignment": "",
+   "class": "",
+   "stats": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "baseStats": [
+    8,
+    8,
+    5,
+    8,
+    8,
+    9
+   ],
+   "points": 0,
+   "classOk": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "canAdd": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "canRemove": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "guide": null
+  },
+  "statNames": [
+   "STRENGTH",
+   "I.Q.",
+   "PIETY",
+   "VITALITY",
+   "AGILITY",
+   "LUCK"
+  ],
+  "classes": [
+   "FIGHTER",
+   "MAGE",
+   "PRIEST",
+   "THIEF",
+   "BISHOP",
+   "SAMURAI",
+   "LORD",
+   "NINJA"
+  ],
+  "races": [
+   "HUMAN",
+   "ELF",
+   "DWARF",
+   "GNOME",
+   "HOBBIT"
+  ],
+  "alignments": [
+   "GOOD",
+   "NEUTRAL",
+   "EVIL"
+  ]
+ },
+ {
+  "case": "race",
+  "screen": "creation",
+  "message": "",
+  "error": "",
+  "creation": {
+   "step": "race",
+   "name": "RECORD",
+   "hasPassword": false,
+   "race": "",
+   "alignment": "",
+   "class": "",
+   "stats": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "baseStats": [
+    8,
+    8,
+    5,
+    8,
+    8,
+    9
+   ],
+   "points": 0,
+   "classOk": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "canAdd": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "canRemove": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "guide": null
+  },
+  "statNames": [
+   "STRENGTH",
+   "I.Q.",
+   "PIETY",
+   "VITALITY",
+   "AGILITY",
+   "LUCK"
+  ],
+  "classes": [
+   "FIGHTER",
+   "MAGE",
+   "PRIEST",
+   "THIEF",
+   "BISHOP",
+   "SAMURAI",
+   "LORD",
+   "NINJA"
+  ],
+  "races": [
+   "HUMAN",
+   "ELF",
+   "DWARF",
+   "GNOME",
+   "HOBBIT"
+  ],
+  "alignments": [
+   "GOOD",
+   "NEUTRAL",
+   "EVIL"
+  ]
+ },
+ {
+  "case": "alignment",
+  "screen": "creation",
+  "message": "",
+  "error": "",
+  "creation": {
+   "step": "alignment",
+   "name": "RECORD",
+   "hasPassword": false,
+   "race": "ELF",
+   "alignment": "",
+   "class": "",
+   "stats": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "baseStats": [
+    7,
+    10,
+    10,
+    6,
+    9,
+    6
+   ],
+   "points": 0,
+   "classOk": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "canAdd": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "canRemove": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "guide": null
+  },
+  "statNames": [
+   "STRENGTH",
+   "I.Q.",
+   "PIETY",
+   "VITALITY",
+   "AGILITY",
+   "LUCK"
+  ],
+  "classes": [
+   "FIGHTER",
+   "MAGE",
+   "PRIEST",
+   "THIEF",
+   "BISHOP",
+   "SAMURAI",
+   "LORD",
+   "NINJA"
+  ],
+  "races": [
+   "HUMAN",
+   "ELF",
+   "DWARF",
+   "GNOME",
+   "HOBBIT"
+  ],
+  "alignments": [
+   "GOOD",
+   "NEUTRAL",
+   "EVIL"
+  ]
+ },
+ {
+  "case": "points left",
+  "screen": "creation",
+  "message": "",
+  "error": "",
+  "creation": {
+   "step": "stats",
+   "name": "RECORD",
+   "hasPassword": false,
+   "race": "ELF",
+   "alignment": "NEUTRAL",
+   "class": "",
+   "stats": [
+    7,
+    10,
+    10,
+    6,
+    9,
+    6
+   ],
+   "baseStats": [
+    7,
+    10,
+    10,
+    6,
+    9,
+    6
+   ],
+   "points": 7,
+   "classOk": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "canAdd": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "canRemove": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "guide": [
+    {
+     "class": "FIGHTER",
+     "minimums": [
+      11,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "shortfall": [
+      4,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "alignments": "ANY",
+     "status": "reachable",
+     "note": "Needs 4 points more (7 left)"
+    },
+    {
+     "class": "MAGE",
+     "minimums": [
+      0,
+      11,
+      0,
+      0,
+      0,
+      0
+     ],
+     "shortfall": [
+      0,
+      1,
+      0,
+      0,
+      0,
+      0
+     ],
+     "alignments": "ANY",
+     "status": "reachable",
+     "note": "Needs 1 point more (7 left)"
+    },
+    {
+     "class": "PRIEST",
+     "minimums": [
+      0,
+      0,
+      11,
+      0,
+      0,
+      0
+     ],
+     "shortfall": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0
+     ],
+     "alignments": "GOOD, EVIL",
+     "status": "alignment",
+     "note": "Not open to NEUTRAL characters"
+    },
+    {
+     "class": "THIEF",
+     "minimums": [
+      0,
+      0,
+      0,
+      0,
+      11,
+      0
+     ],
+     "shortfall": [
+      0,
+      0,
+      0,
+      0,
+      2,
+      0
+     ],
+     "alignments": "NEUTRAL, EVIL",
+     "status": "reachable",
+     "note": "Needs 2 points more (7 left)"
+    },
+    {
+     "class": "BISHOP",
+     "minimums": [
+      0,
+      12,
+      12,
+      0,
+      0,
+      0
+     ],
+     "shortfall": [
+      0,
+      2,
+      2,
+      0,
+      0,
+      0
+     ],
+     "alignments": "GOOD, EVIL",
+     "status": "alignment",
+     "note": "Not open to NEUTRAL characters"
+    },
+    {
+     "class": "SAMURAI",
+     "minimums": [
+      15,
+      11,
+      10,
+      14,
+      10,
+      0
+     ],
+     "shortfall": [
+      8,
+      1,
+      0,
+      8,
+      1,
+      0
+     ],
+     "alignments": "GOOD, NEUTRAL",
+     "status": "points",
+     "note": "Cannot be reached: needs 18 points, only 7 left"
+    },
+    {
+     "class": "LORD",
+     "minimums": [
+      15,
+      12,
+      12,
+      15,
+      14,
+      15
+     ],
+     "shortfall": [
+      8,
+      2,
+      2,
+      9,
+      5,
+      9
+     ],
+     "alignments": "GOOD",
+     "status": "alignment",
+     "note": "Not open to NEUTRAL characters"
+    },
+    {
+     "class": "NINJA",
+     "minimums": [
+      15,
+      15,
+      15,
+      15,
+      15,
+      15
+     ],
+     "shortfall": [
+      8,
+      5,
+      5,
+      9,
+      6,
+      9
+     ],
+     "alignments": "EVIL",
+     "status": "alignment",
+     "note": "Not open to NEUTRAL characters"
+    }
+   ]
+  },
+  "statNames": [
+   "STRENGTH",
+   "I.Q.",
+   "PIETY",
+   "VITALITY",
+   "AGILITY",
+   "LUCK"
+  ],
+  "classes": [
+   "FIGHTER",
+   "MAGE",
+   "PRIEST",
+   "THIEF",
+   "BISHOP",
+   "SAMURAI",
+   "LORD",
+   "NINJA"
+  ],
+  "races": [
+   "HUMAN",
+   "ELF",
+   "DWARF",
+   "GNOME",
+   "HOBBIT"
+  ],
+  "alignments": [
+   "GOOD",
+   "NEUTRAL",
+   "EVIL"
+  ]
+ },
+ {
+  "case": "points spent",
+  "screen": "creation",
+  "message": "",
+  "error": "",
+  "creation": {
+   "step": "stats",
+   "name": "RECORD",
+   "hasPassword": false,
+   "race": "ELF",
+   "alignment": "NEUTRAL",
+   "class": "",
+   "stats": [
+    7,
+    17,
+    10,
+    6,
+    9,
+    6
+   ],
+   "baseStats": [
+    7,
+    10,
+    10,
+    6,
+    9,
+    6
+   ],
+   "points": 0,
+   "classOk": [
+    false,
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "canAdd": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "canRemove": [
+    false,
+    true,
+    false,
+    false,
+    false,
+    false
+   ],
+   "guide": [
+    {
+     "class": "FIGHTER",
+     "minimums": [
+      11,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "shortfall": [
+      4,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "alignments": "ANY",
+     "status": "move",
+     "note": "Needs 4 points, only 0 left: move points from other stats"
+    },
+    {
+     "class": "MAGE",
+     "minimums": [
+      0,
+      11,
+      0,
+      0,
+      0,
+      0
+     ],
+     "shortfall": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "alignments": "ANY",
+     "status": "eligible",
+     "note": "Eligible"
+    },
+    {
+     "class": "PRIEST",
+     "minimums": [
+      0,
+      0,
+      11,
+      0,
+      0,
+      0
+     ],
+     "shortfall": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0
+     ],
+     "alignments": "GOOD, EVIL",
+     "status": "alignment",
+     "note": "Not open to NEUTRAL characters"
+    },
+    {
+     "class": "THIEF",
+     "minimums": [
+      0,
+      0,
+      0,
+      0,
+      11,
+      0
+     ],
+     "shortfall": [
+      0,
+      0,
+      0,
+      0,
+      2,
+      0
+     ],
+     "alignments": "NEUTRAL, EVIL",
+     "status": "move",
+     "note": "Needs 2 points, only 0 left: move points from other stats"
+    },
+    {
+     "class": "BISHOP",
+     "minimums": [
+      0,
+      12,
+      12,
+      0,
+      0,
+      0
+     ],
+     "shortfall": [
+      0,
+      0,
+      2,
+      0,
+      0,
+      0
+     ],
+     "alignments": "GOOD, EVIL",
+     "status": "alignment",
+     "note": "Not open to NEUTRAL characters"
+    },
+    {
+     "class": "SAMURAI",
+     "minimums": [
+      15,
+      11,
+      10,
+      14,
+      10,
+      0
+     ],
+     "shortfall": [
+      8,
+      0,
+      0,
+      8,
+      1,
+      0
+     ],
+     "alignments": "GOOD, NEUTRAL",
+     "status": "points",
+     "note": "Cannot be reached: needs 17 points, only 0 left"
+    },
+    {
+     "class": "LORD",
+     "minimums": [
+      15,
+      12,
+      12,
+      15,
+      14,
+      15
+     ],
+     "shortfall": [
+      8,
+      0,
+      2,
+      9,
+      5,
+      9
+     ],
+     "alignments": "GOOD",
+     "status": "alignment",
+     "note": "Not open to NEUTRAL characters"
+    },
+    {
+     "class": "NINJA",
+     "minimums": [
+      15,
+      15,
+      15,
+      15,
+      15,
+      15
+     ],
+     "shortfall": [
+      8,
+      0,
+      5,
+      9,
+      6,
+      9
+     ],
+     "alignments": "EVIL",
+     "status": "alignment",
+     "note": "Not open to NEUTRAL characters"
+    }
+   ]
+  },
+  "statNames": [
+   "STRENGTH",
+   "I.Q.",
+   "PIETY",
+   "VITALITY",
+   "AGILITY",
+   "LUCK"
+  ],
+  "classes": [
+   "FIGHTER",
+   "MAGE",
+   "PRIEST",
+   "THIEF",
+   "BISHOP",
+   "SAMURAI",
+   "LORD",
+   "NINJA"
+  ],
+  "races": [
+   "HUMAN",
+   "ELF",
+   "DWARF",
+   "GNOME",
+   "HOBBIT"
+  ],
+  "alignments": [
+   "GOOD",
+   "NEUTRAL",
+   "EVIL"
+  ]
+ },
+ {
+  "case": "class refused",
+  "screen": "creation",
+  "message": "",
+  "error": "Your statistics and alignment do not qualify for that class.",
+  "creation": {
+   "step": "stats",
+   "name": "RECORD",
+   "hasPassword": false,
+   "race": "ELF",
+   "alignment": "NEUTRAL",
+   "class": "",
+   "stats": [
+    7,
+    17,
+    10,
+    6,
+    9,
+    6
+   ],
+   "baseStats": [
+    7,
+    10,
+    10,
+    6,
+    9,
+    6
+   ],
+   "points": 0,
+   "classOk": [
+    false,
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "canAdd": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "canRemove": [
+    false,
+    true,
+    false,
+    false,
+    false,
+    false
+   ],
+   "guide": [
+    {
+     "class": "FIGHTER",
+     "minimums": [
+      11,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "shortfall": [
+      4,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "alignments": "ANY",
+     "status": "move",
+     "note": "Needs 4 points, only 0 left: move points from other stats"
+    },
+    {
+     "class": "MAGE",
+     "minimums": [
+      0,
+      11,
+      0,
+      0,
+      0,
+      0
+     ],
+     "shortfall": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "alignments": "ANY",
+     "status": "eligible",
+     "note": "Eligible"
+    },
+    {
+     "class": "PRIEST",
+     "minimums": [
+      0,
+      0,
+      11,
+      0,
+      0,
+      0
+     ],
+     "shortfall": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0
+     ],
+     "alignments": "GOOD, EVIL",
+     "status": "alignment",
+     "note": "Not open to NEUTRAL characters"
+    },
+    {
+     "class": "THIEF",
+     "minimums": [
+      0,
+      0,
+      0,
+      0,
+      11,
+      0
+     ],
+     "shortfall": [
+      0,
+      0,
+      0,
+      0,
+      2,
+      0
+     ],
+     "alignments": "NEUTRAL, EVIL",
+     "status": "move",
+     "note": "Needs 2 points, only 0 left: move points from other stats"
+    },
+    {
+     "class": "BISHOP",
+     "minimums": [
+      0,
+      12,
+      12,
+      0,
+      0,
+      0
+     ],
+     "shortfall": [
+      0,
+      0,
+      2,
+      0,
+      0,
+      0
+     ],
+     "alignments": "GOOD, EVIL",
+     "status": "alignment",
+     "note": "Not open to NEUTRAL characters"
+    },
+    {
+     "class": "SAMURAI",
+     "minimums": [
+      15,
+      11,
+      10,
+      14,
+      10,
+      0
+     ],
+     "shortfall": [
+      8,
+      0,
+      0,
+      8,
+      1,
+      0
+     ],
+     "alignments": "GOOD, NEUTRAL",
+     "status": "points",
+     "note": "Cannot be reached: needs 17 points, only 0 left"
+    },
+    {
+     "class": "LORD",
+     "minimums": [
+      15,
+      12,
+      12,
+      15,
+      14,
+      15
+     ],
+     "shortfall": [
+      8,
+      0,
+      2,
+      9,
+      5,
+      9
+     ],
+     "alignments": "GOOD",
+     "status": "alignment",
+     "note": "Not open to NEUTRAL characters"
+    },
+    {
+     "class": "NINJA",
+     "minimums": [
+      15,
+      15,
+      15,
+      15,
+      15,
+      15
+     ],
+     "shortfall": [
+      8,
+      0,
+      5,
+      9,
+      6,
+      9
+     ],
+     "alignments": "EVIL",
+     "status": "alignment",
+     "note": "Not open to NEUTRAL characters"
+    }
+   ]
+  },
+  "statNames": [
+   "STRENGTH",
+   "I.Q.",
+   "PIETY",
+   "VITALITY",
+   "AGILITY",
+   "LUCK"
+  ],
+  "classes": [
+   "FIGHTER",
+   "MAGE",
+   "PRIEST",
+   "THIEF",
+   "BISHOP",
+   "SAMURAI",
+   "LORD",
+   "NINJA"
+  ],
+  "races": [
+   "HUMAN",
+   "ELF",
+   "DWARF",
+   "GNOME",
+   "HOBBIT"
+  ],
+  "alignments": [
+   "GOOD",
+   "NEUTRAL",
+   "EVIL"
+  ]
+ },
+ {
+  "case": "class step",
+  "screen": "creation",
+  "message": "",
+  "error": "",
+  "creation": {
+   "step": "class",
+   "name": "RECORD",
+   "hasPassword": false,
+   "race": "ELF",
+   "alignment": "NEUTRAL",
+   "class": "",
+   "stats": [
+    7,
+    17,
+    10,
+    6,
+    9,
+    6
+   ],
+   "baseStats": [
+    7,
+    10,
+    10,
+    6,
+    9,
+    6
+   ],
+   "points": 0,
+   "classOk": [
+    false,
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "canAdd": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "canRemove": [
+    false,
+    true,
+    false,
+    false,
+    false,
+    false
+   ],
+   "guide": [
+    {
+     "class": "FIGHTER",
+     "minimums": [
+      11,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "shortfall": [
+      4,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "alignments": "ANY",
+     "status": "move",
+     "note": "Needs 4 points, only 0 left: move points from other stats"
+    },
+    {
+     "class": "MAGE",
+     "minimums": [
+      0,
+      11,
+      0,
+      0,
+      0,
+      0
+     ],
+     "shortfall": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "alignments": "ANY",
+     "status": "eligible",
+     "note": "Eligible"
+    },
+    {
+     "class": "PRIEST",
+     "minimums": [
+      0,
+      0,
+      11,
+      0,
+      0,
+      0
+     ],
+     "shortfall": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0
+     ],
+     "alignments": "GOOD, EVIL",
+     "status": "alignment",
+     "note": "Not open to NEUTRAL characters"
+    },
+    {
+     "class": "THIEF",
+     "minimums": [
+      0,
+      0,
+      0,
+      0,
+      11,
+      0
+     ],
+     "shortfall": [
+      0,
+      0,
+      0,
+      0,
+      2,
+      0
+     ],
+     "alignments": "NEUTRAL, EVIL",
+     "status": "move",
+     "note": "Needs 2 points, only 0 left: move points from other stats"
+    },
+    {
+     "class": "BISHOP",
+     "minimums": [
+      0,
+      12,
+      12,
+      0,
+      0,
+      0
+     ],
+     "shortfall": [
+      0,
+      0,
+      2,
+      0,
+      0,
+      0
+     ],
+     "alignments": "GOOD, EVIL",
+     "status": "alignment",
+     "note": "Not open to NEUTRAL characters"
+    },
+    {
+     "class": "SAMURAI",
+     "minimums": [
+      15,
+      11,
+      10,
+      14,
+      10,
+      0
+     ],
+     "shortfall": [
+      8,
+      0,
+      0,
+      8,
+      1,
+      0
+     ],
+     "alignments": "GOOD, NEUTRAL",
+     "status": "points",
+     "note": "Cannot be reached: needs 17 points, only 0 left"
+    },
+    {
+     "class": "LORD",
+     "minimums": [
+      15,
+      12,
+      12,
+      15,
+      14,
+      15
+     ],
+     "shortfall": [
+      8,
+      0,
+      2,
+      9,
+      5,
+      9
+     ],
+     "alignments": "GOOD",
+     "status": "alignment",
+     "note": "Not open to NEUTRAL characters"
+    },
+    {
+     "class": "NINJA",
+     "minimums": [
+      15,
+      15,
+      15,
+      15,
+      15,
+      15
+     ],
+     "shortfall": [
+      8,
+      0,
+      5,
+      9,
+      6,
+      9
+     ],
+     "alignments": "EVIL",
+     "status": "alignment",
+     "note": "Not open to NEUTRAL characters"
+    }
+   ]
+  },
+  "statNames": [
+   "STRENGTH",
+   "I.Q.",
+   "PIETY",
+   "VITALITY",
+   "AGILITY",
+   "LUCK"
+  ],
+  "classes": [
+   "FIGHTER",
+   "MAGE",
+   "PRIEST",
+   "THIEF",
+   "BISHOP",
+   "SAMURAI",
+   "LORD",
+   "NINJA"
+  ],
+  "races": [
+   "HUMAN",
+   "ELF",
+   "DWARF",
+   "GNOME",
+   "HOBBIT"
+  ],
+  "alignments": [
+   "GOOD",
+   "NEUTRAL",
+   "EVIL"
+  ]
+ },
+ {
+  "case": "review",
+  "screen": "creation",
+  "message": "",
+  "error": "",
+  "creation": {
+   "step": "confirm",
+   "name": "RECORD",
+   "hasPassword": false,
+   "race": "ELF",
+   "alignment": "NEUTRAL",
+   "class": "MAGE",
+   "stats": [
+    7,
+    17,
+    10,
+    6,
+    9,
+    6
+   ],
+   "baseStats": [
+    7,
+    10,
+    10,
+    6,
+    9,
+    6
+   ],
+   "points": 0,
+   "classOk": [
+    false,
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "canAdd": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "canRemove": [
+    false,
+    true,
+    false,
+    false,
+    false,
+    false
+   ],
+   "guide": [
+    {
+     "class": "FIGHTER",
+     "minimums": [
+      11,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "shortfall": [
+      4,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "alignments": "ANY",
+     "status": "move",
+     "note": "Needs 4 points, only 0 left: move points from other stats"
+    },
+    {
+     "class": "MAGE",
+     "minimums": [
+      0,
+      11,
+      0,
+      0,
+      0,
+      0
+     ],
+     "shortfall": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "alignments": "ANY",
+     "status": "eligible",
+     "note": "Eligible"
+    },
+    {
+     "class": "PRIEST",
+     "minimums": [
+      0,
+      0,
+      11,
+      0,
+      0,
+      0
+     ],
+     "shortfall": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0
+     ],
+     "alignments": "GOOD, EVIL",
+     "status": "alignment",
+     "note": "Not open to NEUTRAL characters"
+    },
+    {
+     "class": "THIEF",
+     "minimums": [
+      0,
+      0,
+      0,
+      0,
+      11,
+      0
+     ],
+     "shortfall": [
+      0,
+      0,
+      0,
+      0,
+      2,
+      0
+     ],
+     "alignments": "NEUTRAL, EVIL",
+     "status": "move",
+     "note": "Needs 2 points, only 0 left: move points from other stats"
+    },
+    {
+     "class": "BISHOP",
+     "minimums": [
+      0,
+      12,
+      12,
+      0,
+      0,
+      0
+     ],
+     "shortfall": [
+      0,
+      0,
+      2,
+      0,
+      0,
+      0
+     ],
+     "alignments": "GOOD, EVIL",
+     "status": "alignment",
+     "note": "Not open to NEUTRAL characters"
+    },
+    {
+     "class": "SAMURAI",
+     "minimums": [
+      15,
+      11,
+      10,
+      14,
+      10,
+      0
+     ],
+     "shortfall": [
+      8,
+      0,
+      0,
+      8,
+      1,
+      0
+     ],
+     "alignments": "GOOD, NEUTRAL",
+     "status": "points",
+     "note": "Cannot be reached: needs 17 points, only 0 left"
+    },
+    {
+     "class": "LORD",
+     "minimums": [
+      15,
+      12,
+      12,
+      15,
+      14,
+      15
+     ],
+     "shortfall": [
+      8,
+      0,
+      2,
+      9,
+      5,
+      9
+     ],
+     "alignments": "GOOD",
+     "status": "alignment",
+     "note": "Not open to NEUTRAL characters"
+    },
+    {
+     "class": "NINJA",
+     "minimums": [
+      15,
+      15,
+      15,
+      15,
+      15,
+      15
+     ],
+     "shortfall": [
+      8,
+      0,
+      5,
+      9,
+      6,
+      9
+     ],
+     "alignments": "EVIL",
+     "status": "alignment",
+     "note": "Not open to NEUTRAL characters"
+    }
+   ]
+  },
+  "statNames": [
+   "STRENGTH",
+   "I.Q.",
+   "PIETY",
+   "VITALITY",
+   "AGILITY",
+   "LUCK"
+  ],
+  "classes": [
+   "FIGHTER",
+   "MAGE",
+   "PRIEST",
+   "THIEF",
+   "BISHOP",
+   "SAMURAI",
+   "LORD",
+   "NINJA"
+  ],
+  "races": [
+   "HUMAN",
+   "ELF",
+   "DWARF",
+   "GNOME",
+   "HOBBIT"
+  ],
+  "alignments": [
+   "GOOD",
+   "NEUTRAL",
+   "EVIL"
+  ]
+ },
+ {
+  "case": "evil, points spent",
+  "screen": "creation",
+  "message": "",
+  "error": "",
+  "creation": {
+   "step": "stats",
+   "name": "EVIL",
+   "hasPassword": false,
+   "race": "HUMAN",
+   "alignment": "EVIL",
+   "class": "",
+   "stats": [
+    15,
+    8,
+    5,
+    8,
+    8,
+    9
+   ],
+   "baseStats": [
+    8,
+    8,
+    5,
+    8,
+    8,
+    9
+   ],
+   "points": 0,
+   "classOk": [
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "canAdd": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "canRemove": [
+    true,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "guide": [
+    {
+     "class": "FIGHTER",
+     "minimums": [
+      11,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "shortfall": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "alignments": "ANY",
+     "status": "eligible",
+     "note": "Eligible"
+    },
+    {
+     "class": "MAGE",
+     "minimums": [
+      0,
+      11,
+      0,
+      0,
+      0,
+      0
+     ],
+     "shortfall": [
+      0,
+      3,
+      0,
+      0,
+      0,
+      0
+     ],
+     "alignments": "ANY",
+     "status": "move",
+     "note": "Needs 3 points, only 0 left: move points from other stats"
+    },
+    {
+     "class": "PRIEST",
+     "minimums": [
+      0,
+      0,
+      11,
+      0,
+      0,
+      0
+     ],
+     "shortfall": [
+      0,
+      0,
+      6,
+      0,
+      0,
+      0
+     ],
+     "alignments": "GOOD, EVIL",
+     "status": "move",
+     "note": "Needs 6 points, only 0 left: move points from other stats"
+    },
+    {
+     "class": "THIEF",
+     "minimums": [
+      0,
+      0,
+      0,
+      0,
+      11,
+      0
+     ],
+     "shortfall": [
+      0,
+      0,
+      0,
+      0,
+      3,
+      0
+     ],
+     "alignments": "NEUTRAL, EVIL",
+     "status": "move",
+     "note": "Needs 3 points, only 0 left: move points from other stats"
+    },
+    {
+     "class": "BISHOP",
+     "minimums": [
+      0,
+      12,
+      12,
+      0,
+      0,
+      0
+     ],
+     "shortfall": [
+      0,
+      4,
+      7,
+      0,
+      0,
+      0
+     ],
+     "alignments": "GOOD, EVIL",
+     "status": "points",
+     "note": "Cannot be reached: needs 11 points, only 0 left"
+    },
+    {
+     "class": "SAMURAI",
+     "minimums": [
+      15,
+      11,
+      10,
+      14,
+      10,
+      0
+     ],
+     "shortfall": [
+      0,
+      3,
+      5,
+      6,
+      2,
+      0
+     ],
+     "alignments": "GOOD, NEUTRAL",
+     "status": "alignment",
+     "note": "Not open to EVIL characters"
+    },
+    {
+     "class": "LORD",
+     "minimums": [
+      15,
+      12,
+      12,
+      15,
+      14,
+      15
+     ],
+     "shortfall": [
+      0,
+      4,
+      7,
+      7,
+      6,
+      6
+     ],
+     "alignments": "GOOD",
+     "status": "alignment",
+     "note": "Not open to EVIL characters"
+    },
+    {
+     "class": "NINJA",
+     "minimums": [
+      15,
+      15,
+      15,
+      15,
+      15,
+      15
+     ],
+     "shortfall": [
+      0,
+      7,
+      10,
+      7,
+      7,
+      6
+     ],
+     "alignments": "EVIL",
+     "status": "points",
+     "note": "Cannot be reached: needs 37 points, only 0 left"
+    }
+   ]
+  },
+  "statNames": [
+   "STRENGTH",
+   "I.Q.",
+   "PIETY",
+   "VITALITY",
+   "AGILITY",
+   "LUCK"
+  ],
+  "classes": [
+   "FIGHTER",
+   "MAGE",
+   "PRIEST",
+   "THIEF",
+   "BISHOP",
+   "SAMURAI",
+   "LORD",
+   "NINJA"
+  ],
+  "races": [
+   "HUMAN",
+   "ELF",
+   "DWARF",
+   "GNOME",
+   "HOBBIT"
+  ],
+  "alignments": [
+   "GOOD",
+   "NEUTRAL",
+   "EVIL"
+  ]
+ }
+]

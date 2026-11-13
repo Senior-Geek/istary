@@ -63,6 +63,8 @@ export function ContinueGame(arg1:number):Promise<main.View>;
 
 export function DeleteCharacter(arg1:string,arg2:string):Promise<main.View>;
 
+export function DiscardCreation():Promise<main.View>;
+
 export function DungeonAction(arg1:string,arg2:number):Promise<main.View>;
 
 export function EquipAction(arg1:main.EquipRequest):Promise<main.View>;
@@ -88,6 +90,8 @@ export function ListBackups():Promise<Array<main.BackupInfo>>;
 export function Navigate(arg1:string):Promise<main.View>;
 
 export function NewGame(arg1:number):Promise<main.View>;
+
+export function PickClass(arg1:number):Promise<main.View>;
 
 export function PracticeEncounter(arg1:boolean):Promise<main.View>;
 
