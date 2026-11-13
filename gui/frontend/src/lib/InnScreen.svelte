@@ -7,15 +7,18 @@
   // when Go gives no refusal, and a disabled one says Go's reason. The mode
   // and the weeks typed are the page's own and only ask Go for quotes. A
   // stay, with its level check, is one call (Session.InnAction) and one
-  // save; its receipt is Go's. "← Castle" and Escape leave the Inn.
+  // save; its receipt is Go's. "← Castle" and Escape leave the Inn. The
+  // guest's character sheet is the frame's toggle (UX-3B).
   //
   // Props:
   //   view    the Go View (view.location is "inn")
   //   busy    a request is running
   //   call    (fn, ...args) => Promise   runs a Session method
   //   onopen  (rosterIndex) => void      open a party member's sheet
+  import { getContext } from 'svelte'
   import * as S from '../../wailsjs/go/main/Session.js'
   import LocationFrame from './LocationFrame.svelte'
+  import { SHEET } from './sheet.js'
   import { guest, rows, maxWeeks, pickLabel, receipt } from './inn.js'
 
   let { view, busy = false, call, onopen } = $props()
@@ -33,6 +36,10 @@
   const guests = $derived(inn?.view?.guests ?? [])
 
   const act = (request) => call(S.InnAction, request)
+
+  // The character sheet (the frame's Actions) is the guest's.
+  const sheet = getContext(SHEET)
+  $effect(() => { if (who?.index !== undefined) sheet?.follow(who.index) })
   const enter = (slot) => act({ action: 'enter', slot })
 
   // Go's quotes for the chosen weeks, asked again whenever the weeks, the
@@ -63,7 +70,6 @@
           <dt>Experience</dt><dd>{who.xp}{who.nextXp ? ` · level ${who.level + 1} at ${who.nextXp}` : ''}</dd>
         </dl>
         <div class="row">
-          {#if who.index !== undefined}<button class="small" disabled={busy} onclick={() => onopen?.(who.index)}>Character sheet</button>{/if}
           <button class="small" disabled={busy} onclick={() => act({ action: 'pool' })}
             title="Give {who.name} every other party member's gold (Pool Gold)">Pool party gold</button>
           <button class="small" disabled={busy} onclick={() => act({ action: 'leave-guest' })}

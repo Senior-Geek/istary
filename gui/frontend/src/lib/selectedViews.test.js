@@ -88,7 +88,11 @@ test('the Trading Post: no sheet button, shop actions only, the list alone scrol
   assert.match(src, /<SelectedCharacter /)
   assert.match(src, /\.tablewrap \{ overflow: auto;/)
   const frame = readFileSync(new URL('./LocationFrame.svelte', import.meta.url), 'utf8')
-  assert.match(frame, /\.frame\.fill \.body \{ overflow: hidden;/)
+  // UX-3B: the frame's body never scrolls on a wide window, and in the
+  // fill layout the information area does not either: the lists do.
+  assert.match(frame, /\n  \.body \{[^}]*\boverflow: hidden;/)
+  assert.match(frame, /\.frame\.fill \.content-area \{ overflow: hidden; \}/)
+  assert.match(src, /<LocationFrame [^>]*\bnoSheet\b/, 'no character sheet at Boltac’s: the Selected Character panel is the customer')
   const panel = readFileSync(new URL('./SelectedCharacter.svelte', import.meta.url), 'utf8')
   assert.match(panel, /\.inventory \{ min-height: 0; overflow-y: auto;/)
 })

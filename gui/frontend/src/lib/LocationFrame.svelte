@@ -1,18 +1,27 @@
 <script>
-  // The location frame (Castle-0): one layout for every place. It shows
-  // where the player is, the way Back, the other destinations (closed ones
-  // with Go's reason), the place's own actions and content, its artwork,
-  // and the party bar, each in its own area, so the artwork never covers a
-  // control or the party. Moves go through Session.Navigate and the party
-  // toggle through Session.SetPartyVisible; what is open is Go's.
+  // The location frame (Castle-0, UX-3B): one layout for every place in
+  // town. It shows where the player is, the way Back, the place's actions
+  // and the other destinations (closed ones with Go's reason), its artwork
+  // or a character's sheet, its information, and the party bar, each in
+  // its own area, so nothing is drawn over a control or the party. Moves
+  // go through Session.Navigate and the party toggle through
+  // Session.SetPartyVisible; what is open is Go's.
   //
-  // Areas: head (title, Back, party toggle), scene (the artwork), nav (the
-  // destinations, then the place's actions), content (anything wider, below
-  // both), party (the party bar). The frame fills the window's height: the
-  // head and the party bar stay in place and the areas between them scroll,
-  // so nothing is ever drawn over anything else. A future graphical maze
-  // can draw into the scene area (the scene snippet) and an automap into an
-  // aside beside the nav; neither changes how places are reached.
+  // Areas (UX-3B): head (title, Back, party toggle); A, the display, upper
+  // left (the artwork, or the embedded character sheet); B, the actions,
+  // upper right (the place's decisions, the sheet toggle, then the
+  // destinations), scrolling inside itself if it is long; C, the
+  // information below both, scrolling on its own and taking whatever
+  // height the party bar leaves (all of it when the party is hidden); D,
+  // the party bar. A and B stay in place while C scrolls. Under 700px the
+  // areas stack and the body scrolls as one.
+  //
+  // The character sheet (lib/sheet.js): App keeps whose it is and whether
+  // it is shown (the SHEET context); the frame shows it in A, in place of
+  // the artwork, and offers the one toggle for it in B. What the sheet
+  // offers is the place's: renaming and deleting at the Training Grounds,
+  // joining and leaving at the Tavern, equipping anywhere in town (Go
+  // refuses it when it is not open, with the reason on the sheet).
   //
   // Props:
   //   view      the Go View
@@ -20,35 +29,54 @@
   //   call      (fn, ...args) => Promise   runs a Session method
   //   onopen    (rosterIndex) => void      open a member's sheet (optional)
   //   scene     snippet drawn instead of the place's artwork (optional)
-  //   actions   snippet: the place's actions, under the destinations (optional)
-  //   aside     snippet beside the nav, e.g. a map (optional)
-  //   children  the place's wider content (optional)
-  //   fill      the place fills the window without scrolling the page
-  //             (UX-2, Boltac's): the body does not scroll, the artwork is
-  //             shorter, and the content takes the rest of the height and
-  //             scrolls inside itself (optional)
+  //   actions   snippet: the place's actions, first in B (optional)
+  //   aside     snippet under the actions, e.g. a map (optional)
+  //   children  the place's information, in C (optional)
+  //   fill      the place lays out C itself (UX-2, Boltac's): C does not
+  //             scroll, the place's own lists inside it do, and the
+  //             artwork is shorter (optional)
   //   partyAlways  the party bar is always shown here, whatever the Hide
   //             party setting, and the toggle is not offered (UX-2,
   //             Boltac's: the bar is how the customer is chosen) (optional)
+  //   noSheet   no character sheet here (UX-2, Boltac's: the Selected
+  //             Character panel is the customer) (optional)
   //   pick, onpick, current
   //             the party bar's picking (PartyBar): what a click on a member
   //             does here, and the member worked with (optional; Boltac's)
+  import { getContext } from 'svelte'
   import * as S from '../../wailsjs/go/main/Session.js'
   import LocationScene from './LocationScene.svelte'
   import PartyBar from './PartyBar.svelte'
+  import CharacterSheet from './CharacterSheet.svelte'
   import { title, back, destinations } from './navigation.js'
+  import { SHEET, subject, toggleLabel, available } from './sheet.js'
 
-  let { view, busy = false, call, onopen, scene, actions, aside, children, pick, onpick, current = -1, fill = false, partyAlways = false } = $props()
+  let { view, busy = false, call, onopen, scene, actions, aside, children, pick, onpick, current = -1, fill = false, partyAlways = false, noSheet = false } = $props()
 
   const here = $derived(title(view.location))
   const way = $derived(back(view))
   const ways = $derived(destinations(view))
   const partyShown = $derived(partyAlways || (view.settings?.partyVisible ?? true))
 
+  const sheet = getContext(SHEET)
+  const sheetHere = $derived(!!sheet && !noSheet && available(view))
+  const who = $derived(sheetHere ? subject(view, sheet.index) : null)
+  const sheetShown = $derived(sheetHere && sheet.shown && !!who)
+
   const go = (dest) => call(S.Navigate, dest)
+  const toggleSheet = () => (sheetShown ? sheet.hide() : sheet.show(who.index))
+
+  async function rename(name) {
+    await call(S.RenameCharacter, who.index, name)
+  }
+  async function remove(password) {
+    const name = who.name
+    await call(S.DeleteCharacter, name, password)
+    if (!view.error) sheet.forget()
+  }
 </script>
 
-<div class="frame" class:with-aside={!!aside} class:fill data-location={view.location}>
+<div class="frame" class:fill data-location={view.location}>
   <header class="head">
     <h2 class="title">{here}</h2>
     {#if way}
@@ -63,11 +91,35 @@
   </header>
 
   <div class="body">
-  <div class="scene-area">
-    {#if scene}{@render scene()}{:else}<LocationScene location={view.location} title={here} />{/if}
+  <div class="scene-area" class:sheet={sheetShown} data-area="display">
+    {#if sheetShown}
+      {#key who.index}
+        <CharacterSheet character={who} statNames={view.statNames} nameMax={view.nameMax}
+          {busy} error={view.error}
+          onrename={view.location === 'training' ? rename : undefined}
+          ondelete={view.location === 'training' ? remove : undefined}
+          onjoin={view.location === 'tavern' ? () => call(S.JoinParty, who.index) : undefined}
+          onleave={view.location === 'tavern' ? () => call(S.LeaveParty, who.partySlot - 1) : undefined}
+          onequip={(n, equip) => call(S.EquipAction, { index: who.index, n, equip })} />
+      {/key}
+    {:else if scene}{@render scene()}{:else}<LocationScene location={view.location} title={here} />{/if}
   </div>
 
-  <div class="nav-area">
+  <div class="nav-area" data-area="actions">
+    {#if actions || sheetHere}
+      <section class="actions" aria-label="Actions here">
+        <h3>Actions</h3>
+        {#if actions}{@render actions()}{/if}
+        {#if sheetHere}
+          <div class="sheet-toggle" class:alone={!actions}>
+            <button class="wide" aria-pressed={sheetShown} disabled={busy || !who} onclick={toggleSheet}
+              title={who ? `${sheetShown ? 'Hide' : 'Show'} ${who.name}'s character sheet` : 'Nobody to show'}>{toggleLabel(sheetShown)}</button>
+            {#if sheetShown}<span class="why">{who.name}. Click a party member to see theirs.</span>{/if}
+          </div>
+        {/if}
+      </section>
+    {/if}
+    {#if aside}<div class="aside-area">{@render aside()}</div>{/if}
     {#if ways.length}
       <nav aria-label="Destinations">
         <h3>Go to</h3>
@@ -81,59 +133,52 @@
         </ul>
       </nav>
     {/if}
-    {#if actions}
-      <section class="actions" aria-label="Actions here">
-        <h3>Actions</h3>
-        {@render actions()}
-      </section>
-    {/if}
   </div>
 
-  {#if aside}<div class="aside-area">{@render aside()}</div>{/if}
-
-  {#if children}<div class="content-area">{@render children()}</div>{/if}
+  <div class="content-area" data-area="information">{#if children}{@render children()}{/if}</div>
   </div>
 
   {#if partyShown}
-    <div class="party-area">
+    <div class="party-area" data-area="party">
       <PartyBar slots={view.partyBar ?? []} frontRow={view.frontRow} {onopen} {pick} {onpick} {current} {busy} />
     </div>
   {/if}
 </div>
 
 <style>
-  /* The frame fills the height it is given: head and party bar fixed, the
-     body between them scrolls. In the body, wide windows put the artwork
-     beside the destinations and the content below; under 700px they stack,
-     the artwork as a banner. */
+  /* The frame fills the height it is given: head and party bar fixed. In
+     the body, wide windows put the display (A) beside the actions (B), a
+     fixed height, and the information (C) below takes the rest and
+     scrolls on its own. Under 700px they stack and the body scrolls. */
   .frame {
+    --top: clamp(150px, calc((100vw - 380px) * 0.5625), 42vh);
     display: grid; height: 100%; min-height: 0;
     grid-template-rows: auto minmax(0, 1fr) auto;
     grid-template-areas: "head" "body" "party";
     gap: 10px;
   }
+  .frame.fill { --top: clamp(130px, calc((100vw - 380px) * 0.5625), 30vh); }
   .head { grid-area: head; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
   .title { margin: 0 auto 0 0; font-size: 20px; color: var(--text); letter-spacing: 0.02em; }
   .head button { margin: 0; }
   .back kbd { font: 600 10px ui-monospace, Menlo, monospace; opacity: 0.7; margin-left: 4px; }
   .head-why { flex-basis: 100%; margin: 0; text-align: right; }
   .body {
-    grid-area: body; min-height: 0; overflow-y: auto; overflow-x: hidden;
-    display: grid; gap: 12px 16px; align-content: start; align-items: start;
+    grid-area: body; min-height: 0; overflow: hidden;
+    display: grid; gap: 12px 16px;
     grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
+    grid-template-rows: var(--top) minmax(0, 1fr);
     grid-template-areas: "scene nav" "content content";
-    padding-right: 2px;
   }
-  .frame.with-aside .body { grid-template-areas: "scene nav" "scene aside" "content content"; }
-  /* The scene's height is definite (about 16:9 of its column, between 120px
-     and 46vh), not worked out from its width: in a body that scrolls, a
-     height from aspect-ratio was left out of the row's size, and the
-     content below was drawn over the scene. */
-  .scene-area { grid-area: scene; width: 100%; height: clamp(120px, calc((100vw - 380px) * 0.5625), 46vh); min-width: 0; }
-  .nav-area { grid-area: nav; display: grid; gap: 12px; min-width: 0; }
-  .aside-area { grid-area: aside; min-width: 0; }
-  .content-area { grid-area: content; min-width: 0; }
+  /* A and B share a definite height: the artwork or sheet fills it, and
+     long actions scroll inside B. */
+  .scene-area { grid-area: scene; height: 100%; min-width: 0; min-height: 0; }
+  .nav-area { grid-area: nav; height: 100%; min-width: 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
+    display: grid; gap: 12px; align-content: start; padding-right: 2px; }
+  .aside-area { min-width: 0; }
+  .content-area { grid-area: content; min-width: 0; min-height: 0; height: 100%; overflow-y: auto; padding-right: 2px; }
   .content-area > :global(:first-child) { margin-top: 0; }
+  .frame.fill .content-area { overflow: hidden; }
   .party-area { grid-area: party; border-top: 1px solid var(--line); padding-top: 8px; }
   h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin: 0 0 6px; font-weight: 500; }
   nav ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
@@ -141,19 +186,20 @@
   nav button { width: 100%; text-align: left; margin: 0; }
   .why { color: var(--muted); font-size: 11px; padding: 2px 2px 4px; }
   .actions { margin: 0; padding: 10px 12px; }
-  /* Fill: the content row takes what the head, the artwork row and the
-     party bar leave, and scrolls inside itself; the page does not. */
-  .frame.fill .body { overflow: hidden; grid-template-rows: auto minmax(0, 1fr); }
-  .frame.fill .scene-area { height: clamp(120px, calc((100vw - 380px) * 0.5625), 30vh); }
-  .frame.fill .content-area { align-self: stretch; height: 100%; min-height: 0; }
-  @media (max-height: 640px) { .scene-area { max-height: 30vh; } }
+  .sheet-toggle { display: grid; gap: 2px; margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--line); }
+  .sheet-toggle.alone { margin-top: 0; padding-top: 0; border-top: 0; }
+  .sheet-toggle .wide { width: 100%; text-align: left; margin: 0; }
+  @media (max-height: 640px) { .frame { --top: clamp(130px, calc((100vw - 380px) * 0.5625), 34vh); } }
   @media (max-width: 699px) {
-    .body, .frame.with-aside .body {
+    .body {
+      overflow-y: auto;
       grid-template-columns: minmax(0, 1fr);
-      grid-template-areas: "scene" "nav" "aside" "content";
+      grid-template-rows: none;
+      grid-template-areas: "scene" "nav" "content";
     }
     .scene-area { height: auto; aspect-ratio: 21 / 9; max-height: 30vh; }
-    .frame.fill .body { overflow-y: auto; grid-template-rows: none; }
+    .scene-area.sheet { aspect-ratio: auto; height: 60vh; max-height: none; }
+    .nav-area, .content-area { height: auto; overflow: visible; }
     .frame.fill .content-area { height: auto; }
   }
 </style>

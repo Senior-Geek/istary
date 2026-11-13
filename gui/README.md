@@ -47,11 +47,15 @@ bottom, shown or hidden with Hide party.
   saved at once, and the receipt says Saved, saved but perhaps not durably,
   or NOT saved (with Try saving again). Pool party gold gives the customer
   everyone's gold.
-- **Character sheets** (click a party member or a roster character):
-  Equip and Take off for each item, anywhere in town; a greyed button says
-  why (the class cannot use it, a cursed item is stuck in its place...).
-  The armour class changes at once. Cursed items, and items of another
-  alignment, stick once worn: only Boltac can remove them.
+- **Character sheets** (click a party member or a roster character, or
+  Character Sheet in the Actions): shown in place of the place's picture;
+  Hide Character Sheet (or Escape) brings the picture back. Worn &
+  Wielded and the Pack are one inventory of up to 8: Remove takes an item
+  off into the pack, Use equips one from it, anywhere in town; a greyed
+  button says why (the class cannot use it, a cursed item is stuck in its
+  place...). The armour class changes at once. Cursed items, and items of
+  another alignment, stick once worn: only Boltac can remove them. Not at
+  Boltac's, where the Selected Character panel is the customer.
 - **Gilgamesh's Tavern:** form the party: Join, Remove, and the password;
   Divvy gold shares the party's gold evenly.
 - **Game selection** (UX-3A): Istary opens on six game slots, each its own
@@ -62,7 +66,10 @@ bottom, shown or hidden with Hide party.
 - **The Edge of Town:** Enter the maze; practice (Istary only); Change game;
   Leave the game; the way to the Training Grounds and to Settings.
 - **The Training Grounds:** the roster (click a character for its sheet,
-  where it can be renamed or deleted) and character creation.
+  where it can be renamed or deleted) and character creation: each
+  decision in the Actions; the bonus points and the class on one screen,
+  the classes the points allow highlighted once every point is spent;
+  Discard at any step.
 - **Settings:** the save folder, Reload, Reset roster and Restore roster.
 
 Each action is accepted only at its own place; nothing moves the player

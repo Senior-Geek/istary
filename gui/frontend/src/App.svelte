@@ -2,10 +2,13 @@
   // The page only renders the Go-side View and calls Session methods. Every
   // rule (eligibility, point limits, messages, where each action belongs)
   // comes from Go. In town each place has its own screen in the shared
-  // location frame (Castle-0); the maze, Camp and combat have theirs.
+  // location frame (Castle-0); the maze, Camp and combat have theirs. A
+  // character's sheet is shown in the frame, in place of the artwork
+  // (UX-3B): this page keeps whose it is and whether it is shown, and gives
+  // both to the frame (lib/sheet.js SHEET).
+  import { setContext } from 'svelte'
   import * as S from '../wailsjs/go/main/Session.js'
-  import FloatingPanel from './lib/FloatingPanel.svelte'
-  import CharacterSheet from './lib/CharacterSheet.svelte'
+  import { SHEET, available } from './lib/sheet.js'
   import CombatScreen from './lib/CombatScreen.svelte'
   import DungeonScreen from './lib/DungeonScreen.svelte'
   import LocationFrame from './lib/LocationFrame.svelte'
@@ -21,7 +24,8 @@
 
   let view = $state(null)
   let busy = $state(false)
-  let selected = $state(-1) // roster index shown in the character sheet
+  let selected = $state(-1) // roster index of the character sheet's character, or -1
+  let sheetShown = $state(false) // the sheet is shown in place of the artwork
 
   async function call(fn, ...args) {
     busy = true
@@ -36,30 +40,44 @@
 
   call(S.State)
 
-  const sel = $derived(view?.roster?.find((ch) => ch.index === selected))
   // Town and the dungeon (with Camp) fill the window, the party bar in view.
   const shell = $derived(view && !view.fatal && view.screen !== 'combat' && view.screen !== 'games')
 
-  const select = (index) => { selected = selected === index ? -1 : index }
-  const open = (index) => { selected = index }
+  // A roster row: show that character's sheet, or hide it if it is the
+  // one shown. A party member: show theirs.
+  const select = (index) => {
+    if (sheetShown && selected === index) sheetShown = false
+    else open(index)
+  }
+  const open = (index) => { selected = index; sheetShown = true }
+  const forget = () => { selected = -1; sheetShown = false }
+
+  setContext(SHEET, {
+    get index() { return selected },
+    get shown() { return sheetShown },
+    show: open,
+    hide: () => { sheetShown = false },
+    forget,
+    // follow makes index the sheet's character without showing it: a place
+    // whose party bar picks (Boltac's customer, the Inn's guest) keeps the
+    // sheet on the member it is serving.
+    follow: (index) => { if (index >= 0) selected = index },
+  })
 
   // Escape in town is "← Castle" (ReturnToCastle), as in the frame's head;
-  // an open character sheet takes Escape first. The maze, Camp and combat
-  // keep their own keys.
+  // a shown character sheet takes Escape first and is hidden. The maze,
+  // Camp and combat keep their own keys.
   function onkey(e) {
-    if (e.key !== 'Escape' || e.defaultPrevented || busy || !view?.return?.open) return
-    if (view.screen === 'combat' || view.screen === 'dungeon' || (sel && view.screen === 'roster')) return
+    if (e.key !== 'Escape' || e.defaultPrevented || busy) return
+    if (view?.screen === 'combat' || view?.screen === 'dungeon') return
+    if (sheetShown && available(view)) {
+      e.preventDefault()
+      sheetShown = false
+      return
+    }
+    if (!view?.return?.open) return
     e.preventDefault()
     call(S.ReturnToCastle)
-  }
-
-  async function renameSelected(name) {
-    await call(S.RenameCharacter, selected, name)
-  }
-
-  async function deleteSelected(password) {
-    await call(S.DeleteCharacter, sel.name, password)
-    if (!view.error) selected = -1
   }
 </script>
 
@@ -117,9 +135,9 @@
           {:else if view.location === 'edge'}
             <EdgeScreen {view} {busy} {call} onopen={open} />
           {:else if view.location === 'training'}
-            <TrainingScreen {view} {busy} {call} {selected} onselect={select} onopen={open} />
+            <TrainingScreen {view} {busy} {call} selected={sheetShown ? selected : -1} onselect={select} onopen={open} />
           {:else if view.location === 'tavern'}
-            <TavernScreen {view} {busy} {call} {selected} onselect={select} onopen={open} />
+            <TavernScreen {view} {busy} {call} selected={sheetShown ? selected : -1} onselect={select} onopen={open} />
           {:else if view.location === 'trading'}
             <TradingScreen {view} {busy} {call} onopen={open} />
           {:else if view.location === 'inn'}
@@ -127,27 +145,12 @@
           {:else if view.location === 'temple'}
             <TempleScreen {view} {busy} {call} onopen={open} />
           {:else if view.location === 'settings'}
-            <SettingsScreen {view} {busy} {call} onopen={open} onroster={() => { selected = -1 }} />
+            <SettingsScreen {view} {busy} {call} onopen={open} onroster={forget} />
           {:else}
             <LocationFrame {view} {busy} {call} onopen={open} />
           {/if}
         </div>
 
-        {#if sel && view.screen === 'roster'}
-          {#key sel.index}
-            <FloatingPanel title="Character — {sel.name}" onclose={() => { selected = -1 }}>
-              <!-- The sheet offers what the place allows: renaming and deleting
-                   at the Training Grounds, joining and leaving at the Tavern. -->
-              <CharacterSheet character={sel} statNames={view.statNames} nameMax={view.nameMax}
-                {busy} error={view.error}
-                onrename={view.location === 'training' ? renameSelected : undefined}
-                ondelete={view.location === 'training' ? deleteSelected : undefined}
-                onjoin={view.location === 'tavern' ? () => call(S.JoinParty, sel.index) : undefined}
-                onleave={view.location === 'tavern' ? () => call(S.LeaveParty, sel.partySlot - 1) : undefined}
-                onequip={(n, equip) => call(S.EquipAction, { index: sel.index, n, equip })} />
-            </FloatingPanel>
-          {/key}
-        {/if}
       {/if}
     {/if}
   {:else}

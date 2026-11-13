@@ -15,7 +15,9 @@
   //   busy    a request is running
   //   call    (fn, ...args) => Promise   runs a Session method
   //   onopen  (rosterIndex) => void      open a character's sheet
+  import { getContext } from 'svelte'
   import * as S from '../../wailsjs/go/main/Session.js'
+  import { SHEET } from './sheet.js'
   import LocationFrame from './LocationFrame.svelte'
   import { patients, payers, defaultPayer, pickLabel, confirmation, receipt } from './temple.js'
 
@@ -52,6 +54,14 @@
   const partyShown = $derived(view.settings?.partyVisible ?? true)
 
   const act = (request) => call(S.TempleAction, request)
+
+  // The character sheet (the frame's Actions, UX-3B) follows the member
+  // chosen to tithe; a patient's name shows theirs.
+  const sheet = getContext(SHEET)
+  $effect(() => {
+    const i = (view.partyBar ?? []).find((p) => p.slot - 1 === by)?.index
+    if (i !== undefined) sheet?.follow(i)
+  })
 
   function open(index) {
     chosen = index

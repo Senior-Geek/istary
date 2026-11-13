@@ -420,10 +420,10 @@ reveals it.
 ## Desktop GUI
 
 `gui/` is its own Go module so Wails stays out of the terminal build. Wails v2
-has a single native window, so the character sheet is a self-contained Svelte
-component (`gui/frontend/src/lib/CharacterSheet.svelte`) shown in a movable,
-resizable in-window panel; it takes data and callbacks only, ready to move to a
-native window under Wails v3. Roster backups live in `<saveDir>/backups`. Its
+has a single native window; the character sheet is a self-contained Svelte
+component (`gui/frontend/src/lib/CharacterSheet.svelte`) embedded in the
+location frame's display area (UX-3B, `docs/design/ux3/UX-3B.md`); it takes
+data and callbacks only. Roster backups live in `<saveDir>/backups`. Its
 `Session` type serialises all calls with a mutex, calls controller operations,
 saves after each one, and returns a `View` for Svelte to render. The GUI shows
 roster, Training Grounds and party together while the game has one current
@@ -734,8 +734,15 @@ reshapes it and decides nothing.
   `templeViews.test.js`. Live at 760x532, 980x692 and 1512x945. Stills in
   `docs/design/m2-exploration/stills/gui-temple-t3/`.
 
-**The location frame (Castle-0 C0-3).** Every town place is drawn in one
-frame (`LocationFrame.svelte`), in grid areas that never overlap:
+**The location frame (Castle-0 C0-3; UX-3B).** Every town place is drawn in one
+frame (`LocationFrame.svelte`), in grid areas that never overlap. Since
+UX-3B (`docs/design/ux3/UX-3B.md`) the scene (A) and the actions (B) share
+a fixed top row and stay in place; the actions come first in B, then the
+destinations, and B scrolls inside if long; the content (C) scrolls on its
+own and takes the room the party bar (D) leaves; the page never scrolls on
+a wide window. The scene shows a character's sheet instead of the artwork
+when the Actions' Character Sheet toggle is on. The areas as Castle-0 drew
+them:
 - **head:** the place's title, "← Castle" (`ReturnToCastle`, also
   Escape; since C0-6) and the Show/Hide party toggle;
 - **scene:** (a definite height, about 16:9 of its column between 120px
@@ -751,8 +758,9 @@ frame (`LocationFrame.svelte`), in grid areas that never overlap:
   back row (4-6), empty positions included, two lines a card (name, class
   and row; level, HP, AC and condition) with the HP as a thin bar (C0-6).
   It stays in view at the bottom; a member of the
-  saved roster opens the existing character sheet, which offers Rename and
-  Delete at the Training Grounds and Join/Leave at the Tavern only.
+  saved roster shows their character sheet (in the scene area since
+  UX-3B), which offers Rename and Delete at the Training Grounds and
+  Join/Leave at the Tavern only.
 - **Sizes:** the artwork beside the destinations from 700px wide (16:9, at
   most 46% of the height, 36% in short windows); stacked below 700px with
   the artwork as a 21:9 banner. Checked live at 760x532 (the minimum
@@ -782,8 +790,11 @@ frame (`LocationFrame.svelte`), in grid areas that never overlap:
     the same `realRefusal`/`practiceRefusal` the actions use);
     `LeaveGame` closes the window (Wails's Quit), refused elsewhere, while
     out or creating, and while the last save has failed.
-  - **Training Grounds:** the roster and the Create form; the creation
-    steps unchanged.
+  - **Training Grounds:** the roster and the Create form. Since UX-3B
+    every creation decision is in the Actions, and the points and the
+    class are one screen (`Session.PickClass`: `FinishStats` and
+    `ChooseClass` in one request; `Session.DiscardCreation`:
+    `AbandonCreation` without leaving).
   - **Tavern:** Join, Remove, the Tavern's refusals and the password.
   - **Settings:** the save folder, Reload, Reset and Restore.
   - **The recovery banner's "Try resuming again"** is `TryResumeAgain`,
@@ -836,8 +847,8 @@ shows no bar. `View.PartyBar` carries AC as well.
   under the button says what returning abandons. At the Castle nothing
   happens; during an expedition or practice it is refused and changes
   nothing; with an unresumable expedition it works and leaves the
-  expedition alone. It writes nothing and draws no random number. An open
-  character sheet takes Escape first; the maze, Camp and combat keep their
+  expedition alone. It writes nothing and draws no random number. A shown
+  character sheet takes Escape first (it is hidden); the maze, Camp and combat keep their
   own keys.
 - **Shaded controls** (tokens in `style.css`): buttons are shaded, not
   outlined: lighter on hover, darker when pressed, olive for the main

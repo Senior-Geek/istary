@@ -10,8 +10,10 @@
   // Actions, the Selected Character panel (SelectedCharacter): the
   // customer's gold, AC, carrying and items, equipped apart from carried,
   // with the character sheet's Equip and Take off. The Actions keep only
-  // the shop's own: Pool party gold and Leave the counter. No sheet opens
-  // here; the party bar only chooses the customer.
+  // the shop's own: Pool party gold and Leave the counter. No sheet is
+  // shown here (the frame's noSheet; UX-3B keeps UX-2's choice until
+  // Boltac's own redesign): the Selected Character panel is the customer,
+  // and the party bar only chooses them.
   //
   // Arriving serves the first party member (Go, Session.serveFirst), so
   // the page opens on the Buy tab with a customer. The party bar is always
@@ -52,7 +54,7 @@
   const equip = (n, on) => call(S.EquipAction, { index: ch.index, n, equip: on })
 </script>
 
-<LocationFrame {view} {busy} {call} {onopen} fill partyAlways pick={(slot) => pickLabel(shop, slot)} onpick={enter} current={who?.slot ?? -1}>
+<LocationFrame {view} {busy} {call} {onopen} fill partyAlways noSheet pick={(slot) => pickLabel(shop, slot)} onpick={enter} current={who?.slot ?? -1}>
   {#snippet actions()}
     {#if who}
       <div class="row">
