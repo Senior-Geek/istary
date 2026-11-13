@@ -3,11 +3,13 @@
 // on a scratch library, read through headless Chrome over the DevTools
 // protocol, with the bound Go methods behind it. It checks the town
 // interface as a player meets it: the shared layout at every place, the
-// embedded character sheet with its equipment lists, and character creation
-// at the Training Grounds.
+// embedded character sheet with its equipment lists, the illustrated places
+// (the Castle and the Edge of Town: their pictures, Hide / Show panels, in
+// windows from the smallest to a large display), and character creation at
+// the Training Grounds.
 //
 //   node scripts/acceptance/live.mjs --gui GUI_DIR --library DIR --out DIR
-//        [--size 980x692] [--suites layout,sheet,creation] [--wails PATH] [--chrome PATH]
+//        [--size 980x692] [--suites layout,sheet,scenes,creation] [--wails PATH] [--chrome PATH]
 //
 // The library must have been written by TestWriteAcceptanceLibrary
 // (gui/acceptance_seed_test.go). Everything it starts (wails dev, the app,
@@ -24,7 +26,7 @@ import { join } from 'node:path'
 const arg = (name, dflt) => { const i = process.argv.indexOf(`--${name}`); return i > 0 ? process.argv[i + 1] : dflt }
 const GUI = arg('gui'), LIB = arg('library'), OUT = arg('out')
 const [W, H] = arg('size', '980x692').split('x').map(Number)
-const SUITES = arg('suites', 'layout,sheet,creation').split(',').filter(Boolean)
+const SUITES = arg('suites', 'layout,sheet,scenes,creation').split(',').filter(Boolean)
 const WAILS = arg('wails', 'wails')
 const CHROME = arg('chrome', '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome')
 if (!GUI || !LIB || !OUT || !W || !H) { console.error('usage: live.mjs --gui GUI_DIR --library DIR --out DIR [--size WxH] [--suites ...]'); process.exit(2) }
@@ -242,6 +244,91 @@ async function main() {
       await clickText('Character Sheet', B)
       check(!!(await sheetName()), `the Temple shows a sheet (${await sheetName()})`)
       await esc()
+    },
+
+    // The illustrated places (ART-2A): the picture fills the window behind
+    // the panels, cropped, never stretched; every control in view and
+    // unobscured; Hide / Show panels and Escape; Hide party; the ways between
+    // the two; in windows larger and smaller than this one; nothing saved.
+    async scenes() {
+      const before = sha(GAME)
+      const art = (place) => js(`(() => { const d = document.querySelector('.backdrop'); const i = d?.querySelector('img'); if (!i) return null; const r = d.getBoundingClientRect(); const s = getComputedStyle(i); return { place: d.dataset.place, loaded: i.complete && i.naturalWidth > 0, nw: i.naturalWidth, nh: i.naturalHeight, fit: s.objectFit, covers: r.x <= 0 && r.y <= 0 && r.right >= innerWidth && r.bottom >= innerHeight, ir: (() => { const q = i.getBoundingClientRect(); return { w: q.width, h: q.height } })() } })()`)
+      const loaded = async () => { for (let i = 0; i < 40; i++) { if (await js(`!!document.querySelector('.backdrop img')?.complete`)) break; await sleep(100) } }
+      // Every button of the frame can be brought into view and is the
+      // topmost thing where it is drawn, and no label is cut off.
+      const controls = () => js(`(() => { const bad = []; for (const b of document.querySelectorAll('.frame button')) { b.scrollIntoView({ block: 'nearest', inline: 'nearest' }); const r = b.getBoundingClientRect(); const x = r.x + r.width / 2, y = r.y + r.height / 2; const top = document.elementFromPoint(x, y); if (r.width === 0 || r.right > innerWidth + 0.5 || r.bottom > innerHeight + 0.5 || r.x < -0.5 || r.y < -0.5 || !(top === b || b.contains(top))) bad.push(b.innerText.trim() || b.title); else if (b.scrollWidth > b.clientWidth + 1) bad.push(b.innerText.trim() + ' (cut off)') } for (const e of document.querySelectorAll('.frame [data-area], .frame .body')) e.scrollTop = 0; return bad })()`)
+      // A panel's background: near-opaque, so its text reads over the picture.
+      const opaque = (sel) => js(`[...document.querySelectorAll(${JSON.stringify(sel)})].map((e) => { const m = getComputedStyle(e).backgroundColor.match(/[\\d.]+/g).map(Number); return m.length < 4 ? 1 : m[3] })`)
+      // The picture is seen at these points of the window: everything above
+      // it there draws nothing (no background, no blur).
+      const seen = (pts) => js(`${JSON.stringify(pts)}.every(([x, y]) => { const l = document.elementsFromPoint(x, y); const i = l.findIndex((e) => e.matches('.backdrop img')); return i >= 0 && l.slice(0, i).every((e) => { const c = getComputedStyle(e); return c.backgroundColor === 'rgba(0, 0, 0, 0)' && c.backgroundImage === 'none' && [undefined, '', 'none'].includes(c.backdropFilter) }) })`)
+      const sized = async (w, h) => { await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 1, mobile: false }); await sleep(500) }
+      for (const place of ['castle', 'edge']) {
+        await goto(place); await loaded()
+        let a = await art(place)
+        if (!check(a && a.place === place && a.loaded && a.nw === 1920 && a.nh === 1080, `${place}: its picture is loaded (${a?.nw}x${a?.nh})`)) continue
+        check(a.covers && a.fit === 'cover', `${place}: it fills the window, cropped to cover it`)
+        // Seen, not only there: through the display, the picture is the
+        // topmost thing at its centre and its corners.
+        const d = await rect(A)
+        check(await seen([[0.5, 0.5], [0.05, 0.05], [0.95, 0.95]].map(([u, v]) => [d.x + d.w * u, d.y + d.h * v])), `${place}: and it is seen through the display`)
+        check(await js(`(() => { const f = document.querySelector('${A} figure.scene.view'); return !!f && !f.querySelector('img') && getComputedStyle(f).backgroundColor === 'rgba(0, 0, 0, 0)' && !!f.getAttribute('aria-label') })()`), `${place}: the display is a described opening onto it`)
+        const alphas = await opaque(`.frame .head, ${B} .actions, ${B} nav, ${C} > section, ${D}`)
+        check(alphas.length >= 4 && alphas.every((x) => x >= 0.85), `${place}: the panels are near-opaque (${alphas.map((x) => x.toFixed(2)).join(' ')})`)
+        let bad = await controls()
+        check(bad.length === 0, `${place}: every control in view and uncovered${bad.length ? ': ' + bad.join(', ') : ''}`)
+        check(await pageStill(), `${place}: the page itself does not scroll`)
+        await shot(`${place}-panels`)
+
+        await clickText('Hide panels')
+        const only = await buttons('.frame')
+        check(!(await rect(A)) && !(await rect(B)) && !(await rect(C)) && !(await rect(D)) && !(await rect('.frame .head')), `${place}: Hide panels leaves the picture alone`)
+        check(only.length === 1 && /^Show panels/.test(only[0]) && await js(`document.activeElement?.innerText.startsWith('Show panels')`), `${place}: with one way back, Show panels, which has the focus`)
+        a = await art(place)
+        check(a.covers && (await controls()).length === 0 && await seen([[0.3, 0.5], [0.5, 0.9], [0.9, 0.6]].map(([u, v]) => [W * u, H * v])), `${place}: the picture is seen across the window; Show panels is in view`)
+        await shot(`${place}-hidden`)
+        await esc()
+        check(!!(await rect(A)) && !!(await rect(B)) && (await view()).location === place, `${place}: Escape brings the panels back and stays here`)
+        await clickText('Hide panels')
+        await js(`[...document.querySelectorAll('.frame button')].find((b) => b.innerText.startsWith('Show panels')).click()`); await sleep(500)
+        check(!!(await rect(B)) && await js(`document.activeElement?.innerText.trim() === 'Hide panels'`), `${place}: Show panels brings them back, the focus on Hide panels`)
+
+        const withParty = [await rect(B), await rect(C)]
+        await clickText('Hide party')
+        const without = [await rect(B), await rect(C)]
+        check(!(await rect(D)) && without[0].h > withParty[0].h + 40 && without[1].b > withParty[1].b + 40 && (await controls()).length === 0, `${place}: Hide party gives its room to the panels (actions ${Math.round(withParty[0].h)} → ${Math.round(without[0].h)} px high)`)
+        await shot(`${place}-no-party`)
+        await clickText('Show party')
+        check(!!(await rect(D)), `${place}: Show party brings the bar back`)
+
+        // Larger and smaller windows: the 14- and 16-inch MacBook Pro's
+        // full screens, a large display, and the smallest window.
+        for (const [w, h] of [[1512, 982], [1728, 1117], [2560, 1440], [760, 560]]) {
+          await sized(w, h)
+          a = await art(place); bad = await controls()
+          const ratio = a.ir.w / a.ir.h
+          check(a.covers && Math.abs(ratio - w / h) < 0.01 && bad.length === 0 && await pageStill(), `${place} at ${w}x${h}: the picture fills it, every control in view and uncovered${bad.length ? ': ' + bad.join(', ') : ''}`)
+          if (w >= 1512 && w <= 1728) await shot(`${place}-${w}x${h}`)
+        }
+        await sized(W, H)
+      }
+      // The ways between them, through the buttons.
+      await goto('castle')
+      await clickText('The Edge of Town', B)
+      check((await view()).location === 'edge' && (await art('edge'))?.place === 'edge', 'The Edge of Town: outside the walls, its own picture')
+      await clickText('← Castle Esc', '.frame .head')
+      check((await view()).location === 'castle' && (await art('castle'))?.place === 'castle', '← Castle: back in the courtyard, its own picture')
+      await goto('tavern')
+      check(!(await js(`!!document.querySelector('.backdrop')`)) && !!(await js(`document.querySelector('${A} figure.scene:not(.view)')`)) && !(await buttons('.frame .head')).includes('Hide panels'), 'a place without artwork keeps its themed panel, and no Hide panels')
+      await goto('castle')
+      await clickSlot(0)
+      check(await js(`(() => { const s = document.querySelector('${A} .sheet'); return !!s && getComputedStyle(s).backgroundColor !== 'rgba(0, 0, 0, 0)' })()`), 'a character sheet stands over the picture in the display')
+      await clickText('Hide panels')
+      check(!(await rect(`${A} .sheet`)), 'Hide panels hides the sheet with the rest')
+      await esc()
+      check(!!(await rect(`${A} .sheet`)), 'and Show panels brings it back')
+      await esc()
+      check(sha(GAME) === before, 'the game is saved exactly as before: the pictures and panels change nothing')
     },
 
     // Creation: decisions in the Actions; points and class on one screen; Discard, then Keep.

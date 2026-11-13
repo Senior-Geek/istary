@@ -42,7 +42,7 @@ and say when race tests and the full gate are due:
 
 | Area | For example | Adds |
 |---|---|---|
-| UI | Svelte components, CSS | live layout and sheet checks |
+| UI | Svelte components, CSS | live layout, sheet and scenes checks |
 | Creation | `TrainingScreen`, `app/creation*`, `classguide` | live creation checks |
 | Equipment and trading | `equip`, `shop`, `CharacterSheet` | live sheet and equipment checks |
 | Combat and maze | `combat`, `dungeon`, `camp`, `expedition` | their packages' tests (the GUI walkthroughs are integration tests) |
@@ -112,6 +112,17 @@ suites are:
 - **sheet:** the embedded sheet and its toggle, switching members, Escape,
   Worn & Wielded and the Pack on every member, a Remove / Use round trip
   saved exactly as before, the Inn's and Temple's sheets;
+- **scenes:** the illustrated places (ART-2A), the Castle and the Edge of
+  Town:
+  - the picture loaded, filling the window, cropped and not stretched, and
+    seen (nothing painted over it) through the display;
+  - the panels near-opaque, and every control in view and uncovered;
+  - Hide panels, Show panels and Escape, with the focus;
+  - Hide party giving its room to the panels;
+  - the same at 1512×982 and 1728×1117 (the 14- and 16-inch MacBook Pro
+    full screens), 2560×1440 and the smallest window, 760×560;
+  - the ways between the two places, a place without artwork, the sheet
+    over the picture, and the game saved exactly as before;
 - **creation:** decisions in the Actions, the class table at zero points,
   taking a point back, Discard (nothing saved), Keep and save.
 
@@ -255,7 +266,7 @@ Within level 2, on everything:
 |---|---|
 | Every Go test, both modules, parallel | 49 s (`go test` one package at a time: about 8.5 min) |
 | Race tests on `engine`, `cmd/istary`, `gui`, parallel | 2 min 9 s (the gate's GUI race alone: 11 min) |
-| Live checks, three suites, each size | 50 s (123 checks) |
+| Live checks, three suites, each size | 50 s (123 checks; the scenes suite, added since, about 22 s more) |
 | The gate's own tests | 23 s |
 | Wails build and codesign | 4 s |
 
@@ -275,6 +286,7 @@ Without the RAM disk (`TIERS_RAMDISK=0`), the parallel Go tests take about
 - **The live checks** cover the town interface only:
   - the layout at every place;
   - the character sheet and equipment;
+  - the illustrated places' pictures and panels;
   - character creation.
 
   Combat, the maze, camp, Boltac's purchases and the Temple's services are

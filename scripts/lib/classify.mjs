@@ -159,6 +159,7 @@ export function classify(files, pkgs, root) {
     plan.live.push('layout')
     if (areas.has('creation') || plan.broad) plan.live.push('creation')
     if (areas.has('equipment') || areas.has('ui') || areas.has('town') || plan.broad) plan.live.push('sheet')
+    if (areas.has('ui') || areas.has('town') || plan.broad) plan.live.push('scenes')
   }
   plan.areas = [...areas].sort()
   return plan
