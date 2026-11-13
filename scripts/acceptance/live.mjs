@@ -160,6 +160,61 @@ async function main() {
   check(v.game === 1 && v.roster.length === 8 && v.party.length === 6, `the scratch game is open: ${v.roster?.length} characters, a party of ${v.party?.length}`)
   await js(`${S}.SetPartyVisible(true)`)
 
+  // The illustrated places (ART-2A, ART-2B).
+  const art = (place) => js(`(() => { const d = document.querySelector('.backdrop'); const i = d?.querySelector('img'); if (!i) return null; const r = d.getBoundingClientRect(); const s = getComputedStyle(i); return { place: d.dataset.place, loaded: i.complete && i.naturalWidth > 0, nw: i.naturalWidth, nh: i.naturalHeight, fit: s.objectFit, covers: r.x <= 0 && r.y <= 0 && r.right >= innerWidth && r.bottom >= innerHeight, ir: (() => { const q = i.getBoundingClientRect(); return { w: q.width, h: q.height } })() } })()`)
+  const loaded = async () => { for (let i = 0; i < 40; i++) { if (await js(`!!document.querySelector('.backdrop img')?.complete`)) break; await sleep(100) } }
+  // Every button of the frame can be brought into view and is the
+  // topmost thing where it is drawn, and no label is cut off.
+  const controls = () => js(`(() => { const bad = []; for (const b of document.querySelectorAll('.frame button')) { b.scrollIntoView({ block: 'nearest', inline: 'nearest' }); const r = b.getBoundingClientRect(); const x = r.x + r.width / 2, y = r.y + r.height / 2; const top = document.elementFromPoint(x, y); if (r.width === 0 || r.right > innerWidth + 0.5 || r.bottom > innerHeight + 0.5 || r.x < -0.5 || r.y < -0.5 || !(top === b || b.contains(top))) bad.push(b.innerText.trim() || b.title); else if (b.scrollWidth > b.clientWidth + 1) bad.push(b.innerText.trim() + ' (cut off)') } for (const e of document.querySelectorAll('.frame [data-area], .frame .body')) e.scrollTop = 0; return bad })()`)
+  // A panel's background: near-opaque, so its text reads over the picture.
+  const opaque = (sel) => js(`[...document.querySelectorAll(${JSON.stringify(sel)})].map((e) => { const m = getComputedStyle(e).backgroundColor.match(/[\\d.]+/g).map(Number); return m.length < 4 ? 1 : m[3] })`)
+  // The picture is seen at these points of the window: everything above
+  // it there draws nothing (no background, no blur).
+  const seen = (pts) => js(`${JSON.stringify(pts)}.every(([x, y]) => { const l = document.elementsFromPoint(x, y); const i = l.findIndex((e) => e.matches('.backdrop img')); return i >= 0 && l.slice(0, i).every((e) => { const c = getComputedStyle(e); return c.backgroundColor === 'rgba(0, 0, 0, 0)' && c.backgroundImage === 'none' && [undefined, '', 'none'].includes(c.backdropFilter) }) })`)
+  const sized = async (w, h) => { await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 1, mobile: false }); await sleep(500) }
+  // The mouse and keys, as a player would use them.
+  const mouse = (type, x, y) => send('Input.dispatchMouseEvent', { type, x, y, button: 'left', buttons: type === 'mouseReleased' ? 0 : 1, clickCount: 1 })
+  const dragBy = async (x, y, dx, dy) => {
+    await mouse('mousePressed', x, y)
+    for (let i = 1; i <= 6; i++) await mouse('mouseMoved', x + (dx * i) / 6, y + (dy * i) / 6)
+    await mouse('mouseReleased', x + dx, y + dy); await sleep(300)
+  }
+  const keys = { ArrowLeft: 37, ArrowUp: 38, ArrowRight: 39, ArrowDown: 40 }
+  const press = async (key, shift = false) => {
+    for (const type of ['rawKeyDown', 'keyUp']) await send('Input.dispatchKeyEvent', { type, key, code: key, windowsVirtualKeyCode: keys[key], modifiers: shift ? 8 : 0 })
+    await sleep(200)
+  }
+  const STORY = '.frame aside.story'
+  const setLook = async (id) => { await js(`(() => { const s = document.querySelector('.frame .look select'); s.value = ${JSON.stringify(id)}; s.dispatchEvent(new Event('change', { bubbles: true })) })()`); await sleep(300) }
+  // Where everything in the frame is: the same in every appearance.
+  const layoutNow = () => js(`[...document.querySelectorAll('.frame .head, .frame [data-area], .frame button, .frame select, ${STORY}, .frame p, .frame h2, .frame h3')].map((e) => { const r = e.getBoundingClientRect(); return [r.x, r.y, r.width, r.height].map(Math.round).join(',') }).join(' ')`)
+  // The lowest contrast of the frame's text against what is behind it
+  // (WCAG 2), with the picture under the panels taken at its darkest and
+  // its lightest: every fill and opacity between the text and the picture
+  // composited over black and over white. Disabled controls are exempt.
+  // Large text (24px, or 18.66px bold) needs 3:1, the rest 4.5:1.
+  const contrast = () => js(`(() => {
+    const rgba = (s) => { const m = s.match(/[\\d.]+/g).map(Number); return [m[0], m[1], m[2], m.length > 3 ? m[3] : 1] }
+    const over = (t, b) => [0, 1, 2].map((i) => t[i] * t[3] + b[i] * (1 - t[3])).concat(1)
+    const lin = (c) => { c /= 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4 }
+    const lum = (c) => 0.2126 * lin(c[0]) + 0.7152 * lin(c[1]) + 0.0722 * lin(c[2])
+    const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05) }
+    const worst = []
+    for (const el of document.querySelectorAll('.frame *')) {
+      if (![...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim())) continue
+      const r = el.getBoundingClientRect(); if (!r.width || !r.height || el.closest('button:disabled, select:disabled, .backdrop')) continue
+      const chain = []; let op = 1
+      for (let e = el; e && e !== document.documentElement; e = e.parentElement) { const c = getComputedStyle(e); op *= Number(c.opacity); const f = rgba(c.backgroundColor); if (f[3] > 0) chain.push(f) }
+      const cs = getComputedStyle(el); const fg = rgba(cs.color); fg[3] *= op
+      const size = parseFloat(cs.fontSize), bold = Number(cs.fontWeight) >= 700
+      const need = size >= 24 || (size >= 18.66 && bold) ? 3 : 4.5
+      let min = Infinity
+      for (const base of [[0, 0, 0, 1], [255, 255, 255, 1]]) { const bg = chain.reverse().reduce((acc, f) => over(f, acc), base); chain.reverse(); min = Math.min(min, ratio(over(fg, bg), bg)) }
+      if (min < need) worst.push(el.tagName.toLowerCase() + '.' + [...el.classList].join('.') + ' "' + el.textContent.trim().slice(0, 24) + '" ' + min.toFixed(2))
+    }
+    return worst
+  })()`)
+
   const suites = {
     // The four areas at every place in town; the party bar hidden and shown.
     async layout() {
@@ -252,17 +307,6 @@ async function main() {
     // the two; in windows larger and smaller than this one; nothing saved.
     async scenes() {
       const before = sha(GAME)
-      const art = (place) => js(`(() => { const d = document.querySelector('.backdrop'); const i = d?.querySelector('img'); if (!i) return null; const r = d.getBoundingClientRect(); const s = getComputedStyle(i); return { place: d.dataset.place, loaded: i.complete && i.naturalWidth > 0, nw: i.naturalWidth, nh: i.naturalHeight, fit: s.objectFit, covers: r.x <= 0 && r.y <= 0 && r.right >= innerWidth && r.bottom >= innerHeight, ir: (() => { const q = i.getBoundingClientRect(); return { w: q.width, h: q.height } })() } })()`)
-      const loaded = async () => { for (let i = 0; i < 40; i++) { if (await js(`!!document.querySelector('.backdrop img')?.complete`)) break; await sleep(100) } }
-      // Every button of the frame can be brought into view and is the
-      // topmost thing where it is drawn, and no label is cut off.
-      const controls = () => js(`(() => { const bad = []; for (const b of document.querySelectorAll('.frame button')) { b.scrollIntoView({ block: 'nearest', inline: 'nearest' }); const r = b.getBoundingClientRect(); const x = r.x + r.width / 2, y = r.y + r.height / 2; const top = document.elementFromPoint(x, y); if (r.width === 0 || r.right > innerWidth + 0.5 || r.bottom > innerHeight + 0.5 || r.x < -0.5 || r.y < -0.5 || !(top === b || b.contains(top))) bad.push(b.innerText.trim() || b.title); else if (b.scrollWidth > b.clientWidth + 1) bad.push(b.innerText.trim() + ' (cut off)') } for (const e of document.querySelectorAll('.frame [data-area], .frame .body')) e.scrollTop = 0; return bad })()`)
-      // A panel's background: near-opaque, so its text reads over the picture.
-      const opaque = (sel) => js(`[...document.querySelectorAll(${JSON.stringify(sel)})].map((e) => { const m = getComputedStyle(e).backgroundColor.match(/[\\d.]+/g).map(Number); return m.length < 4 ? 1 : m[3] })`)
-      // The picture is seen at these points of the window: everything above
-      // it there draws nothing (no background, no blur).
-      const seen = (pts) => js(`${JSON.stringify(pts)}.every(([x, y]) => { const l = document.elementsFromPoint(x, y); const i = l.findIndex((e) => e.matches('.backdrop img')); return i >= 0 && l.slice(0, i).every((e) => { const c = getComputedStyle(e); return c.backgroundColor === 'rgba(0, 0, 0, 0)' && c.backgroundImage === 'none' && [undefined, '', 'none'].includes(c.backdropFilter) }) })`)
-      const sized = async (w, h) => { await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 1, mobile: false }); await sleep(500) }
       for (const place of ['castle', 'edge']) {
         await goto(place); await loaded()
         let a = await art(place)
@@ -328,7 +372,119 @@ async function main() {
       await esc()
       check(!!(await rect(`${A} .sheet`)), 'and Show panels brings it back')
       await esc()
+
+      // The story box (ART-2B): open at first, in the lower left of the
+      // display; moved and resized within the window, with the mouse and
+      // the keys; closed, and not opened again by going elsewhere; the
+      // narrative in it, and what the player needs to play still below.
+      await goto('castle')
+      let st = await rect(STORY), disp = await rect(A)
+      check(!!st && st.x >= disp.x && st.x < disp.x + 40 && Math.abs(st.b - (disp.b - 12)) < 2 && st.y >= disp.y, `castle: the story box is open, in the lower left of the display (${st && Math.round(st.x)},${st && Math.round(st.y)} ${st && Math.round(st.w)}x${st && Math.round(st.h)})`)
+      check(await js(`document.querySelector('${STORY} .text').innerText.includes("The party is formed at Gilgamesh's Tavern")`) && !(await js(`document.querySelector('${C}').innerText.includes('The party is formed')`)), 'castle: the description is in it, and no longer below')
+      let bad = await controls()
+      check(bad.length === 0, `castle: it covers no control${bad.length ? ': ' + bad.join(', ') : ''}`)
+      let bar = await rect(`${STORY} .bar`)
+      await dragBy(bar.x + 30, bar.y + bar.h / 2, 120, -80)
+      let moved = await rect(STORY)
+      check(Math.abs(moved.x - st.x - 120) < 2 && Math.abs(moved.y - st.y + 80) < 2 && Math.abs(moved.w - st.w) < 1, 'dragging its title moves it')
+      bar = await rect(`${STORY} .bar`)
+      await dragBy(bar.x + 30, bar.y + bar.h / 2, 5000, 5000)
+      moved = await rect(STORY)
+      check(Math.abs(moved.r - (W - 8)) < 1.5 && Math.abs(moved.b - (H - 8)) < 1.5, 'dragged past the window, it stops at its edge')
+      bar = await rect(`${STORY} .bar`)
+      await dragBy(bar.x + 30, bar.y + bar.h / 2, -5000, -5000)
+      moved = await rect(STORY)
+      check(Math.abs(moved.x - 8) < 1.5 && Math.abs(moved.y - 8) < 1.5, 'and at the other')
+      let g = await rect(`${STORY} .grip`)
+      await dragBy(g.x + 8, g.y + 8, 80, 60)
+      let sz = await rect(STORY)
+      check(Math.abs(sz.w - moved.w - 80) < 2 && Math.abs(sz.h - moved.h - 60) < 2 && Math.abs(sz.x - moved.x) < 1, `dragging its corner resizes it (${Math.round(moved.w)}x${Math.round(moved.h)} → ${Math.round(sz.w)}x${Math.round(sz.h)})`)
+      g = await rect(`${STORY} .grip`)
+      await dragBy(g.x + 8, g.y + 8, 5000, 5000)
+      sz = await rect(STORY)
+      check(Math.abs(sz.r - (W - 8)) < 1.5 && Math.abs(sz.b - (H - 8)) < 1.5, 'no larger than the window')
+      g = await rect(`${STORY} .grip`)
+      await dragBy(g.x + 8, g.y + 8, -5000, -5000)
+      sz = await rect(STORY)
+      check(Math.abs(sz.w - 220) < 1.5 && Math.abs(sz.h - 90) < 1.5 && await js(`(() => { const t = document.querySelector('${STORY} .text'); return getComputedStyle(t).overflowY === 'auto' && t.scrollHeight > t.clientHeight })()`), `no smaller than 220x90, its text scrolling (${Math.round(sz.w)}x${Math.round(sz.h)})`)
+      await js(`document.querySelector('${STORY} .bar').focus()`)
+      const k0 = await rect(STORY)
+      await press('ArrowRight'); await press('ArrowDown')
+      await press('ArrowRight', true); await press('ArrowDown', true)
+      const k1 = await rect(STORY)
+      check(Math.abs(k1.x - k0.x - 16) < 1 && Math.abs(k1.y - k0.y - 16) < 1 && Math.abs(k1.w - k0.w - 16) < 1 && Math.abs(k1.h - k0.h - 16) < 1, 'with its title focused, the arrow keys move it and Shift with them resizes it')
+      // Left somewhere of the player's choosing, then closed.
+      bar = await rect(`${STORY} .bar`)
+      await dragBy(bar.x + 30, bar.y + bar.h / 2, 40, 200)
+      const left = await rect(STORY)
+      await js(`document.querySelector('${STORY} .close').click()`); await sleep(400)
+      check(!(await rect(STORY)) && await js(`(() => { const b = [...document.querySelectorAll('.frame .head button')].find((b) => b.innerText.trim() === 'Story'); return !!b && b.getAttribute('aria-pressed') === 'false' && document.activeElement === b })()`), '× closes it; Story, not pressed, has the focus')
+      await clickText('The Edge of Town', B)
+      check((await view()).location === 'edge' && !(await rect(STORY)), 'going to the Edge of Town does not open it')
+      const info = await js(`document.querySelector('${C}').innerText`)
+      check(/Saving\.[\s\S]*saved after every[\s\S]*Practice/.test(info), 'the Edge’s saving and practice notes are below, the story box closed')
+      await clickText('Story', '.frame .head')
+      st = await rect(STORY)
+      check(!!st && await js(`document.querySelector('${STORY} .text').innerText.trim()`) === 'The maze. The party sets out from here.', 'Story opens it, with the Edge’s narrative')
+      check(Math.abs(st.x - left.x) < 1 && Math.abs(st.y - left.y) < 1 && Math.abs(st.w - left.w) < 1 && Math.abs(st.h - left.h) < 1, 'where the player left it')
+      check(/Saving\.[\s\S]*Practice/.test(await js(`document.querySelector('${C}').innerText`)), 'and the notes stay below')
+      await clickText('Hide panels')
+      check(!(await rect(STORY)), 'Hide panels hides it')
+      await esc()
+      check(!!(await rect(STORY)), 'Show panels brings it back')
+      await clickText('← Castle Esc', '.frame .head')
+      check((await view()).location === 'castle' && !!(await rect(STORY)), 'open, it stays open at the Castle')
+
+      // The appearances (ART-2B): only colours change; the text reads on
+      // every panel; the choice holds from place to place; nothing is saved.
+      await goto('castle')
+      for (const place of ['castle', 'edge']) {
+        if (place === 'edge') await clickText('The Edge of Town', B)
+        const base = await layoutNow()
+        for (const look of ['dark', 'light', 'slate']) {
+          await setLook(look)
+          check(await js(`document.querySelector('.frame').dataset.appearance`) === look && await js(`document.querySelector('${STORY}').closest('[data-appearance]')?.dataset.appearance`) === look, `${place}, ${look}: the panels and the story box take it`)
+          check(await layoutNow() === base, `${place}, ${look}: everything is where it is in the dark`)
+          const al = await opaque(`.frame .head, ${B} .actions, ${B} nav, ${C} > section, ${D}, ${STORY}`)
+          check(al.every((x) => x >= 0.9 && x <= 0.95), `${place}, ${look}: the panels are ${Math.round(Math.min(...al) * 100)}–${Math.round(Math.max(...al) * 100)}% opaque`)
+          const low = await contrast()
+          check(low.length === 0, `${place}, ${look}: all its text reads (WCAG AA over the picture's darkest and lightest)${low.length ? ': ' + low.slice(0, 4).join('; ') : ''}`)
+          bad = await controls()
+          check(bad.length === 0, `${place}, ${look}: every control in view and uncovered${bad.length ? ': ' + bad.join(', ') : ''}`)
+        }
+      }
+      await setLook('light')
+      await clickText('← Castle Esc', '.frame .head')
+      check(await js(`document.querySelector('.frame').dataset.appearance`) === 'light', 'the appearance holds from place to place')
+      await goto('tavern')
+      check(await js(`!document.querySelector('[data-appearance]') && !document.querySelector('.frame .look')`), 'a place without artwork is as it was')
+
       check(sha(GAME) === before, 'the game is saved exactly as before: the pictures and panels change nothing')
+    },
+
+    // The appearances side by side (ART-2B), for choosing one: the Castle
+    // and the Edge of Town in each, at the compact window, 1440x900 and the
+    // MacBook Pro's full screens, with the story box open, and closed at the
+    // first two. Screenshots only, named for what they show; the checks are
+    // the scenes suite's.
+    async looks() {
+      for (const [w, h] of [[980, 692], [1440, 900], [1512, 982], [1728, 1117]]) {
+        await sized(w, h)
+        for (const place of ['castle', 'edge']) {
+          await goto(place); await loaded()
+          for (const look of ['dark', 'light', 'slate']) {
+            await setLook(look)
+            await shot(`${place}-${look}-${w}x${h}-story`)
+            if (w <= 1440) {
+              await js(`document.querySelector('${STORY} .close').click()`); await sleep(300)
+              await shot(`${place}-${look}-${w}x${h}-closed`)
+              await clickText('Story', '.frame .head')
+            }
+          }
+        }
+      }
+      await sized(W, H)
+      check(true, 'looks: the screenshots are taken')
     },
 
     // Creation: decisions in the Actions; points and class on one screen; Discard, then Keep.

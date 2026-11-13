@@ -123,8 +123,20 @@ suites are:
     full screens), 2560×1440 and the smallest window, 760×560;
   - the ways between the two places, a place without artwork, the sheet
     over the picture, and the game saved exactly as before;
+  - the story box (ART-2B): where it opens, dragged and resized with the
+    mouse and the keys, kept inside the window, closed and not reopened by
+    going elsewhere, reopened where it was left, the narrative in it and
+    the saving and practice notes still below;
+  - the appearances (ART-2B): in each, nothing moves, the panels are 90–95%
+    opaque, and all text meets WCAG AA contrast with the picture behind
+    taken at its darkest and at its lightest;
 - **creation:** decisions in the Actions, the class table at zero points,
   taking a point back, Discard (nothing saved), Keep and save.
+
+One more suite takes screenshots only, and is run by hand, not by level 2:
+**looks** shows the Castle and the Edge of Town in each appearance at
+980×692, 1440×900, 1512×982 and 1728×1117, with the story box open and
+closed, for comparing them (`--suites looks`).
 
 When nothing changed between BASE and CANDIDATE (a release check on
 `main`), it checks as if everything had changed.
