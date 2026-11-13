@@ -63,8 +63,6 @@
         {#each view.statNames as s}<th class="num">{s.slice(0, 3)}</th>{/each}
         <th>Alignment</th><th>Status</th>
       </tr>
-    </thead>
-    <tbody>
       <tr class="current">
         <td>Current</td>
         {#each c.stats as v, i}
@@ -83,6 +81,8 @@
         <td>{c.alignment}</td>
         <td class="muted">{#if at === 'points' || at === 'choose'}▲ add · ▼ remove{/if}</td>
       </tr>
+    </thead>
+    <tbody>
       {#each rows as row (row.index)}
         <tr class="class-row" class:pickable={row.pickable} class:closed={picking && !row.pickable}
           onclick={() => { if (row.pickable && !busy) pick(row) }}>
@@ -110,7 +110,7 @@
     {#if picking}Highlighted classes can be chosen; points can still be moved until one is.{/if}</p>
 {/snippet}
 
-<LocationFrame {view} {busy} {call} {onopen}>
+<LocationFrame {view} {busy} {call} {onopen} compact={creating}>
   {#snippet actions()}
     {#if creating}
       <div class="decision" aria-live="polite">
@@ -265,6 +265,17 @@
   .hint { font-size: 11px; }
   section { margin-top: 0; }
   .summary { margin: 0 0 8px; }
+  .creation { padding: 10px 14px; }
+  /* The class table's head, with the Current row, stays in view while
+     the classes scroll under it (the information area scrolls). */
+  @media (min-width: 700px) {
+    .creation .tablewrap { overflow: visible; }
+    /* Separate borders: a collapsed border does not move with a sticky
+       cell, and the rows would show through it. */
+    .creation table.guide { border-collapse: separate; border-spacing: 0; }
+    .creation table.guide thead { position: sticky; top: 0; z-index: 1; }
+    .creation table.guide thead th, .creation table.guide thead td { background: var(--panel); }
+  }
   .review { width: auto; }
   .review td:first-child { color: var(--muted); padding-right: 16px; }
   .inparty { color: var(--accent); font-weight: 600; }

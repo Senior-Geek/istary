@@ -38,6 +38,9 @@
   //   partyAlways  the party bar is always shown here, whatever the Hide
   //             party setting, and the toggle is not offered (UX-2,
   //             Boltac's: the bar is how the customer is chosen) (optional)
+  //   compact   the display and actions are shorter, for a place whose
+  //             information needs the height (the Training Grounds while
+  //             a character is created) (optional)
   //   noSheet   no character sheet here (UX-2, Boltac's: the Selected
   //             Character panel is the customer) (optional)
   //   pick, onpick, current
@@ -51,7 +54,7 @@
   import { title, back, destinations } from './navigation.js'
   import { SHEET, subject, toggleLabel, available } from './sheet.js'
 
-  let { view, busy = false, call, onopen, scene, actions, aside, children, pick, onpick, current = -1, fill = false, partyAlways = false, noSheet = false } = $props()
+  let { view, busy = false, call, onopen, scene, actions, aside, children, pick, onpick, current = -1, fill = false, partyAlways = false, compact = false, noSheet = false } = $props()
 
   const here = $derived(title(view.location))
   const way = $derived(back(view))
@@ -76,7 +79,7 @@
   }
 </script>
 
-<div class="frame" class:fill data-location={view.location}>
+<div class="frame" class:fill class:compact data-location={view.location}>
   <header class="head">
     <h2 class="title">{here}</h2>
     {#if way}
@@ -157,7 +160,7 @@
     grid-template-areas: "head" "body" "party";
     gap: 10px;
   }
-  .frame.fill { --top: clamp(130px, calc((100vw - 380px) * 0.5625), 30vh); }
+  .frame.fill, .frame.compact { --top: clamp(130px, calc((100vw - 380px) * 0.5625), 30vh); }
   .head { grid-area: head; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
   .title { margin: 0 auto 0 0; font-size: 20px; color: var(--text); letter-spacing: 0.02em; }
   .head button { margin: 0; }
@@ -189,7 +192,7 @@
   .sheet-toggle { display: grid; gap: 2px; margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--line); }
   .sheet-toggle.alone { margin-top: 0; padding-top: 0; border-top: 0; }
   .sheet-toggle .wide { width: 100%; text-align: left; margin: 0; }
-  @media (max-height: 640px) { .frame { --top: clamp(130px, calc((100vw - 380px) * 0.5625), 34vh); } }
+  @media (max-height: 640px) { .frame:not(.fill):not(.compact) { --top: clamp(130px, calc((100vw - 380px) * 0.5625), 34vh); } }
   @media (max-width: 699px) {
     .body {
       overflow-y: auto;

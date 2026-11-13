@@ -54,7 +54,8 @@ The frame (`LocationFrame.svelte`) has the head, then four areas:
 
 - **Top row:** A and B share a definite height (`--top`: about 16:9 of
   A's column, at most 42% of the window, 34% in short windows, 30% at
-  Boltac's).
+  Boltac's and at the Training Grounds while a character is created, the
+  frame's `compact`, so the class table has room).
 - **Page:** the page and the frame's body never scroll on a wide window.
 - **Under 700px:** the areas stack and the body scrolls as one, as
   before.
@@ -119,6 +120,8 @@ The frame (`LocationFrame.svelte`) has the head, then four areas:
   - The Actions say "Choose a highlighted class."
   - Points can be taken back and moved until a class is chosen.
   - Choosing a class goes straight to the review.
+  - The table's head, with the Current row and its ▲ / ▼, stays in view
+    while the classes scroll under it.
 - **Outcomes:** hit points, gold and age are rolled when the character is
   kept, as before. `TestPickClassIsTheTwoStepsTogether` checks that a
   character made this way is identical to one made through the two

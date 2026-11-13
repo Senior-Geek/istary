@@ -208,7 +208,10 @@
   .identity { flex: 1; min-width: 0; }
   .name { font-size: 17px; font-weight: 600; display: flex; gap: 10px; align-items: center; }
   .line { margin-top: 2px; font-size: 13px; }
-  section { margin-top: 10px; }
+  /* The sheet is one panel: its sections are separated by a rule, not
+     boxed again. */
+  section { margin: 0; padding: 10px 0 0; background: none; border: 0; border-radius: 0; }
+  section + section { margin-top: 10px; border-top: 1px solid var(--line); }
   h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin: 0 0 6px; }
   h3 .count { margin-left: 6px; color: var(--text); font-variant-numeric: tabular-nums; letter-spacing: 0; }
   h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin: 8px 0 3px; font-weight: 600; }
