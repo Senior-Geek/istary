@@ -61,6 +61,11 @@ main.shell .banners:empty { display: none; }
 main.shell .banners .banner:first-child { margin-top: 0; }
 main.shell .banners .banner + .banner { margin-top: 6px; }
 main.shell .place { flex: 1 1 auto; min-height: 0; }
+/* An illustrated place (ART-2A): its picture fills the window, and the
+   frame's panels take the window's whole width over it. The shell is a
+   stacking context of its own, above the page's background, with the
+   picture at its bottom (LocationScene's backdrop). */
+main.shell.art { max-width: none; isolation: isolate; }
 td.partycell { white-space: nowrap; }
 td.partycell .inparty { color: var(--accent); font-weight: 600; }
 td.partycell .refusal { font-size: 11px; }

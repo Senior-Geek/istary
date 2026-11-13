@@ -83,3 +83,25 @@ test('at the Training Grounds every creation decision is in the Actions', () => 
   assert.ok(!/FinishStats|Done — choose class/.test(src), 'no separate class-selection step')
   assert.match(rest, /PickClass/, 'the class is chosen from the table')
 })
+
+test('ART-2A: an illustrated place lays the same areas over its picture, and its panels can be hidden', () => {
+  const f = read('./LocationFrame.svelte')
+  assert.match(f, /\{#if art\}<LocationScene [^>]*mode="backdrop" \/>\{\/if\}/, 'the picture behind the frame')
+  assert.match(f, /mode=\{art \? 'view' : 'panel'\}/, 'the display opens onto it')
+  // Hidden: the picture, and one way back.
+  const bare = f.slice(f.indexOf('{#if bare}'), f.indexOf('{:else}', f.indexOf('{#if bare}')))
+  assert.equal(bare.match(/<button/g)?.length, 1, 'one control while hidden')
+  assert.match(bare, />Show panels <kbd>Esc<\/kbd><\/button>/)
+  assert.ok(!/data-area="(display|actions|information|party)"/.test(bare), 'no working area while hidden')
+  // Offered only where there is a picture; the frame's areas are the same.
+  assert.match(f, /\{#if art\}\s*<button [^>]*onclick=\{hidePanels\}/)
+  assert.match(f, /grid-template-areas: "scene nav" "content content";/)
+  assert.ok(!/SetSettings|S\.Set\w*Panel/.test(f), 'nothing about the panels is sent to Go')
+  // Escape shows hidden panels before anything else.
+  const app = read('../App.svelte')
+  const key = app.slice(app.indexOf('function onkey'))
+  assert.ok(key.indexOf('if (bare)') > 0 && key.indexOf('if (bare)') < key.indexOf('if (sheetShown'), 'Escape: panels first, then the sheet')
+  assert.ok(key.indexOf('if (bare)') < key.indexOf('ReturnToCastle'), 'and before Back')
+  // The picture is a cover, never stretched.
+  assert.match(read('./LocationScene.svelte'), /img \{[^}]*object-fit: cover;/)
+})

@@ -16,6 +16,16 @@
   // the party bar. A and B stay in place while C scrolls. Under 700px the
   // areas stack and the body scrolls as one.
   //
+  // An illustrated place (ART-2A; lib/scenes.js): its picture fills the
+  // window behind the frame, cropped to cover it, and the areas are the
+  // same, laid over it: A is a clear opening onto the picture; the head, the
+  // actions, the information and the party bar are near-opaque panels, the
+  // information only as tall as it needs, the display and actions taking
+  // the rest. "Hide panels"
+  // (in the head) leaves the picture alone with one way back, "Show panels"
+  // (or Escape); App keeps which (PANELS). Nothing of it is saved or sent
+  // to Go.
+  //
   // The character sheet (lib/sheet.js): App keeps whose it is and whether
   // it is shown (the SHEET context); the frame shows it in A, in place of
   // the artwork, and offers the one toggle for it in B. What the sheet
@@ -53,6 +63,7 @@
   import CharacterSheet from './CharacterSheet.svelte'
   import { title, back, destinations } from './navigation.js'
   import { SHEET, subject, toggleLabel, available } from './sheet.js'
+  import { PANELS, illustrated } from './scenes.js'
 
   let { view, busy = false, call, onopen, scene, actions, aside, children, pick, onpick, current = -1, fill = false, partyAlways = false, compact = false, noSheet = false } = $props()
 
@@ -65,6 +76,22 @@
   const sheetHere = $derived(!!sheet && !noSheet && available(view))
   const who = $derived(sheetHere ? subject(view, sheet.index) : null)
   const sheetShown = $derived(sheetHere && sheet.shown && !!who)
+
+  // The place's own scene, if it draws one, is never a backdrop.
+  const art = $derived(!scene && illustrated(view.location))
+  const panels = getContext(PANELS)
+  const bare = $derived(art && !!panels?.hidden)
+  let hideButton = $state(), showButton = $state()
+  let moved = false // focus goes with the toggle, once it is pressed
+  $effect(() => {
+    const to = bare ? showButton : hideButton
+    if (moved && to) {
+      to.focus()
+      moved = false
+    }
+  })
+  const hidePanels = () => { moved = true; panels?.hide() }
+  const showPanels = () => { moved = true; panels?.show() }
 
   const go = (dest) => call(S.Navigate, dest)
   const toggleSheet = () => (sheetShown ? sheet.hide() : sheet.show(who.index))
@@ -79,7 +106,18 @@
   }
 </script>
 
-<div class="frame" class:fill class:compact data-location={view.location}>
+{#if art}<LocationScene location={view.location} title={here} mode="backdrop" />{/if}
+
+{#if bare}
+  <div class="frame bare" data-location={view.location}>
+    <div class="restore" data-area="restore">
+      <span class="restore-title">{here}</span>
+      <button class="primary" bind:this={showButton} onclick={showPanels}
+        title="Show the panels again (Esc)">Show panels <kbd>Esc</kbd></button>
+    </div>
+  </div>
+{:else}
+<div class="frame" class:fill class:compact class:illustrated={art} data-location={view.location}>
   <header class="head">
     <h2 class="title">{here}</h2>
     {#if way}
@@ -89,6 +127,10 @@
     {#if !partyAlways}
       <button class="toggle" aria-pressed={partyShown} disabled={busy}
         onclick={() => call(S.SetPartyVisible, !partyShown)}>{partyShown ? 'Hide party' : 'Show party'}</button>
+    {/if}
+    {#if art}
+      <button class="toggle" bind:this={hideButton} disabled={busy} onclick={hidePanels}
+        title="Hide the panels to see the picture (Esc brings them back)">Hide panels</button>
     {/if}
     {#if way?.note}<p class="why head-why">{way.note}</p>{/if}
   </header>
@@ -105,7 +147,7 @@
           onleave={view.location === 'tavern' ? () => call(S.LeaveParty, who.partySlot - 1) : undefined}
           onequip={(n, equip) => call(S.EquipAction, { index: who.index, n, equip })} />
       {/key}
-    {:else if scene}{@render scene()}{:else}<LocationScene location={view.location} title={here} />{/if}
+    {:else if scene}{@render scene()}{:else}<LocationScene location={view.location} title={here} mode={art ? 'view' : 'panel'} />{/if}
   </div>
 
   <div class="nav-area" data-area="actions">
@@ -147,6 +189,7 @@
     </div>
   {/if}
 </div>
+{/if}
 
 <style>
   /* The frame fills the height it is given: head and party bar fixed. In
@@ -192,6 +235,40 @@
   .sheet-toggle { display: grid; gap: 2px; margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--line); }
   .sheet-toggle.alone { margin-top: 0; padding-top: 0; border-top: 0; }
   .sheet-toggle .wide { width: 100%; text-align: left; margin: 0; }
+
+  /* An illustrated place: the same areas over the picture. Each working
+     panel is near-opaque, so its text reads over any part of the picture;
+     the gaps between them, and A, show the picture. */
+  .frame.illustrated { --glass: rgba(20, 18, 15, 0.9); --glass-line: rgba(216, 180, 106, 0.22); }
+  .frame.illustrated .head,
+  .frame.illustrated .actions,
+  .frame.illustrated nav,
+  .frame.illustrated .content-area > :global(section),
+  .frame.illustrated .party-area {
+    background: var(--glass); border: 1px solid var(--glass-line); border-radius: 6px;
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+  }
+  .frame.illustrated .head { padding: 6px 8px 6px 12px; }
+  .frame.illustrated nav { padding: 10px 12px; }
+  .frame.illustrated .party-area { padding: 6px; }
+  /* The information is as tall as it needs, up to 45% of the body, and
+     scrolls on its own past that; the display and the actions take the
+     rest, so the actions are long enough for all of them more often, and
+     hiding the party gives them its room. */
+  .frame.illustrated .body { grid-template-rows: minmax(var(--top), 1fr) fit-content(45%); }
+  .frame.illustrated .content-area > :global(section) { margin-top: 0; }
+  .frame.illustrated .sheet-toggle { border-top-color: var(--glass-line); }
+  /* The picture alone: one way back, in the corner. */
+  .frame.bare { display: flex; justify-content: flex-end; align-items: flex-start; }
+  .restore {
+    display: flex; align-items: center; gap: 10px; padding: 6px 6px 6px 12px;
+    background: var(--glass, rgba(20, 18, 15, 0.9)); border: 1px solid rgba(216, 180, 106, 0.22); border-radius: 6px;
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+  }
+  .restore-title { font-size: 15px; letter-spacing: 0.02em; }
+  .restore button { margin: 0; }
+  .restore kbd { font: 600 10px ui-monospace, Menlo, monospace; opacity: 0.7; margin-left: 4px; }
   @media (max-height: 640px) { .frame:not(.fill):not(.compact) { --top: clamp(130px, calc((100vw - 380px) * 0.5625), 34vh); } }
   @media (max-width: 699px) {
     .body {
@@ -204,5 +281,6 @@
     .scene-area.sheet { aspect-ratio: auto; height: 60vh; max-height: none; }
     .nav-area, .content-area { height: auto; overflow: visible; }
     .frame.fill .content-area { height: auto; }
+    .frame.illustrated .body { grid-template-rows: none; }
   }
 </style>

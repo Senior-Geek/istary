@@ -6,7 +6,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { places, title, back, destinations } from './navigation.js'
 import { formation, condition, unwell, hpShare, canOpen } from './party.js'
-import { scenes, sceneFor, fallback } from './scenes.js'
+import { scenes, sceneFor, fallback, illustrated } from './scenes.js'
 
 const views = JSON.parse(readFileSync(new URL('./testdata/frame-views.json', import.meta.url)))
 const at = (name) => views.find((v) => v.case === name)
@@ -103,12 +103,35 @@ test('practice copies are shown with their own HP, and their sheets are not offe
   for (const p of at('real expedition').partyBar) assert.equal(canOpen(p), true)
 })
 
-test('no artwork yet: every place shows its themed panel and emblem', () => {
+// A WebP's width and height, from its header (simple lossy, lossless or
+// extended).
+function webpSize(buf) {
+  assert.equal(buf.toString('ascii', 0, 4), 'RIFF')
+  assert.equal(buf.toString('ascii', 8, 12), 'WEBP')
+  const kind = buf.toString('ascii', 12, 16)
+  if (kind === 'VP8 ') return [buf.readUInt16LE(26) & 0x3fff, buf.readUInt16LE(28) & 0x3fff]
+  if (kind === 'VP8L') { const b = buf.readUInt32LE(21); return [(b & 0x3fff) + 1, ((b >> 14) & 0x3fff) + 1] }
+  assert.equal(kind, 'VP8X')
+  return [buf.readUIntLE(24, 3) + 1, buf.readUIntLE(27, 3) + 1]
+}
+
+test('ART-2A: the Castle and the Edge of Town have their pictures; every other place its themed panel', () => {
+  const art = ['castle', 'edge']
   for (const [place, s] of Object.entries(scenes)) {
-    assert.equal(s.src, null, place)
     assert.ok(s.emblem && s.alt, place)
     assert.match(s.focus, /^\d+% \d+%$/, place)
+    assert.equal(illustrated(place), art.includes(place), place)
+    if (!art.includes(place)) {
+      assert.equal(s.src, null, place)
+      continue
+    }
+    const file = new URL(s.src)
+    assert.equal(file.protocol, 'file:', place)
+    assert.match(file.pathname, new RegExp(`/src/assets/scenes/${place}\\.webp$`), place)
+    assert.deepEqual(webpSize(readFileSync(file)), [1920, 1080], `${place}: 1920x1080`)
   }
+  assert.equal(illustrated('nowhere'), false)
+  assert.equal(illustrated(undefined), false)
   assert.equal(sceneFor('nowhere'), fallback)
   assert.equal(sceneFor(undefined), fallback)
 })

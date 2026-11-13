@@ -1,35 +1,64 @@
 <script>
-  // A place's artwork (Castle-0). It shows the place's picture (scenes.js),
-  // cropped to fill its area around the picture's focus, or, while there is
-  // no picture or if it fails to load, a themed panel with the place's
-  // emblem and name. It fills the area the frame gives it and never holds
-  // controls or text the player needs: the frame keeps those beside it.
+  // A place's artwork (Castle-0, ART-2A). It shows the place's picture
+  // (scenes.js), cropped to cover its area around the picture's focus, never
+  // stretched, or, while there is no picture or if it fails to load, a
+  // themed panel with the place's emblem and name. It never holds controls
+  // or text the player needs.
   //
   // Props:
   //   location  where the player is (view.location)
   //   title     the place's name, shown on the themed panel
+  //   mode      how the frame uses it:
+  //             panel     the picture fills the display area (a place
+  //                       without artwork, or a place's own scene)
+  //             backdrop  the picture fills the window, behind the frame
+  //                       (an illustrated place); hidden from screen
+  //                       readers, which read the view instead
+  //             view      the display area of an illustrated place: a clear
+  //                       opening onto the backdrop, described for screen
+  //                       readers
   import { sceneFor } from './scenes.js'
 
-  let { location, title } = $props()
+  let { location, title, mode = 'panel' } = $props()
 
   const scene = $derived(sceneFor(location))
   let failed = $state('') // the src that failed to load
+  const shown = $derived(!!scene.src && failed !== scene.src)
 </script>
 
-<figure class="scene" aria-label={scene.alt || title}>
-  {#if scene.src && failed !== scene.src}
-    <img src={scene.src} alt={scene.alt} style:object-position={scene.focus}
-      onerror={() => { failed = scene.src }} />
-  {:else}
-    <div class="fallback" data-place={location}>
-      <span class="emblem" aria-hidden="true">{scene.emblem}</span>
-      <span class="name" aria-hidden="true">{title}</span>
-    </div>
-  {/if}
-</figure>
+{#snippet fallback()}
+  <div class="fallback" data-place={location}>
+    <span class="emblem" aria-hidden="true">{scene.emblem}</span>
+    <span class="name" aria-hidden="true">{title}</span>
+  </div>
+{/snippet}
+
+{#if mode === 'backdrop'}
+  <div class="backdrop" aria-hidden="true" data-place={location}>
+    {#if shown}
+      <img src={scene.src} alt="" style:object-position={scene.focus} onerror={() => { failed = scene.src }} />
+    {:else}{@render fallback()}{/if}
+  </div>
+{:else if mode === 'view'}
+  <figure class="scene view" role="img" aria-label={scene.alt || title}></figure>
+{:else}
+  <figure class="scene" aria-label={scene.alt || title}>
+    {#if shown}
+      <img src={scene.src} alt={scene.alt} style:object-position={scene.focus}
+        onerror={() => { failed = scene.src }} />
+    {:else}{@render fallback()}{/if}
+  </figure>
+{/if}
 
 <style>
   .scene { margin: 0; width: 100%; height: 100%; min-height: 0; overflow: hidden; border-radius: 6px; border: 1px solid var(--line); background: var(--panel); }
+  /* The opening onto the backdrop: nothing drawn, the picture shows, and
+     a pointer reaches it. */
+  .scene.view { border-color: transparent; background: transparent; pointer-events: none; }
+  /* At the bottom of the shell's stacking context (main.shell.art, which is
+     above the page's background): the frame's panels and the banners draw
+     over it. */
+  .backdrop { position: fixed; inset: 0; z-index: -1; overflow: hidden; background: #161616; }
   img { display: block; width: 100%; height: 100%; object-fit: cover; }
   .fallback {
     --tint: 120, 120, 120;

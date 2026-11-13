@@ -5,10 +5,13 @@
   // location frame (Castle-0); the maze, Camp and combat have theirs. A
   // character's sheet is shown in the frame, in place of the artwork
   // (UX-3B): this page keeps whose it is and whether it is shown, and gives
-  // both to the frame (lib/sheet.js SHEET).
+  // both to the frame (lib/sheet.js SHEET). At a place with artwork the
+  // picture fills the window behind the frame, and its panels can be hidden
+  // to see it (ART-2A): this page keeps that too (lib/scenes.js PANELS).
   import { setContext } from 'svelte'
   import * as S from '../wailsjs/go/main/Session.js'
   import { SHEET, available } from './lib/sheet.js'
+  import { PANELS, illustrated } from './lib/scenes.js'
   import CombatScreen from './lib/CombatScreen.svelte'
   import DungeonScreen from './lib/DungeonScreen.svelte'
   import LocationFrame from './lib/LocationFrame.svelte'
@@ -26,11 +29,13 @@
   let busy = $state(false)
   let selected = $state(-1) // roster index of the character sheet's character, or -1
   let sheetShown = $state(false) // the sheet is shown in place of the artwork
+  let bareAt = $state('') // the place whose panels are hidden, or ''
 
   async function call(fn, ...args) {
     busy = true
     try {
       view = await fn(...args)
+      if (view?.location !== bareAt) bareAt = ''
     } catch (e) {
       view = { ...view, error: String(e) }
     } finally {
@@ -42,6 +47,10 @@
 
   // Town and the dungeon (with Camp) fill the window, the party bar in view.
   const shell = $derived(view && !view.fatal && view.screen !== 'combat' && view.screen !== 'games')
+  // An illustrated place in town: its picture fills the window, so the
+  // frame takes the window's whole width.
+  const art = $derived(!!shell && !(view.screen === 'dungeon' && view.dungeon) && illustrated(view.location))
+  const bare = $derived(art && bareAt === view.location)
 
   // A roster row: show that character's sheet, or hide it if it is the
   // one shown. A party member: show theirs.
@@ -64,12 +73,23 @@
     follow: (index) => { if (index >= 0) selected = index },
   })
 
+  setContext(PANELS, {
+    get hidden() { return bare },
+    hide: () => { if (art) bareAt = view.location },
+    show: () => { bareAt = '' },
+  })
+
   // Escape in town is "← Castle" (ReturnToCastle), as in the frame's head;
-  // a shown character sheet takes Escape first and is hidden. The maze,
-  // Camp and combat keep their own keys.
+  // hidden panels take Escape first and are shown, then a shown character
+  // sheet is hidden. The maze, Camp and combat keep their own keys.
   function onkey(e) {
     if (e.key !== 'Escape' || e.defaultPrevented || busy) return
     if (view?.screen === 'combat' || view?.screen === 'dungeon') return
+    if (bare) {
+      e.preventDefault()
+      bareAt = ''
+      return
+    }
     if (sheetShown && available(view)) {
       e.preventDefault()
       sheetShown = false
@@ -83,7 +103,7 @@
 
 <svelte:window onkeydown={onkey} />
 
-<main class:shell>
+<main class:shell class:art>
   {#if view}
     {#if !shell}<h1>Istary — Wizardry I</h1>{/if}
 
