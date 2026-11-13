@@ -175,3 +175,94 @@ tr.pick.selected td { background: var(--selected); }
 .tablewrap { overflow-x: auto; }
 table.roster td, table.roster th { white-space: nowrap; }
 @media (max-width: 900px) { .narrow-hide { display: none; } }
+
+/* The illustrated places' panels (ART-2A, ART-2B): three appearances, for
+   comparison. Each sets only colours, the panels' (--glass, a near-opaque
+   fill over the picture; --glass-line, its gold-tinted edge) and the
+   ordinary ones as they are used inside the panels, so the layout, the
+   controls, the type and the pictures are the same in all three. Text
+   reads at WCAG AA (4.5:1) or better on each fill, over light and dark
+   parts of the picture alike (scripts/acceptance/live.mjs, suite scenes). */
+[data-appearance] { color: var(--text); --glass-shadow: rgba(0, 0, 0, 0.35); }
+
+/* Dark: the charcoal of the rest of the game. */
+[data-appearance='dark'] {
+  --glass: rgba(20, 18, 15, 0.92);
+  --glass-line: rgba(216, 180, 106, 0.22);
+}
+
+/* Light: warm parchment, dark brown text, restrained gold. */
+[data-appearance='light'] {
+  --glass: rgba(246, 239, 222, 0.94);
+  --glass-line: rgba(150, 112, 42, 0.45);
+  --glass-shadow: rgba(40, 28, 10, 0.3);
+  --panel: #f6efde;
+  --line: rgba(110, 84, 40, 0.28);
+  --text: #2a2016;
+  --muted: #5e4d36;
+  --accent: #3d6a2c;
+  --error: #9b2c22;
+  --notice: #2c5a8f;
+  --gold: #7a5a14;
+  --btn: #e8dcbf;
+  --btn-hover: #dfd0ac;
+  --btn-pressed: #d4c399;
+  --btn-text: #2a2016;
+  --btn-primary: #c9d6a0;
+  --btn-primary-hover: #bccb8d;
+  --btn-primary-pressed: #afbf7d;
+  --btn-danger: #efc9bf;
+  --btn-danger-hover: #e8b8ab;
+  --btn-danger-pressed: #dfa898;
+  --btn-danger-text: #6e1d14;
+  --btn-disabled: #eee6d3;
+  --btn-disabled-text: #8a7a60;
+  --focus: #8a6414;
+  --card: #efe5cc;
+  --card-back: #e9ddc0;
+  --pick: #dfe3c4;
+  --pick-hover: #d3dab2;
+  --selected: #e6d29b;
+  --hp: #4f8a3f;
+  --dash: rgba(110, 84, 40, 0.45);
+  color-scheme: light;
+}
+[data-appearance='light'] input { color: var(--text); background: #fffaf0; border-color: var(--line); }
+/* On parchment a button's fill alone hardly parts it from the panel: its
+   edge is drawn (the same 1px border every button has, coloured). */
+[data-appearance='light'] button:not(:disabled), [data-appearance='light'] select { border-color: rgba(110, 84, 40, 0.34); }
+
+/* Slate: muted blue-grey, pale text, the heraldry's gold for accents. */
+[data-appearance='slate'] {
+  --glass: rgba(36, 45, 58, 0.92);
+  --glass-line: rgba(214, 180, 104, 0.3);
+  --glass-shadow: rgba(8, 12, 20, 0.45);
+  --panel: #27313f;
+  --line: rgba(170, 186, 208, 0.22);
+  --text: #e9eef4;
+  --muted: #b0bccb;
+  --accent: #9ccf8c;
+  --error: #ffa79e;
+  --notice: #a9c8f2;
+  --gold: #e0bd6a;
+  --btn: #3a495d;
+  --btn-hover: #46576e;
+  --btn-pressed: #313e50;
+  --btn-text: #eef2f7;
+  --btn-primary: #47603f;
+  --btn-primary-hover: #53704a;
+  --btn-primary-pressed: #3d5236;
+  --btn-danger: #5e3434;
+  --btn-danger-hover: #6f3d3d;
+  --btn-danger-pressed: #4f2c2c;
+  --btn-danger-text: #f6d2cc;
+  --btn-disabled: #2c3645;
+  --btn-disabled-text: #8592a3;
+  --focus: #e0bd6a;
+  --card: #2f3b4b;
+  --card-back: #2a3543;
+  --pick: #35453a;
+  --pick-hover: #3f5244;
+  --selected: #5b4d2b;
+  --dash: rgba(170, 186, 208, 0.4);
+}

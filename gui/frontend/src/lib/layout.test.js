@@ -105,3 +105,35 @@ test('ART-2A: an illustrated place lays the same areas over its picture, and its
   // The picture is a cover, never stretched.
   assert.match(read('./LocationScene.svelte'), /img \{[^}]*object-fit: cover;/)
 })
+
+test('ART-2B: the appearances change colours only, and the story box holds narrative only', () => {
+  const css = readFileSync(new URL('../style.css', import.meta.url), 'utf8')
+  const blocks = [...css.matchAll(/^(\[data-appearance[^{]*)\{([^}]*)\}/gm)]
+  for (const id of ['dark', 'light', 'slate']) {
+    const own = blocks.find(([, sel]) => sel.trim() === `[data-appearance='${id}']`)
+    assert.ok(own, `${id} is defined`)
+    const glass = own[2].match(/--glass: rgba\([^)]*, ([\d.]+)\)/)
+    assert.ok(glass && +glass[1] >= 0.9 && +glass[1] <= 0.95, `${id}: panels 90-95% opaque`)
+  }
+  // Nothing but colours: no size, spacing, type or position.
+  for (const [, sel, body] of blocks) {
+    for (const decl of body.split(';').map((d) => d.trim()).filter(Boolean)) {
+      const prop = decl.split(':')[0].trim()
+      assert.ok(/^--|^(color|color-scheme|background|border-color)$/.test(prop), `${sel.trim()}: ${prop} is not a colour`)
+    }
+  }
+  const frame = read('./LocationFrame.svelte')
+  assert.match(frame, /data-appearance=\{look\}/)
+  assert.match(frame, /\{#each appearances as a/)
+  assert.ok(!/S\.\w*(Appearance|Story)/.test(frame), 'nothing about the appearance or the story box is sent to Go')
+  // The Castle's description is its story; the Edge keeps saving and
+  // practice in its information, outside the story.
+  const castle = read('./CastleScreen.svelte'), edge = read('./EdgeScreen.svelte')
+  assert.match(castle, /\{#snippet story\(\)\}[\s\S]*The party is formed at[\s\S]*\{\/snippet\}/)
+  const story = edge.slice(edge.indexOf('{#snippet story()}'), edge.indexOf('{/snippet}', edge.indexOf('{#snippet story()}')))
+  assert.match(story, /The party sets out from here/)
+  assert.ok(!/saved|Practice|practice/.test(story), 'no saving or practice in the story')
+  const rest = edge.replace(story, '')
+  assert.match(rest, /saved after every/)
+  assert.match(rest, /<b>Practice<\/b> is Istary's own/)
+})

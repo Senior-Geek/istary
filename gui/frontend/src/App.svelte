@@ -7,7 +7,9 @@
   // (UX-3B): this page keeps whose it is and whether it is shown, and gives
   // both to the frame (lib/sheet.js SHEET). At a place with artwork the
   // picture fills the window behind the frame, and its panels can be hidden
-  // to see it (ART-2A): this page keeps that too (lib/scenes.js PANELS).
+  // to see it (ART-2A): this page keeps that too (lib/scenes.js PANELS),
+  // with the panels' appearance and the story box (ART-2B), for the session
+  // only: none of it is saved.
   import { setContext } from 'svelte'
   import * as S from '../wailsjs/go/main/Session.js'
   import { SHEET, available } from './lib/sheet.js'
@@ -30,6 +32,9 @@
   let selected = $state(-1) // roster index of the character sheet's character, or -1
   let sheetShown = $state(false) // the sheet is shown in place of the artwork
   let bareAt = $state('') // the place whose panels are hidden, or ''
+  let appearance = $state('dark') // the illustrated places' panels (ART-2B)
+  let storyOpen = $state(true) // the story box: open until it is closed
+  let storyRect = $state(null) // where the player left it, or null
 
   async function call(fn, ...args) {
     busy = true
@@ -77,6 +82,14 @@
     get hidden() { return bare },
     hide: () => { if (art) bareAt = view.location },
     show: () => { bareAt = '' },
+    get appearance() { return appearance },
+    setAppearance: (a) => { appearance = a },
+    story: {
+      get open() { return storyOpen },
+      set open(v) { storyOpen = v },
+      get rect() { return storyRect },
+      set rect(r) { storyRect = r },
+    },
   })
 
   // Escape in town is "← Castle" (ReturnToCastle), as in the frame's head;

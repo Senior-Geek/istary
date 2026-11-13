@@ -14,14 +14,11 @@
   let { view, busy = false, call, onopen } = $props()
 </script>
 
+<!-- The Castle's description is its story (ART-2B): there is nothing here
+     the player needs to play that the destinations do not say. -->
 <LocationFrame {view} {busy} {call} {onopen}>
-  <section class="about">
+  {#snippet story()}
     <p>The party is formed at <b>Gilgamesh's Tavern</b>. Beyond the castle walls, the <b>Edge of Town</b>
       leads to the Training Grounds, where characters are created, and to the maze.</p>
-  </section>
+  {/snippet}
 </LocationFrame>
-
-<style>
-  .about { margin-top: 0; }
-  .about p { margin: 0; }
-</style>

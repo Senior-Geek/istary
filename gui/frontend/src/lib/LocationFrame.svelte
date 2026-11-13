@@ -26,6 +26,13 @@
   // (or Escape); App keeps which (PANELS). Nothing of it is saved or sent
   // to Go.
   //
+  // ART-2B, for comparison: the illustrated places' panels have an
+  // appearance (dark, light or slate: only colours, style.css
+  // [data-appearance]), chosen in the head while the three are compared;
+  // and a place's narrative is in a story box over the picture (StoryBox),
+  // closed with its ×, opened again with Story in the head, and not
+  // reopened by going elsewhere. What the player needs to play stays in C.
+  //
   // The character sheet (lib/sheet.js): App keeps whose it is and whether
   // it is shown (the SHEET context); the frame shows it in A, in place of
   // the artwork, and offers the one toggle for it in B. What the sheet
@@ -42,6 +49,9 @@
   //   actions   snippet: the place's actions, first in B (optional)
   //   aside     snippet under the actions, e.g. a map (optional)
   //   children  the place's information, in C (optional)
+  //   story     snippet: the place's narrative, in the story box at an
+  //             illustrated place (ART-2B) (optional)
+  //   storyTitle  the story box's title (optional; the place's name)
   //   fill      the place lays out C itself (UX-2, Boltac's): C does not
   //             scroll, the place's own lists inside it do, and the
   //             artwork is shorter (optional)
@@ -63,9 +73,10 @@
   import CharacterSheet from './CharacterSheet.svelte'
   import { title, back, destinations } from './navigation.js'
   import { SHEET, subject, toggleLabel, available } from './sheet.js'
-  import { PANELS, illustrated } from './scenes.js'
+  import StoryBox from './StoryBox.svelte'
+  import { PANELS, illustrated, appearances } from './scenes.js'
 
-  let { view, busy = false, call, onopen, scene, actions, aside, children, pick, onpick, current = -1, fill = false, partyAlways = false, compact = false, noSheet = false } = $props()
+  let { view, busy = false, call, onopen, scene, actions, aside, children, story, storyTitle, pick, onpick, current = -1, fill = false, partyAlways = false, compact = false, noSheet = false } = $props()
 
   const here = $derived(title(view.location))
   const way = $derived(back(view))
@@ -93,6 +104,15 @@
   const hidePanels = () => { moved = true; panels?.hide() }
   const showPanels = () => { moved = true; panels?.show() }
 
+  const look = $derived(art ? (panels?.appearance ?? 'dark') : null)
+  const storyHere = $derived(art && !!story && !!panels)
+  const storyOpen = $derived(storyHere && panels.story.open)
+  let display = $state(), storyButton = $state()
+  function closeStory() {
+    panels.story.open = false
+    storyButton?.focus()
+  }
+
   const go = (dest) => call(S.Navigate, dest)
   const toggleSheet = () => (sheetShown ? sheet.hide() : sheet.show(who.index))
 
@@ -109,7 +129,7 @@
 {#if art}<LocationScene location={view.location} title={here} mode="backdrop" />{/if}
 
 {#if bare}
-  <div class="frame bare" data-location={view.location}>
+  <div class="frame bare" data-location={view.location} data-appearance={look}>
     <div class="restore" data-area="restore">
       <span class="restore-title">{here}</span>
       <button class="primary" bind:this={showButton} onclick={showPanels}
@@ -117,7 +137,7 @@
     </div>
   </div>
 {:else}
-<div class="frame" class:fill class:compact class:illustrated={art} data-location={view.location}>
+<div class="frame" class:fill class:compact class:illustrated={art} data-location={view.location} data-appearance={look}>
   <header class="head">
     <h2 class="title">{here}</h2>
     {#if way}
@@ -128,15 +148,27 @@
       <button class="toggle" aria-pressed={partyShown} disabled={busy}
         onclick={() => call(S.SetPartyVisible, !partyShown)}>{partyShown ? 'Hide party' : 'Show party'}</button>
     {/if}
+    {#if storyHere}
+      <button class="toggle" bind:this={storyButton} aria-pressed={storyOpen}
+        onclick={() => (storyOpen ? closeStory() : (panels.story.open = true))}
+        title={storyOpen ? 'Close the story' : 'Open the story'}>Story</button>
+    {/if}
     {#if art}
       <button class="toggle" bind:this={hideButton} disabled={busy} onclick={hidePanels}
         title="Hide the panels to see the picture (Esc brings them back)">Hide panels</button>
+      <!-- For comparing the appearances (ART-2B); temporary. -->
+      <label class="look" title="The panels' appearance, for comparison (not saved)">
+        <span>Appearance</span>
+        <select value={look} onchange={(e) => panels.setAppearance(e.currentTarget.value)}>
+          {#each appearances as a (a.id)}<option value={a.id}>{a.label}</option>{/each}
+        </select>
+      </label>
     {/if}
     {#if way?.note}<p class="why head-why">{way.note}</p>{/if}
   </header>
 
   <div class="body">
-  <div class="scene-area" class:sheet={sheetShown} data-area="display">
+  <div class="scene-area" class:sheet={sheetShown} data-area="display" bind:this={display}>
     {#if sheetShown}
       {#key who.index}
         <CharacterSheet character={who} statNames={view.statNames} nameMax={view.nameMax}
@@ -187,6 +219,11 @@
     <div class="party-area" data-area="party">
       <PartyBar slots={view.partyBar ?? []} frontRow={view.frontRow} {onopen} {pick} {onpick} {current} {busy} />
     </div>
+  {/if}
+
+  {#if storyOpen && display}
+    <StoryBox title={storyTitle ?? here} anchor={display} rect={panels.story.rect}
+      onmove={(r) => (panels.story.rect = r)} onclose={closeStory}>{@render story()}</StoryBox>
   {/if}
 </div>
 {/if}
@@ -239,7 +276,7 @@
   /* An illustrated place: the same areas over the picture. Each working
      panel is near-opaque, so its text reads over any part of the picture;
      the gaps between them, and A, show the picture. */
-  .frame.illustrated { --glass: rgba(20, 18, 15, 0.9); --glass-line: rgba(216, 180, 106, 0.22); }
+  /* The panels' colours are the appearance's (style.css [data-appearance]). */
   .frame.illustrated .head,
   .frame.illustrated .actions,
   .frame.illustrated nav,
@@ -247,7 +284,7 @@
   .frame.illustrated .party-area {
     background: var(--glass); border: 1px solid var(--glass-line); border-radius: 6px;
     -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 2px 12px var(--glass-shadow);
   }
   .frame.illustrated .head { padding: 6px 8px 6px 12px; }
   .frame.illustrated nav { padding: 10px 12px; }
@@ -263,10 +300,13 @@
   .frame.bare { display: flex; justify-content: flex-end; align-items: flex-start; }
   .restore {
     display: flex; align-items: center; gap: 10px; padding: 6px 6px 6px 12px;
-    background: var(--glass, rgba(20, 18, 15, 0.9)); border: 1px solid rgba(216, 180, 106, 0.22); border-radius: 6px;
-    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+    background: var(--glass); color: var(--text); border: 1px solid var(--glass-line); border-radius: 6px;
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); box-shadow: 0 2px 12px var(--glass-shadow);
   }
   .restore-title { font-size: 15px; letter-spacing: 0.02em; }
+  .look { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 12px; color: var(--muted); }
+  .look span { width: auto; color: inherit; }
+  .look select { font: inherit; font-size: 12px; color: var(--btn-text); background: var(--btn); border: 1px solid var(--glass-line); border-radius: 4px; padding: 3px 4px; }
   .restore button { margin: 0; }
   .restore kbd { font: 600 10px ui-monospace, Menlo, monospace; opacity: 0.7; margin-left: 4px; }
   @media (max-height: 640px) { .frame:not(.fill):not(.compact) { --top: clamp(130px, calc((100vw - 380px) * 0.5625), 34vh); } }

@@ -65,8 +65,15 @@
     </div>
   {/snippet}
 
+  <!-- The story box has the place's narrative (ART-2B); what the player
+       needs to know to play, saving and practice, stays here, whether or
+       not it is open. -->
+  {#snippet story()}
+    <p><b>The maze.</b> The party sets out from here.</p>
+  {/snippet}
+
   <section class="about">
-    <p><b>The maze.</b> The party sets out from here. Everything that happens to it is saved after every
+    <p><b>Saving.</b> Everything that happens to the party in the maze is saved after every
       action. If Istary closes during an expedition, it resumes where it was last saved; an encounter it
       was in is over, and its unclaimed rewards are lost.</p>
     <p class="muted"><b>Practice</b> is Istary's own: a practice expedition walks the real maze with copies of the
@@ -79,7 +86,7 @@
   .group { display: grid; gap: 4px; margin-bottom: 10px; }
   .group:last-child { margin-bottom: 0; }
   .wide { width: 100%; text-align: left; margin: 0; }
-  .practice { border: 1px dashed #444; border-radius: 6px; padding: 6px 8px; }
+  .practice { border: 1px dashed var(--dash, #444); border-radius: 6px; padding: 6px 8px; }
   .tag { font-size: 11px; color: var(--notice); text-transform: uppercase; letter-spacing: 0.05em; }
   .check-equipment { border: 1px solid var(--notice); border-radius: 6px; padding: 6px 8px; display: grid; gap: 4px; }
   .check-equipment p { margin: 0; }

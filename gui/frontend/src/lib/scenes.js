@@ -60,8 +60,23 @@ export function illustrated(location) {
   return !!scenes[location]?.src
 }
 
-// PANELS is the context key of whether an illustrated place's panels are
-// hidden, to look at its picture (App keeps it; LocationFrame offers the
-// toggle): { hidden, hide(), show() }. It is the window's alone: nothing
-// is saved, and the panels come back at every other place.
+// PANELS is the context key of the illustrated places' window state, which
+// App keeps and LocationFrame offers (ART-2A, ART-2B). It is the window's
+// alone, for the session: nothing is saved or sent to Go.
+//   hidden, hide(), show()   the panels hidden to look at the picture; they
+//                            come back at every other place
+//   appearance, setAppearance(id)
+//                            the panels' appearance, one of appearances
+//   story.open, story.rect   the story box open (until it is closed, and
+//                            then until it is opened again), and where the
+//                            player left it ({ x, y, w, h }, or null)
 export const PANELS = Symbol('panels')
+
+// The panels' appearances (ART-2B), for comparison: the same layout,
+// controls, type and pictures in each; only colours change (style.css,
+// [data-appearance]). The first is the default.
+export const appearances = [
+  { id: 'dark', label: 'Dark' },
+  { id: 'light', label: 'Light' },
+  { id: 'slate', label: 'Slate' },
+]
