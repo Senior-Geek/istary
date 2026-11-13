@@ -23,7 +23,6 @@ func TestWriteAcceptanceLibrary(t *testing.T) {
 	}
 	rand.Seed(11)
 	s := newLibraryAt(t, root)
-	defer s.shutdown()
 	fine(t, s.NewGame(1))
 	fillParty(t, s, false, engine.Neutral)
 
@@ -62,8 +61,18 @@ func TestWriteAcceptanceLibrary(t *testing.T) {
 	createMage(t, s, "spare")
 	rosterWith(t, s, hero("RESERVE", engine.Good, ""))
 	walkTo(t, s, "castle")
-	v := s.State()
-	if v.Error != "" || len(v.Roster) != 8 || len(v.Party) != 6 {
-		t.Fatalf("library: error %q, roster %d, party %d", v.Error, len(v.Roster), len(v.Party))
+	s.shutdown()
+
+	// Opened and saved once more, as the window would: loading completes
+	// what a save leaves implicit (the spells a caster knows), so the file
+	// is what the window itself writes, and its first save changes nothing.
+	r := newLibraryAt(t, root)
+	defer r.shutdown()
+	v := fine(t, r.ContinueGame(1))
+	if err := r.ctrl.Save(); err != nil {
+		t.Fatal(err)
+	}
+	if v.Error != "" || len(v.Roster) != 8 || len(v.Party) != 6 || v.Location != "castle" {
+		t.Fatalf("library: error %q, roster %d, party %d, at %q", v.Error, len(v.Roster), len(v.Party), v.Location)
 	}
 }

@@ -18,7 +18,7 @@
 import { spawn, execFileSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { createServer } from 'node:net'
-import { createWriteStream, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { appendFileSync, createWriteStream, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 const arg = (name, dflt) => { const i = process.argv.indexOf(`--${name}`); return i > 0 ? process.argv[i + 1] : dflt }
@@ -39,6 +39,8 @@ const groups = new Set()
 function start(cmd, args, opts, logFile) {
   const p = spawn(cmd, args, { ...opts, detached: true, stdio: ['ignore', 'pipe', 'pipe'] })
   groups.add(p.pid)
+  // Recorded, so the level can check afterwards that none is left.
+  appendFileSync(join(OUT, 'groups'), `${p.pid} ${cmd}\n`)
   const log = createWriteStream(logFile)
   p.stdout.pipe(log); p.stderr.pipe(log)
   p.on('exit', () => groups.delete(p.pid))
@@ -84,7 +86,7 @@ async function main() {
 
   // Headless Chrome, on a profile and port of its own.
   const dbg = await freePort()
-  start(CHROME, ['--headless=new', '--disable-gpu', `--remote-debugging-port=${dbg}`, `--window-size=${W},${H}`, `--user-data-dir=${join(OUT, 'chrome-profile')}`, '--no-first-run', '--no-default-browser-check', 'about:blank'], {}, join(OUT, 'chrome.log'))
+  start(CHROME, ['--headless=new', '--disable-gpu', `--remote-debugging-port=${dbg}`, `--window-size=${W},${H}`, `--user-data-dir=${join(OUT, 'chrome-profile')}`, '--no-first-run', '--no-default-browser-check', '--use-mock-keychain', '--password-store=basic', 'about:blank'], {}, join(OUT, 'chrome.log'))
   let ws
   for (let i = 0; i < 100 && !ws; i++) {
     try { const p = (await (await fetch(`http://127.0.0.1:${dbg}/json`)).json()).find((t) => t.type === 'page'); if (p) ws = new WebSocket(p.webSocketDebuggerUrl) } catch {}
@@ -99,7 +101,14 @@ async function main() {
     if (d.id && pending.has(d.id)) { pending.get(d.id)(d); pending.delete(d.id) }
     if (d.method === 'Runtime.exceptionThrown') problems.push((d.params.exceptionDetails.exception?.description ?? d.params.exceptionDetails.text).split('\n')[0])
   }
-  const send = (method, params = {}) => new Promise((r) => { const i = ++id; pending.set(i, r); ws.send(JSON.stringify({ id: i, method, params })) })
+  // Every request has a time limit, so a page that stops answering is a
+  // failure that says where, not a hang.
+  const send = (method, params = {}, secs = 30) => new Promise((r, j) => {
+    const i = ++id
+    const timer = setTimeout(() => { pending.delete(i); j(new Error(`no answer in ${secs}s to ${method} ${JSON.stringify(params).slice(0, 120)}`)) }, secs * 1000)
+    pending.set(i, (d) => { clearTimeout(timer); r(d) })
+    ws.send(JSON.stringify({ id: i, method, params }))
+  })
   const js = async (expr) => {
     const r = await send('Runtime.evaluate', { expression: expr, awaitPromise: true, returnByValue: true })
     if (r.result?.exceptionDetails) throw new Error('page: ' + JSON.stringify(r.result.exceptionDetails).slice(0, 300))
@@ -202,7 +211,8 @@ async function main() {
       let trip = null
       for (let i = 0; i < await slots(); i++) {
         await clickSlot(i)
-        const ch = v.roster.find((c) => c.index === v.partyBar[i].index)
+        const found = v.roster.find((c) => c.index === v.partyBar[i].index)
+        const ch = { ...found, items: found.items ?? [] } // Go's empty list is null
         const worn = await listNames('worn'), pack = await listNames('pack')
         const want = { worn: ch.items.filter((it) => it.equipped).map((it) => it.name), pack: ch.items.filter((it) => !it.equipped).map((it) => it.name) }
         check(JSON.stringify(worn) === JSON.stringify(want.worn) && JSON.stringify(pack) === JSON.stringify(want.pack), `${ch.name}: Worn & Wielded ${worn.length}, Pack ${pack.length}, each item once`)
@@ -281,7 +291,9 @@ async function main() {
       check((await buttons(B)).includes('Keep and save') && (await buttons(B)).includes('Discard'), 'review: Keep and save / Discard in the Actions')
       await clickText('Discard', B)
       v = await view()
-      check(v.screen === 'roster' && v.location === 'training' && v.roster.length === rosterSize && sha(GAME) === before, 'Discard: nothing kept, nothing saved, still at the Training Grounds')
+      check(v.screen === 'roster' && v.location === 'training', `Discard: still at the Training Grounds (${v.screen}, ${v.location})`)
+      check(v.roster.length === rosterSize, `Discard: nothing kept (roster ${v.roster.length}, was ${rosterSize})`)
+      check(sha(GAME) === before, 'Discard: nothing saved')
       await begin()
       await spend()
       const stats = (await view()).creation.stats

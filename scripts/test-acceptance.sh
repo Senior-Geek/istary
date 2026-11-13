@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Level 2, milestone acceptance (docs/TESTING.md): a commit, in a temporary
-# worktree outside your checkout, checked as a milestone is accepted.
+# worktree outside your checkout, checked as a milestone is accepted. The
+# test tools (the parallel runner, the live checks) are this checkout's.
 #
 #   scripts/test-acceptance.sh [options] [BASE [CANDIDATE]]
 #     BASE defaults to main, CANDIDATE to HEAD
@@ -87,10 +88,10 @@ stage "frontend: dependencies (npm ci)" "$WT/gui/frontend" "$LIMIT" npm ci --pre
 stage "go: vet (root)" "$WT" "$LIMIT" go vet ./...
 stage "go: vet (gui)" "$WT/gui" "$LIMIT" go vet ./...
 stage "go: every test, both modules (parallel)" "$WT" "$LIMIT" \
-  node scripts/lib/gotest.mjs --jobs "$JOBS" --work "$WORK/gotest" --timings "$TIMINGS_CACHE" --baseline "$TIMINGS_BASELINE" \
+  node "$ROOT/scripts/lib/gotest.mjs" --jobs "$JOBS" --work "$WORK/gotest" --timings "$TIMINGS_CACHE" --baseline "$TIMINGS_BASELINE" \
   .:./... gui:./...
 stage "frontend: tests" "$WT/gui/frontend" "$LIMIT" npm test
-stage "test scripts: their own tests" "$WT" "$LIMIT" bash scripts/test-scripts_test.sh
+stage "test scripts: their own tests" "$ROOT" "$LIMIT" bash scripts/test-scripts_test.sh
 [ "$(plan_get p.gateScripts)" = true ] && stage "gate: its own tests" "$WT" "$LIMIT" bash scripts/gate_test.sh
 stage "terminal game: make build" "$WT" "$LIMIT" make build
 
@@ -98,7 +99,7 @@ RACE=$(plan_get 'p.race.map((x) => (x.module === "gui" ? "gui:" : ".:") + x.pkg)
 [ -n "$RACE_ALL" ] && RACE=$'.:github.com/Senior-Geek/istary/engine\n.:github.com/Senior-Geek/istary/cmd/istary\ngui:github.com/Senior-Geek/istary/gui'
 if [ -n "$RACE" ]; then
   stage "go: race tests ($(echo $RACE | sed 's#[^ ]*/##g' | tr '\n' ' '))" "$WT" "$LIMIT" \
-    node scripts/lib/gotest.mjs --race --jobs "$JOBS" --work "$WORK/gotest-race" --timings "$TIMINGS_CACHE" --baseline "$TIMINGS_BASELINE" $RACE
+    node "$ROOT/scripts/lib/gotest.mjs" --race --jobs "$JOBS" --work "$WORK/gotest-race" --timings "$TIMINGS_CACHE" --baseline "$TIMINGS_BASELINE" $RACE
 else
   note "no race tests: the change reaches no concurrent code or saving (--race runs them anyway)"
 fi
@@ -108,13 +109,18 @@ stage "codesign verify" "$WT/gui" "$LIMIT" codesign --verify --verbose build/bin
 
 if [ -n "$LIVE" ]; then
   [ -n "$SUITES" ] || SUITES=$(plan_get 'p.live.join(",")')
+  if [ -n "$SUITES" ] && [ ! -f "$WT/gui/acceptance_seed_test.go" ]; then
+    # A candidate from before the live checks: their seed, from this
+    # checkout, in the worktree only.
+    cp "$ROOT/gui/acceptance_seed_test.go" "$WT/gui/" && note "the candidate has no live-check seed; this checkout's gui/acceptance_seed_test.go was added to its worktree"
+  fi
   if [ -z "$SUITES" ]; then
     note "no live checks: the change does not reach the window"
   else
     for size in $SIZES; do
       lib="$WORK/library-$size"
       stage "live: seed a scratch library ($size)" "$WT/gui" "$LIMIT" env ISTARY_ACCEPTANCE_LIBRARY="$lib" go test . -run '^TestWriteAcceptanceLibrary$' -count=1
-      stage "live: $SUITES at $size" "$WT" "$LIMIT" node scripts/acceptance/live.mjs --gui "$WT/gui" --library "$lib" \
+      stage "live: $SUITES at $size" "$WT" "$LIMIT" node "$ROOT/scripts/acceptance/live.mjs" --gui "$WT/gui" --library "$lib" \
         --out "$LOG_DIR/live-$size" --size "$size" --suites "$SUITES" --wails "$WAILS" --chrome "$CHROME"
     done
   fi
@@ -122,9 +128,20 @@ else
   note "live checks skipped (--no-live)"
 fi
 
-# Nothing of ours still running: every process whose command names this
-# run's directory (its worktree, library, profile) is ours, and none may be left.
-ours_left() { pgrep -f "$WORK/" >/dev/null 2>&1 && { say "   still running: $(pgrep -fl "$WORK/" | head -5)"; return 1; }; return 0; }
+# Nothing of ours still running: no process group the live checks started
+# (recorded in their groups files: wails dev, the app, Vite, Chrome), and no
+# process whose command names this run's directory.
+ours_left() {
+  local ok=0 g cmd
+  for f in "$LOG_DIR"/live-*/groups; do
+    [ -f "$f" ] || continue
+    while read -r g cmd; do
+      if kill -0 -- "-$g" 2>/dev/null; then say "   process group $g ($cmd) is still running"; ok=1; fi
+    done <"$f"
+  done
+  if pgrep -f "$WORK/" >/dev/null 2>&1; then say "   still running: $(pgrep -fl "$WORK/" | head -5)"; ok=1; fi
+  return $ok
+}
 check "no process of this run left" ours_left
 remove_wt() { git -C "$ROOT" worktree remove --force "$WT" && [ ! -d "$WT" ]; }
 check "worktree removed" remove_wt
