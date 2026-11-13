@@ -236,6 +236,52 @@ with `hdiutil info` (a `ram://` image) and detach it with
 
 ## Measured times
 
-Measured on an Apple M3 Pro (5 performance and 6 efficiency cores) at
-`v0.11.0-castle-interface`. See the branch's report for the figures of the
-runs that delivered it.
+Apple M3 Pro (5 performance and 6 efficiency cores), 18 GB, at
+`v0.11.0-castle-interface` (`8f8114f`), with the RAM disk:
+
+| Run | Time |
+|---|---|
+| Level 1, a Svelte file changed | 6 s (frontend tests and build; no Go) |
+| Level 1, `app/shop.go` changed | 54 s (`app`, `cmd/istary`, `gui`) |
+| Level 1, `engine/character.go` changed | 55 s (every package) |
+| Level 1, `--all` | 1 min 23 s (of which the gate's own tests 25 s) |
+| Level 2, `main` against itself (everything, race, live at both sizes) | 5 min 14 s |
+| Level 2, a branch reaching no concurrent code | about 2 min |
+| Level 3, the full gate | about 2 h (`--per-commit` adds about 8.5 min a commit) |
+
+Within level 2, on everything:
+
+| Stage | Time |
+|---|---|
+| Every Go test, both modules, parallel | 49 s (`go test` one package at a time: about 8.5 min) |
+| Race tests on `engine`, `cmd/istary`, `gui`, parallel | 2 min 9 s (the gate's GUI race alone: 11 min) |
+| Live checks, three suites, each size | 50 s (123 checks) |
+| The gate's own tests | 23 s |
+| Wails build and codesign | 4 s |
+
+Without the RAM disk (`TIERS_RAMDISK=0`), the parallel Go tests take about
+3 minutes.
+
+## What the faster levels do not cover
+
+- **Race on the `app` package** (65 minutes): only the full gate runs it.
+  `app` has no goroutines of its own; its race run guards against ones
+  added later.
+- **Shuffled order** and **fixture and golden regeneration**: only the full
+  gate. The ordinary tests still compare every fixture and golden.
+- **Real-disk durability** of saves (`F_FULLFSYNC`): levels 1 and 2 save to
+  a RAM disk; the gate saves to the real disk.
+- **Each commit alone:** only `scripts/gate.sh --per-commit`.
+- **The live checks** cover the town interface only:
+  - the layout at every place;
+  - the character sheet and equipment;
+  - character creation.
+
+  Combat, the maze, camp, Boltac's purchases and the Temple's services are
+  not driven live. They are covered by their Go tests, the GUI walkthrough
+  tests among them.
+- **The classifier's graph** is read from the checkout running it. For a
+  candidate whose imports differ greatly from the checkout, use `--all` or
+  the gate.
+- **The terminal game's screen** is covered by its golden tests only; no
+  level drives a terminal.
