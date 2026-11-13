@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math/rand"
 	"testing"
 
 	"github.com/Senior-Geek/istary/data"
@@ -485,6 +486,9 @@ func TestTheRescuedComeHome(t *testing.T) {
 	}
 	for name, home := range ways {
 		t.Run(name, func(t *testing.T) {
+			// A step can meet a wandering party (global math/rand); a fixed
+			// seed keeps that from depending on the tests run before.
+			rand.Seed(1)
 			c := rescueParty(t, 1)
 			g := c.Game
 			onLevel(c, 0, 1, 0)
