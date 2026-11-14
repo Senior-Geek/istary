@@ -61,22 +61,44 @@ export function illustrated(location) {
 }
 
 // PANELS is the context key of the illustrated places' window state, which
-// App keeps and LocationFrame offers (ART-2A, ART-2B). It is the window's
-// alone, for the session: nothing is saved or sent to Go.
+// App keeps and LocationFrame offers (ART-2A, ART-2B, ART-2C).
 //   hidden, hide(), show()   the panels hidden to look at the picture; they
 //                            come back at every other place
-//   appearance, setAppearance(id)
-//                            the panels' appearance, one of appearances
+//   look                     { panels, story, artwork }: the appearance
+//                            chosen in Settings (see looks), kept by Go in
+//                            the window's settings, not in any game
 //   story.open, story.rect   the story box open (until it is closed, and
 //                            then until it is opened again), and where the
-//                            player left it ({ x, y, w, h }, or null)
+//                            player left it ({ x, y, w, h }, or null); the
+//                            window's alone, for the session
 export const PANELS = Symbol('panels')
 
-// The panels' appearances (ART-2B), for comparison: the same layout,
-// controls, type and pictures in each; only colours change (style.css,
-// [data-appearance]). The first is the default.
-export const appearances = [
-  { id: 'dark', label: 'Dark' },
-  { id: 'light', label: 'Light' },
-  { id: 'slate', label: 'Slate' },
-]
+// The illustrated places' appearances (ART-2C), chosen in Settings, each
+// list's default first (as Go's, settings.go). The panels' and the story
+// box's change only colours (style.css, [data-appearance]); the picture
+// is shown whole, subdued (darker and less saturated: the panels are
+// unchanged) or not at all.
+export const looks = {
+  panels: [
+    { id: 'slate', label: 'Slate' },
+    { id: 'dark', label: 'Dark' },
+    { id: 'light', label: 'Light' },
+  ],
+  story: [
+    { id: 'parchment', label: 'Parchment' },
+    { id: 'dark', label: 'Dark' },
+    { id: 'slate', label: 'Slate' },
+  ],
+  artwork: [
+    { id: 'full', label: 'Full' },
+    { id: 'subdued', label: 'Subdued' },
+    { id: 'hidden', label: 'Hidden' },
+  ],
+}
+
+// lookOf is the appearance in Go's settings view, each part its default
+// if it is missing or unknown.
+export function lookOf(settings) {
+  const pick = (k) => (looks[k].some((o) => o.id === settings?.[k]) ? settings[k] : looks[k][0].id)
+  return { panels: pick('panels'), story: pick('story'), artwork: pick('artwork') }
+}

@@ -27,6 +27,9 @@
   --btn-disabled: #1f1d1a;
   --btn-disabled-text: #6f685c;
   --focus: #d8b46a;
+  --btn-edge: rgba(255, 255, 255, 0.06);
+  --field: #0e0e0e;
+  --field-line: #444;
 
   /* Party cards: front and back rows, a member that can be picked, the
      member selected, and the HP bar. */
@@ -93,7 +96,7 @@ button {
   font: inherit;
   color: var(--btn-text);
   background: var(--btn);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--btn-edge);
   border-radius: 4px;
   padding: 5px 12px;
   margin: 2px 4px 2px 0;
@@ -117,8 +120,8 @@ button:focus-visible, input:focus-visible, select:focus-visible, tr.pick:focus-v
 input {
   font: inherit;
   color: var(--text);
-  background: #0e0e0e;
-  border: 1px solid #444;
+  background: var(--field);
+  border: 1px solid var(--field-line);
   border-radius: 4px;
   padding: 5px 8px;
   margin-right: 6px;
@@ -176,26 +179,69 @@ tr.pick.selected td { background: var(--selected); }
 table.roster td, table.roster th { white-space: nowrap; }
 @media (max-width: 900px) { .narrow-hide { display: none; } }
 
-/* The illustrated places' panels (ART-2A, ART-2B): three appearances, for
-   comparison. Each sets only colours, the panels' (--glass, a near-opaque
-   fill over the picture; --glass-line, its gold-tinted edge) and the
-   ordinary ones as they are used inside the panels, so the layout, the
-   controls, the type and the pictures are the same in all three. Text
-   reads at WCAG AA (4.5:1) or better on each fill, over light and dark
-   parts of the picture alike (scripts/acceptance/live.mjs, suite scenes). */
-[data-appearance] { color: var(--text); --glass-shadow: rgba(0, 0, 0, 0.35); }
+/* The illustrated places' appearances (ART-2A, ART-2B, ART-2C). The
+   panels take one (Settings: Slate, Dark or Light; Slate unless another
+   is chosen), and the story box one of its own (Parchment, Dark or Slate;
+   Parchment unless another is chosen), so a story box can sit in panels
+   of another appearance. Each sets only colours, and every one of them:
+   the panels' (--glass, a near-opaque fill over the picture; --glass-line,
+   its gold-tinted edge; --glass-shadow) and the game's ordinary ones as
+   they are used inside the panels. So the layout, the controls, the type
+   and the pictures are the same in all of them, and nothing of one
+   appearance shows through another. Text reads at WCAG AA (4.5:1) or
+   better on each fill, over light and dark parts of the picture alike
+   (scripts/acceptance/live.mjs, suite scenes). */
+[data-appearance] { color: var(--text); }
 
-/* Dark: the charcoal of the rest of the game. */
+/* Dark: the charcoal of the rest of the game, its colours (:root) again. */
 [data-appearance='dark'] {
   --glass: rgba(20, 18, 15, 0.92);
   --glass-line: rgba(216, 180, 106, 0.22);
+  --glass-shadow: rgba(0, 0, 0, 0.35);
+  --bg: #121212;
+  --panel: #1c1c1c;
+  --line: #333;
+  --text: #e6e6e6;
+  --muted: #9a9a9a;
+  --accent: #6fcf6f;
+  --error: #ff8a80;
+  --notice: #8ab4f8;
+  --gold: #d2b06a;
+  --btn: #302b24;
+  --btn-hover: #3e372d;
+  --btn-pressed: #25211c;
+  --btn-text: #ece4d2;
+  --btn-primary: #3b4a2b;
+  --btn-primary-hover: #4a5c37;
+  --btn-primary-pressed: #303d23;
+  --btn-danger: #4c2824;
+  --btn-danger-hover: #5e322c;
+  --btn-danger-pressed: #3e201d;
+  --btn-danger-text: #f2cbc3;
+  --btn-disabled: #1f1d1a;
+  --btn-disabled-text: #6f685c;
+  --focus: #d8b46a;
+  --btn-edge: rgba(255, 255, 255, 0.06);
+  --field: #0e0e0e;
+  --field-line: #444;
+  --card: #211e1a;
+  --card-back: #1c1a17;
+  --pick: #2f3526;
+  --pick-hover: #3b4430;
+  --selected: #4a3d22;
+  --hp: #6fae5f;
+  --dash: #444;
+  color-scheme: dark;
 }
 
-/* Light: warm parchment, dark brown text, restrained gold. */
-[data-appearance='light'] {
+/* Light, and Parchment for the story box: warm parchment, dark brown
+   text, restrained gold. On parchment a button's fill alone hardly parts
+   it from the panel: its edge is drawn (--btn-edge). */
+[data-appearance='light'], [data-appearance='parchment'] {
   --glass: rgba(246, 239, 222, 0.94);
   --glass-line: rgba(150, 112, 42, 0.45);
   --glass-shadow: rgba(40, 28, 10, 0.3);
+  --bg: #efe6d0;
   --panel: #f6efde;
   --line: rgba(110, 84, 40, 0.28);
   --text: #2a2016;
@@ -218,6 +264,9 @@ table.roster td, table.roster th { white-space: nowrap; }
   --btn-disabled: #eee6d3;
   --btn-disabled-text: #8a7a60;
   --focus: #8a6414;
+  --btn-edge: rgba(110, 84, 40, 0.34);
+  --field: #fffaf0;
+  --field-line: rgba(110, 84, 40, 0.28);
   --card: #efe5cc;
   --card-back: #e9ddc0;
   --pick: #dfe3c4;
@@ -227,16 +276,13 @@ table.roster td, table.roster th { white-space: nowrap; }
   --dash: rgba(110, 84, 40, 0.45);
   color-scheme: light;
 }
-[data-appearance='light'] input { color: var(--text); background: #fffaf0; border-color: var(--line); }
-/* On parchment a button's fill alone hardly parts it from the panel: its
-   edge is drawn (the same 1px border every button has, coloured). */
-[data-appearance='light'] button:not(:disabled), [data-appearance='light'] select { border-color: rgba(110, 84, 40, 0.34); }
 
 /* Slate: muted blue-grey, pale text, the heraldry's gold for accents. */
 [data-appearance='slate'] {
   --glass: rgba(36, 45, 58, 0.92);
   --glass-line: rgba(214, 180, 104, 0.3);
   --glass-shadow: rgba(8, 12, 20, 0.45);
+  --bg: #1d242e;
   --panel: #27313f;
   --line: rgba(170, 186, 208, 0.22);
   --text: #e9eef4;
@@ -259,10 +305,15 @@ table.roster td, table.roster th { white-space: nowrap; }
   --btn-disabled: #2c3645;
   --btn-disabled-text: #8592a3;
   --focus: #e0bd6a;
+  --btn-edge: rgba(255, 255, 255, 0.06);
+  --field: #0e0e0e;
+  --field-line: #444;
   --card: #2f3b4b;
   --card-back: #2a3543;
   --pick: #35453a;
   --pick-hover: #3f5244;
   --selected: #5b4d2b;
+  --hp: #6fae5f;
   --dash: rgba(170, 186, 208, 0.4);
+  color-scheme: dark;
 }

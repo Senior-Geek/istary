@@ -86,15 +86,17 @@ test('at the Training Grounds every creation decision is in the Actions', () => 
 
 test('ART-2A: an illustrated place lays the same areas over its picture, and its panels can be hidden', () => {
   const f = read('./LocationFrame.svelte')
-  assert.match(f, /\{#if art\}<LocationScene [^>]*mode="backdrop" \/>\{\/if\}/, 'the picture behind the frame')
+  assert.match(f, /\{#if art\}<LocationScene [^>]*mode="backdrop"[^>]*\/>\{\/if\}/, 'the picture behind the frame')
   assert.match(f, /mode=\{art \? 'view' : 'panel'\}/, 'the display opens onto it')
   // Hidden: the picture, and one way back.
   const bare = f.slice(f.indexOf('{#if bare}'), f.indexOf('{:else}', f.indexOf('{#if bare}')))
   assert.equal(bare.match(/<button/g)?.length, 1, 'one control while hidden')
   assert.match(bare, />Show panels <kbd>Esc<\/kbd><\/button>/)
   assert.ok(!/data-area="(display|actions|information|party)"/.test(bare), 'no working area while hidden')
-  // Offered only where there is a picture; the frame's areas are the same.
-  assert.match(f, /\{#if art\}\s*<button [^>]*onclick=\{hidePanels\}/)
+  // Offered only where there is a picture, and it is shown (ART-2C); the
+  // frame's areas are the same.
+  assert.match(f, /\{#if pictured\}\s*<button [^>]*onclick=\{hidePanels\}/)
+  assert.match(f, /const pictured = \$derived\(art && look\.artwork !== 'hidden'\)/)
   assert.match(f, /grid-template-areas: "scene nav" "content content";/)
   assert.ok(!/SetSettings|S\.Set\w*Panel/.test(f), 'nothing about the panels is sent to Go')
   // Escape shows hidden panels before anything else.
@@ -109,8 +111,8 @@ test('ART-2A: an illustrated place lays the same areas over its picture, and its
 test('ART-2B: the appearances change colours only, and the story box holds narrative only', () => {
   const css = readFileSync(new URL('../style.css', import.meta.url), 'utf8')
   const blocks = [...css.matchAll(/^(\[data-appearance[^{]*)\{([^}]*)\}/gm)]
-  for (const id of ['dark', 'light', 'slate']) {
-    const own = blocks.find(([, sel]) => sel.trim() === `[data-appearance='${id}']`)
+  for (const id of ['dark', 'light', 'slate', 'parchment']) {
+    const own = blocks.find(([, sel]) => sel.split(',').map((x) => x.trim()).includes(`[data-appearance='${id}']`))
     assert.ok(own, `${id} is defined`)
     const glass = own[2].match(/--glass: rgba\([^)]*, ([\d.]+)\)/)
     assert.ok(glass && +glass[1] >= 0.9 && +glass[1] <= 0.95, `${id}: panels 90-95% opaque`)
@@ -123,9 +125,8 @@ test('ART-2B: the appearances change colours only, and the story box holds narra
     }
   }
   const frame = read('./LocationFrame.svelte')
-  assert.match(frame, /data-appearance=\{look\}/)
-  assert.match(frame, /\{#each appearances as a/)
-  assert.ok(!/S\.\w*(Appearance|Story)/.test(frame), 'nothing about the appearance or the story box is sent to Go')
+  assert.match(frame, /data-appearance=\{look\??\.panels\}/)
+  assert.ok(!/S\.\w*(Appearance|Story)/.test(frame), 'nothing about the appearance or the story box is sent to Go from the frame')
   // The Castle's description is its story; the Edge keeps saving and
   // practice in its information, outside the story.
   const castle = read('./CastleScreen.svelte'), edge = read('./EdgeScreen.svelte')
@@ -136,4 +137,56 @@ test('ART-2B: the appearances change colours only, and the story box holds narra
   const rest = edge.replace(story, '')
   assert.match(rest, /saved after every/)
   assert.match(rest, /<b>Practice<\/b> is Istary's own/)
+})
+
+test('ART-2C: the appearance is chosen in Settings and kept by Go; each part is complete on its own', async () => {
+  const { looks, lookOf } = await import('./scenes.js')
+  // The choices, each list's default first, as Go's (settings.go).
+  assert.deepEqual(looks.panels.map((o) => o.id), ['slate', 'dark', 'light'])
+  assert.deepEqual(looks.story.map((o) => o.id), ['parchment', 'dark', 'slate'])
+  assert.deepEqual(looks.artwork.map((o) => o.id), ['full', 'subdued', 'hidden'])
+  const go = readFileSync(new URL('../../../settings.go', import.meta.url), 'utf8')
+  for (const [k, v] of [['panelLooks', 'panels'], ['storyLooks', 'story'], ['artworks', 'artwork']]) {
+    const list = go.match(new RegExp(`${k}\\s*=\\s*\\[\\]string\\{([^}]*)\\}`))[1].match(/"(\w+)"/g).map((x) => x.slice(1, -1))
+    assert.deepEqual(list, looks[v].map((o) => o.id), `${k} is Go's list`)
+  }
+  assert.deepEqual(lookOf(undefined), { panels: 'slate', story: 'parchment', artwork: 'full' })
+  assert.deepEqual(lookOf({ panels: 'light', story: 'dark', artwork: 'hidden' }), { panels: 'light', story: 'dark', artwork: 'hidden' })
+  assert.deepEqual(lookOf({ panels: 'neon', story: 'light', artwork: '' }), { panels: 'slate', story: 'parchment', artwork: 'full' })
+
+  // Every appearance sets every colour the dark one does, which are the
+  // game's own (:root) and the panels': so a story box in one appearance
+  // inside panels of another takes nothing from them.
+  const css = readFileSync(new URL('../style.css', import.meta.url), 'utf8')
+  const vars = (body) => Object.fromEntries([...body.matchAll(/(--[\w-]+):\s*([^;]+);/g)].map((m) => [m[1], m[2].trim()]))
+  const root = vars(css.match(/^:root \{([^}]*)\}/m)[1])
+  const block = (id) => vars([...css.matchAll(/^(\[data-appearance[^{]*)\{([^}]*)\}/gm)].find(([, sel]) => sel.split(',').map((x) => x.trim()).includes(`[data-appearance='${id}']`))[2])
+  const dark = block('dark')
+  for (const [k, v] of Object.entries(root)) assert.equal(dark[k], v, `dark's ${k} is the game's own`)
+  for (const id of ['light', 'parchment', 'slate']) assert.deepEqual(Object.keys(block(id)).sort(), Object.keys(dark).sort(), `${id} sets every colour`)
+  // No appearance colours a control by selector: only through variables.
+  assert.ok(!/\[data-appearance[^\]]*\][^{,]*\s(button|input|select)\b/.test(css), 'no control styled per appearance')
+
+  // The frame: the panels' appearance, the story box's own, the picture's;
+  // no appearance control in the head; Hide panels only with a picture.
+  const frame = read('./LocationFrame.svelte')
+  assert.ok(!/<select|appearances/.test(frame), 'the head has no appearance menu')
+  assert.match(frame, /look=\{look\.story\}/)
+  assert.match(frame, /artwork=\{look\.artwork\}/)
+  assert.match(frame, /\{#if pictured\}\s*<button class="toggle" bind:this=\{hideButton\}/)
+  assert.match(read('./StoryBox.svelte'), /data-appearance=\{look\}/)
+  const scene = read('./LocationScene.svelte')
+  assert.match(scene, /\.backdrop\[data-artwork='subdued'\] img \{ filter: [^}]*\}/)
+  assert.ok(!/\.backdrop\[data-artwork[^{]*\{[^}]*(opacity|width|height|inset)/.test(scene), 'subdued changes the picture only')
+  const app = read('../App.svelte')
+  assert.match(app, /const pictured = \$derived\(art && look\.artwork !== 'hidden'\)/)
+  assert.match(app, /hide: \(\) => \{ if \(pictured\)/)
+  assert.ok(!/appearance = \$state|setAppearance/.test(app), 'the page keeps no appearance of its own')
+
+  // Settings: one Go call, with the three parts; the story box's place and
+  // whether it is open stay the window's, for the session.
+  const settings = read('./SettingsScreen.svelte')
+  assert.match(settings, /call\(S\.SetAppearance, next\.panels, next\.story, next\.artwork\)/)
+  for (const k of ['panels', 'story', 'artwork']) assert.match(settings, new RegExp(`key: '${k}'`))
+  assert.ok(!/S\.\w*Story/.test(app + frame + read('./StoryBox.svelte')), 'the story box is not sent to Go')
 })

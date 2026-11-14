@@ -696,9 +696,14 @@ func TestSettingsAreTheWindows(t *testing.T) {
 	defer s.shutdown()
 	fine(t, s.NewGame(1))
 	s.SetMinimapVisible(false)
+	s.SetAppearance("light", "slate", "subdued")
 	changeGame(t, s)
-	if v := fine(t, s.NewGame(2)); v.Settings.MinimapVisible {
-		t.Fatal("game 2 has its own settings")
+	if v := fine(t, s.NewGame(2)); v.Settings.MinimapVisible || v.Settings.Panels != "light" || v.Settings.Story != "slate" || v.Settings.Artwork != "subdued" {
+		t.Fatalf("game 2 has its own settings: %+v", v.Settings)
+	}
+	changeGame(t, s)
+	if v := fine(t, s.ContinueGame(1)); v.Settings.Panels != "light" || v.Settings.Story != "slate" || v.Settings.Artwork != "subdued" {
+		t.Fatalf("back in game 1: %+v", v.Settings)
 	}
 	if !exists(filepath.Join(root, settingsFile)) || exists(filepath.Join(s.slotDir(1), settingsFile)) {
 		t.Fatal("the settings are not the library's")

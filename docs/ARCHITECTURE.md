@@ -777,6 +777,10 @@ them:
   missing file is the defaults; a damaged or newer one is left as it is,
   the defaults are used with a note (`View.Settings.Note`), and the next
   change replaces it.
+  `Session.SetMinimapVisible` (M-1) and `Session.SetAppearance` (ART-2C:
+  the illustrated places' panels, story box and picture) keep theirs the
+  same way, in optional fields of the same format, so an earlier Istary
+  still reads the file.
 - **The town screens (C0-4):** `CastleScreen`, `EdgeScreen`,
   `TrainingScreen`, `TavernScreen` and `SettingsScreen`, each in the
   frame; `App.svelte` only routes by `View.Location` and keeps the

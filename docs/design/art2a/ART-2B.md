@@ -3,6 +3,12 @@
 Status: implemented on `art-2b-appearance` (2026-11-13), for comparison
 before a default is chosen.
 
+**Since ART-2C** (`ART-2C.md`), the appearance is chosen in Settings and
+kept in the window's settings, not for the session, and the temporary menu
+in the head is gone. The panels default to Slate, the story box has an
+appearance of its own (Parchment by default), and the picture can be
+subdued or hidden.
+
 - **Built on ART-2A** (`art-2a-castle`), which is not yet merged; the
   branch holds both.
 - **Presentation only:** no rule of the game, no navigation, and nothing

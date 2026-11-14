@@ -198,3 +198,78 @@ func TestRosterManagementLeavesSettingsAlone(t *testing.T) {
 		t.Fatal("a reload forgot the setting")
 	}
 }
+
+// The illustrated places' appearance (ART-2C) is the window's, like the
+// party's visibility: the defaults (slate panels, a parchment story box,
+// the whole picture) until it is chosen; kept in gui-settings.json, which
+// a settings file of before keeps reading; never in the game or its save;
+// and drawing no random number. A value it does not know is refused and
+// changes nothing.
+func TestAppearanceIsKept(t *testing.T) {
+	s, dir := newTestSession(t)
+	rosterWith(t, s, hero("WALKER", engine.Good, ""))
+	look := func(v View) [3]string { return [3]string{v.Settings.Panels, v.Settings.Story, v.Settings.Artwork} }
+	if v := s.State(); look(v) != [3]string{"slate", "parchment", "full"} {
+		t.Fatalf("defaults: %+v", v.Settings)
+	}
+	before := s.State()
+	game := without(t, dir, settingsFile)
+	for _, c := range [][3]string{{"dark", "slate", "subdued"}, {"light", "dark", "hidden"}, {"slate", "parchment", "full"}, {"light", "parchment", "subdued"}} {
+		rand.Seed(17)
+		v := s.SetAppearance(c[0], c[1], c[2])
+		next := rand.Int63()
+		rand.Seed(17)
+		if next != rand.Int63() {
+			t.Fatal("a random number was drawn")
+		}
+		if v.Error != "" || look(v) != c || v.Settings.Note != "" {
+			t.Fatalf("set %v: %q %+v", c, v.Error, v.Settings)
+		}
+		v.Settings = before.Settings
+		if !sameView(v, before) {
+			t.Fatalf("set %v: the view changed", c)
+		}
+		if !maps.Equal(game, without(t, dir, settingsFile)) {
+			t.Fatalf("set %v: changed another file in the save folder", c)
+		}
+	}
+	for _, bad := range [][3]string{{"neon", "parchment", "full"}, {"slate", "light", "full"}, {"slate", "parchment", "dim"}, {"", "", ""}} {
+		raw, _ := os.ReadFile(filepath.Join(dir, settingsFile))
+		v := s.SetAppearance(bad[0], bad[1], bad[2])
+		after, _ := os.ReadFile(filepath.Join(dir, settingsFile))
+		if v.Error == "" || look(v) != [3]string{"light", "parchment", "subdued"} || !bytes.Equal(raw, after) {
+			t.Fatalf("set %v: %q %+v", bad, v.Error, v.Settings)
+		}
+	}
+	raw, _ := os.ReadFile(filepath.Join(dir, settingsFile))
+	if string(raw) != "{\n  \"version\": 1,\n  \"partyHidden\": false,\n  \"panels\": \"light\",\n  \"story\": \"parchment\",\n  \"artwork\": \"subdued\"\n}\n" {
+		t.Fatalf("settings file: %q", raw)
+	}
+	if roster, _ := os.ReadFile(filepath.Join(dir, "roster1.json")); bytes.Contains(roster, []byte("parchment")) || bytes.Contains(roster, []byte("artwork")) {
+		t.Fatal("the appearance is in the roster file")
+	}
+	if v := reopened(t, s, dir).State(); look(v) != [3]string{"light", "parchment", "subdued"} || v.Settings.Note != "" {
+		t.Fatalf("after a restart: %+v", v.Settings)
+	}
+}
+
+// A settings file of before ART-2C has no appearance: the defaults, with
+// no note; one with an appearance this Istary does not know reads it as the
+// default, and keeps the rest.
+func TestAppearanceFromOtherFiles(t *testing.T) {
+	for name, c := range map[string]struct {
+		file string
+		want [3]string
+		hide bool
+	}{
+		"before ART-2C": {"{\n  \"version\": 1,\n  \"partyHidden\": true\n}\n", [3]string{"slate", "parchment", "full"}, true},
+		"unknown names": {`{"version": 1, "panels": "neon", "story": "dark", "artwork": "sepia"}`, [3]string{"slate", "dark", "full"}, false},
+	} {
+		s, dir := newTestSession(t)
+		os.WriteFile(filepath.Join(dir, settingsFile), []byte(c.file), 0o644)
+		v := reopened(t, s, dir).State()
+		if got := [3]string{v.Settings.Panels, v.Settings.Story, v.Settings.Artwork}; got != c.want || v.Settings.PartyVisible == c.hide || v.Settings.Note != "" {
+			t.Fatalf("%s: %+v", name, v.Settings)
+		}
+	}
+}

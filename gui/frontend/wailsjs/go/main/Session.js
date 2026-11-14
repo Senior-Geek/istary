@@ -230,6 +230,10 @@ export function SaveNow() {
   return window['go']['main']['Session']['SaveNow']();
 }
 
+export function SetAppearance(arg1, arg2, arg3) {
+  return window['go']['main']['Session']['SetAppearance'](arg1, arg2, arg3);
+}
+
 export function SetMinimapVisible(arg1) {
   return window['go']['main']['Session']['SetMinimapVisible'](arg1);
 }

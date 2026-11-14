@@ -128,8 +128,9 @@ only renders `View` (see `view.go`) and calls `Session` methods
 
 ## Saves
 
-The window's own preferences (whether the party bar is shown) are kept in
-`gui-settings.json` in the save folder, never in a game. A damaged file is left
+The window's own preferences (whether the party bar and the minimap are
+shown, and the illustrated places' appearance, chosen in Settings) are kept
+in `gui-settings.json` in the save folder, never in a game. A damaged file is left
 alone and the defaults are used until a setting is changed.
 
 The GUI never uses the terminal game's `~/.config/wizardry`. It saves to

@@ -26,12 +26,17 @@
   // (or Escape); App keeps which (PANELS). Nothing of it is saved or sent
   // to Go.
   //
-  // ART-2B, for comparison: the illustrated places' panels have an
-  // appearance (dark, light or slate: only colours, style.css
-  // [data-appearance]), chosen in the head while the three are compared;
-  // and a place's narrative is in a story box over the picture (StoryBox),
-  // closed with its ×, opened again with Story in the head, and not
-  // reopened by going elsewhere. What the player needs to play stays in C.
+  // ART-2B: a place's narrative is in a story box over the picture
+  // (StoryBox), closed with its ×, opened again with Story in the head, and
+  // not reopened by going elsewhere. What the player needs to play stays
+  // in C.
+  //
+  // ART-2C: the illustrated places' appearance is chosen in Settings and
+  // kept by Go (App's PANELS look): the panels' (slate, dark or light) and
+  // the story box's (parchment, dark or slate), only colours (style.css
+  // [data-appearance]), and the picture, shown whole, subdued or hidden.
+  // With the picture hidden there is nothing to look at: Hide panels is
+  // not offered, and the rest is as with it.
   //
   // The character sheet (lib/sheet.js): App keeps whose it is and whether
   // it is shown (the SHEET context); the frame shows it in A, in place of
@@ -74,7 +79,7 @@
   import { title, back, destinations } from './navigation.js'
   import { SHEET, subject, toggleLabel, available } from './sheet.js'
   import StoryBox from './StoryBox.svelte'
-  import { PANELS, illustrated, appearances } from './scenes.js'
+  import { PANELS, illustrated, lookOf } from './scenes.js'
 
   let { view, busy = false, call, onopen, scene, actions, aside, children, story, storyTitle, pick, onpick, current = -1, fill = false, partyAlways = false, compact = false, noSheet = false } = $props()
 
@@ -91,7 +96,9 @@
   // The place's own scene, if it draws one, is never a backdrop.
   const art = $derived(!scene && illustrated(view.location))
   const panels = getContext(PANELS)
-  const bare = $derived(art && !!panels?.hidden)
+  const look = $derived(art ? (panels?.look ?? lookOf(null)) : null)
+  const pictured = $derived(art && look.artwork !== 'hidden')
+  const bare = $derived(pictured && !!panels?.hidden)
   let hideButton = $state(), showButton = $state()
   let moved = false // focus goes with the toggle, once it is pressed
   $effect(() => {
@@ -104,7 +111,6 @@
   const hidePanels = () => { moved = true; panels?.hide() }
   const showPanels = () => { moved = true; panels?.show() }
 
-  const look = $derived(art ? (panels?.appearance ?? 'dark') : null)
   const storyHere = $derived(art && !!story && !!panels)
   const storyOpen = $derived(storyHere && panels.story.open)
   let display = $state(), storyButton = $state()
@@ -126,10 +132,10 @@
   }
 </script>
 
-{#if art}<LocationScene location={view.location} title={here} mode="backdrop" />{/if}
+{#if art}<LocationScene location={view.location} title={here} mode="backdrop" artwork={look.artwork} />{/if}
 
 {#if bare}
-  <div class="frame bare" data-location={view.location} data-appearance={look}>
+  <div class="frame bare" data-location={view.location} data-appearance={look.panels}>
     <div class="restore" data-area="restore">
       <span class="restore-title">{here}</span>
       <button class="primary" bind:this={showButton} onclick={showPanels}
@@ -137,7 +143,7 @@
     </div>
   </div>
 {:else}
-<div class="frame" class:fill class:compact class:illustrated={art} data-location={view.location} data-appearance={look}>
+<div class="frame" class:fill class:compact class:illustrated={art} data-location={view.location} data-appearance={look?.panels}>
   <header class="head">
     <h2 class="title">{here}</h2>
     {#if way}
@@ -153,16 +159,9 @@
         onclick={() => (storyOpen ? closeStory() : (panels.story.open = true))}
         title={storyOpen ? 'Close the story' : 'Open the story'}>Story</button>
     {/if}
-    {#if art}
+    {#if pictured}
       <button class="toggle" bind:this={hideButton} disabled={busy} onclick={hidePanels}
         title="Hide the panels to see the picture (Esc brings them back)">Hide panels</button>
-      <!-- For comparing the appearances (ART-2B); temporary. -->
-      <label class="look" title="The panels' appearance, for comparison (not saved)">
-        <span>Appearance</span>
-        <select value={look} onchange={(e) => panels.setAppearance(e.currentTarget.value)}>
-          {#each appearances as a (a.id)}<option value={a.id}>{a.label}</option>{/each}
-        </select>
-      </label>
     {/if}
     {#if way?.note}<p class="why head-why">{way.note}</p>{/if}
   </header>
@@ -179,7 +178,7 @@
           onleave={view.location === 'tavern' ? () => call(S.LeaveParty, who.partySlot - 1) : undefined}
           onequip={(n, equip) => call(S.EquipAction, { index: who.index, n, equip })} />
       {/key}
-    {:else if scene}{@render scene()}{:else}<LocationScene location={view.location} title={here} mode={art ? 'view' : 'panel'} />{/if}
+    {:else if scene}{@render scene()}{:else}<LocationScene location={view.location} title={here} mode={art ? 'view' : 'panel'} artwork={look?.artwork} />{/if}
   </div>
 
   <div class="nav-area" data-area="actions">
@@ -222,7 +221,7 @@
   {/if}
 
   {#if storyOpen && display}
-    <StoryBox title={storyTitle ?? here} anchor={display} rect={panels.story.rect}
+    <StoryBox title={storyTitle ?? here} anchor={display} look={look.story} rect={panels.story.rect}
       onmove={(r) => (panels.story.rect = r)} onclose={closeStory}>{@render story()}</StoryBox>
   {/if}
 </div>
@@ -304,9 +303,6 @@
     -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); box-shadow: 0 2px 12px var(--glass-shadow);
   }
   .restore-title { font-size: 15px; letter-spacing: 0.02em; }
-  .look { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 12px; color: var(--muted); }
-  .look span { width: auto; color: inherit; }
-  .look select { font: inherit; font-size: 12px; color: var(--btn-text); background: var(--btn); border: 1px solid var(--glass-line); border-radius: 4px; padding: 3px 4px; }
   .restore button { margin: 0; }
   .restore kbd { font: 600 10px ui-monospace, Menlo, monospace; opacity: 0.7; margin-left: 4px; }
   @media (max-height: 640px) { .frame:not(.fill):not(.compact) { --top: clamp(130px, calc((100vw - 380px) * 0.5625), 34vh); } }

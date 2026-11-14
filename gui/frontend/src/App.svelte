@@ -8,12 +8,13 @@
   // both to the frame (lib/sheet.js SHEET). At a place with artwork the
   // picture fills the window behind the frame, and its panels can be hidden
   // to see it (ART-2A): this page keeps that too (lib/scenes.js PANELS),
-  // with the panels' appearance and the story box (ART-2B), for the session
-  // only: none of it is saved.
+  // with the story box (ART-2B), for the session only: none of it is saved.
+  // Their appearance (ART-2C) is Go's, a setting of the window chosen in
+  // Settings, and this page passes it on.
   import { setContext } from 'svelte'
   import * as S from '../wailsjs/go/main/Session.js'
   import { SHEET, available } from './lib/sheet.js'
-  import { PANELS, illustrated } from './lib/scenes.js'
+  import { PANELS, illustrated, lookOf } from './lib/scenes.js'
   import CombatScreen from './lib/CombatScreen.svelte'
   import DungeonScreen from './lib/DungeonScreen.svelte'
   import LocationFrame from './lib/LocationFrame.svelte'
@@ -32,7 +33,6 @@
   let selected = $state(-1) // roster index of the character sheet's character, or -1
   let sheetShown = $state(false) // the sheet is shown in place of the artwork
   let bareAt = $state('') // the place whose panels are hidden, or ''
-  let appearance = $state('dark') // the illustrated places' panels (ART-2B)
   let storyOpen = $state(true) // the story box: open until it is closed
   let storyRect = $state(null) // where the player left it, or null
 
@@ -55,7 +55,12 @@
   // An illustrated place in town: its picture fills the window, so the
   // frame takes the window's whole width.
   const art = $derived(!!shell && !(view.screen === 'dungeon' && view.dungeon) && illustrated(view.location))
-  const bare = $derived(art && bareAt === view.location)
+  // The illustrated places' appearance (ART-2C): Go's, from Settings.
+  const look = $derived(lookOf(view?.settings))
+  // Its picture is shown (not hidden in Settings): the panels can be hidden
+  // to look at it.
+  const pictured = $derived(art && look.artwork !== 'hidden')
+  const bare = $derived(pictured && bareAt === view.location)
 
   // A roster row: show that character's sheet, or hide it if it is the
   // one shown. A party member: show theirs.
@@ -80,10 +85,9 @@
 
   setContext(PANELS, {
     get hidden() { return bare },
-    hide: () => { if (art) bareAt = view.location },
+    hide: () => { if (pictured) bareAt = view.location },
     show: () => { bareAt = '' },
-    get appearance() { return appearance },
-    setAppearance: (a) => { appearance = a },
+    get look() { return look },
     story: {
       get open() { return storyOpen },
       set open(v) { storyOpen = v },

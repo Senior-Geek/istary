@@ -15,6 +15,8 @@
   // Props:
   //   title     the story's title
   //   anchor    the element it opens over (the display area)
+  //   look      its appearance (ART-2C): parchment, dark or slate, its own
+  //             whatever the panels' (style.css [data-appearance])
   //   rect      { x, y, w, h } where the player last left it, or null: the
   //             lower left of the anchor, as wide as suits it, as tall as
   //             its text
@@ -23,7 +25,7 @@
   //   children  the story
   import { onMount } from 'svelte'
 
-  let { title, anchor, rect = null, onmove, onclose, children } = $props()
+  let { title, anchor, look = 'parchment', rect = null, onmove, onclose, children } = $props()
 
   const M = 8 // kept this far inside the window
   const MIN_W = 220, MIN_H = 90
@@ -91,7 +93,7 @@
 <svelte:window onresize={() => { win = { w: innerWidth, h: innerHeight }; if (!rect) place() }} />
 
 {#if at}
-  <aside class="story" bind:this={box} aria-label="Story: {title}"
+  <aside class="story" bind:this={box} aria-label="Story: {title}" data-appearance={look}
     style:left="{at.x}px" style:top="{at.y}px" style:width="{at.w}px" style:height={at.h == null ? null : `${at.h}px`}
     style:visibility={at.measuring ? 'hidden' : null}>
     <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
@@ -110,7 +112,7 @@
   .story {
     position: fixed; z-index: 2; display: flex; flex-direction: column; min-height: 0;
     background: var(--glass); color: var(--text); border: 1px solid var(--glass-line); border-radius: 8px;
-    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); box-shadow: 0 6px 24px var(--glass-shadow);
   }
   .bar {
     display: flex; align-items: center; gap: 8px; padding: 6px 6px 4px 12px; cursor: move;

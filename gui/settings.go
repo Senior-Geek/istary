@@ -15,6 +15,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"slices"
 
 	"github.com/Senior-Geek/istary/engine"
 )
@@ -30,14 +31,43 @@ type Settings struct {
 	PartyHidden bool `json:"partyHidden"` // the party panel is hidden
 	// MinimapHidden: the dungeon's minimap is hidden (M-1).
 	MinimapHidden bool `json:"minimapHidden,omitempty"`
+	// The illustrated places' appearance (ART-2C): their panels', their
+	// story box's and their picture's. Empty is the default; a value this
+	// Istary does not know is read as the default too.
+	Panels  string `json:"panels,omitempty"`
+	Story   string `json:"story,omitempty"`
+	Artwork string `json:"artwork,omitempty"`
+}
+
+// The appearances an illustrated place can have (ART-2C), the default
+// first: the panels', the story box's, and how its picture is shown.
+var (
+	panelLooks = []string{"slate", "dark", "light"}
+	storyLooks = []string{"parchment", "dark", "slate"}
+	artworks   = []string{"full", "subdued", "hidden"}
+)
+
+// chosen is choice if it is one of options, and otherwise the default,
+// options[0].
+func chosen(choice string, options []string) string {
+	if slices.Contains(options, choice) {
+		return choice
+	}
+	return options[0]
 }
 
 // SettingsView is the settings as the page sees them, and Note, when they
 // could not be read or saved.
 type SettingsView struct {
-	PartyVisible   bool   `json:"partyVisible"`
-	MinimapVisible bool   `json:"minimapVisible"`
-	Note           string `json:"note"`
+	PartyVisible   bool `json:"partyVisible"`
+	MinimapVisible bool `json:"minimapVisible"`
+	// The illustrated places' appearance (ART-2C), never empty: the
+	// panels (slate, dark or light), the story box (parchment, dark or
+	// slate) and the picture (full, subdued or hidden).
+	Panels  string `json:"panels"`
+	Story   string `json:"story"`
+	Artwork string `json:"artwork"`
+	Note    string `json:"note"`
 }
 
 func (s *Session) settingsPath() string {
@@ -101,6 +131,33 @@ func (s *Session) SetMinimapVisible(visible bool) View {
 	return s.view(nil)
 }
 
+// SetAppearance sets the illustrated places' appearance (ART-2C): their
+// panels (slate, dark or light), their story box (parchment, dark or
+// slate) and their picture (full, subdued or hidden), and saves it, as
+// SetPartyVisible does: accepted anywhere, touching nothing of the game.
+// A value it does not know is refused and nothing changes.
+func (s *Session) SetAppearance(panels, story, artwork string) View {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.startErr != nil {
+		return s.view(nil)
+	}
+	for _, c := range []struct {
+		what, choice string
+		options      []string
+	}{{"panels", panels, panelLooks}, {"story box", story, storyLooks}, {"picture", artwork, artworks}} {
+		if !slices.Contains(c.options, c.choice) {
+			return s.view(fmt.Errorf("there is no %q appearance for the %s", c.choice, c.what))
+		}
+	}
+	s.prefs.Panels, s.prefs.Story, s.prefs.Artwork = panels, story, artwork
+	s.prefsNote = ""
+	if err := s.saveSettings(); err != nil {
+		s.prefsNote = fmt.Sprintf("The window's settings could not be saved (%v); this choice holds until Istary closes.", err)
+	}
+	return s.view(nil)
+}
+
 func (s *Session) saveSettings() error {
 	st := s.prefs
 	st.Version = settingsFormat
@@ -117,5 +174,9 @@ func (s *Session) saveSettings() error {
 }
 
 func (s *Session) settingsView() SettingsView {
-	return SettingsView{PartyVisible: !s.prefs.PartyHidden, MinimapVisible: !s.prefs.MinimapHidden, Note: s.prefsNote}
+	return SettingsView{
+		PartyVisible: !s.prefs.PartyHidden, MinimapVisible: !s.prefs.MinimapHidden,
+		Panels: chosen(s.prefs.Panels, panelLooks), Story: chosen(s.prefs.Story, storyLooks), Artwork: chosen(s.prefs.Artwork, artworks),
+		Note: s.prefsNote,
+	}
 }

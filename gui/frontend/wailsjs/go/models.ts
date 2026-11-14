@@ -2135,6 +2135,9 @@ export namespace main {
 	export class SettingsView {
 	    partyVisible: boolean;
 	    minimapVisible: boolean;
+	    panels: string;
+	    story: string;
+	    artwork: string;
 	    note: string;
 	
 	    static createFrom(source: any = {}) {
@@ -2145,6 +2148,9 @@ export namespace main {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.partyVisible = source["partyVisible"];
 	        this.minimapVisible = source["minimapVisible"];
+	        this.panels = source["panels"];
+	        this.story = source["story"];
+	        this.artwork = source["artwork"];
 	        this.note = source["note"];
 	    }
 	}

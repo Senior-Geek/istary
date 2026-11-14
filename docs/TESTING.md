@@ -127,16 +127,31 @@ suites are:
     mouse and the keys, kept inside the window, closed and not reopened by
     going elsewhere, reopened where it was left, the narrative in it and
     the saving and practice notes still below;
-  - the appearances (ART-2B): in each, nothing moves, the panels are 90–95%
-    opaque, and all text meets WCAG AA contrast with the picture behind
-    taken at its darkest and at its lightest;
+  - the appearances (ART-2B, ART-2C): the defaults on a library that has
+    never chosen (Slate panels, a Parchment story box, the whole picture);
+    Settings' three choices, clicked, taking effect at once and kept in
+    `gui-settings.json`; the same appearance in another game and back, the
+    game unchanged; the story box open and where it was left through
+    Settings and between the places;
+  - every combination, 27 at each place: shown as chosen, nothing moved
+    (Hide panels gone with the picture hidden), the panels and the story
+    box 90–95% opaque, all text meeting WCAG AA contrast with the picture
+    behind taken at its darkest and at its lightest, and every control in
+    view, uncovered and enabled;
 - **creation:** decisions in the Actions, the class table at zero points,
   taking a point back, Discard (nothing saved), Keep and save.
 
-One more suite takes screenshots only, and is run by hand, not by level 2:
-**looks** shows the Castle and the Edge of Town in each appearance at
-980×692, 1440×900, 1512×982 and 1728×1117, with the story box open and
-closed, for comparing them (`--suites looks`).
+Two more suites are run by hand, not by level 2:
+
+- **looks** takes screenshots only: the Castle and the Edge of Town with
+  the default appearance and a contrasting one (Light panels, a Dark story
+  box, the picture subdued) at 980×692, 1440×900, 1512×982 and 1728×1117,
+  the story box open and, at the first two, closed; and the picture hidden
+  at 1440×900 (`--suites looks`).
+- **restarted** checks that Istary opens with the appearance kept in
+  `gui-settings.json` (the defaults, if it keeps none), then chooses
+  another. Run it twice on one library, without seeding it again between:
+  the second run checks what the first chose, across a real restart.
 
 When nothing changed between BASE and CANDIDATE (a release check on
 `main`), it checks as if everything had changed.
@@ -278,7 +293,7 @@ Within level 2, on everything:
 |---|---|
 | Every Go test, both modules, parallel | 49 s (`go test` one package at a time: about 8.5 min) |
 | Race tests on `engine`, `cmd/istary`, `gui`, parallel | 2 min 9 s (the gate's GUI race alone: 11 min) |
-| Live checks, three suites, each size | 50 s (123 checks; the scenes suite, added since, about 22 s more) |
+| Live checks, three suites, each size | 50 s (123 checks; the scenes suite, added since, about 2 min 45 s more with ART-2C's 54 combinations) |
 | The gate's own tests | 23 s |
 | Wails build and codesign | 4 s |
 

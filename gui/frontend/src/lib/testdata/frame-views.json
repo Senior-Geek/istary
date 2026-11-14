@@ -114,6 +114,9 @@
   "settings": {
    "partyVisible": true,
    "minimapVisible": true,
+   "panels": "slate",
+   "story": "parchment",
+   "artwork": "full",
    "note": ""
   },
   "departures": {
@@ -239,6 +242,9 @@
   "settings": {
    "partyVisible": true,
    "minimapVisible": true,
+   "panels": "slate",
+   "story": "parchment",
+   "artwork": "full",
    "note": ""
   },
   "departures": {
@@ -344,6 +350,9 @@
   "settings": {
    "partyVisible": true,
    "minimapVisible": true,
+   "panels": "slate",
+   "story": "parchment",
+   "artwork": "full",
    "note": ""
   },
   "departures": {
@@ -462,6 +471,9 @@
   "settings": {
    "partyVisible": true,
    "minimapVisible": true,
+   "panels": "slate",
+   "story": "parchment",
+   "artwork": "full",
    "note": ""
   },
   "departures": {
@@ -570,6 +582,9 @@
   "settings": {
    "partyVisible": true,
    "minimapVisible": true,
+   "panels": "slate",
+   "story": "parchment",
+   "artwork": "full",
    "note": ""
   },
   "departures": {
@@ -678,6 +693,9 @@
   "settings": {
    "partyVisible": true,
    "minimapVisible": true,
+   "panels": "slate",
+   "story": "parchment",
+   "artwork": "full",
    "note": ""
   },
   "departures": {
@@ -806,6 +824,9 @@
   "settings": {
    "partyVisible": false,
    "minimapVisible": true,
+   "panels": "slate",
+   "story": "parchment",
+   "artwork": "full",
    "note": ""
   },
   "departures": {
@@ -911,6 +932,9 @@
   "settings": {
    "partyVisible": true,
    "minimapVisible": true,
+   "panels": "slate",
+   "story": "parchment",
+   "artwork": "full",
    "note": ""
   },
   "departures": {
@@ -1019,6 +1043,9 @@
   "settings": {
    "partyVisible": true,
    "minimapVisible": true,
+   "panels": "slate",
+   "story": "parchment",
+   "artwork": "full",
    "note": ""
   },
   "departures": {
@@ -1121,6 +1148,9 @@
   "settings": {
    "partyVisible": true,
    "minimapVisible": true,
+   "panels": "slate",
+   "story": "parchment",
+   "artwork": "full",
    "note": ""
   },
   "departures": {
@@ -1220,6 +1250,9 @@
   "settings": {
    "partyVisible": true,
    "minimapVisible": true,
+   "panels": "slate",
+   "story": "parchment",
+   "artwork": "full",
    "note": ""
   },
   "departures": {
