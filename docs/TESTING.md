@@ -140,6 +140,13 @@ suites are:
     view, uncovered and enabled;
 - **creation:** decisions in the Actions, the class table at zero points,
   taking a point back, Discard (nothing saved), Keep and save.
+- **combat** (COMBAT-1), whenever a change reaches combat: in a practice
+  encounter, the spell picker (every known spell, the description area
+  changing as spells are pointed at and focused, in the window without
+  scrolling, nothing overlapping, cut off or covered); a spell with no
+  effect in combat and a caster with no casts left, each with its reason
+  and ordering nothing; Party retreat in view, its review and its
+  outcome; the character sheet's spell descriptions; nothing saved.
 
 Two more suites are run by hand, not by level 2:
 

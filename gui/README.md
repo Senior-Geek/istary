@@ -117,6 +117,11 @@ copies of the party into the real maze, to Camp at the entrance.
 - **The chest option:** "the encounter guards a chest" adds a chest to try the chest screen.
 - **The screen** (`frontend/src/lib/CombatScreen.svelte`):
   - order entry with the actions each member may take and why not;
+  - the spell picker: every known spell, with a description area that
+    follows the spell pointed at or focused, its casts left, and why it
+    cannot be cast when it cannot (COMBAT-1);
+  - Party retreat: one order for the whole party, reviewed before the
+    round (COMBAT-1);
   - target choice and the order review;
   - playback one action at a time (Space or Enter, or automatic);
   - the chest, victory, defeat and escape;

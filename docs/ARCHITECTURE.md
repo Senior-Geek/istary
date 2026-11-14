@@ -878,6 +878,17 @@ shows no bar. `View.PartyBar` carries AC as well.
   `CombatAdvance`, `CombatChooseBoon`, `CombatEndRound`, `CombatLeave`,
   `ChestAction`, `ChestContinue` and `AbandonPractice`. Each calls the
   matching controller operation.
+- **COMBAT-1** (`design/combat1/COMBAT-1.md`):
+  - **The spell list** (`CombatView.Spells`) is every known spell, with its
+    description, its casts left and why it cannot be cast. `CombatOrder`
+    refuses the spells with no effect in combat (`app.CombatSpellNote`);
+    the terminal can still cast them.
+  - **`CombatRetreat`** is `app.PartyRetreat`: Run for the most agile
+    member who can act, Parry for the rest, then confirmation. It is the
+    Run order unchanged.
+  - **`SpellGuide`** returns `app.SpellGuide()`, the one description of
+    every spell (`app/spells.go`), used by Combat, Camp and the character
+    sheet.
 - **Pacing:** the frontend's: Space or Enter for the next step, or automatic
   at a chosen speed.
 - **How combat is reached:** through `PracticeEncounter(withChest)`, a
