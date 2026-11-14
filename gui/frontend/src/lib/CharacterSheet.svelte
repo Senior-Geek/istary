@@ -24,6 +24,8 @@
   //   onequip    (n, equip) => Promise  equip or take off item n (optional: in town;
   //              what may be equipped, and why not, is Go's, on each item)
   import { kindLabel, wornAndPack, removeAction, useAction } from './equip.js'
+  import { guide } from './spellGuide.svelte.js'
+  import { knownSpells } from './sheet.js'
 
   let { character: ch, statNames, nameMax, busy = false, error = '', onrename, ondelete, onjoin, onleave, onequip } = $props()
 
@@ -118,7 +120,13 @@
       <div><span>Mage slots</span>{slots(ch.mageSpells, ch.maxMage)}</div>
       <div><span>Priest slots</span>{slots(ch.priestSpells, ch.maxPriest)}</div>
     </div>
-    <p><span class="muted">Known:</span> {ch.spells?.join(', ') || 'none'}</p>
+    {#if ch.spells?.length}
+      <ul class="spells">
+        {#each knownSpells(ch.spells, guide.spells) as sp (sp.name)}
+          <li><b>{sp.name}</b>{#if sp.level}<span class="kind">{sp.book} {sp.level}</span>{/if}{#if sp.summary}<span class="what">{sp.summary}</span>{/if}</li>
+        {/each}
+      </ul>
+    {:else}<p><span class="muted">Known:</span> none</p>{/if}
   </section>
 {/snippet}
 
@@ -226,6 +234,9 @@
   ul.worn li { border-left: 3px solid var(--notice); }
   ul.pack li { border-left: 3px dashed var(--line); }
   .none { margin: 0; font-size: 12px; }
+  .spells { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 3px; font-size: 13px; }
+  .spells li { display: grid; grid-template-columns: 90px 70px 1fr; gap: 6px; align-items: baseline; }
+  .spells .what { color: var(--muted); }
   .kind { font-size: 11px; color: var(--muted); }
   .equip { display: flex; gap: 8px; align-items: center; margin-left: auto; }
   .why { font-size: 11px; color: var(--muted); text-align: right; }

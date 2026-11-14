@@ -292,6 +292,7 @@ export namespace app {
 	    part?: number;
 	    silent?: boolean;
 	    effects?: CombatEffectView[];
+	    escape?: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new CombatEventView(source);
@@ -306,6 +307,7 @@ export namespace app {
 	        this.part = source["part"];
 	        this.silent = source["silent"];
 	        this.effects = this.convertValues(source["effects"], CombatEffectView);
+	        this.escape = source["escape"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -415,6 +417,12 @@ export namespace app {
 	    level: number;
 	    kind: string;
 	    target: string;
+	    summary: string;
+	    affects: string;
+	    left: number;
+	    max: number;
+	    castable: boolean;
+	    reason?: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new CombatSpellView(source);
@@ -426,6 +434,12 @@ export namespace app {
 	        this.level = source["level"];
 	        this.kind = source["kind"];
 	        this.target = source["target"];
+	        this.summary = source["summary"];
+	        this.affects = source["affects"];
+	        this.left = source["left"];
+	        this.max = source["max"];
+	        this.castable = source["castable"];
+	        this.reason = source["reason"];
 	    }
 	}
 	export class CombatView {
@@ -439,6 +453,7 @@ export namespace app {
 	    menu: CombatOptionView[];
 	    spells?: CombatSpellView[];
 	    items?: CombatItemView[];
+	    retreat?: string;
 	    orders: CombatOrderView[];
 	    events: CombatEventView[];
 	    current: number;
@@ -465,6 +480,7 @@ export namespace app {
 	        this.menu = this.convertValues(source["menu"], CombatOptionView);
 	        this.spells = this.convertValues(source["spells"], CombatSpellView);
 	        this.items = this.convertValues(source["items"], CombatItemView);
+	        this.retreat = source["retreat"];
 	        this.orders = this.convertValues(source["orders"], CombatOrderView);
 	        this.events = this.convertValues(source["events"], CombatEventView);
 	        this.current = source["current"];
@@ -1226,6 +1242,30 @@ export namespace app {
 		    }
 		    return a;
 		}
+	}
+	export class SpellGuideView {
+	    name: string;
+	    level: number;
+	    book: string;
+	    summary: string;
+	    affects: string;
+	    combat?: string;
+	    camp: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new SpellGuideView(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.level = source["level"];
+	        this.book = source["book"];
+	        this.summary = source["summary"];
+	        this.affects = source["affects"];
+	        this.combat = source["combat"];
+	        this.camp = source["camp"];
+	    }
 	}
 	export class TemplePatient {
 	    index: number;

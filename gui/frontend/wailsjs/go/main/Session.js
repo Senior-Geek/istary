@@ -98,6 +98,10 @@ export function CombatOrder(arg1) {
   return window['go']['main']['Session']['CombatOrder'](arg1);
 }
 
+export function CombatRetreat() {
+  return window['go']['main']['Session']['CombatRetreat']();
+}
+
 export function CombatSelect(arg1) {
   return window['go']['main']['Session']['CombatSelect'](arg1);
 }
@@ -252,6 +256,10 @@ export function SetPassword(arg1, arg2) {
 
 export function ShopAction(arg1) {
   return window['go']['main']['Session']['ShopAction'](arg1);
+}
+
+export function SpellGuide() {
+  return window['go']['main']['Session']['SpellGuide']();
 }
 
 export function StartCreation(arg1) {

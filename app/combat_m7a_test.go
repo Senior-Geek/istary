@@ -2,6 +2,7 @@ package app
 
 import (
 	"errors"
+	"slices"
 	"testing"
 
 	"github.com/Senior-Geek/istary/engine"
@@ -30,8 +31,9 @@ func TestCombatSelectActor(t *testing.T) {
 	}
 }
 
-// The actor's castable spells (known, with points) with their targets, and
-// usable items by the name the player knows.
+// The actor's known spells with their targets and descriptions, castable
+// or not with the reason (COMBAT-1: before, a spell without points was
+// left out), and usable items by the name the player knows.
 func TestCombatViewSpellsAndItems(t *testing.T) {
 	c, p := combatController(t, 1)
 	pr := p[4]
@@ -45,8 +47,15 @@ func TestCombatViewSpellsAndItems(t *testing.T) {
 	pr.ItemCount = 2
 	c.SelectCombatActor(pr)
 	v := view(t, c)
-	if len(v.Spells) != 2 || v.Spells[0] != (CombatSpellView{Name: "DIOS", Level: 1, Kind: "priest", Target: "member"}) ||
-		v.Spells[1] != (CombatSpellView{Name: "BADIOS", Level: 1, Kind: "priest", Target: "group"}) {
+	want := []CombatSpellView{
+		{Name: "DIOS", Level: 1, Kind: "priest", Target: "member", Summary: SpellSummary("DIOS"), Affects: "one party member",
+			Left: 1, Max: 1, Castable: true},
+		{Name: "BADIOS", Level: 1, Kind: "priest", Target: "group", Summary: SpellSummary("BADIOS"), Affects: "one monster (choose its group)",
+			Left: 1, Max: 1, Castable: true},
+		{Name: "DIALKO", Level: 3, Kind: "priest", Target: "none", Summary: SpellSummary("DIALKO"), Affects: "one party member",
+			Reason: "No level 3 priest casts yet."},
+	}
+	if !slices.Equal(v.Spells, want) {
 		t.Fatalf("spells: %+v", v.Spells)
 	}
 	items := c.Game.Scenario.Items

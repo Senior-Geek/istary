@@ -125,3 +125,44 @@ export function targetKind(option, combat) {
   if (option.target === 'item' && !(combat?.items?.length)) return 'none'
   return option.target
 }
+
+// COMBAT-1: the spell picker, Party Retreat and the escape's outcome.
+
+// firstSpell is the spell the picker describes before the player points
+// at one: the first that can be cast, or else the first known.
+export function firstSpell(spells = []) {
+  return spells.find((sp) => sp.castable) ?? spells[0] ?? null
+}
+
+// spellLevel names a spell's book and level, e.g. "Mage level 1".
+export function spellLevel(sp) {
+  return `${sp.kind === 'priest' ? 'Priest' : 'Mage'} level ${sp.level}`
+}
+
+// spellStatus is the line that says whether who can cast sp now, and if
+// not, Go's reason ("ELENARA cannot cast HALITO: no level 1 mage casts
+// left …").
+export function spellStatus(who, sp) {
+  if (!sp) return ''
+  if (sp.castable) return `${who} can cast ${sp.name} now.`
+  const why = sp.reason ? sp.reason[0].toLowerCase() + sp.reason.slice(1) : 'it cannot be cast now.'
+  return `${who} cannot cast ${sp.name}: ${why}`
+}
+
+// runNote explains a Run order in the review: the existing rule, that one
+// member's successful Run takes the whole party out of the fight.
+export function runNote(combat) {
+  const runs = (combat?.orders ?? []).filter((o) => o.action === 'run')
+  if (!runs.length) return ''
+  const who = runs.map((o) => o.member).join(' and ')
+  return `The party attempts to retreat: ${who} will try to lead it away. ` +
+    'If that succeeds the fight is over at once; if it fails, that turn is lost and the fight goes on.'
+}
+
+// escapeLine glosses a party-run event once it is on screen.
+export function escapeLine(event) {
+  if (event?.kind !== 'party-run' || event.silent) return ''
+  if (event.escape === 'escaped') return 'The party escapes!'
+  if (event.escape === 'failed') return 'Escape failed — the fight goes on.'
+  return ''
+}

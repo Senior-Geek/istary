@@ -20,6 +20,7 @@ package app
 // No timers, no random numbers.
 
 import (
+	"slices"
 	"strings"
 
 	"github.com/Senior-Geek/istary/engine"
@@ -37,6 +38,7 @@ type CombatView struct {
 	Menu     []CombatOptionView `json:"menu"`               // the actor's orders, during order entry
 	Spells   []CombatSpellView  `json:"spells,omitempty"`   // the actor's spells that can be cast now, during order entry
 	Items    []CombatItemView   `json:"items,omitempty"`    // the actor's usable items, during order entry
+	Retreat  string             `json:"retreat,omitempty"`  // who Party Retreat would order to Run, during order entry (PartyRetreat)
 	Orders   []CombatOrderView  `json:"orders"`             // orders given this round, during order entry and confirmation
 	Events   []CombatEventView  `json:"events"`             // released events of the round being played back, in order
 	Current  int                `json:"current"`            // index into Events of the block being shown; -1 when none
@@ -122,12 +124,20 @@ type CombatOptionView struct {
 	Target    string `json:"target"` // group, member, spell, item, none
 }
 
-// CombatSpellView is a spell the actor knows and can cast now.
+// CombatSpellView is a spell the actor knows, castable now or not
+// (COMBAT-1): known spells and the points to cast them are different
+// things, and the player is told which is missing.
 type CombatSpellView struct {
-	Name   string `json:"name"`
-	Level  int    `json:"level"`
-	Kind   string `json:"kind"`   // mage or priest
-	Target string `json:"target"` // group, member or none
+	Name     string `json:"name"`
+	Level    int    `json:"level"`
+	Kind     string `json:"kind"`             // mage or priest
+	Target   string `json:"target"`           // group, member or none: what the order needs next
+	Summary  string `json:"summary"`          // the spell's description (spells.go)
+	Affects  string `json:"affects"`          // what it is cast on, in words
+	Left     int    `json:"left"`             // points left at its level and book
+	Max      int    `json:"max"`              // most points at its level and book
+	Castable bool   `json:"castable"`         // it can be ordered now
+	Reason   string `json:"reason,omitempty"` // why not, when it cannot
 }
 
 // CombatItemView is an item the actor can use, by the name the player knows.
@@ -173,6 +183,7 @@ type CombatEventView struct {
 	Part    int                `json:"part,omitempty"`
 	Silent  bool               `json:"silent,omitempty"`
 	Effects []CombatEffectView `json:"effects,omitempty"`
+	Escape  string             `json:"escape,omitempty"` // a party-run event: "escaped" or "failed"
 }
 
 var actionNames = map[engine.CombatAction]string{
@@ -236,7 +247,15 @@ func (c *Controller) CombatView() (CombatView, error) {
 						Available: o.Available, Reason: o.Reason, Note: o.Note, Target: targetNames[o.Target]})
 				}
 				v.Spells, v.Items = c.spellsView(actor), c.itemsView(actor)
+				for i := range v.Menu {
+					if v.Menu[i].Action == "spell" && v.Menu[i].Available {
+						v.Menu[i].Note = spellNote(v.Spells)
+					}
+				}
 			}
+		}
+		if r := c.RetreatRunner(); r != nil {
+			v.Retreat = r.Name
 		}
 		v.Orders = c.ordersView(cs)
 	case engine.CombatConfirm:
@@ -262,27 +281,54 @@ func (c *Controller) CombatView() (CombatView, error) {
 	return v, nil
 }
 
-// spellsView lists the spells ch knows and can cast now, in table order.
+// spellsView lists the spells ch knows, in table order, each with its
+// description, its points and whether it can be ordered now. A spell with
+// no effect in combat (CombatSpellNote) is listed but not castable.
 func (c *Controller) spellsView(ch *engine.Character) []CombatSpellView {
 	if !ch.IsCaster() {
 		return nil
 	}
 	var out []CombatSpellView
-	for _, sp := range engine.SpellTable {
-		if sp == nil || !ch.CanCastSpell(sp) {
+	for i, sp := range engine.SpellTable {
+		if sp == nil || i >= len(ch.SpellKnown) || !ch.SpellKnown[i] {
 			continue
+		}
+		v := CombatSpellView{Name: sp.Name, Level: sp.Level, Kind: spellBook(sp), Target: "none",
+			Summary: SpellSummary(sp.Name), Affects: SpellAffects(sp)}
+		v.Left, v.Max = castsLeft(ch, sp)
+		switch {
+		case !canUseBook(ch, sp):
+			v.Reason = classCannot(ch, sp)
+		case CombatSpellNote(sp.Name) != "":
+			v.Reason = CombatSpellNote(sp.Name)
+		case noCastsLeft(ch, sp) != "":
+			v.Reason = noCastsLeft(ch, sp)
 		}
 		target, err := c.CombatSpellTarget(ch, sp.Name)
-		if err != nil {
-			continue
+		switch {
+		case v.Reason != "":
+		case err != nil:
+			v.Reason = err.Error()
+		default:
+			v.Castable, v.Target = true, targetNames[target]
 		}
-		kind := "mage"
-		if sp.Type == engine.PriestSpell {
-			kind = "priest"
-		}
-		out = append(out, CombatSpellView{Name: sp.Name, Level: sp.Level, Kind: kind, Target: targetNames[target]})
+		out = append(out, v)
 	}
 	return out
+}
+
+// spellNote is the Spell order's note when the actor knows spells but can
+// cast none of them now.
+func spellNote(spells []CombatSpellView) string {
+	if len(spells) == 0 {
+		return ""
+	}
+	for _, sp := range spells {
+		if sp.Castable {
+			return ""
+		}
+	}
+	return "no spell can be cast now: see why"
 }
 
 // itemsView lists ch's usable items by the name the player knows.
@@ -479,6 +525,13 @@ func refView(r engine.CombatRef) CombatRefView {
 func eventView(e engine.CombatEvent) CombatEventView {
 	v := CombatEventView{Kind: string(e.Kind), Actor: refView(e.Actor), Target: refView(e.Target),
 		Lines: append([]string{}, e.Lines...), Part: e.Part, Silent: e.Silent}
+	if e.Kind == engine.EventPartyRun {
+		// The engine's own lines say which (engine/combat.go, ActionRun).
+		v.Escape = "failed"
+		if slices.Contains(e.Lines, "THE PARTY FLED!") {
+			v.Escape = "escaped"
+		}
+	}
 	for _, f := range e.Effects {
 		ev := CombatEffectView{Who: refView(f.Who), StatusFrom: f.StatusFrom, StatusTo: f.StatusTo}
 		if f.Who.Side == engine.SideParty {

@@ -103,6 +103,58 @@ func (c *Controller) FinishOrders() error {
 	return nil
 }
 
+// RetreatRunner is the member Party Retreat gives the Run order to: of
+// those who can be given an order, the one with the highest agility, the
+// earlier in the formation on a tie. Nil when no one can act.
+//
+// Run is already the whole party's escape (engine: a member's successful
+// Run ends combat for everyone), and its chance depends on that member's
+// agility, so this is the runner a player choosing by hand would pick.
+func (c *Controller) RetreatRunner() *engine.Character {
+	var runner *engine.Character
+	for _, m := range c.Game.Town.Party.Members {
+		if CanGiveOrder(m) && (runner == nil || m.Agility > runner.Agility) {
+			runner = m
+		}
+	}
+	return runner
+}
+
+// PartyRetreat (COMBAT-1) orders the party to retreat in one command: the
+// retreat runner (RetreatRunner) is ordered to Run and everyone else who can
+// act to Parry, replacing any orders given this round, and the orders go to
+// confirmation, where they can still be taken back.
+//
+// It is only orders the player could give one by one: the escape chance,
+// when in the round it is tried, and what a failure costs are the Run
+// order's, unchanged. Members who cannot act (dead, paralysed, stoned) get
+// no order and go with the party if it escapes.
+func (c *Controller) PartyRetreat() error {
+	cs, err := c.combatChoosing()
+	if err != nil {
+		return err
+	}
+	runner := c.RetreatRunner()
+	if runner == nil {
+		return ErrOrderUnavailable
+	}
+	saved := append([]engine.PartyAction(nil), cs.Actions...)
+	for _, m := range c.Game.Town.Party.Members {
+		if !CanGiveOrder(m) {
+			continue
+		}
+		o := Order{Action: engine.ActionParry}
+		if m == runner {
+			o.Action = engine.ActionRun
+		}
+		if err := c.SetOrder(m, o); err != nil {
+			copy(cs.Actions, saved) // all or nothing
+			return err
+		}
+	}
+	return c.FinishOrders()
+}
+
 // FightFriendly answers F)IGHT to a friendly encounter: order entry begins.
 func (c *Controller) FightFriendly() error {
 	cs, err := c.combatIn(engine.CombatFriendly, ErrNotFriendly)

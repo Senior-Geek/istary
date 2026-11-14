@@ -13,6 +13,7 @@
   // Settings, and this page passes it on.
   import { setContext } from 'svelte'
   import * as S from '../wailsjs/go/main/Session.js'
+  import { loadGuide } from './lib/spellGuide.svelte.js'
   import { SHEET, available } from './lib/sheet.js'
   import { PANELS, illustrated, lookOf } from './lib/scenes.js'
   import CombatScreen from './lib/CombatScreen.svelte'
@@ -49,6 +50,7 @@
   }
 
   call(S.State)
+  loadGuide(S.SpellGuide)
 
   // Town and the dungeon (with Camp) fill the window, the party bar in view.
   const shell = $derived(view && !view.fatal && view.screen !== 'combat' && view.screen !== 'games')

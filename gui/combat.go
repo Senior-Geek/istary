@@ -323,6 +323,10 @@ func (s *Session) CombatOrder(r OrderRequest) View {
 		if !ok {
 			return app.ErrInvalidChoice
 		}
+		if act == engine.ActionSpell && app.CombatSpellNote(r.Spell) != "" {
+			// Listed but not offered (COMBAT-1): no effect in combat here.
+			return &app.Refusal{Message: r.Spell + ": " + app.CombatSpellNote(r.Spell)}
+		}
 		o := app.Order{Action: act, Group: r.Group - 1, Spell: r.Spell, Item: r.Item}
 		if r.Ally > 0 {
 			if o.Ally, err = member(c, r.Ally); err != nil {
@@ -331,6 +335,19 @@ func (s *Session) CombatOrder(r OrderRequest) View {
 		}
 		return c.SetOrder(ch, o)
 	})
+}
+
+// CombatRetreat orders the whole party to retreat in one command and goes
+// to confirmation (app.PartyRetreat): the existing Run order for the most
+// agile member who can act, Parry for the rest.
+func (s *Session) CombatRetreat() View {
+	return s.onPractice(func(c *app.Controller) error { return c.PartyRetreat() })
+}
+
+// SpellGuide is every spell's description, for the character sheet and
+// any spell reference (app.SpellGuide). It reads no game state.
+func (s *Session) SpellGuide() []app.SpellGuideView {
+	return app.SpellGuide()
 }
 
 // CombatFinishOrders moves to confirmation.

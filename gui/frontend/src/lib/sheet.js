@@ -29,3 +29,10 @@ export function toggleLabel(shown) {
 export function available(view) {
   return !!view && view.screen === 'roster' && !!view.location && view.location !== 'maze'
 }
+
+// knownSpells lists a character's known spells (CharacterView.spells, by
+// name) with their entries in Go's spell guide (COMBAT-1, spellGuide), in
+// the order given; a name the guide lacks keeps just its name.
+export function knownSpells(names = [], guide = []) {
+  return (names ?? []).map((name) => guide.find((sp) => sp.name === name) ?? { name, level: 0, book: '', summary: '' })
+}

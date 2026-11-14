@@ -134,6 +134,9 @@
               <button class="small" disabled={busy} onclick={() => (choosing = '')}>Cancel</button>
             </div>
             <p class="muted small">Spells marked … are cast on one member, chosen next.</p>
+            <ul class="spellnotes small">
+              {#each castable as sp (sp.name)}<li><b>{sp.name}</b> {sp.summary}</li>{/each}
+            </ul>
             {#each whyNot(v.spells) as g (g.reason)}
               <p class="why"><b>{g.reason}</b> {g.names.join(', ')}</p>
             {/each}
@@ -220,6 +223,7 @@
 </div>
 
 <style>
+  .spellnotes { list-style: none; margin: 4px 0; padding: 0; display: grid; gap: 2px; }
   .campscreen { display: grid; gap: 12px; }
   .op { display: flex; gap: 14px; align-items: baseline; flex-wrap: wrap; padding: 8px 10px; border-radius: 6px;
     background: var(--panel); border: 1px solid var(--line); }

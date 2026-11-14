@@ -149,9 +149,25 @@ func partyXP(g *engine.GameState) (xp, gold int) {
 // party's losses and rewards are kept, the expedition ends in the castle
 // (the stairs, or the engine's defeat), and a restart at any point resumes
 // it exactly where it was saved.
+//
+// At least twelve seeds are played, and more, up to sixty, until every
+// outcome below has been seen: a win (experience and gold) comes in about
+// one encounter in ten, and which seeds have one changes whenever the
+// orders a front end may give do (COMBAT-1 stopped offering CALFO in
+// combat, and the first twelve no longer included a win).
 func TestRealExpeditionsThroughTheBridge(t *testing.T) {
 	seen := map[string]int{}
-	for seed := int64(1); seed <= 12; seed++ {
+	want := []string{"encounter", "back in the maze after combat", "prompt stairs", "camp",
+		"perished", "climbed out", "experience gained", "gold gained", "party changed", "restarted mid-expedition"}
+	covered := func() bool {
+		for _, k := range want {
+			if seen[k] == 0 {
+				return false
+			}
+		}
+		return true
+	}
+	for seed := int64(1); seed <= 60 && (seed <= 12 || !covered()); seed++ {
 		rand.Seed(seed)
 		rng := rand.New(rand.NewSource(seed))
 		s, dir := partySession(t, seed%4 == 0) // some weak parties, to see defeats
@@ -205,8 +221,7 @@ func TestRealExpeditionsThroughTheBridge(t *testing.T) {
 		restart(t, s, dir, "at the end")
 	}
 	t.Logf("covered: %v", seen)
-	for _, k := range []string{"encounter", "back in the maze after combat", "prompt stairs", "camp",
-		"perished", "climbed out", "experience gained", "gold gained", "party changed", "restarted mid-expedition"} {
+	for _, k := range want {
 		if seen[k] == 0 {
 			t.Errorf("not covered: %s", k)
 		}

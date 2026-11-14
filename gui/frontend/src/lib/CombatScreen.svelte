@@ -9,7 +9,8 @@
   //   busy   a request is running
   //   call   (fn, ...args) => Promise   runs a Session method and stores the new view
   import * as S from '../../wailsjs/go/main/Session.js'
-  import { condition, ranks, step, delay, needsOrder, orderFor, orderLabel, current, highlight, chips, targetKind } from './combat.js'
+  import { condition, ranks, step, delay, needsOrder, orderFor, orderLabel, current, highlight, chips, targetKind,
+    firstSpell, spellLevel, spellStatus, runNote, escapeLine } from './combat.js'
   import { expeditionTag } from './dungeon.js'
 
   let { view, busy = false, call } = $props()
@@ -29,12 +30,16 @@
   let details = $state(false) // the expanded review
   let pending = $state(null) // { action, needs: 'group'|'member'|'spell'|'item', spell? }
   let chestAction = $state('') // chest action waiting for who does it
+  let pointed = $state('') // the spell the picker describes: pointed at, focused or chosen
 
   // A new actor, phase or step drops whatever was half chosen.
   $effect(() => {
     void c.actor, c.phase, c.next
     pending = null
+    pointed = ''
   })
+  const spells = $derived(c.spells ?? [])
+  const described = $derived(spells.find((sp) => sp.name === pointed) ?? firstSpell(spells))
   $effect(() => {
     if (c.next !== 'chest') chestAction = ''
   })
@@ -75,6 +80,8 @@
   }
 
   function chooseSpell(sp) {
+    pointed = sp.name
+    if (!sp.castable) return // described, with the reason, and not ordered
     if (sp.target === 'none') return order({ action: 'spell', spell: sp.name })
     if (sp.target === 'group' && groups.length === 1) return order({ action: 'spell', spell: sp.name, group: groups[0].number })
     pending = { action: 'spell', needs: sp.target, spell: sp.name }
@@ -148,7 +155,9 @@
       {:else if c.phase === 'victory'}
         <!-- As the terminal: the shares, not the reward messages. -->
       {:else if c.lines?.length}
+        {#if ev?.kind === 'party-run'}<p class="gloss">The party attempts to retreat!</p>{/if}
         {#each c.lines as line}<p>{line}</p>{/each}
+        {#if escapeLine(ev)}<p class="gloss">{escapeLine(ev)}</p>{/if}
       {:else if c.phase === 'playback' && ev?.silent}
         <p class="muted">…</p>
       {/if}
@@ -179,10 +188,28 @@
               </button>
             {/each}
           {:else if pending.needs === 'spell'}
-            <div class="muted">Which spell?</div>
-            {#each c.spells ?? [] as sp}
-              <button class="act" disabled={busy} onclick={() => chooseSpell(sp)}>{sp.name} <span class="why">{sp.kind} {sp.level} · {sp.target === 'none' ? 'no target' : sp.target}</span></button>
-            {:else}<div class="muted">No spell can be cast now.</div>{/each}
+            <div class="muted">Which spell? Point at one to read about it.</div>
+            <div class="spellpick">
+              <div class="spelllist" role="group" aria-label="Known spells">
+                {#each spells as sp (sp.name)}
+                  <button class="spell" class:off={!sp.castable} class:pointed={described?.name === sp.name}
+                    aria-disabled={!sp.castable} disabled={busy} aria-describedby="spell-info"
+                    onmouseenter={() => (pointed = sp.name)} onfocus={() => (pointed = sp.name)} onclick={() => chooseSpell(sp)}>
+                    <span class="sname">{sp.name}</span>
+                    <span class="why">L{sp.level} {sp.kind} · {sp.left}/{sp.max}</span>
+                  </button>
+                {:else}<div class="muted">{actor.name} knows no spells.</div>{/each}
+              </div>
+              {#if described}
+                <div class="spellinfo" id="spell-info" aria-live="polite">
+                  <div class="shead"><b>{described.name}</b> <span class="muted">{spellLevel(described)}</span></div>
+                  <p>{described.summary}</p>
+                  <div><span class="muted">Affects:</span> {described.affects}</div>
+                  <div><span class="muted">Casts left at this level:</span> {described.left} of {described.max}</div>
+                  <div class="status" class:can={described.castable}>{spellStatus(actor.name, described)}</div>
+                </div>
+              {/if}
+            </div>
             <button class="small" onclick={() => (pending = null)}>Back</button>
           {:else if pending.needs === 'item'}
             <div class="muted">Use which item?</div>
@@ -202,6 +229,11 @@
       <div class="finish">
         <span class="muted">{missing.length ? `${missing.length} still need orders` : 'Every member who can act has an order.'}</span>
         <button class="primary" disabled={busy || missing.length > 0} onclick={() => call(S.CombatFinishOrders)}>Review orders</button>
+        <span class="retreat">
+          <button disabled={busy || !c.retreat} onclick={() => call(S.CombatRetreat)}
+            title="One order for everyone: the most agile member who can act tries to Run for the whole party, the others parry. You review the orders first; escape is not certain.">Party retreat</button>
+          <span class="muted">{c.retreat ? `${c.retreat} runs for the party; the others parry. Escape is not certain.` : 'No one can act to lead a retreat.'}</span>
+        </span>
       </div>
     {:else if c.next === 'confirm'}
       <div class="review">
@@ -213,6 +245,7 @@
             {/each}
           </tbody>
         </table>
+        {#if runNote(c)}<p class="runnote">{runNote(c)}</p>{/if}
         <button class="primary" disabled={busy} onclick={() => call(S.CombatCommit)}>Fight! <kbd>↵</kbd></button>
         <button disabled={busy} onclick={() => call(S.CombatBack)}>Change orders (clears all)</button>
       </div>
@@ -327,7 +360,24 @@
   .act.off { opacity: 0.55; }
   .why { font-size: 11px; color: #b6a98e; text-transform: none; margin-left: auto; }
   kbd { font: 600 11px ui-monospace, Menlo, monospace; border: 1px solid var(--line); border-radius: 3px; padding: 0 4px; }
-  .finish { display: flex; gap: 10px; align-items: center; }
+  .finish { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .retreat { display: flex; gap: 8px; align-items: center; margin-left: 14px; }
+  .retreat .muted { font-size: 12px; }
+  .runnote { margin: 0 0 8px; max-width: 640px; font-size: 13px; }
+  .gloss { font-family: system-ui, sans-serif; color: #f2c14e; }
+  /* The spell picker: the list and, beside it, the one described. */
+  .menu:has(.spellpick) { max-width: 760px; }
+  .spellpick { display: grid; grid-template-columns: minmax(200px, 260px) 1fr; gap: 10px; align-items: start; }
+  .spelllist { display: grid; gap: 4px; max-height: 260px; overflow: auto; }
+  .spell { display: flex; gap: 8px; align-items: baseline; text-align: left; }
+  .spell .sname { font-weight: 700; }
+  .spell.off { opacity: 0.6; }
+  .spell.pointed { border-color: #f2c14e; box-shadow: 0 0 0 1px #f2c14e; }
+  .spellinfo { display: grid; gap: 4px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px;
+    background: var(--panel); font-size: 13px; min-height: 140px; }
+  .spellinfo p { margin: 2px 0; }
+  .spellinfo .status { margin-top: 2px; color: #ffb59e; }
+  .spellinfo .status.can { color: #8fe38f; }
   .review table { border-collapse: collapse; margin-bottom: 8px; }
   .review td { padding: 2px 10px 2px 0; }
   .reports { font-size: 13px; }

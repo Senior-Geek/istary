@@ -151,6 +151,9 @@ func giveOrder(t *testing.T, s *Session, c *app.CombatView, rng *rand.Rand) View
 				tries = append(tries, OrderRequest{Slot: m.Slot, Action: opt.Action, Group: group, Item: -1})
 			case "spell":
 				for _, sp := range c.Spells {
+					if !sp.Castable { // listed with its reason, not offered (COMBAT-1)
+						continue
+					}
 					r := OrderRequest{Slot: m.Slot, Action: "spell", Spell: sp.Name, Item: -1}
 					switch sp.Target {
 					case "group":

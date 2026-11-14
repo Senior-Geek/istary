@@ -46,6 +46,7 @@ type CampSpellView struct {
 	Target   bool   `json:"target"` // cast on one party member (CastOn)
 	Castable bool   `json:"castable"`
 	Reason   string `json:"reason,omitempty"`
+	Summary  string `json:"summary"` // the spell's description (spells.go)
 }
 
 // EquipChoiceView is one item offered by the equip screen.
@@ -190,7 +191,8 @@ func campSpellViews(ch *engine.Character) []CampSpellView {
 		if i >= len(ch.SpellKnown) || !ch.SpellKnown[i] {
 			continue
 		}
-		v := CampSpellView{Name: sp.Name, Book: "mage", Level: sp.Level, Target: sp.Target == engine.TargetPartyMember}
+		v := CampSpellView{Name: sp.Name, Book: "mage", Level: sp.Level, Target: sp.Target == engine.TargetPartyMember,
+			Summary: SpellSummary(sp.Name)}
 		left := ch.MageSpells[sp.Level-1]
 		if sp.Type == engine.PriestSpell {
 			v.Book, left = "priest", ch.PriestSpells[sp.Level-1]

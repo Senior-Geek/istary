@@ -51,6 +51,8 @@ export function CombatLeave():Promise<main.View>;
 
 export function CombatOrder(arg1:main.OrderRequest):Promise<main.View>;
 
+export function CombatRetreat():Promise<main.View>;
+
 export function CombatSelect(arg1:number):Promise<main.View>;
 
 export function CombatStart():Promise<main.View>;
@@ -128,6 +130,8 @@ export function SetPartyVisible(arg1:boolean):Promise<main.View>;
 export function SetPassword(arg1:string,arg2:string):Promise<main.View>;
 
 export function ShopAction(arg1:main.ShopRequest):Promise<main.View>;
+
+export function SpellGuide():Promise<Array<app.SpellGuideView>>;
 
 export function StartCreation(arg1:string):Promise<main.View>;
 
