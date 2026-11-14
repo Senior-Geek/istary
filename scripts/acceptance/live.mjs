@@ -703,18 +703,16 @@ async function main() {
       const mage = slotOf(c, 'MAGE'), priest = slotOf(c, 'PRIEST')
       await openSpells(mage)
       let bs = await spellButtons(), i1 = await info()
-      // The library's mage was made with HALITO and KATINO; loading the
-      // library taught all four level 1 spells (finding #32, kept).
-      check(JSON.stringify(bs.map((b) => [b.name, b.off])) === JSON.stringify([['HALITO', false], ['MOGREF', false], ['KATINO', false], ['DUMAPIC', true]]),
-        `the mage's known spells: three castable, DUMAPIC listed but not (${JSON.stringify(bs)})`)
+      // The library's mage was made with HALITO and KATINO, and knows no
+      // more after the library is loaded (COMBAT-1, #32).
+      check(JSON.stringify(bs.map((b) => [b.name, b.off])) === JSON.stringify([['HALITO', false], ['KATINO', false]]),
+        `the mage's known spells, as made, both castable (${JSON.stringify(bs)})`)
       check(i1?.name === bs[0].name && /damage|sleep/.test(i1.text) && /Affects:/.test(i1.text) && /Casts left at this level:\s*2 of 2/.test(i1.text) && /can cast/.test(i1.status),
         `the description panel: name, level, what it does, target, casts left, castable (${i1?.text.replace(/\n/g, ' | ')})`)
       await js(`document.querySelectorAll('${C1} .spelllist button.spell')[1].dispatchEvent(new MouseEvent('mouseenter'))`); await sleep(200)
       check((await info())?.name === bs[1].name, 'pointing at another spell describes it at once')
-      await js(`document.querySelectorAll('${C1} .spelllist button.spell')[3].dispatchEvent(new FocusEvent('focus'))`); await sleep(200)
-      const idu = await info()
-      check(idu?.name === 'DUMAPIC' && /cannot cast DUMAPIC: exploration only/.test(idu.status), `focusing a spell (the keyboard) describes it at once, with why it cannot be cast (${idu?.status})`)
       await js(`document.querySelectorAll('${C1} .spelllist button.spell')[0].dispatchEvent(new FocusEvent('focus'))`); await sleep(200)
+      check((await info())?.name === bs[0].name, 'focusing a spell (the keyboard) describes it at once')
       check(await fits() === '', `the picker fits the window (${await fits()})`)
       await shot('spell-picker')
 
@@ -722,6 +720,8 @@ async function main() {
       await openSpells(priest)
       bs = await spellButtons()
       const calfo = bs.findIndex((b) => b.name === 'CALFO')
+      await js(`document.querySelectorAll('${C1} .spelllist button.spell')[${calfo}].dispatchEvent(new FocusEvent('focus'))`); await sleep(200)
+      check(/cannot cast CALFO/.test((await info())?.status ?? ''), 'focusing a spell that cannot be cast says why at once')
       await js(`document.querySelectorAll('${C1} .spelllist button.spell')[${calfo}].click()`); await sleep(400)
       const ic = await info()
       c = await cv()
@@ -759,7 +759,7 @@ async function main() {
       await openSpells(mage)
       bs = await spellButtons()
       const ie = await info()
-      check(bs.length === 4 && bs.every((b) => b.off) && /cannot cast HALITO: no level 1 mage casts left \(0 of 2\); a stay at the Inn restores them\./.test(ie?.status ?? ''),
+      check(bs.length === 2 && bs.every((b) => b.off) && /cannot cast HALITO: no level 1 mage casts left \(0 of 2\); a stay at the Inn restores them\./.test(ie?.status ?? ''),
         `no casts left: every spell says why (${ie?.status})`)
       check(await fits() === '', 'the exhausted picker fits')
       await shot('spell-exhausted')
@@ -805,7 +805,7 @@ async function main() {
       await clickSlot(mi)
       if (await toggle() === 'Character Sheet') await clickText('Character Sheet', B)
       const rows = await js(`[...document.querySelectorAll('${A} .sheet ul.spells li')].map((li) => li.innerText.replaceAll(String.fromCharCode(10), ' '))`)
-      check(rows.length === 4 && rows.every((r) => /^(HALITO|MOGREF|KATINO|DUMAPIC)\s+mage 1\s+\S/.test(r)), `the sheet lists the mage's spells with descriptions (${JSON.stringify(rows)})`)
+      check(rows.length === 2 && rows.every((r) => /^(HALITO|KATINO)\s+mage 1\s+\S/.test(r)), `the sheet lists the mage's spells with descriptions (${JSON.stringify(rows)})`)
       await shot('sheet-spells')
     },
   }

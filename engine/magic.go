@@ -419,6 +419,33 @@ func try2Learn(c *Character, spells []*Spell, stat int, learned *bool) {
 	}
 }
 
+// SpellKnownFits reports whether c's saved known spells can be kept as
+// they are: some are known, and each is of a book and level at which c has
+// spell points. The game keeps that true (SETSPELS gives at least one
+// point for each spell known at a level); known spells saved in the table's
+// old order generally break it.
+func (c *Character) SpellKnownFits() bool {
+	any := false
+	for i, k := range c.SpellKnown {
+		if !k {
+			continue
+		}
+		if i >= len(SpellTable) {
+			return false
+		}
+		any = true
+		sp := SpellTable[i]
+		max := c.MaxMageSpells
+		if sp.Type == PriestSpell {
+			max = c.MaxPriestSpells
+		}
+		if max[sp.Level-1] <= 0 {
+			return false
+		}
+	}
+	return any
+}
+
 // MigrateSpellKnown sets SpellKnown for characters loaded from pre-TRYLEARN saves.
 // If no spells are marked known but the character has spell slots, assume all spells
 // known at levels where they have max slots (preserves pre-TRYLEARN behavior).

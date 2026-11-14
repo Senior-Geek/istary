@@ -172,11 +172,17 @@ func (g *GameState) Load() error {
 		c.MigrateItems()
 		// AC is derived from what is worn: never trust a stored value (#35).
 		c.RecalcAC(g.Scenario.Items)
-		// Force reset SpellKnown — spell table was reordered (MONTINO moved from
-		// Mage to Priest, spells reindexed to match Pascal SPELLSKN[1..50]).
-		// MigrateSpellKnown will regenerate from current spell slots.
-		c.SpellKnown = [50]bool{}
-		c.MigrateSpellKnown()
+		// Known spells are kept as saved (COMBAT-1, finding #32). Before, every
+		// load cleared them and MigrateSpellKnown marked every spell of each
+		// level with points as known, so each restart taught spells. Only a
+		// save without them, or whose known spells do not fit the character's
+		// points (from before the spell table was reordered to Pascal
+		// SPELLSKN[1..50]: MONTINO moved from Mage to Priest), is rebuilt
+		// from the points as before.
+		if !c.SpellKnownFits() {
+			c.SpellKnown = [50]bool{}
+			c.MigrateSpellKnown()
+		}
 	}
 
 	// Rebuild party from names

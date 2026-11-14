@@ -222,37 +222,6 @@ func TestCurrentSaveTakesPrecedenceOverLegacy(t *testing.T) {
 	}
 }
 
-// Characterizes current behavior: Load discards saved SpellKnown and
-// regenerates it from MaxMageSpells/MaxPriestSpells, so a freshly created
-// mage (HALITO + KATINO) knows all level-1 mage spells after a reload.
-func TestLoadRegeneratesSpellKnowledge(t *testing.T) {
-	freshHome(t)
-	g := newTestGame(t, 1)
-	cs := &CreationState{Name: "MERLIN", Race: Elf, Class: Mage, Alignment: Neutral,
-		Stats: [6]int{7, 15, 10, 6, 9, 6}}
-	seed(1)
-	c := cs.FinalizeCharacter()
-	known := func(c *Character) (n int) {
-		for _, k := range c.SpellKnown {
-			if k {
-				n++
-			}
-		}
-		return n
-	}
-	if known(c) != 2 {
-		t.Fatalf("new mage knows %d spells, want 2 (HALITO, KATINO)", known(c))
-	}
-	g.Town.Roster.Add(c)
-	g.Save()
-
-	g2 := newTestGame(t, 1)
-	g2.Load()
-	if got, want := known(g2.Town.Roster.Characters[0]), len(MageSpellsByLevel[0]); got != want {
-		t.Errorf("reloaded mage knows %d spells, want %d (all level-1 mage spells)", got, want)
-	}
-}
-
 func TestSetSaveDirRedirectsSaves(t *testing.T) {
 	home := freshHome(t)
 	alt := filepath.Join(t.TempDir(), "gui-saves")

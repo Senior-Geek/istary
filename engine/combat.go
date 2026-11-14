@@ -1899,7 +1899,14 @@ func (cs *CombatState) executeSpell(member *Character, action *PartyAction, game
 				}
 			}
 		case "LATUMOFIS":
-			// Cure poison — not a combat status in our model, just message
+			// Cure poison (guide p.70: "removes the effects of poison", any
+			// time, 1 person), as Camp does: the target's poison is gone.
+			// Before COMBAT-1 it only said so (finding #41).
+			if action.TargetAlly >= 0 && action.TargetAlly < len(game.Town.Party.Members) {
+				if target := game.Town.Party.Members[action.TargetAlly]; target != nil {
+					target.PoisonAmt = 0
+				}
+			}
 			cs.addMessage("POISON CURED!")
 		case "MILWA":
 			// Pascal COMBAT4.TEXT line 598: LIGHT := LIGHT + 15 + (RANDOM MOD 15)
@@ -2008,10 +2015,13 @@ func (cs *CombatState) executeSpell(member *Character, action *PartyAction, game
 				}
 			}
 		case "MAPORFIC":
-			// Pascal COMBAT4.TEXT line 640: ACMOD2 := 2
-			// Global AC bonus for entire party — add to each member's combat AC mod
-			for i := 0; i < len(game.Town.Party.Members); i++ {
-				cs.PartyACMod[i] += 2
+			// Pascal COMBAT4.TEXT line 640: ACMOD2 := 2, a party-wide armour
+			// class bonus ("BIG SHIELD", guide p.70): 2 better. A lower
+			// PartyACMod is better (MOGREF's -2, MATU's -2), as the monsters'
+			// to-hit 20 - AC - level + mod reads it; this added 2 before
+			// COMBAT-1 (finding #40), making the party easier to hit.
+			for i := 0; i < len(game.Town.Party.Members) && i < len(cs.PartyACMod); i++ {
+				cs.PartyACMod[i] -= 2
 			}
 			cs.addMessage("MAPORFIC!")
 		case "LATUMAPIC":

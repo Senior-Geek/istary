@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -42,7 +43,7 @@ func TestRenameCharacter(t *testing.T) {
 	s.RenameCharacter(0, "elessar")
 	after := s.State().Roster[0]
 	after.Name = before.Name
-	if !sameExceptSpells(before, after) {
+	if !reflect.DeepEqual(before, after) {
 		t.Errorf("rename changed more than the name:\nbefore %+v\nafter  %+v", before, after)
 	}
 }

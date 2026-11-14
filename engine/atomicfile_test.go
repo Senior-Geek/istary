@@ -169,9 +169,10 @@ func TestRepeatedSaves(t *testing.T) {
 // Rosters saved before this change load, and saving them again writes the
 // bytes the old writer (os.WriteFile at a1eef2a) wrote for the same roster:
 // save_roster1.resaved.golden.json was produced that way. (It differs from
-// the original golden only where Load regenerates spell knowledge and
-// works out each AC from what is worn, finding #35: the golden's AC 4 and
-// AC 0 were hand-written, and every AC is 10 for what they wear.) The
+// the original golden only where Load works out each AC from what is
+// worn, finding #35: the golden's AC 4 and AC 0 were hand-written, and
+// every AC is 10 for what they wear. Until COMBAT-1 it also differed in
+// known spells, which Load widened, #32: ALDRIC now keeps DIOS and BADIOS.) The
 // legacy upstream roster loads, saves and reloads.
 func TestExistingRostersStillLoadAndResave(t *testing.T) {
 	home := freshHome(t)

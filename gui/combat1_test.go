@@ -40,10 +40,9 @@ func toOrders(t *testing.T, s *Session, slot int) View {
 }
 
 // A mage made at the Training Grounds starts with two level 1 casts, keeps
-// them through a restart, and on the first expedition finds HALITO, KATINO
-// and MOGREF ready to cast in the first fight, each described, and DUMAPIC
-// listed as exploration only, refused if ordered. (A restart teaches every
-// level 1 mage spell: finding #32, kept.)
+// them and only the spells it was made with (HALITO and KATINO) through a
+// restart (COMBAT-1, #32), and on the first expedition finds both ready to
+// cast in the first fight, each described.
 func TestFirstExpeditionSpells(t *testing.T) {
 	s, dir := newTestSession(t)
 	var err error
@@ -88,13 +87,21 @@ func TestFirstExpeditionSpells(t *testing.T) {
 	for _, sp := range v.Combat.Spells {
 		byName[sp.Name] = sp
 	}
-	for _, n := range []string{"HALITO", "MOGREF", "KATINO"} {
+	if len(byName) != 2 {
+		t.Errorf("known after a restart: %+v", v.Combat.Spells)
+	}
+	for _, n := range []string{"HALITO", "KATINO"} {
 		if sp := byName[n]; !sp.Castable || sp.Left != 2 || sp.Max != 2 || sp.Summary != app.SpellSummary(n) || sp.Summary == "" {
 			t.Errorf("%s on the first expedition: %+v", n, sp)
 		}
 	}
-	if sp := byName["DUMAPIC"]; sp.Castable || !strings.HasPrefix(sp.Reason, "Exploration only") {
-		t.Errorf("DUMAPIC in combat: %+v", sp)
+	// DUMAPIC, once learned, is listed as exploration only and refused.
+	mage.SpellKnown[engine.SpellIndex["DUMAPIC"]] = true
+	v = r.CombatSelect(1)
+	for _, sp := range v.Combat.Spells {
+		if sp.Name == "DUMAPIC" && (sp.Castable || !strings.HasPrefix(sp.Reason, "Exploration only")) {
+			t.Errorf("DUMAPIC in combat: %+v", sp)
+		}
 	}
 	if v := r.CombatOrder(OrderRequest{Slot: 1, Action: "spell", Spell: "DUMAPIC", Item: -1}); !strings.Contains(v.Error, "Exploration only") {
 		t.Fatalf("DUMAPIC ordered: %q", v.Error)
