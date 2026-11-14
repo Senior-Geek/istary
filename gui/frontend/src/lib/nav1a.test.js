@@ -59,8 +59,14 @@ test('the Castle’s story: the introductory one with no game, its own in one', 
   const story = src.slice(src.indexOf('{#snippet story()}'), src.indexOf('{/snippet}'))
   const intro = story.slice(story.indexOf('{#if !view.game}'), story.indexOf('{:else}'))
   const own = story.slice(story.indexOf('{:else}'))
-  assert.match(intro, /Edge of Town/)
-  assert.match(intro, /Select Game/)
+  // The approved text (NAV-1A), its first line, its directions and its
+  // challenge, emphasised in the story box's own gold.
+  assert.match(intro, /<p>You have arrived at the Castle of Trebor, the Mad Overlord,/)
+  assert.match(intro, /<p><b>Your journey begins at the Edge of Town\.<\/b><\/p>/)
+  assert.match(intro, /<p class="challenge">Trebor has issued his challenge\. Will you answer it\?<\/p>/)
+  assert.equal((intro.match(/<p[ >]/g) ?? []).length, 11, 'eleven paragraphs, as approved')
+  assert.match(src, /\.challenge \{ color: var\(--gold\); font-weight: 700; \}/)
+  assert.match(src, /storyTitle=\{view\.game \? undefined : 'Welcome to the Castle'\}/, 'titled Welcome to the Castle; the Castle in a game')
   assert.match(own, /Gilgamesh's Tavern/)
   assert.ok(!/Select Game/.test(own), 'the Castle’s own story is as before')
   assert.match(src, /\{#if !view\.game\}\s*<section class="no-game"/, 'and the information says no game is selected')

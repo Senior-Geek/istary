@@ -958,7 +958,7 @@ async function main() {
     const fits = () => js(`(() => { const h = document.querySelector('${HEAD}'); const bs = [...h.querySelectorAll('button')]; const ys = new Set(bs.map((b) => Math.round(b.getBoundingClientRect().top))); return h.scrollWidth <= h.clientWidth + 1 && document.scrollingElement.scrollWidth <= innerWidth + 1 && ys.size <= 1 })()`)
     const ways = (sel) => js(`[...document.querySelectorAll(${JSON.stringify(sel)})].map((b) => [b.innerText.trim(), !b.disabled])`)
     const storyText = () => js(`document.querySelector('${STORY}')?.innerText ?? ''`)
-    const INTRO = 'no party has yet been named'
+    const INTRO = 'You have arrived at the Castle of Trebor'
 
     // No game: Select Game closes this one, and Escape leaves game selection.
     await goto('edge')
@@ -974,7 +974,17 @@ async function main() {
     check(JSON.stringify(dests) === JSON.stringify([["Gilgamesh's Tavern", false], ["The Adventurer's Inn", false], ["Boltac's Trading Post", false], ['The Temple of Cant', false], ['The Edge of Town', true]]), `only the Edge of Town is open (${JSON.stringify(dests)})`)
     const why = await js(`[...document.querySelectorAll('${B} nav[aria-label=Destinations] .why')].map((e) => e.innerText.trim())`)
     check(why.length === 4 && why.every((w) => w === 'Select a game first: Select Game is at the Edge of Town.'), `the closed ones say a game must be selected first (${JSON.stringify(why)})`)
-    check(await js(`!document.querySelector('${B} section.actions')`) && (await storyText()).includes(INTRO) && (await storyText()).includes('Select Game'), 'the introductory story, in the story box')
+    const intro = await storyText()
+    check(await js(`!document.querySelector('${B} section.actions')`) && intro.includes(INTRO) && intro.includes('Your journey begins at the Edge of Town.') && intro.includes('Trebor has issued his challenge. Will you answer it?'), 'the introductory story, in the story box')
+    check(await js(`document.querySelector('${STORY} h3')?.textContent.trim()`) === 'Welcome to the Castle', 'titled Welcome to the Castle')
+    // Longer than the box: it scrolls inside the story box, which stays in
+    // the picture's area, clear of the destinations and the party.
+    const box = await rect(STORY), area = await rect(A), nav = await rect(`${B}`), party = await rect(D)
+    check(!!box && box.x >= area.x - 1 && box.r <= area.r + 1 && box.y >= area.y - 1 && box.b <= area.b + 1 && box.r <= nav.x && box.b <= party.y, `the story box within the picture's area, clear of the controls (${JSON.stringify(box)})`)
+    const scroll = await js(`(() => { const t = document.querySelector('${STORY} .text'); const before = t.scrollHeight > t.clientHeight + 1 && getComputedStyle(t).overflowY === 'auto'; t.scrollTop = t.scrollHeight; const c = document.querySelector('${STORY} .challenge').getBoundingClientRect(), r = t.getBoundingClientRect(); const seen = c.top >= r.top - 1 && c.bottom <= r.bottom + 1; t.scrollTop = 0; return before && seen })()`)
+    check(scroll, 'the story scrolls inside its box, to its last line')
+    const em = await js(`(() => { const c = getComputedStyle(document.querySelector('${STORY} .challenge')), h = getComputedStyle(document.querySelector('${STORY} h3')); return c.color === h.color && Number(c.fontWeight) >= 700 })()`)
+    check(em, 'the challenge emphasised, in the story box\'s gold')
     check(await js(`!!document.querySelector('${C} .no-game')`), 'and the information says no game is selected')
     check(JSON.stringify(await buttons(HEAD)) === JSON.stringify(['Hide party', 'Story', 'Show sheet', 'Hide panels']) && await fits(), `the top bar as in a game, on one row (${JSON.stringify(await buttons(HEAD))})`)
     check(await js(`[...document.querySelectorAll('${HEAD} button')].find((b) => b.innerText.trim() === 'Show sheet').disabled`), 'no sheet to show: its toggle is disabled')
