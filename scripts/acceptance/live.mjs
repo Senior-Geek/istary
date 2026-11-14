@@ -185,9 +185,15 @@ async function main() {
     await sleep(200)
   }
   const STORY = '.frame aside.story'
-  const setLook = async (id) => { await js(`(() => { const s = document.querySelector('.frame .look select'); s.value = ${JSON.stringify(id)}; s.dispatchEvent(new Event('change', { bubbles: true })) })()`); await sleep(300) }
+  // The appearance (ART-2C), set as Settings sets it, then shown at place.
+  const LOOKS = { panels: ['slate', 'dark', 'light'], story: ['parchment', 'dark', 'slate'], artwork: ['full', 'subdued', 'hidden'] }
+  const setLook = async (l, place) => { const v = JSON.parse(await js(`${S}.SetAppearance(${JSON.stringify(l.panels)}, ${JSON.stringify(l.story)}, ${JSON.stringify(l.artwork)}).then((v) => JSON.stringify(v))`)); if (v.error) throw new Error(v.error); await goto(place); await loaded() }
+  // What the page shows of it.
+  const shownLook = () => js(`(() => { const f = document.querySelector('.frame'), b = document.querySelector('.backdrop'), i = b?.querySelector('img'); return { panels: f?.dataset.appearance ?? null, story: document.querySelector('${STORY}')?.dataset.appearance ?? null, artwork: b?.dataset.artwork ?? null, img: !!i, filter: i ? getComputedStyle(i).filter : null } })()`)
+  const SETTINGS_FILE = join(LIB, 'gui-settings.json')
+  const fileLook = () => { try { const f = JSON.parse(readFileSync(SETTINGS_FILE, 'utf8')); return { panels: f.panels, story: f.story, artwork: f.artwork } } catch { return null } }
   // Where everything in the frame is: the same in every appearance.
-  const layoutNow = () => js(`[...document.querySelectorAll('.frame .head, .frame [data-area], .frame button, .frame select, ${STORY}, .frame p, .frame h2, .frame h3')].map((e) => { const r = e.getBoundingClientRect(); return [r.x, r.y, r.width, r.height].map(Math.round).join(',') }).join(' ')`)
+  const layoutNow = () => js(`[...document.querySelectorAll('.frame .head, .frame [data-area], .frame button, ${STORY}, .frame p, .frame h2, .frame h3')].map((e) => { const r = e.getBoundingClientRect(); return [r.x, r.y, r.width, r.height].map(Math.round).join(',') }).join(' ')`)
   // The lowest contrast of the frame's text against what is behind it
   // (WCAG 2), with the picture under the panels taken at its darkest and
   // its lightest: every fill and opacity between the text and the picture
@@ -307,6 +313,11 @@ async function main() {
     // the two; in windows larger and smaller than this one; nothing saved.
     async scenes() {
       const before = sha(GAME)
+      // A library that has never chosen: Slate panels, a Parchment story
+      // box, the whole picture (ART-2C).
+      await goto('castle'); await loaded()
+      const first = await shownLook()
+      check(fileLook()?.panels === undefined && first.panels === 'slate' && first.story === 'parchment' && first.artwork === 'full' && first.img && first.filter === 'none', `the defaults: Slate panels, a Parchment story box, the whole picture (${JSON.stringify(first)})`)
       for (const place of ['castle', 'edge']) {
         await goto(place); await loaded()
         let a = await art(place)
@@ -433,58 +444,140 @@ async function main() {
       await esc()
       check(!!(await rect(STORY)), 'Show panels brings it back')
       await clickText('← Castle Esc', '.frame .head')
-      check((await view()).location === 'castle' && !!(await rect(STORY)), 'open, it stays open at the Castle')
+      st = await rect(STORY)
+      check((await view()).location === 'castle' && !!st && Math.abs(st.x - left.x) < 1 && Math.abs(st.y - left.y) < 1 && Math.abs(st.w - left.w) < 1, 'open, it stays open at the Castle, in the same place')
 
-      // The appearances (ART-2B): only colours change; the text reads on
-      // every panel; the choice holds from place to place; nothing is saved.
-      await goto('castle')
-      for (const place of ['castle', 'edge']) {
-        if (place === 'edge') await clickText('The Edge of Town', B)
-        const base = await layoutNow()
-        for (const look of ['dark', 'light', 'slate']) {
-          await setLook(look)
-          check(await js(`document.querySelector('.frame').dataset.appearance`) === look && await js(`document.querySelector('${STORY}').closest('[data-appearance]')?.dataset.appearance`) === look, `${place}, ${look}: the panels and the story box take it`)
-          check(await layoutNow() === base, `${place}, ${look}: everything is where it is in the dark`)
-          const al = await opaque(`.frame .head, ${B} .actions, ${B} nav, ${C} > section, ${D}, ${STORY}`)
-          check(al.every((x) => x >= 0.9 && x <= 0.95), `${place}, ${look}: the panels are ${Math.round(Math.min(...al) * 100)}–${Math.round(Math.max(...al) * 100)}% opaque`)
-          const low = await contrast()
-          check(low.length === 0, `${place}, ${look}: all its text reads (WCAG AA over the picture's darkest and lightest)${low.length ? ': ' + low.slice(0, 4).join('; ') : ''}`)
-          bad = await controls()
-          check(bad.length === 0, `${place}, ${look}: every control in view and uncovered${bad.length ? ': ' + bad.join(', ') : ''}`)
-        }
+      // Settings (ART-2C): the three choices, taking effect at once, kept
+      // in the window's settings file and nowhere in the game; the story
+      // box as it was, open and where it was left, through Settings.
+      await clickText('The Edge of Town', B)
+      await clickText('Settings', B)
+      const radios = () => js(`Object.fromEntries(['panels', 'story', 'artwork'].map((k) => [k, [...document.querySelectorAll('input[name=look-' + k + ']')].map((r) => (r.checked ? '*' : '') + r.value).join(' ')]))`)
+      let r0 = await radios()
+      check(r0.panels === '*slate dark light' && r0.story === '*parchment dark slate' && r0.artwork === '*full subdued hidden', `Settings offers each part, the defaults chosen (${JSON.stringify(r0)})`)
+      check(!(await js(`!!document.querySelector('[data-appearance]') || !!document.querySelector('.backdrop')`)), 'Settings itself, a place without artwork, is as it was')
+      await shot('settings-appearance')
+      const clickRadio = async (k, id) => {
+        const p = await js(`(() => { const r = document.querySelector('input[name=look-${k}][value=${id}]').closest('label'); r.scrollIntoView({ block: 'nearest' }); const q = r.getBoundingClientRect(); return { x: q.x + 12, y: q.y + q.height / 2 } })()`)
+        await mouse('mousePressed', p.x, p.y); await mouse('mouseReleased', p.x, p.y); await sleep(500)
       }
-      await setLook('light')
-      await clickText('← Castle Esc', '.frame .head')
-      check(await js(`document.querySelector('.frame').dataset.appearance`) === 'light', 'the appearance holds from place to place')
+      await clickRadio('panels', 'light'); await clickRadio('story', 'dark'); await clickRadio('artwork', 'subdued')
+      r0 = await radios()
+      check(r0.panels.includes('*light') && r0.story.includes('*dark') && r0.artwork.includes('*subdued') && JSON.stringify(fileLook()) === JSON.stringify({ panels: 'light', story: 'dark', artwork: 'subdued' }), `clicked, each takes effect and is kept in gui-settings.json (${JSON.stringify(fileLook())})`)
+      check(!(await js(`document.querySelector('input[name=look-panels]').closest('fieldset').disabled`)), 'and the choices stay open to change')
+      await clickText('← Castle Esc', '.frame .head'); await loaded()
+      let sl = await shownLook()
+      st = await rect(STORY)
+      check(sl.panels === 'light' && sl.story === 'dark' && sl.artwork === 'subdued' && sl.img && sl.filter !== 'none', `back at the Castle: Light panels, a Dark story box, the picture subdued (${sl.filter})`)
+      check(!!st && Math.abs(st.x - left.x) < 1 && Math.abs(st.y - left.y) < 1, 'the story box open, where it was left')
+
+      // Another game, and back: the same appearance (it is the window's).
+      await js(`${S}.Navigate('edge')`)
+      let gv = JSON.parse(await js(`${S}.ChangeGame().then((v) => JSON.stringify(v))`))
+      if (gv.screen === 'games') gv = JSON.parse(await js(`${S}.NewGame(2).then((v) => JSON.stringify(v))`))
+      if (gv.screen === 'games') gv = JSON.parse(await js(`${S}.ContinueGame(2).then((v) => JSON.stringify(v))`)) // a library used before
+      await reload(); await loaded()
+      sl = await shownLook()
+      check(gv.game === 2 && gv.location === 'castle' && sl.panels === 'light' && sl.story === 'dark' && sl.artwork === 'subdued', `in another game (${gv.game}, ${gv.location}): the same appearance`)
+      await js(`${S}.Navigate('edge')`)
+      await js(`${S}.ChangeGame()`)
+      gv = JSON.parse(await js(`${S}.ContinueGame(1).then((v) => JSON.stringify(v))`))
+      await goto('castle'); await loaded()
+      sl = await shownLook()
+      check(gv.game === 1 && sl.panels === 'light' && sl.story === 'dark' && sl.artwork === 'subdued' && sha(GAME) === before, 'back in the first game: the same, and the game unchanged')
+
+      // Every combination (ART-2C): the panels' 3 appearances, the story
+      // box's 3 and the picture's 3, at both places. Only colours change, so
+      // everything is where it is in the defaults (the picture hidden: less
+      // Hide panels); the text reads on every panel and in the story box;
+      // every control is in view and uncovered, and none disabled by it.
+      const combos = []
+      for (const panels of LOOKS.panels) for (const story of LOOKS.story) for (const artwork of LOOKS.artwork) combos.push({ panels, story, artwork })
+      for (const place of ['castle', 'edge']) {
+        await setLook({ panels: 'slate', story: 'parchment', artwork: 'full' }, place)
+        const base = await layoutNow(), enabled = await js(`[...document.querySelectorAll('.frame button')].filter((b) => !b.disabled).length`)
+        await setLook({ panels: 'slate', story: 'parchment', artwork: 'hidden' }, place)
+        const baseHidden = await layoutNow()
+        const issues = []
+        for (const l of combos) {
+          await setLook(l, place)
+          const name = `${l.panels}/${l.story}/${l.artwork}`
+          const sl = await shownLook()
+          if (sl.panels !== l.panels || sl.story !== l.story || sl.artwork !== l.artwork) issues.push(`${name}: shows ${JSON.stringify(sl)}`)
+          const pic = l.artwork === 'hidden' ? !sl.img : sl.img && (l.artwork === 'full' ? sl.filter === 'none' : /brightness/.test(sl.filter))
+          if (!pic) issues.push(`${name}: the picture is not ${l.artwork} (${sl.img}, ${sl.filter})`)
+          const head = await buttons('.frame .head')
+          if (head.includes('Hide panels') === (l.artwork === 'hidden') || !head.includes('Story')) issues.push(`${name}: head ${head.join('|')}`)
+          if (await layoutNow() !== (l.artwork === 'hidden' ? baseHidden : base)) issues.push(`${name}: the layout moved`)
+          const al = await opaque(`.frame .head, ${B} .actions, ${B} nav, ${C} > section, ${D}, ${STORY}`)
+          if (!al.every((x) => x >= 0.9 && x <= 0.95)) issues.push(`${name}: opacity ${al.join(' ')}`)
+          const low = await contrast()
+          if (low.length) issues.push(`${name}: contrast ${low.slice(0, 3).join('; ')}`)
+          const bad = await controls()
+          if (bad.length) issues.push(`${name}: covered ${bad.join(', ')}`)
+          const on = await js(`[...document.querySelectorAll('.frame button')].filter((b) => !b.disabled).length`)
+          if (on !== enabled - (l.artwork === 'hidden' ? 1 : 0)) issues.push(`${name}: ${on} controls enabled, ${enabled} in the defaults`)
+          if (!(await pageStill())) issues.push(`${name}: the page scrolls`)
+        }
+        check(issues.length === 0, `${place}: all ${combos.length} combinations shown as chosen, the layout unchanged, 90–95% opaque, every text at WCAG AA, every control in view, uncovered and enabled${issues.length ? ': ' + issues.slice(0, 6).join(' | ') : ''}`)
+      }
+      // The picture hidden: the place's tint alone; the display describes
+      // nothing; Escape still goes Back.
+      await setLook({ panels: 'dark', story: 'slate', artwork: 'hidden' }, 'castle')
+      check(await js(`(() => { const b = document.querySelector('.backdrop'); return !b.querySelector('img') && !b.querySelector('.emblem') && !!b.querySelector('.fallback.plain') && document.querySelector('${A} figure.scene.view').getAttribute('aria-hidden') === 'true' && !document.querySelector('${A} [role=img]') })()`), 'the picture hidden: a plain backdrop, and the display describes no picture')
+      await clickText('The Edge of Town', B); await esc()
+      check((await view()).location === 'castle', 'Escape still goes Back')
+      await setLook({ panels: 'slate', story: 'parchment', artwork: 'full' }, 'castle')
       await goto('tavern')
-      check(await js(`!document.querySelector('[data-appearance]') && !document.querySelector('.frame .look')`), 'a place without artwork is as it was')
+      check(await js(`!document.querySelector('[data-appearance]') && !document.querySelector('.backdrop') && !!document.querySelector('${A} figure.scene:not(.view) .fallback .emblem')`), 'a place without artwork is as it was')
 
       check(sha(GAME) === before, 'the game is saved exactly as before: the pictures and panels change nothing')
     },
 
-    // The appearances side by side (ART-2B), for choosing one: the Castle
-    // and the Edge of Town in each, at the compact window, 1440x900 and the
-    // MacBook Pro's full screens, with the story box open, and closed at the
-    // first two. Screenshots only, named for what they show; the checks are
-    // the scenes suite's.
+    // The appearances for review (ART-2C): the Castle and the Edge of Town
+    // with the defaults (Slate panels, a Parchment story box) and a
+    // contrasting combination (Light panels, a Dark story box, the picture
+    // subdued), at the compact window, 1440x900 and the MacBook Pro's full
+    // screens, the story box open and, at the first two, closed; and the
+    // picture hidden, once. Screenshots only, named for what they show;
+    // the checks are the scenes suite's. Leaves the defaults.
     async looks() {
+      const shots = [{ panels: 'slate', story: 'parchment', artwork: 'full' }, { panels: 'light', story: 'dark', artwork: 'subdued' }]
       for (const [w, h] of [[980, 692], [1440, 900], [1512, 982], [1728, 1117]]) {
         await sized(w, h)
         for (const place of ['castle', 'edge']) {
-          await goto(place); await loaded()
-          for (const look of ['dark', 'light', 'slate']) {
-            await setLook(look)
-            await shot(`${place}-${look}-${w}x${h}-story`)
+          for (const l of shots) {
+            await setLook(l, place)
+            const name = `${place}-${l.panels}-${l.story}-${l.artwork}-${w}x${h}`
+            await shot(`${name}-story`)
             if (w <= 1440) {
               await js(`document.querySelector('${STORY} .close').click()`); await sleep(300)
-              await shot(`${place}-${look}-${w}x${h}-closed`)
+              await shot(`${name}-closed`)
               await clickText('Story', '.frame .head')
             }
           }
         }
       }
+      await sized(1440, 900)
+      for (const place of ['castle', 'edge']) { await setLook({ panels: 'dark', story: 'slate', artwork: 'hidden' }, place); await shot(`${place}-dark-slate-hidden-1440x900-story`) }
+      await setLook({ panels: 'slate', story: 'parchment', artwork: 'full' }, 'castle')
       await sized(W, H)
       check(true, 'looks: the screenshots are taken')
+    },
+
+    // A restart (ART-2C; by hand, twice on one library): Istary opens with
+    // the appearance gui-settings.json keeps, the defaults if it keeps none;
+    // then another is chosen, for the next run to find.
+    async restarted() {
+      const kept = fileLook()
+      await goto('castle'); await loaded()
+      const sl = await shownLook()
+      const want = kept?.panels ? kept : { panels: 'slate', story: 'parchment', artwork: 'full' }
+      check(sl.panels === want.panels && sl.story === want.story && sl.artwork === want.artwork, `opened with ${kept?.panels ? 'the appearance kept' : 'the defaults, none kept'} (${JSON.stringify(want)}; shown ${JSON.stringify(sl)})`)
+      const i = (LOOKS.panels.indexOf(want.panels) + 1) % 3
+      const next = { panels: LOOKS.panels[i], story: LOOKS.story[(i + 1) % 3], artwork: LOOKS.artwork[i] }
+      await setLook(next, 'castle')
+      check(JSON.stringify(fileLook()) === JSON.stringify(next), `chosen for the next run: ${JSON.stringify(next)}`)
     },
 
     // Creation: decisions in the Actions; points and class on one screen; Discard, then Keep.
