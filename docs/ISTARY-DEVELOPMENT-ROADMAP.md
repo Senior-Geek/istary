@@ -329,7 +329,11 @@ decided by then.
   Castle is the hub with its five destinations only; the Edge of Town's
   actions are Enter the Maze, the Training Grounds, Select Game, Settings
   and Leave the Game; the character sheet's toggle is in the top bar;
-  practice is no longer offered in the window (`design/nav1/NAV-1.md`).*
+  practice is no longer offered in the window (`design/nav1/NAV-1.md`).
+  NAV-1A (2026-11-14): Istary always opens at the Castle, with the game
+  last chosen open, or with none and an introductory story, only the Edge
+  of Town open; game selection is reached by Select Game
+  (`design/nav1/NAV-1A.md`).*
 - **Compatibility audit:** close or explicitly defer every "Not
   investigated" row.
 - **Playtest:** a guided playtest against the Hawkwind walkthrough

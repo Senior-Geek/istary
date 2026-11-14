@@ -158,6 +158,17 @@ suites are:
   - Escape leaving neither the maze (a real expedition, entered with Enter
     the Maze, and a practice one) nor combat;
   - practice started through its Session methods, saving nothing.
+- **startup** (NAV-1A), whenever a change reaches the town interface:
+  - game selection's ← Castle (Esc), to the Castle with no game open;
+  - with no game: the Castle's picture, only the Edge of Town open, the
+    others saying a game must be selected first, the introductory story
+    in the story box, closed with its ×, and nothing in the way;
+  - the Edge's actions with no game (the maze and the Training Grounds
+    closed, with their reasons) and Settings with only the appearance;
+  - Escape from the Edge and Settings to the Castle;
+  - Select Game and Continue: the game at the Castle, every destination
+    open, its own story shown again, the save unchanged and the game
+    remembered.
 
 Two more suites are run by hand, not by level 2:
 
