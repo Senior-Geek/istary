@@ -7,6 +7,7 @@ export namespace app {
 	    target: boolean;
 	    castable: boolean;
 	    reason?: string;
+	    summary: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new CampSpellView(source);
@@ -20,6 +21,7 @@ export namespace app {
 	        this.target = source["target"];
 	        this.castable = source["castable"];
 	        this.reason = source["reason"];
+	        this.summary = source["summary"];
 	    }
 	}
 	export class DumapicView {
