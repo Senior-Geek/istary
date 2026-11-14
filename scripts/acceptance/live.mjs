@@ -9,7 +9,7 @@
 // the Training Grounds.
 //
 //   node scripts/acceptance/live.mjs --gui GUI_DIR --library DIR --out DIR
-//        [--size 980x692] [--suites layout,sheet,scenes,creation,combat,nav] [--wails PATH] [--chrome PATH]
+//        [--size 980x692] [--suites layout,sheet,scenes,creation,combat,nav,startup] [--wails PATH] [--chrome PATH]
 //
 // The library must have been written by TestWriteAcceptanceLibrary
 // (gui/acceptance_seed_test.go). Everything it starts (wails dev, the app,
@@ -157,7 +157,10 @@ async function main() {
   await send('Emulation.setDeviceMetricsOverride', { width: W, height: H, deviceScaleFactor: 1, mobile: false })
   await reload()
   let v = await view()
-  if (v.screen === 'games') { await js(`${S}.ContinueGame(1)`); await reload(); v = await view() }
+  // Istary opens at the Castle (NAV-1A), with the game last chosen open; a
+  // library that remembers none is at the Castle with no game.
+  if (!v.game) { await js(`${S}.Navigate('edge')`); await js(`${S}.ChangeGame()`) }
+  if (!v.game || v.screen === 'games') { await js(`${S}.ContinueGame(1)`); await reload(); v = await view() }
   check(v.game === 1 && v.roster.length === 8 && v.party.length === 6, `the scratch game is open: ${v.roster?.length} characters, a party of ${v.party?.length}`)
   await js(`${S}.SetPartyVisible(true)`)
 
@@ -940,6 +943,83 @@ async function main() {
       await goto('castle')
       check((await view()).screen === 'roster' && sha(GAME) === before, 'practice ended; nothing of it was saved')
     },
+  }
+
+  // NAV-1A: the Castle with no game open, as Istary opens when it
+  // remembers none: only the Edge of Town open, the others saying why;
+  // the introductory story in the story box over the Castle's picture,
+  // closed with its × and not in the way; the Edge's actions; Settings
+  // with only the window's appearance; Escape to the Castle everywhere,
+  // game selection included; and Select Game and Continue to the Castle
+  // with its own story again. Nothing of the game is written.
+  suites.startup = async () => {
+    const before = sha(GAME)
+    const HEAD = '.frame .head'
+    const fits = () => js(`(() => { const h = document.querySelector('${HEAD}'); const bs = [...h.querySelectorAll('button')]; const ys = new Set(bs.map((b) => Math.round(b.getBoundingClientRect().top))); return h.scrollWidth <= h.clientWidth + 1 && document.scrollingElement.scrollWidth <= innerWidth + 1 && ys.size <= 1 })()`)
+    const ways = (sel) => js(`[...document.querySelectorAll(${JSON.stringify(sel)})].map((b) => [b.innerText.trim(), !b.disabled])`)
+    const storyText = () => js(`document.querySelector('${STORY}')?.innerText ?? ''`)
+    const INTRO = 'no party has yet been named'
+
+    // No game: Select Game closes this one, and Escape leaves game selection.
+    await goto('edge')
+    await clickText('Select Game', B)
+    check((await view()).screen === 'games' && await js(`[...document.querySelectorAll('.games button')].some((b) => b.innerText.trim() === '← Castle Esc')`), 'game selection offers ← Castle (Esc)')
+    await esc(); await loaded()
+    let v = await view()
+    check(v.game === 0 && v.location === 'castle' && v.screen === 'roster', `Escape leaves game selection for the Castle with no game (${v.game}, ${v.location}, ${v.screen})`)
+    await reload(); await loaded()
+    const a = await art('castle')
+    check(!!a?.loaded && a.covers, 'with no game: the Castle\'s picture, filling the window')
+    const dests = await ways(`${B} nav[aria-label=Destinations] button`)
+    check(JSON.stringify(dests) === JSON.stringify([["Gilgamesh's Tavern", false], ["The Adventurer's Inn", false], ["Boltac's Trading Post", false], ['The Temple of Cant', false], ['The Edge of Town', true]]), `only the Edge of Town is open (${JSON.stringify(dests)})`)
+    const why = await js(`[...document.querySelectorAll('${B} nav[aria-label=Destinations] .why')].map((e) => e.innerText.trim())`)
+    check(why.length === 4 && why.every((w) => w === 'Select a game first: Select Game is at the Edge of Town.'), `the closed ones say a game must be selected first (${JSON.stringify(why)})`)
+    check(await js(`!document.querySelector('${B} section.actions')`) && (await storyText()).includes(INTRO) && (await storyText()).includes('Select Game'), 'the introductory story, in the story box')
+    check(await js(`!!document.querySelector('${C} .no-game')`), 'and the information says no game is selected')
+    check(JSON.stringify(await buttons(HEAD)) === JSON.stringify(['Hide party', 'Story', 'Show sheet', 'Hide panels']) && await fits(), `the top bar as in a game, on one row (${JSON.stringify(await buttons(HEAD))})`)
+    check(await js(`[...document.querySelectorAll('${HEAD} button')].find((b) => b.innerText.trim() === 'Show sheet').disabled`), 'no sheet to show: its toggle is disabled')
+    check((await controls()).length === 0 && await pageStill(), 'every control in view and uncovered; nothing scrolls')
+    await shot('startup-castle-no-game')
+    // Skippable: closed with its ×, and the Edge still a click away.
+    await js(`document.querySelector('${STORY} button.close').click()`); await sleep(300)
+    check(!(await js(`!!document.querySelector('${STORY}')`)), 'the story box closes with its ×')
+    await clickText('The Edge of Town', B)
+    v = await view()
+    check(v.location === 'edge' && v.game === 0, `the Edge of Town opens with no game (${v.location})`)
+
+    // The Edge with no game.
+    const acts = await ways(`${B} section.actions button`)
+    check(JSON.stringify(acts) === JSON.stringify([['Enter the Maze', false], ['The Training Grounds', false], ['Select Game', true], ['Settings', true], ['Leave the Game', true]]), `the Edge's actions: the maze and the Training Grounds closed (${JSON.stringify(acts)})`)
+    const ewhy = await js(`[...document.querySelectorAll('${B} section.actions .why')].map((e) => e.innerText.trim())`)
+    check(ewhy.filter((w) => w === 'Select a game first: Select Game is at the Edge of Town.').length === 2 && ewhy.includes('No game is selected.'), `each says why (${JSON.stringify(ewhy)})`)
+    check(JSON.stringify(await buttons(HEAD)) === JSON.stringify(['← Castle Esc', 'Hide party', 'Story', 'Show sheet', 'Hide panels']) && await fits(), 'its top bar: Castle (Esc) and the toggles, on one row')
+    check((await controls()).length === 0 && await pageStill(), 'the Edge: every control in view; nothing scrolls')
+    await shot('startup-edge-no-game')
+    await esc()
+    check((await view()).location === 'castle', 'Escape at the Edge returns to the Castle')
+
+    // Settings: the window's appearance only.
+    await clickText('The Edge of Town', B)
+    await clickText('Settings', B)
+    v = await view()
+    const sb = await buttons(B)
+    check(v.location === 'settings' && !sb.some((b) => /Reload|Reset|Restore/.test(b)) && await js(`!!document.querySelector('fieldset.part') && !!document.querySelector('${B} .no-game')`), `Settings with no game: the appearance, no roster tools (${JSON.stringify(sb)})`)
+    await shot('startup-settings-no-game')
+    await esc()
+    check((await view()).location === 'castle', 'Escape in Settings returns to the Castle')
+
+    // Select Game, Continue: the Castle, with its own story, open again.
+    await clickText('The Edge of Town', B)
+    await clickText('Select Game', B)
+    await clickIn('.games .slot', 'Game 1', 'button')
+    await loaded()
+    v = await view()
+    const st = await storyText()
+    check(v.game === 1 && v.location === 'castle' && !st.includes(INTRO) && st.includes("Gilgamesh's Tavern"), `Continue opens game 1 at the Castle, its own story shown again (${v.game}, ${v.location})`)
+    const open = await ways(`${B} nav[aria-label=Destinations] button`)
+    check(open.every(([, o]) => o) && !(await js(`!!document.querySelector('${C} .no-game')`)), `in the game every destination is open (${JSON.stringify(open)})`)
+    await shot('startup-castle-game')
+    check(sha(GAME) === before && JSON.parse(readFileSync(SETTINGS_FILE, 'utf8')).lastGame === 1, 'the game\'s save unchanged; game 1 is the one remembered')
   }
 
   for (const name of SUITES) {

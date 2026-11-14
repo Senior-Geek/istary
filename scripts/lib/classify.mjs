@@ -23,12 +23,12 @@ const AREAS = [
   ['creation', /creation|training|classguide|TrainingScreen/i],
   ['equipment', /equip|shop|stock|trading|curse|item|gold|CharacterSheet|sheet/i],
   ['combat-maze', /combat|dungeon|maze|camp|chest|explore|movement|stairs|automap|map|marker|position|expedition|rescue|stranded|encounter|spell/i],
-  ['town', /tavern|inn|temple|edge|castle|navigation|party|location|LocationFrame|Scene/i],
+  ['town', /tavern|inn|temple|edge|castle|navigation|party|location|LocationFrame|Scene|startup/i],
   ['persistence', /save|atomicfile|roster|games|backup|settings|lock|close|legacy|migrat|scenario/i],
 ]
 // Code that runs on more than one goroutine, or guards a file shared between
 // processes: a change here wants race tests and the full gate.
-const CONCURRENT = [/^gui\/(session|lock|lock_other|close|main|games|backups|settings)\.go$/, /^engine\/(game|save|atomicfile)\.go$/, /^cmd\/istary\/main\.go$/, /^render\/title_anim\.go$/]
+const CONCURRENT = [/^gui\/(session|lock|lock_other|close|main|games|backups|settings|startup)\.go$/, /^engine\/(game|save|atomicfile)\.go$/, /^cmd\/istary\/main\.go$/, /^render\/title_anim\.go$/]
 // Files that change nothing tested or built.
 const INERT = [/\.md$/i, /^docs\//, /^images\//, /^LICENSE$/, /^\.gitignore$/]
 
@@ -161,6 +161,7 @@ export function classify(files, pkgs, root) {
     if (areas.has('equipment') || areas.has('ui') || areas.has('town') || plan.broad) plan.live.push('sheet')
     if (areas.has('ui') || areas.has('town') || plan.broad) plan.live.push('scenes')
     if (areas.has('ui') || areas.has('town') || plan.broad) plan.live.push('nav')
+    if (areas.has('ui') || areas.has('town') || plan.broad) plan.live.push('startup')
     if (areas.has('combat-maze') || plan.broad) plan.live.push('combat')
   }
   plan.areas = [...areas].sort()
