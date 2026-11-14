@@ -410,6 +410,14 @@ own before any work.
 - **Pool Gold elsewhere.** Pool Gold from a character's inspect screen
   (PG p.28) is in the controller but on no GUI screen.
 - **Inn aging.** No source establishes the rate (finding #11).
+- **MAPORFIC's duration (COMBAT-1, finding #40).** Istary's MAPORFIC lasts
+  one fight; the guide says it lasts the expedition (p.70), as MILWA,
+  LOMILWA and LATUMAPIC do (p.42). To investigate against the original
+  rules before any change.
+- **Combat layout (COMBAT-1).** The combat screen is taller than the
+  window at 980×692 and 1440×900, so the party strip needs a scroll during
+  order entry. Make the party's status visible without scrolling at every
+  supported window size.
 - **Terminal Temple.** The terminal keeps the original: the patient found
   anywhere on the roster, even out in the maze; any party member tithes,
   dead or not; paying and the treatment are two keys, each saved after

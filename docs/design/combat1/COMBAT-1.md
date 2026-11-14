@@ -1,8 +1,8 @@
 # COMBAT-1 — Spellcasting, spell descriptions and Party Retreat
 
 Status: implemented on `combat-1-spells-retreat` (2026-11-14), from
-v0.12.0-illustrated-castle; awaiting approval. Three rules questions are
-left for decision (below); nothing in them was changed.
+v0.12.0-illustrated-castle. Approved 2026-11-14, with Option A for existing
+player data; awaiting the full regression gate and release approval.
 
 ## Stage A — investigation
 
@@ -57,7 +57,7 @@ the list and the casts are per book and level.
 **Existing saves need no correction.** No character holds a wrong
 allowance: 0/2 is the true state of a caster who has cast twice since the
 Inn, and a stay restores it. Known spells grow with each load (#32). That
-is a rules question, not a save to correct (decision 1).
+is a rules question, not a save to correct (decided in Stage C).
 
 ### The existing escape
 
@@ -116,7 +116,6 @@ cast would spend a point for nothing, as Camp already treats such spells
 | DUMAPIC | Exploration only: cast it in Camp. |
 | CALFO | For chests: offered when a chest is found. |
 | KANDI, DI, KADORTO | No effect in combat. ("SPELL DISRUPTED" in the engine; DI and KADORTO have no effect in Camp either, #33) |
-| LATUMOFIS | No effect in combat in Istary: cast it in Camp (finding #41) |
 | LOKTOFEIT, MALOR | Not available in combat until their defect (#24) is corrected. |
 
 The engine and the terminal are unchanged: there these can still be cast.
@@ -134,8 +133,9 @@ The engine and the terminal are unchanged: there these can still be cast.
     window opens. Each known spell has its book, level and description.
   No screen writes a description of its own.
 - **Descriptions say what a spell is for.** Where Istary differs, the
-  reason fields say so. MAPORFIC is described as protecting the party,
-  although Istary applies its armour class the wrong way (finding #40).
+  reason fields say so. (MAPORFIC's and LATUMOFIS's combat defects, #40
+  and #41, were corrected in Stage C, and LATUMOFIS is offered in combat
+  again.)
 
 ### Party Retreat
 
@@ -172,36 +172,104 @@ player choosing the runner by hand would do, since agility sets the chance.
 - No animation or sound.
 - Combat's other screens are unchanged.
 
-## Decisions requested
+## Stage C — decisions applied (2026-11-14)
 
-1. **Known spells after loading (#32).** Today every restart teaches all
-   the spells of each level with casts. Options:
-   - **a.** Keep it (current).
-   - **b.** Run the migration once, for saves from before known spells
-     were stored. Saves made since then keep exactly what was learned.
-     Characters who have already gained spells this way (Elenara's MOGREF
-     and DUMAPIC) would keep them unless a reset is also wanted. The guide
-     says knowing one spell of a level eventually teaches all of it (p.9),
-     so this mostly changes when, not whether.
-2. **When casts come back (#10).** Options:
-   - **a.** At the Inn only (current; the original's code).
-   - **b.** Also on entering the maze from the castle (the guide's
-     wording). That would have given Elenara her casts on the second
-     trip, and would make the game easier.
-3. **Run (#42).** Party Retreat keeps Run as it is. Options:
-   - **a.** Keep it (current).
-   - **b.** Follow the guide: one attempt before the round, and on failure
-     the monsters get a free round. The chance needs a source from the
-     original before it is changed.
-   - **c.** Keep it, but count a single attempt per round however many
-     members are ordered to Run. Today six runners get six tries.
+### #32: loading no longer teaches spells
 
-Also found, and **not corrected** (each a combat-balance change, so each
-needs approval):
+- **`engine.Load` keeps each character's saved known spells,** when they
+  fit the character's spell points: some are known, and each is of a book
+  and level at which the character has points (`SpellKnownFits`). The game
+  keeps that true (SETSPELS gives at least one point per spell known at a
+  level), so any save Istary has written passes.
+- **Only what cannot be trusted is rebuilt** from the points, as every
+  load did before:
+  - a character with no known spells saved (the oldest saves, imports);
+  - known spells that do not fit, as spells saved in the table's order
+    before it was reordered to Pascal SPELLSKN[1..50] would generally not.
+- **Save format and compatibility:** unchanged. No field was added. An
+  earlier Istary reading a new save rebuilds known spells as it always did.
+- **A new mage knows HALITO and KATINO** after any number of restarts. A
+  learned level 2 spell, or a spell kept through a class change, stays.
 
-- **#40:** MAPORFIC worsens the party's armour class by 2 instead of
-  improving it.
-- **#41:** LATUMOFIS in combat says "POISON CURED!" and cures nothing.
+### Existing player data: migration options (not applied)
+
+Saves written by earlier Istary already hold the widened spells. Every
+load wrote them back, so the save cannot tell a learned spell from one the
+load gave. The fix keeps them exactly as saved; **no player's data was
+changed.** In the game played on 13 November, three characters are
+affected:
+
+| Character | Class, level | Known | Made with |
+|---|---|---|---|
+| ELENARA | Mage 1 | HALITO, MOGREF, KATINO, DUMAPIC | HALITO, KATINO |
+| BODDIN | Bishop 1 | the same | HALITO, KATINO |
+| NIMBLE | Bishop 1 | the same | HALITO, KATINO |
+
+This matters beyond the list: SETSPELS gives at least one point per known
+spell, so at level 2 a mage knowing four level 1 spells has 4 level 1
+casts where one knowing two has 2.
+
+Options:
+
+- **A. Leave them as saved** (current). Nothing is changed. The guide says
+  a character who knows one spell of a level eventually learns them all
+  (p.9), so the difference is in when, and in the extra casts until then.
+- **B. A one-time, per-character correction, for level 1 characters
+  only.** A level 1 character cannot yet have learned a spell (TryLearn
+  runs at a level-up), so their legitimate spells are their class's
+  creation set. Exceptions are class changes and the Rite of Passage, which
+  a save does not always record. The correction would:
+  - be a separate tool or prompt, run only with approval;
+  - back up the game first (as restores do);
+  - list every change before applying it.
+
+  For this game it would remove MOGREF and DUMAPIC from the three above.
+- **C. Leave higher-level characters alone in any case.** Their learned
+  spells cannot be told from the given ones. A reset there would remove
+  spells legitimately learned, so it is not proposed.
+
+**Decided 2026-11-14: Option A.** Existing player data is left unchanged
+and no correction or migration is made. The extra spells of ELENARA,
+BODDIN and NIMBLE are accepted as legacy data.
+
+### #10: casts come back at the Inn only
+
+- **Unchanged rule:** any room, the free Stables included, restores every
+  point (`RestoreSpells`); entering the maze does not.
+- **The Inn now says so:**
+  - every room's rate ends "restores spells" (the Stables: "Free · heals
+    nothing · restores spells");
+  - the note under the rooms says every stay, the Stables included,
+    restores all spell points, and that they come back only at the Inn and
+    not on entering the maze;
+  - a guest with points used has "Spell points used: any stay, the free
+    Stables too, restores them all." under their points, now given by
+    level ("L1 0/2").
+- **The receipt reports by book:** "Spell points restored: Mage L1 0→2",
+  "Spell points: already full", or "Spell points: none (no spells yet)".
+
+### #42: Run unchanged
+
+Run and Party Retreat are as in Stage B: no free monster round, no change
+of chance.
+
+### #40: MAPORFIC
+
+- **Before:** it added 2 to each member's combat armour-class modifier,
+  which the monsters' to-hit (20 − AC − level + modifier) reads as 2
+  worse.
+- **Now:** it subtracts 2, the party's armour class 2 better, applied as
+  MOGREF's and MATU's are. That is the original's ACMOD2 := 2 "BIG SHIELD"
+  (guide p.70).
+- **Still for the fight only.** The guide has it last the expedition; that
+  is not changed here.
+
+### #41: LATUMOFIS
+
+**In combat it cures the target member's poison,** as in Camp (guide p.70:
+"removes the effects of poison", any time, one person). The message is
+unchanged ("POISON CURED!"). It is offered in the GUI's combat list again,
+for a party member.
 
 ## Tests
 
@@ -259,16 +327,37 @@ needs approval):
     new fields, and in combat the orders that follow from CALFO not being
     offered. With CALFO allowed, only the new fields differ.
 
+## Tests added in Stage C
+
+- **`engine/combat1_test.go`:**
+  - known spells through three reloads: a new mage and priest, a bishop
+    with a learned level 2 spell, a fighter keeping HALITO;
+  - the rebuild only for none saved or ones that do not fit;
+  - MAPORFIC 2 better for every member, beside MOGREF;
+  - LATUMOFIS curing its target only.
+  Each fails with its correction undone.
+- **Golden:** `save_roster1.resaved.golden.json` now keeps ALDRIC's DIOS
+  and BADIOS. Before, the resave widened them to every level 1 and 2
+  priest spell. Nothing else in it changed.
+- **GUI and front end:**
+  - a reload keeps a new mage's two spells (`TestCreateSaveAndReload`, and
+    the rename test now compares the spells too);
+  - the first expedition with HALITO and KATINO only;
+  - the Inn's rates, guest note and receipt (`innViews.test.js`).
+- **Live `combat`:** the library's mage knows HALITO and KATINO only.
+
 ## Remaining limitations
 
 - **The combat screen is taller than the window** at both 980×692 and
-  1440×900 (1056 px, as before COMBAT-1). The picker, the description area,
-  Review orders and Party retreat are in view without scrolling at both
-  sizes; the party strip below the commands needs a scroll.
-- **The three decisions above** are not implemented. Known spells still
-  grow on loading, casts return only at the Inn, and Run is unchanged.
+  1440×900 (1056 px, as before COMBAT-1; in the roadmap's backlog). The
+  picker, the description area, Review orders and Party retreat are in
+  view without scrolling at both sizes; the party strip below the commands
+  needs a scroll.
+- **Widened known spells in existing saves stay** (Option A), as legacy
+  data.
+- **MAPORFIC lasts one fight,** not the expedition: in the roadmap's
+  backlog, to investigate against the original.
 - **The runner is chosen by agility.** A player who wants another member to
   run gives the orders by hand, as before.
 - **The descriptions are Istary's,** checked against its engine, not the
-  original's manual. Where the two differ (#40, #41), the description gives
-  the spell's purpose.
+  original's manual.
