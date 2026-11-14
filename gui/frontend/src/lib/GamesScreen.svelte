@@ -4,6 +4,11 @@
   // a saved one continues, and replacing one is asked twice. The slots and
   // what each allows are Go's (view.games); the words are games.js's.
   //
+  // Since NAV-1A Istary opens at the Castle, and this is shown from the
+  // Edge of Town's Select Game. Choosing a game opens it at the Castle (or
+  // its expedition, resumed); "← Castle" (or Escape, App) leaves without
+  // choosing, to the Castle with no game open.
+  //
   // Props:
   //   view  the Go View (view.screen is "games")
   //   busy  a request is running
@@ -29,6 +34,9 @@
 
 <section class="games" aria-label="Game selection">
   <header>
+    {#if view.return?.open}
+      <button class="back" disabled={busy} onclick={() => call(S.ReturnToCastle)}>← Castle <kbd>Esc</kbd></button>
+    {/if}
     <h2>Choose a game</h2>
     <p class="muted">Each game is its own adventure: its own characters, party, maze and map. Everything is saved as it happens.</p>
   </header>
@@ -82,6 +90,8 @@
 <style>
   .games { max-width: 900px; padding: 4px 8px 12px; }
   header h2 { margin: 0 0 2px; font-size: 18px; }
+  .back { float: right; margin: 0; }
+  .back kbd { font: 600 10px ui-monospace, Menlo, monospace; opacity: 0.7; margin-left: 4px; }
   header p { margin: 0 0 10px; }
   .legacy { border: 1px solid var(--notice); border-radius: 6px; padding: 6px 10px; margin-bottom: 10px; display: grid; gap: 2px; }
   .legacy.bad { border-color: var(--error); }

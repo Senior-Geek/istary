@@ -54,12 +54,12 @@ func TestGamesViewFixture(t *testing.T) {
 	}
 
 	s := newLibraryAt(t, root)
-	record("no games", s.State())
+	record("no games", selectGame(t, s))
 	s.shutdown()
 
 	put(saveFile, `{"roster":[{"Name":"ALDA"},{"Name":"BRAN"},{"Name":"CORA"}],"party":["ALDA","BRAN"]}`)
 	s = newLibraryAt(t, root)
-	record("an earlier save", s.State())
+	record("an earlier save", selectGame(t, s))
 	fine(t, s.ImportEarlierGame(2))
 	walkTo(t, s, "edge")
 	fine(t, s.ChangeGame())
@@ -75,7 +75,7 @@ func TestGamesViewFixture(t *testing.T) {
 	put(saveFile, "not a save")
 	s = newLibraryAt(t, root)
 	defer s.shutdown()
-	record("games of every kind", s.State())
+	record("games of every kind", selectGame(t, s))
 	record("replacing game 3", s.ReplaceGame(3))
 	s.CancelReplaceGame()
 	record("continuing a damaged game", s.ContinueGame(5))

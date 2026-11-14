@@ -96,6 +96,12 @@ type Session struct {
 	// awaits confirmation.
 	slot      int
 	replacing int
+
+	// lobby is where the player stands while no game is open (NAV-1A,
+	// startup.go): "castle", "edge" or "settings"; choosing is set while
+	// game selection is shown.
+	lobby    string
+	choosing bool
 }
 
 // NewSession loads Wizardry I and the roster from saveDir. saveDir must not
@@ -118,12 +124,13 @@ func unopenedSession(saveDir string) *Session {
 }
 
 // unopenedLibrary returns a window on the game slots in root (games.go),
-// not yet opened: it opens on game selection, with no game open.
+// not yet opened: it opens at the Castle, with the game last chosen open
+// if it can be (startup.go).
 func unopenedLibrary(root string) *Session {
 	return &Session{saveDir: root, root: root, library: true, startErr: errNotStarted}
 }
 
-// NewLibrary opens the game slots in root, on game selection.
+// NewLibrary opens the game slots in root, at the Castle (startup.go).
 func NewLibrary(root string) *Session {
 	s := unopenedLibrary(root)
 	s.start()
@@ -157,7 +164,9 @@ func (s *Session) open() error {
 	}
 	s.loadSettings()
 	if s.library {
-		s.forgetGame() // game selection first
+		s.forgetGame() // the Castle, with no game open
+		s.choosing = false
+		s.openLastGame()
 		return nil
 	}
 	return s.loadGame(s.saveDir)

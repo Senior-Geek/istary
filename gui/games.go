@@ -270,7 +270,8 @@ func (s *Session) gamesView() *GamesView {
 }
 
 // chooser runs a game selection action: only in a library window, with no
-// game open. It returns the new view.
+// game open. A game it opens is the one opened on the next start
+// (startup.go remember). It returns the new view.
 func (s *Session) chooser(slot int, action func() error) View {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -286,7 +287,13 @@ func (s *Session) chooser(slot int, action func() error) View {
 	case slot < 1 || slot > gameSlots:
 		return s.view(errNoSuchSlot)
 	}
-	return s.view(action())
+	err := action()
+	if err == nil && s.ctrl != nil {
+		// A game is open: at the Castle, or its expedition resumed.
+		s.choosing = false
+		s.remember(s.slot)
+	}
+	return s.view(err)
 }
 
 // ContinueGame opens the game in slot, as it was last saved: its party in
@@ -538,16 +545,28 @@ func (s *Session) forgetGame() {
 	s.unsaved, s.uncertain = "", ""
 	s.receipt, s.innLast, s.goldLast, s.templeLast = nil, nil, nil, nil
 	s.settings, s.replacing = false, 0
+	s.lobby = "castle"
 }
 
-// ChangeGame (Select Game since NAV-1) closes the open game and returns to
-// the game selection (GamesScreen), from the Edge of Town. Every action is
+// ChangeGame (Select Game since NAV-1) closes the open game and shows game
+// selection (GamesScreen), from the Edge of Town; with no game open it only
+// shows it (startup.go). Leaving game selection without choosing is
+// ReturnToCastle, to the Castle with no game open. Every action is
 // saved as it happens, so nothing is lost;
 // it is refused while the last save has failed, and anywhere a game is
 // under way (an expedition, a practice, a character being created).
 func (s *Session) ChangeGame() View {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	if s.inLobby() {
+		// No game to close (startup.go): game selection, from the Edge.
+		s.notice = ""
+		if !s.choosing && s.lobby != "edge" {
+			return s.view(errLeaveAtEdge)
+		}
+		s.choosing = true
+		return s.view(nil)
+	}
 	if s.closed() {
 		return s.view(nil)
 	}
@@ -566,6 +585,7 @@ func (s *Session) ChangeGame() View {
 	}
 	slot := s.slot
 	s.forgetGame()
+	s.choosing = true
 	s.notice = fmt.Sprintf("Game %d is saved.", slot)
 	return s.view(nil)
 }

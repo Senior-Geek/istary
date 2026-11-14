@@ -6,8 +6,12 @@ dungeon (M6a): real expeditions (M6b-1), practice expeditions and practice
 encounters played through `app.Controller`, `app.DungeonView` and
 `app.CombatView`.
 
-**Getting around (Castle-0, NAV-1).** A game opens at the Castle, the
-hub, as the original does (an expedition under way resumes in the maze).
+**Getting around (Castle-0, NAV-1, NAV-1A).** Istary always opens at the
+Castle, the hub, as the original does, with the game last chosen open
+(an expedition under way resumes in the maze). With no game (none chosen
+yet, or the last one gone) the Castle tells an introductory story, only
+the Edge of Town is open, and its Select Game chooses one; the Edge's
+Settings has only the appearance then, and Leave the Game closes Istary.
 Each place has its own screen. Its top bar has its name, "← Castle" (or
 press Esc; it abandons only what is unfinished, such as a character being
 created) and the toggles: Hide party, Story and Hide panels where there is
@@ -60,9 +64,12 @@ party bar at the bottom.
   Boltac's, where the Selected Character panel is the customer.
 - **Gilgamesh's Tavern:** form the party: Join, Remove, and the password;
   Divvy gold shares the party's gold evenly.
-- **Game selection** (UX-3A): Istary opens on six game slots, each its own
-  adventure. New Game in an empty slot, Continue a saved one, or Replace
-  it (asked twice; the old game is moved aside, not deleted). A game saved
+- **Game selection** (UX-3A, NAV-1A): Select Game, at the Edge of Town,
+  shows six game slots, each its own adventure (← Castle, or Escape,
+  leaves without choosing). New Game in an empty slot, Continue a saved
+  one, or Replace it (asked twice; the old game is moved aside, not
+  deleted). The game chosen opens at the Castle, and is the one Istary
+  opens next time (`lastGame` in `gui-settings.json`). A game saved
   by an earlier Istary is offered for import into an empty slot; the
   original is left as it was.
 - **The Edge of Town (NAV-1):** its actions are Enter the Maze, the
@@ -141,7 +148,8 @@ only renders `View` (see `view.go`) and calls `Session` methods
 ## Saves
 
 The window's own preferences (whether the party bar and the minimap are
-shown, and the illustrated places' appearance, chosen in Settings) are kept
+shown, the illustrated places' appearance, chosen in Settings, and the
+game last chosen) are kept
 in `gui-settings.json` in the save folder, never in a game. A damaged file is left
 alone and the defaults are used until a setting is changed.
 

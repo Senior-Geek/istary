@@ -70,6 +70,13 @@ func TestFrameViewFixture(t *testing.T) {
 	views = append(views, frameOf("real expedition", s.DungeonAction(app.ActLeaveCamp, 0)))
 	s.shutdown()
 
+	// No game open (NAV-1A): the Castle, the Edge of Town and Settings.
+	s, _ = newLibrary(t)
+	views = append(views, frameOf("no game, castle", s.State()))
+	views = append(views, frameOf("no game, edge", s.Navigate("edge")))
+	views = append(views, frameOf("no game, settings", s.Navigate("settings")))
+	s.shutdown()
+
 	got, _ := json.MarshalIndent(views, "", " ")
 	got = append(got, '\n')
 	path := filepath.Join("frontend", "src", "lib", "testdata", "frame-views.json")

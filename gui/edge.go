@@ -7,6 +7,7 @@ package main
 import (
 	"errors"
 
+	"github.com/Senior-Geek/istary/app"
 	"github.com/Senior-Geek/istary/engine"
 )
 
@@ -46,6 +47,14 @@ var errUnsavedLeave = errors.New("The last action is not saved yet. Istary tries
 func (s *Session) LeaveGame() View {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	if s.inLobby() && !s.choosing {
+		// No game open (startup.go): nothing to save, only the window to close.
+		s.notice = ""
+		if s.lobby != "edge" {
+			return s.view(app.ErrWrongState)
+		}
+		return s.quitWindow()
+	}
 	if s.closed() {
 		return s.view(nil)
 	}
@@ -59,6 +68,11 @@ func (s *Session) LeaveGame() View {
 	if s.unsaved != "" {
 		return s.view(errUnsavedLeave)
 	}
+	return s.quitWindow()
+}
+
+// quitWindow closes the window, under the session's lock.
+func (s *Session) quitWindow() View {
 	if s.quit == nil {
 		return s.view(errors.New("This window cannot be closed from here; close it with the window's own button."))
 	}

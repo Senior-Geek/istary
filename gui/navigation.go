@@ -70,6 +70,10 @@ var (
 func (s *Session) Navigate(dest string) View {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	if s.inLobby() {
+		s.notice = ""
+		return s.view(s.lobbyNavigate(dest))
+	}
 	if s.closed() {
 		return s.view(nil)
 	}
@@ -183,6 +187,11 @@ func (s *Session) returnView() *ReturnView {
 func (s *Session) ReturnToCastle() View {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	if s.inLobby() {
+		s.notice = ""
+		s.lobbyReturn()
+		return s.view(nil)
+	}
 	if s.closed() {
 		return s.view(nil)
 	}

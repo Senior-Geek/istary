@@ -37,6 +37,9 @@ type Settings struct {
 	Panels  string `json:"panels,omitempty"`
 	Story   string `json:"story,omitempty"`
 	Artwork string `json:"artwork,omitempty"`
+	// LastGame is the slot of the game last chosen (NAV-1A, startup.go),
+	// opened again when Istary starts; 0 for none.
+	LastGame int `json:"lastGame,omitempty"`
 }
 
 // The appearances an illustrated place can have (ART-2C), the default

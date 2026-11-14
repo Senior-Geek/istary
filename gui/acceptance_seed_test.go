@@ -68,7 +68,7 @@ func TestWriteAcceptanceLibrary(t *testing.T) {
 	// is what the window itself writes, and its first save changes nothing.
 	r := newLibraryAt(t, root)
 	defer r.shutdown()
-	v := fine(t, r.ContinueGame(1))
+	v := openedLast(t, r, 1) // the game last chosen (NAV-1A)
 	if err := r.ctrl.Save(); err != nil {
 		t.Fatal(err)
 	}

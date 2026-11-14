@@ -36,6 +36,16 @@
   let bareAt = $state('') // the place whose panels are hidden, or ''
   let storyOpen = $state(true) // the story box: open until it is closed
   let storyRect = $state(null) // where the player left it, or null
+  // A game opened or closed (NAV-1A): the Castle's story is another one,
+  // so the story box is open again.
+  let storyGame = 0
+  $effect(() => {
+    const game = view?.game ?? 0
+    if (view && !view.fatal && game !== storyGame) {
+      storyGame = game
+      storyOpen = true
+    }
+  })
 
   async function call(fn, ...args) {
     busy = true
@@ -98,7 +108,8 @@
     },
   })
 
-  // Escape in town is "← Castle" (ReturnToCastle), as in the frame's head;
+  // Escape in town is "← Castle" (ReturnToCastle), as in the frame's head,
+  // and leaves game selection for the Castle too (NAV-1A);
   // hidden panels take Escape first and are shown, then a shown character
   // sheet is hidden. The maze, Camp and combat keep their own keys.
   function onkey(e) {

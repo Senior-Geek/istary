@@ -10,6 +10,9 @@
   // once. They are the window's settings (Session.SetAppearance, kept in
   // gui-settings.json): the same in every game, and in none of them.
   //
+  // With no game open (NAV-1A, view.game 0) only the appearance is here:
+  // the roster tools are a game's.
+  //
   // Props:
   //   view     the Go View (view.location is "settings")
   //   busy     a request is running
@@ -59,9 +62,13 @@
 
 <LocationFrame {view} {busy} {call} {onopen}>
   {#snippet actions()}
-    <button class="wide" disabled={busy} onclick={() => call(S.ReloadRoster)}>Reload from disk</button>
-    <button class="wide danger" disabled={busy} onclick={() => { resetting = true; backups = null }}>Reset roster…</button>
-    <button class="wide" disabled={busy} onclick={openRestore}>Restore roster…</button>
+    {#if view.game}
+      <button class="wide" disabled={busy} onclick={() => call(S.ReloadRoster)}>Reload from disk</button>
+      <button class="wide danger" disabled={busy} onclick={() => { resetting = true; backups = null }}>Reset roster…</button>
+      <button class="wide" disabled={busy} onclick={openRestore}>Restore roster…</button>
+    {:else}
+      <p class="muted no-game">The roster tools are for a selected game: Select Game, at the Edge of Town, chooses one.</p>
+    {/if}
   {/snippet}
 
   <section class="appearance" aria-labelledby="appearance-title">
@@ -86,7 +93,7 @@
     </div>
   </section>
 
-  <section>
+  {#if view.game}<section>
     <h2>Save folder</h2>
     <p class="path">{view.saveDir}</p>
     <p class="muted">The roster, the party and any expedition are saved here after every action. Backups are
@@ -100,7 +107,7 @@
         </div>
       </div>
     {/if}
-  </section>
+  </section>{/if}
   {#if backups}
     <section>
       <h2>Restore roster</h2>
@@ -111,6 +118,7 @@
 
 <style>
   section { margin-top: 0; }
+  .no-game { margin: 0; font-size: 12px; }
   section + section { margin-top: 12px; }
   .wide { width: 100%; text-align: left; margin: 0 0 4px; }
   .parts { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px 16px; }

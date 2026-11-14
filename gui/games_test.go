@@ -24,8 +24,9 @@ import (
 func newLibraryAt(t *testing.T, root string) *Session {
 	t.Helper()
 	s := NewLibrary(root)
-	if v := s.State(); v.Fatal != "" || v.Screen != "games" || v.Game != 0 {
-		t.Fatalf("library: fatal %q screen %q game %d", v.Fatal, v.Screen, v.Game)
+	// At the Castle (NAV-1A): with no game, or the last one chosen open.
+	if v := s.State(); v.Fatal != "" || (v.Game == 0 && (v.Screen != "roster" || v.Location != "castle")) {
+		t.Fatalf("library: fatal %q screen %q at %q game %d", v.Fatal, v.Screen, v.Location, v.Game)
 	}
 	return s
 }
@@ -71,6 +72,47 @@ func changeGame(t *testing.T, s *Session) View {
 	return v
 }
 
+// selectGame shows game selection as the player reaches it (NAV-1A):
+// Select Game at the Edge of Town, closing the open game if there is one.
+func selectGame(t *testing.T, s *Session) View {
+	t.Helper()
+	if s.ctrl != nil {
+		return changeGame(t, s)
+	}
+	if v := s.State(); v.Screen == "games" {
+		return v
+	}
+	fine(t, s.ReturnToCastle())
+	fine(t, s.Navigate("edge"))
+	v := fine(t, s.ChangeGame())
+	if v.Screen != "games" || v.Games == nil {
+		t.Fatalf("Select Game showed %q", v.Screen)
+	}
+	return v
+}
+
+// openedLast is the view of a window started again (relibrary) that opened
+// slot's game by itself, as the last chosen (NAV-1A).
+func openedLast(t *testing.T, r *Session, slot int) View {
+	t.Helper()
+	v := r.State()
+	if v.Fatal != "" || v.Error != "" || v.Game != slot || r.ctrl == nil {
+		t.Fatalf("started again: game %d, not %d (%q %q)", v.Game, slot, v.Fatal, v.Error)
+	}
+	return v
+}
+
+// relibraryNoGame is relibrary with no game remembered (NAV-1A), as after
+// an Istary that did not remember one: it opens with no game.
+func relibraryNoGame(t *testing.T, s *Session, root string) *Session {
+	t.Helper()
+	s.prefs.LastGame = 0
+	if err := s.saveSettings(); err != nil {
+		t.Fatal(err)
+	}
+	return relibrary(t, s, root)
+}
+
 func rosterNames(v View) []string {
 	var out []string
 	for _, c := range v.Roster {
@@ -108,7 +150,7 @@ func exists(path string) bool {
 func TestTwoGamesAreIndependent(t *testing.T) {
 	s, root := newLibrary(t)
 	defer s.shutdown()
-	v := s.State()
+	v := selectGame(t, s)
 	if !slices.Equal(slotStates(v), []string{"empty", "empty", "empty", "empty", "empty", "empty"}) || v.Games.Legacy != nil {
 		t.Fatalf("a new library: %v %+v", slotStates(v), v.Games.Legacy)
 	}
@@ -174,7 +216,7 @@ func TestAGameKeepsEquipmentGoldAndStatus(t *testing.T) {
 	}
 	r := relibrary(t, s, root)
 	defer r.shutdown()
-	v := fine(t, r.ContinueGame(3))
+	v := openedLast(t, r, 3)
 	if !reflect.DeepEqual(v.Roster, before) {
 		t.Fatalf("after a restart:\n%+v\nwas\n%+v", v.Roster, before)
 	}
@@ -216,16 +258,14 @@ func TestAnExpeditionContinuesWhereItWasSaved(t *testing.T) {
 		t.Fatalf("changed games in the maze: %q %q", v.Error, v.Screen)
 	}
 
-	r := relibrary(t, s, root)
-	defer r.shutdown()
-	rv := r.State()
-	if rv.Screen != "games" || r.ctrl != nil {
-		t.Fatalf("a restart opened %q", rv.Screen)
-	}
-	if sl := rv.Games.Slots[0]; len(sl.Expedition) != 6 || sl.Depth != 1 || len(sl.Party) != 0 {
+	// Started again, the game last chosen resumes its expedition by itself
+	// (NAV-1A), and game selection lists it out in the maze.
+	if sl := s.slotView(1); len(sl.Expedition) != 6 || sl.Depth != 1 || len(sl.Party) != 0 {
 		t.Fatalf("slot 1 listed as %+v", sl)
 	}
-	rv = fine(t, r.ContinueGame(1))
+	r := relibrary(t, s, root)
+	defer r.shutdown()
+	rv := openedLast(t, r, 1)
 	rg := r.ctrl.Game
 	if !rv.Real || rv.Screen != "dungeon" || rv.Title != resumedTitle || rg.Town.Party.Size() != 6 {
 		t.Fatalf("continued: real %v screen %q title %q", rv.Real, rv.Screen, rv.Title)
@@ -258,7 +298,7 @@ func TestAnInterruptedEncounterContinuesUnderTheExistingRule(t *testing.T) {
 	}
 	r := relibrary(t, s, root)
 	defer r.shutdown()
-	rv := fine(t, r.ContinueGame(2))
+	rv := openedLast(t, r, 2) // resumed by itself, the last game chosen (NAV-1A)
 	there, _ := r.ctrl.Game.Place()
 	if !rv.Real || rv.Screen != "dungeon" || r.ctrl.Game.Phase != engine.PhaseMaze || there != here || rv.Title != resumedTitle ||
 		!strings.Contains(rv.Notice, "Istary closed during an encounter: it is over") {
@@ -397,7 +437,7 @@ func TestTheEarlierSaveIsImportedOnce(t *testing.T) {
 
 	s := newLibraryAt(t, root)
 	defer s.shutdown()
-	v := s.State()
+	v := selectGame(t, s)
 	l := v.Games.Legacy
 	if l == nil || l.Problem != "" || l.Characters != len(fallen)+2 || l.Stranded != len(fallen) || len(l.Expedition) != 2 || l.Depth != 1 || l.Saved != "2026-11-01 12:00" {
 		t.Fatalf("earlier save offered as %+v", l)
@@ -422,9 +462,9 @@ func TestTheEarlierSaveIsImportedOnce(t *testing.T) {
 		t.Fatal("the backups were not copied")
 	}
 
-	r := relibrary(t, s, root)
+	r := relibraryNoGame(t, s, root)
 	defer r.shutdown()
-	rv := r.State()
+	rv := selectGame(t, r)
 	if rv.Games.Legacy != nil || !slices.Equal(slotStates(rv), []string{"empty", "empty", "empty", "game", "empty", "empty"}) || !rv.Games.Slots[3].Imported {
 		t.Fatalf("after a restart: legacy %+v slots %v", rv.Games.Legacy, slotStates(rv))
 	}
@@ -537,7 +577,7 @@ func TestDamagedSavesAreLeftAsTheyAre(t *testing.T) {
 
 	s := newLibraryAt(t, root)
 	defer s.shutdown()
-	v := s.State()
+	v := selectGame(t, s)
 	if want := []string{"damaged", "damaged", "damaged", "damaged", "game", "empty"}; !slices.Equal(slotStates(v), want) {
 		t.Fatalf("slots %v, want %v", slotStates(v), want)
 	}
@@ -590,7 +630,7 @@ func TestAnEmptySlotFolderIsReplaced(t *testing.T) {
 	os.WriteFile(left, []byte("{}"), 0o644)
 	s := newLibraryAt(t, root)
 	defer s.shutdown()
-	if sl := s.State().Games.Slots[1]; sl.State != "damaged" || sl.Problem == "" {
+	if sl := selectGame(t, s).Games.Slots[1]; sl.State != "damaged" || sl.Problem == "" {
 		t.Fatalf("slot 2 listed as %+v", sl)
 	}
 	if v := s.NewGame(2); v.Error != errSlotTaken.Error() || !exists(left) {
@@ -655,8 +695,9 @@ func TestChangingGamesIsRefusedMidGame(t *testing.T) {
 	}
 }
 
-// With no game open, every action of the window is refused or shows game
-// selection: none fails, and none writes a game.
+// With no game open, every action of the window is refused, or shows the
+// Castle, the Edge of Town, Settings or game selection (NAV-1A): none
+// fails, none opens a game, and none writes one.
 func TestNoGameOpenActsOnNothing(t *testing.T) {
 	s, root := newLibrary(t)
 	defer s.shutdown()
@@ -674,7 +715,7 @@ func TestNoGameOpenActsOnNothing(t *testing.T) {
 				args = append(args, reflect.Zero(m.Type.In(j)))
 			}
 			out := rv.Method(i).Call(args)
-			if v, ok := out[0].Interface().(View); ok && (v.Screen != "games" || v.Game != 0) {
+			if v, ok := out[0].Interface().(View); ok && (v.Screen != "games" && v.Screen != "roster" || v.Game != 0 || s.ctrl != nil) {
 				t.Errorf("%s with no game open shows %q, game %d", m.Name, v.Screen, v.Game)
 			}
 		}()

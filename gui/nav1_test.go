@@ -53,7 +53,7 @@ func TestAGameOpensAtTheCastle(t *testing.T) {
 	save := readFile(t, filepath.Join(s.slotDir(1), saveFile))
 	r := relibrary(t, s, root)
 	defer r.shutdown()
-	if v = fine(t, r.ContinueGame(1)); v.Location != "castle" || partyNames(v) != "ALDA" {
+	if v = openedLast(t, r, 1); v.Location != "castle" || partyNames(v) != "ALDA" {
 		t.Fatalf("after a restart: at %q, party %q", v.Location, partyNames(v))
 	}
 	if !bytes.Equal(readFile(t, filepath.Join(r.slotDir(1), saveFile)), save) {

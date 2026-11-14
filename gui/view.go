@@ -40,8 +40,10 @@ type View struct {
 	// Settings are the window's own preferences (settings.go).
 	Settings SettingsView `json:"settings"`
 
-	// Games is game selection (Screen "games", games.go), while no game
-	// is open; nil otherwise. Game is the open game's slot, 0 if none.
+	// Games is game selection (Screen "games", games.go), shown from the
+	// Edge of Town's Select Game while no game is open; nil otherwise.
+	// Game is the open game's slot, 0 if none (startup.go: the window is
+	// then at the Castle, the Edge of Town or Settings, with no game).
 	Games *GamesView `json:"games"`
 	Game  int        `json:"game"`
 
@@ -349,9 +351,16 @@ func (s *Session) view(err error) View {
 		return v
 	}
 	if s.ctrl == nil {
-		// Game selection: no game is open (games.go).
-		v.Screen, v.Error, v.Games, v.SaveDir = "games", errorText(err), s.gamesView(), s.root
+		// No game is open (startup.go): game selection (games.go), or the
+		// Castle, the Edge of Town or Settings with nothing of a game.
+		v.Error, v.SaveDir = errorText(err), s.root
 		v.Warning, v.Settings = s.lockNote, s.settingsView()
+		if s.choosing {
+			v.Screen, v.Games = "games", s.gamesView()
+			v.Return = &ReturnView{Open: true}
+		} else {
+			s.lobbyView(&v)
+		}
 		return v
 	}
 	v.Game = s.slot

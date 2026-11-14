@@ -10,6 +10,10 @@
   // Practice (Istary's own) is not offered here: its Session methods stay,
   // for the automated tests.
   //
+  // With no game open (NAV-1A, view.game 0) Select Game, Settings and
+  // Leave the Game are open; Enter the Maze and the Training Grounds are
+  // closed with Go's reason.
+  //
   // Props:
   //   view    the Go View (view.location is "edge")
   //   busy    a request is running
@@ -57,12 +61,10 @@
       <div class="group">{@render destination(w)}</div>
     {/each}
     <div class="group">
-      {#if view.game}
-        <button class="wide" disabled={busy} onclick={() => call(S.ChangeGame)}>Select Game</button>
-      {/if}
+      <button class="wide" disabled={busy} onclick={() => call(S.ChangeGame)}>Select Game</button>
       {#each ways.filter((w) => w.dest === 'settings') as w (w.dest)}{@render destination(w)}{/each}
       <button class="wide" disabled={busy} onclick={() => call(S.LeaveGame)}>Leave the Game</button>
-      <span class="why">Everything is saved as it happens{#if view.game}; this is game {view.game}{/if}.</span>
+      <span class="why">{#if view.game}Everything is saved as it happens; this is game {view.game}.{:else}No game is selected.{/if}</span>
     </div>
   {/snippet}
 
