@@ -741,17 +741,25 @@ a fixed top row and stay in place; the actions come first in B, then the
 destinations, and B scrolls inside if long; the content (C) scrolls on its
 own and takes the room the party bar (D) leaves; the page never scrolls on
 a wide window. The scene shows a character's sheet instead of the artwork
-when the Actions' Character Sheet toggle is on. The areas as Castle-0 drew
-them:
+when the top bar's sheet toggle is on (Show sheet / Hide sheet; in the
+Actions until NAV-1). The areas as Castle-0 drew them:
 - **head:** the place's title, "← Castle" (`ReturnToCastle`, also
-  Escape; since C0-6) and the Show/Hide party toggle;
+  Escape; since C0-6) and the Show/Hide party toggle; since NAV-1 the top
+  bar, with the Story, sheet and Hide panels toggles too, and never
+  Settings;
 - **scene:** (a definite height, about 16:9 of its column between 120px
   and 46vh, since a height from aspect-ratio was left out of the row in a
   scrolling body) the place's artwork (`LocationScene.svelte`, `lib/scenes.js`):
   a picture cropped around its focus, or, while there is none (all places
   for now) or it fails to load, a themed panel with the place's emblem;
-- **nav:** the other destinations from `View.Exits` (closed ones with Go's
-  reason written out), then the place's actions;
+- **nav:** the place's actions, then the other destinations from
+  `View.Exits` (closed ones with Go's reason written out). Since NAV-1 a
+  place can list its destinations among its actions instead
+  (`waysInActions`, drawn by the frame's one destination snippet): the
+  Edge of Town's actions are Enter the Maze, the Training Grounds, Select
+  Game (`ChangeGame`), Settings and Leave the Game, and it has no Go to
+  list. The Castle has no actions, only its five destinations. Practice
+  is not offered in the window; its Session methods remain for the tests;
 - **content:** anything wider, below both;
 - **party:** `PartyBar.svelte`, from `View.PartyBar` only (the practice
   copies during practice): three across, the front row (1-3) above the

@@ -325,7 +325,11 @@ decided by then.
   the earlier single save (`design/ux3/UX-3A.md`). UX-3B (2026-11-12): one
   Castle layout, creation decisions in the Actions with the points and the
   class on one screen, the character sheet embedded in the frame, and Worn
-  & Wielded / Pack (`design/ux3/UX-3B.md`).*
+  & Wielded / Pack (`design/ux3/UX-3B.md`). NAV-1 (2026-11-14): the
+  Castle is the hub with its five destinations only; the Edge of Town's
+  actions are Enter the Maze, the Training Grounds, Select Game, Settings
+  and Leave the Game; the character sheet's toggle is in the top bar;
+  practice is no longer offered in the window (`design/nav1/NAV-1.md`).*
 - **Compatibility audit:** close or explicitly defer every "Not
   investigated" row.
 - **Playtest:** a guided playtest against the Hawkwind walkthrough

@@ -126,7 +126,7 @@ suites are:
   - the story box (ART-2B): where it opens, dragged and resized with the
     mouse and the keys, kept inside the window, closed and not reopened by
     going elsewhere, reopened where it was left, the narrative in it and
-    the saving and practice notes still below;
+    the saving note still below;
   - the appearances (ART-2B, ART-2C): the defaults on a library that has
     never chosen (Slate panels, a Parchment story box, the whole picture);
     Settings' three choices, clicked, taking effect at once and kept in
@@ -147,6 +147,17 @@ suites are:
   effect in combat and a caster with no casts left, each with its reason
   and ordering nothing; Party retreat in view, its review and its
   outcome; the character sheet's spell descriptions; nothing saved.
+- **nav** (NAV-1), whenever a change reaches the town interface:
+  - Select Game opening the game slots, and Continue opening the Castle;
+  - the Castle's five destinations and no Actions;
+  - the Edge's five actions in order, with no Go to list and no practice;
+  - the top bar: Castle (Esc) and the party, story, sheet and panels
+    toggles, on one row, never Settings, at every place;
+  - each Castle destination and the Training Grounds and Settings opened,
+    and Escape from each, and from the Edge, back to the Castle;
+  - Escape leaving neither the maze (a real expedition, entered with Enter
+    the Maze, and a practice one) nor combat;
+  - practice started through its Session methods, saving nothing.
 
 Two more suites are run by hand, not by level 2:
 

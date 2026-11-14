@@ -6,12 +6,14 @@ dungeon (M6a): real expeditions (M6b-1), practice expeditions and practice
 encounters played through `app.Controller`, `app.DungeonView` and
 `app.CombatView`.
 
-**Getting around (Castle-0).** The window opens at the Castle, the hub, as
-the original does. Each place has its own screen: its name and "← Castle"
-at the top (or press Esc; it abandons only what is unfinished, such as a
-character being created), its destinations ("Go to") and its actions apart, its
-picture (a themed panel until artwork exists), and the party bar at the
-bottom, shown or hidden with Hide party.
+**Getting around (Castle-0, NAV-1).** A game opens at the Castle, the
+hub, as the original does (an expedition under way resumes in the maze).
+Each place has its own screen. Its top bar has its name, "← Castle" (or
+press Esc; it abandons only what is unfinished, such as a character being
+created) and the toggles: Hide party, Story and Hide panels where there is
+a picture, and Show sheet. Below are its destinations ("Go to") and its
+actions apart, its picture (a themed panel until artwork exists), and the
+party bar at the bottom.
 - **The Castle:** Gilgamesh's Tavern, the Adventurer's Inn, Boltac's
   Trading Post and the Temple of Cant (for a party), the Edge of Town.
 - **The Temple of Cant (T-3):** every character the priests can help,
@@ -48,8 +50,8 @@ bottom, shown or hidden with Hide party.
   or NOT saved (with Try saving again). Pool party gold gives the customer
   everyone's gold.
 - **Character sheets** (click a party member or a roster character, or
-  Character Sheet in the Actions): shown in place of the place's picture;
-  Hide Character Sheet (or Escape) brings the picture back. Worn &
+  Show sheet in the top bar): shown in place of the place's picture;
+  Hide sheet (or Escape) brings the picture back. Worn &
   Wielded and the Pack are one inventory of up to 8: Remove takes an item
   off into the pack, Use equips one from it, anywhere in town; a greyed
   button says why (the class cannot use it, a cursed item is stuck in its
@@ -63,8 +65,9 @@ bottom, shown or hidden with Hide party.
   it (asked twice; the old game is moved aside, not deleted). A game saved
   by an earlier Istary is offered for import into an empty slot; the
   original is left as it was.
-- **The Edge of Town:** Enter the maze; practice (Istary only); Change game;
-  Leave the game; the way to the Training Grounds and to Settings.
+- **The Edge of Town (NAV-1):** its actions are Enter the Maze, the
+  Training Grounds, Select Game (back to the game slots), Settings and
+  Leave the Game; there is no Go to list, and the Castle is the top bar's.
 - **The Training Grounds:** the roster (click a character for its sheet,
   where it can be renamed or deleted) and character creation: each
   decision in the Actions; the bonus points and the class on one screen,
@@ -87,8 +90,11 @@ save that fails is shown until one succeeds; what failed to be saved stays in
 the window, and Try saving again writes it without doing anything twice. Only one Istary window can use
 a save folder at a time.
 
-**Practice expeditions.** "Practice expedition" at the Edge of Town takes
-copies of the party into the real maze, to Camp at the entrance.
+**Practice expeditions.** A practice expedition (Istary only) takes
+copies of the party into the real maze, to Camp at the entrance. Since
+NAV-1 the window does not offer practice: it is started through its
+Session methods (`PracticeExpedition`, `PracticeEncounter`), as the tests
+and the live checks do.
 - **Moving:** the buttons or the terminal's keys (F/W/↑ forward, L/A/←
   left, R/D/→ right, K kick, C camp, I inspect, Enter, Y/N, button letters).
   Doors need a kick, as in the engine.
@@ -110,11 +116,12 @@ copies of the party into the real maze, to Camp at the entrance.
   map with every action, practice discards it.
 
 **Practice encounters.**
-- **What you fight:** "Practice encounter" at the Edge of Town starts a real
-  encounter from the maze entrance, with copies of the party.
+- **What you fight:** a practice encounter (`PracticeEncounter`, not
+  offered in the window since NAV-1) starts a real encounter from the maze
+  entrance, with copies of the party.
 - **Nothing is kept:** the results are discarded and the roster is not
   touched.
-- **The chest option:** "the encounter guards a chest" adds a chest to try the chest screen.
+- **The chest option:** `PracticeEncounter(true)` adds a chest to try the chest screen.
 - **The screen** (`frontend/src/lib/CombatScreen.svelte`):
   - order entry with the actions each member may take and why not;
   - the spell picker: every known spell, with a description area that
