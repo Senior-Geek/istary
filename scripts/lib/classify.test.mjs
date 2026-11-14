@@ -28,6 +28,13 @@ test('a frontend change tests the frontend and builds it, and no Go', () => {
   assert.deepEqual(p.live, ['layout', 'sheet', 'scenes'])
 })
 
+test('combat in the frontend adds the combat live checks (COMBAT-1)', () => {
+  const p = plan('gui/frontend/src/lib/CombatScreen.svelte')
+  assert.ok(p.areas.includes('combat-maze'))
+  assert.deepEqual(p.live, ['layout', 'combat'])
+  assert.ok(!plan('gui/frontend/src/lib/LocationFrame.svelte').live.includes('combat'))
+})
+
 test('creation in the frontend adds the creation live checks', () => {
   const p = plan('gui/frontend/src/lib/TrainingScreen.svelte')
   assert.ok(p.areas.includes('creation'))
@@ -83,7 +90,7 @@ test('an unknown file, the Go modules or the frontend dependencies broaden to ev
     assert.equal(p.goPackages.length, PKGS.length, f)
     assert.equal(p.frontend && p.wailsBuild && p.makeBuild, true, f)
     assert.ok(p.race.length === 3 && p.gateRequired, f)
-    assert.deepEqual(p.live, ['layout', 'creation', 'sheet', 'scenes'], f)
+    assert.deepEqual(p.live, ['layout', 'creation', 'sheet', 'scenes', 'combat'], f)
   }
 })
 

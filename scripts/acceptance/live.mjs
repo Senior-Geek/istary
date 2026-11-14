@@ -9,7 +9,7 @@
 // the Training Grounds.
 //
 //   node scripts/acceptance/live.mjs --gui GUI_DIR --library DIR --out DIR
-//        [--size 980x692] [--suites layout,sheet,scenes,creation] [--wails PATH] [--chrome PATH]
+//        [--size 980x692] [--suites layout,sheet,scenes,creation,combat] [--wails PATH] [--chrome PATH]
 //
 // The library must have been written by TestWriteAcceptanceLibrary
 // (gui/acceptance_seed_test.go). Everything it starts (wails dev, the app,
@@ -641,6 +641,172 @@ async function main() {
       check(disk().roster.some((ch) => ch.Name === 'LIVE'), 'and it is saved')
       await js(`[...document.querySelectorAll('${C} tr.pick')].find((r) => r.innerText.includes('LIVE')).click()`); await sleep(600)
       check(await sheetName() === 'LIVE' && (await buttons(`${A} .sheet`)).includes('Rename'), 'its roster row shows its sheet, with Rename')
+    },
+
+    // COMBAT-1: the spell picker with its descriptions and reasons, Party
+    // Retreat and its outcome, and the character sheet's spells, in a
+    // practice encounter (which writes nothing).
+    combat: async () => {
+      const before = sha(GAME)
+      const C1 = '.combat .commands'
+      const cv = async () => (await view()).combat
+      // On to order entry, through the bound methods, then the page.
+      const toOrders = async () => {
+        for (let i = 0; i < 60; i++) {
+          const c = await cv()
+          if (!c || c.next === 'orders') break
+          const m = { start: 'CombatStart', advance: 'CombatAdvance', 'end-round': 'CombatEndRound', confirm: 'CombatCommit' }[c.next]
+          if (c.next === 'friendly') await js(`${S}.CombatFriendly(true)`)
+          else if (m) await js(`${S}.${m}()`)
+          else break
+        }
+        await reload()
+        return cv()
+      }
+      const practice = async () => {
+        await goto('edge')
+        await js(`${S}.PracticeEncounter(false)`)
+        await reload()
+        return toOrders()
+      }
+      const slotOf = (c, cls) => c.party.find((m) => m.class.endsWith(cls.slice(0, 3)))?.slot // e.g. N-MAG
+      // The combat screen has no frame: wait for its own controls.
+      const waitFor = async (sel) => { for (let i = 0; i < 40; i++) { if (await js(`!!document.querySelector(${JSON.stringify(sel)})`)) return true; await sleep(250) } return false }
+      const select = async (slot) => { await js(`${S}.CombatSelect(${slot})`); await reload(); await waitFor(`${C1} button.act`) }
+      const openSpells = async (slot) => {
+        await select(slot)
+        await js(`[...document.querySelectorAll('${C1} button.act')].find((b) => /spell/i.test(b.innerText)).click()`)
+        await waitFor(`${C1} .spellpick`); await sleep(200)
+      }
+      const info = () => js(`(() => { const e = document.querySelector('${C1} .spellinfo'); return e ? { name: e.querySelector('.shead b').innerText, text: e.innerText, status: e.querySelector('.status').innerText } : null })()`)
+      const spellButtons = () => js(`[...document.querySelectorAll('${C1} .spelllist button.spell')].map((b) => ({ name: b.querySelector('.sname').innerText, off: b.classList.contains('off'), dis: b.disabled }))`)
+      // Everything the picker shows is in the window and readable: the list
+      // and the description side by side, nothing cut off or covered.
+      const fits = () => js(`(() => {
+        const pick = document.querySelector('${C1} .spellpick'), list = pick?.querySelector('.spelllist'), inf = pick?.querySelector('.spellinfo')
+        if (!pick || !list || !inf) return 'no picker'
+        const a = list.getBoundingClientRect(), b = inf.getBoundingClientRect(), vw = document.documentElement.clientWidth
+        if (a.right > b.left + 0.5 && a.bottom > b.top + 0.5) return 'list and description overlap'
+        if (b.right > vw + 0.5 || a.left < -0.5) return 'outside the window: ' + b.right + ' > ' + vw
+        scrollTo(0, 0)
+        const p = pick.getBoundingClientRect()
+        if (p.bottom > innerHeight + 0.5) return 'below the window without scrolling: ' + Math.round(p.bottom) + ' > ' + innerHeight
+        for (const e of [inf, ...inf.children, ...list.querySelectorAll('button')]) if (e.scrollWidth > e.clientWidth + 1) return 'cut off: ' + e.innerText.slice(0, 40)
+        inf.scrollIntoView({ block: 'nearest' })
+        const r = inf.getBoundingClientRect(), top = document.elementFromPoint(r.left + r.width / 2, r.top + Math.min(20, r.height / 2))
+        if (!inf.contains(top)) return 'description covered by ' + (top?.className || top?.tagName)
+        return ''
+      })()`)
+
+      let c = await practice()
+      check(c?.next === 'orders' && c.retreat, `a practice encounter at order entry, retreat offered (${c?.next}, ${c?.retreat})`)
+      const mage = slotOf(c, 'MAGE'), priest = slotOf(c, 'PRIEST')
+      await openSpells(mage)
+      let bs = await spellButtons(), i1 = await info()
+      // The library's mage was made with HALITO and KATINO; loading the
+      // library taught all four level 1 spells (finding #32, kept).
+      check(JSON.stringify(bs.map((b) => [b.name, b.off])) === JSON.stringify([['HALITO', false], ['MOGREF', false], ['KATINO', false], ['DUMAPIC', true]]),
+        `the mage's known spells: three castable, DUMAPIC listed but not (${JSON.stringify(bs)})`)
+      check(i1?.name === bs[0].name && /damage|sleep/.test(i1.text) && /Affects:/.test(i1.text) && /Casts left at this level:\s*2 of 2/.test(i1.text) && /can cast/.test(i1.status),
+        `the description panel: name, level, what it does, target, casts left, castable (${i1?.text.replace(/\n/g, ' | ')})`)
+      await js(`document.querySelectorAll('${C1} .spelllist button.spell')[1].dispatchEvent(new MouseEvent('mouseenter'))`); await sleep(200)
+      check((await info())?.name === bs[1].name, 'pointing at another spell describes it at once')
+      await js(`document.querySelectorAll('${C1} .spelllist button.spell')[3].dispatchEvent(new FocusEvent('focus'))`); await sleep(200)
+      const idu = await info()
+      check(idu?.name === 'DUMAPIC' && /cannot cast DUMAPIC: exploration only/.test(idu.status), `focusing a spell (the keyboard) describes it at once, with why it cannot be cast (${idu?.status})`)
+      await js(`document.querySelectorAll('${C1} .spelllist button.spell')[0].dispatchEvent(new FocusEvent('focus'))`); await sleep(200)
+      check(await fits() === '', `the picker fits the window (${await fits()})`)
+      await shot('spell-picker')
+
+      // The priest's CALFO: listed, described, not cast; clicking it orders nothing.
+      await openSpells(priest)
+      bs = await spellButtons()
+      const calfo = bs.findIndex((b) => b.name === 'CALFO')
+      await js(`document.querySelectorAll('${C1} .spelllist button.spell')[${calfo}].click()`); await sleep(400)
+      const ic = await info()
+      c = await cv()
+      check(calfo >= 0 && bs[calfo].off && ic?.name === 'CALFO' && /cannot cast CALFO: for chests/.test(ic.status) && !c.orders?.some((o) => o.slot === priest),
+        `a spell with no effect in combat is shown with its reason and not ordered (${ic?.status})`)
+      check(await fits() === '', 'and the picker still fits')
+      await shot('spell-unavailable')
+
+      // The mage spends both casts (KATINO twice, everyone else parries),
+      // then finds none left, with the reason.
+      let spent = 0
+      for (let round = 0; round < 6 && spent < 2; round++) {
+        c = await cv()
+        if (!c || c.next !== 'orders') { c = await practice(); spent = 0 }
+        for (const m of c.party.filter((m) => m.canAct)) {
+          const katino = m.slot === mage
+          await js(`${S}.CombatSelect(${m.slot})`)
+          const g = (await cv()).groups[0].number
+          const r = katino ? `{ slot: ${m.slot}, action: 'spell', spell: 'KATINO', group: ${g}, ally: 0, item: -1 }` : `{ slot: ${m.slot}, action: 'parry', group: 0, spell: '', ally: 0, item: -1 }`
+          await js(`${S}.CombatOrder(${r})`)
+        }
+        await js(`${S}.CombatFinishOrders()`)
+        c = await toOrders()
+        if (c?.next === 'orders') {
+          await js(`${S}.CombatSelect(${mage})`)
+          const k = (await cv()).spells?.find((sp) => sp.name === 'KATINO')
+          spent = k ? k.max - k.left : spent
+        }
+      }
+      c = await cv()
+      check(c?.next === 'orders' && spent === 2, `the mage has spent both casts in one encounter (${spent})`)
+      await select(mage)
+      const menuText = await js(`[...document.querySelectorAll('${C1} button.act')].find((b) => /spell/i.test(b.innerText))?.innerText ?? ''`)
+      check(/no spell can be cast now: see why/.test(menuText), `the Spell order says none can be cast now (${menuText.replace(/\n/g, ' ')})`)
+      await openSpells(mage)
+      bs = await spellButtons()
+      const ie = await info()
+      check(bs.length === 4 && bs.every((b) => b.off) && /cannot cast HALITO: no level 1 mage casts left \(0 of 2\); a stay at the Inn restores them\./.test(ie?.status ?? ''),
+        `no casts left: every spell says why (${ie?.status})`)
+      check(await fits() === '', 'the exhausted picker fits')
+      await shot('spell-exhausted')
+      await js(`[...document.querySelectorAll('${C1} button.small')].find((b) => b.innerText.trim() === 'Back').click()`); await sleep(300)
+
+      // Party Retreat: one click, the review explains it, then the round.
+      await js('scrollTo(0, 0)')
+      const rb = await rect(`${C1} .retreat button`)
+      check(rb && rb.b <= H && rb.r <= W, `Party retreat is in the window (${JSON.stringify(rb)})`)
+      await clickText('Party retreat', C1)
+      c = await cv()
+      const note = await js(`document.querySelector('${C1} .runnote')?.innerText ?? ''`)
+      check(c.next === 'confirm' && c.orders.filter((o) => o.action === 'run').length === 1 && /^The party attempts to retreat: \w+ will try to lead it away/.test(note),
+        `the review shows one Run and explains the retreat (${note})`)
+      await shot('retreat-review')
+      await clickText('Fight! ↵', C1)
+      let gloss = ''
+      for (let i = 0; i < 80 && !gloss; i++) {
+        gloss = await js(`[...document.querySelectorAll('.combat .messages p.gloss')].map((p) => p.innerText).join(' / ')`)
+        if (/escapes|Escape failed/.test(gloss)) break
+        gloss = ''
+        const b = await js(`(() => { const b = document.querySelector('${C1} button.primary'); if (!b || b.disabled) return false; b.click(); return true })()`)
+        if (!b) { if ((await view()).screen !== 'combat') break; await sleep(300) } else await sleep(350)
+      }
+      check(/^The party attempts to retreat! \/ (The party escapes!|Escape failed — the fight goes on\.)$/.test(gloss), `the attempt and its outcome are said (${gloss})`)
+      await shot('retreat-outcome')
+      for (let i = 0; i < 80 && (await view()).screen === 'combat'; i++) {
+        c = await cv()
+        if (c.next === 'orders') await js(`${S}.CombatRetreat()`)
+        else if (c.next === 'confirm') await js(`${S}.CombatCommit()`)
+        else if (c.next === 'leave') await js(`${S}.CombatLeave()`)
+        else if (c.next === 'choice') await js(`${S}.CombatChooseBoon(1)`)
+        else await js(`${S}.${{ advance: 'CombatAdvance', 'end-round': 'CombatEndRound', start: 'CombatStart' }[c.next] ?? 'State'}()`)
+      }
+      check((await view()).screen !== 'combat', 'the encounter is over')
+      check(sha(GAME) === before, 'practice combat, spells and retreat saved nothing')
+
+      // The character sheet: each known spell with Go's description.
+      await goto('castle')
+      const v = await view()
+      const mi = v.partyBar.findIndex((p) => /-MAG$/.test(p.class))
+      check(mi >= 0, `the mage is in the party bar (${mi})`)
+      await clickSlot(mi)
+      if (await toggle() === 'Character Sheet') await clickText('Character Sheet', B)
+      const rows = await js(`[...document.querySelectorAll('${A} .sheet ul.spells li')].map((li) => li.innerText.replaceAll(String.fromCharCode(10), ' '))`)
+      check(rows.length === 4 && rows.every((r) => /^(HALITO|MOGREF|KATINO|DUMAPIC)\s+mage 1\s+\S/.test(r)), `the sheet lists the mage's spells with descriptions (${JSON.stringify(rows)})`)
+      await shot('sheet-spells')
     },
   }
 
