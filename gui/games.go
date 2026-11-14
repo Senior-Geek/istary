@@ -106,7 +106,7 @@ var (
 	errNotLibrary  = errors.New("This window opened one save folder directly; it has no other games.")
 	errNoLegacy    = errors.New("There is no earlier save to import.")
 	errNotReplace  = errors.New("Choose Replace for that slot first.")
-	errLeaveAtEdge = errors.New("Go to the Edge of Town to change games.")
+	errLeaveAtEdge = errors.New("Select Game is at the Edge of Town.")
 )
 
 // readSave parses a save as the engine writes it.
@@ -282,7 +282,7 @@ func (s *Session) chooser(slot int, action func() error) View {
 	case !s.library:
 		return s.view(errNotLibrary)
 	case s.ctrl != nil:
-		return s.view(errors.New("A game is open. Change games from the Edge of Town."))
+		return s.view(errors.New("A game is open. Select Game, at the Edge of Town, chooses another."))
 	case slot < 1 || slot > gameSlots:
 		return s.view(errNoSuchSlot)
 	}
@@ -540,8 +540,9 @@ func (s *Session) forgetGame() {
 	s.settings, s.replacing = false, 0
 }
 
-// ChangeGame closes the open game and returns to game selection, from the
-// Edge of Town. Every action is saved as it happens, so nothing is lost;
+// ChangeGame (Select Game since NAV-1) closes the open game and returns to
+// the game selection (GamesScreen), from the Edge of Town. Every action is
+// saved as it happens, so nothing is lost;
 // it is refused while the last save has failed, and anywhere a game is
 // under way (an expedition, a practice, a character being created).
 func (s *Session) ChangeGame() View {

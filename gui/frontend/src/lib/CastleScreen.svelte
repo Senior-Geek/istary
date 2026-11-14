@@ -1,8 +1,9 @@
 <script>
-  // The Castle (Castle-0 C0-4): the hub. Its destinations are the Tavern,
-  // the Adventurer's Inn, Boltac's Trading Post, the Temple of Cant (the
-  // last three closed, with Go's reason) and the Edge of Town; it has no
-  // actions of its own.
+  // The Castle (Castle-0 C0-4): the hub, where every game opens (NAV-1).
+  // Its destinations are the Tavern, the Adventurer's Inn, Boltac's Trading
+  // Post, the Temple of Cant (the last three closed, with Go's reason) and
+  // the Edge of Town; it has no actions of its own, so no Actions section
+  // (the character sheet's toggle is in the top bar).
   //
   // Props:
   //   view    the Go View (view.location is "castle")

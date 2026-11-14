@@ -8,9 +8,9 @@ import { subject, toggleLabel, available } from './sheet.js'
 const frames = JSON.parse(readFileSync(new URL('./testdata/frame-views.json', import.meta.url)))
 const creations = JSON.parse(readFileSync(new URL('./testdata/creation-views.json', import.meta.url)))
 
-test('the toggle says what it does', () => {
-  assert.equal(toggleLabel(false), 'Character Sheet')
-  assert.equal(toggleLabel(true), 'Hide Character Sheet')
+test('the toggle says what it does, as the party toggle does (NAV-1)', () => {
+  assert.equal(toggleLabel(false), 'Show sheet')
+  assert.equal(toggleLabel(true), 'Hide sheet')
 })
 
 test('the sheet is offered in town, and not in the maze or while a character is created', () => {

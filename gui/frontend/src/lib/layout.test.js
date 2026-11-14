@@ -11,7 +11,7 @@ const read = (name) => readFileSync(new URL(name, import.meta.url), 'utf8')
 const places = ['CastleScreen', 'EdgeScreen', 'TrainingScreen', 'TavernScreen', 'TradingScreen', 'InnScreen', 'TempleScreen', 'SettingsScreen']
 // The place's own actions snippet, up to the next snippet or the content.
 const actionsOf = (src) => {
-  const from = src.indexOf('{#snippet actions()}')
+  const from = src.search(/\{#snippet actions\(/)
   assert.ok(from >= 0, 'an actions snippet')
   let depth = 0
   const re = /\{#snippet |\{\/snippet\}/g
@@ -127,8 +127,9 @@ test('ART-2B: the appearances change colours only, and the story box holds narra
   const frame = read('./LocationFrame.svelte')
   assert.match(frame, /data-appearance=\{look\??\.panels\}/)
   assert.ok(!/S\.\w*(Appearance|Story)/.test(frame), 'nothing about the appearance or the story box is sent to Go from the frame')
-  // The Castle's description is its story; the Edge keeps saving and
-  // practice in its information, outside the story.
+  // The Castle's description is its story; the Edge keeps saving in its
+  // information, outside the story, and says nothing of practice, which
+  // it no longer offers (NAV-1).
   const castle = read('./CastleScreen.svelte'), edge = read('./EdgeScreen.svelte')
   assert.match(castle, /\{#snippet story\(\)\}[\s\S]*The party is formed at[\s\S]*\{\/snippet\}/)
   const story = edge.slice(edge.indexOf('{#snippet story()}'), edge.indexOf('{/snippet}', edge.indexOf('{#snippet story()}')))
@@ -136,7 +137,7 @@ test('ART-2B: the appearances change colours only, and the story box holds narra
   assert.ok(!/saved|Practice|practice/.test(story), 'no saving or practice in the story')
   const rest = edge.replace(story, '')
   assert.match(rest, /saved after every/)
-  assert.match(rest, /<b>Practice<\/b> is Istary's own/)
+  assert.ok(!/Practice|practice/.test(edge.replace(/^\s*\/\/.*$/gm, '')), 'no practice at the Edge, outside its comments')
 })
 
 test('ART-2C: the appearance is chosen in Settings and kept by Go; each part is complete on its own', async () => {

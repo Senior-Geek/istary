@@ -19,9 +19,10 @@ export function subject(view, index) {
   return roster[0] ?? null
 }
 
-// toggleLabel is the Actions button's label.
+// toggleLabel is the top bar's sheet toggle's label (NAV-1), worded as
+// the party toggle is.
 export function toggleLabel(shown) {
-  return shown ? 'Hide Character Sheet' : 'Character Sheet'
+  return shown ? 'Hide sheet' : 'Show sheet'
 }
 
 // available says whether the sheet can be shown here: in town, at a place,

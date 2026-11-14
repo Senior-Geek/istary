@@ -7,9 +7,10 @@
   // go through Session.Navigate and the party toggle through
   // Session.SetPartyVisible; what is open is Go's.
   //
-  // Areas (UX-3B): head (title, Back, party toggle); A, the display, upper
-  // left (the artwork, or the embedded character sheet); B, the actions,
-  // upper right (the place's decisions, the sheet toggle, then the
+  // Areas (UX-3B, NAV-1): head, the top bar (title, Back to the Castle,
+  // then the toggles: party, story, character sheet, panels); A, the
+  // display, upper left (the artwork, or the embedded character sheet); B,
+  // the actions, upper right (the place's decisions, then the
   // destinations), scrolling inside itself if it is long; C, the
   // information below both, scrolling on its own and taking whatever
   // height the party bar leaves (all of it when the party is hidden); D,
@@ -40,7 +41,7 @@
   //
   // The character sheet (lib/sheet.js): App keeps whose it is and whether
   // it is shown (the SHEET context); the frame shows it in A, in place of
-  // the artwork, and offers the one toggle for it in B. What the sheet
+  // the artwork, and offers the one toggle for it in the head (NAV-1). What the sheet
   // offers is the place's: renaming and deleting at the Training Grounds,
   // joining and leaving at the Tavern, equipping anywhere in town (Go
   // refuses it when it is not open, with the reason on the sheet).
@@ -51,7 +52,12 @@
   //   call      (fn, ...args) => Promise   runs a Session method
   //   onopen    (rosterIndex) => void      open a member's sheet (optional)
   //   scene     snippet drawn instead of the place's artwork (optional)
-  //   actions   snippet: the place's actions, first in B (optional)
+  //   actions   snippet: the place's actions, first in B (optional); it is
+  //             given the destinations (navigation.js) and the snippet
+  //             that draws one, for a place that lists them among its
+  //             actions
+  //   waysInActions  the place's actions list its destinations, and there
+  //             is no Go to list (NAV-1, the Edge of Town) (optional)
   //   aside     snippet under the actions, e.g. a map (optional)
   //   children  the place's information, in C (optional)
   //   story     snippet: the place's narrative, in the story box at an
@@ -81,7 +87,7 @@
   import StoryBox from './StoryBox.svelte'
   import { PANELS, illustrated, lookOf } from './scenes.js'
 
-  let { view, busy = false, call, onopen, scene, actions, aside, children, story, storyTitle, pick, onpick, current = -1, fill = false, partyAlways = false, compact = false, noSheet = false } = $props()
+  let { view, busy = false, call, onopen, scene, actions, aside, children, story, storyTitle, pick, onpick, current = -1, fill = false, partyAlways = false, compact = false, noSheet = false, waysInActions = false } = $props()
 
   const here = $derived(title(view.location))
   const way = $derived(back(view))
@@ -132,6 +138,14 @@
   }
 </script>
 
+<!-- One destination: its button, and Go's reason when it is closed. The
+     Go to list draws each with it, and a place that puts its destinations
+     among its actions (waysInActions) is given it with them. -->
+{#snippet destination(w)}
+  <button class="way" disabled={busy || !w.open} onclick={() => go(w.dest)}>{w.label}</button>
+  {#if !w.open}<span class="why">{w.reason}</span>{/if}
+{/snippet}
+
 {#if art}<LocationScene location={view.location} title={here} mode="backdrop" artwork={look.artwork} />{/if}
 
 {#if bare}
@@ -159,6 +173,10 @@
         onclick={() => (storyOpen ? closeStory() : (panels.story.open = true))}
         title={storyOpen ? 'Close the story' : 'Open the story'}>Story</button>
     {/if}
+    {#if sheetHere}
+      <button class="toggle" aria-pressed={sheetShown} disabled={busy || !who} onclick={toggleSheet}
+        title={who ? `${sheetShown ? 'Hide' : 'Show'} ${who.name}'s character sheet (click a party member to see theirs)` : 'Nobody to show'}>{toggleLabel(sheetShown)}</button>
+    {/if}
     {#if pictured}
       <button class="toggle" bind:this={hideButton} disabled={busy} onclick={hidePanels}
         title="Hide the panels to see the picture (Esc brings them back)">Hide panels</button>
@@ -182,29 +200,19 @@
   </div>
 
   <div class="nav-area" data-area="actions">
-    {#if actions || sheetHere}
+    {#if actions}
       <section class="actions" aria-label="Actions here">
         <h3>Actions</h3>
-        {#if actions}{@render actions()}{/if}
-        {#if sheetHere}
-          <div class="sheet-toggle" class:alone={!actions}>
-            <button class="wide" aria-pressed={sheetShown} disabled={busy || !who} onclick={toggleSheet}
-              title={who ? `${sheetShown ? 'Hide' : 'Show'} ${who.name}'s character sheet` : 'Nobody to show'}>{toggleLabel(sheetShown)}</button>
-            {#if sheetShown}<span class="why">{who.name}. Click a party member to see theirs.</span>{/if}
-          </div>
-        {/if}
+        {@render actions(ways, destination)}
       </section>
     {/if}
     {#if aside}<div class="aside-area">{@render aside()}</div>{/if}
-    {#if ways.length}
+    {#if ways.length && !waysInActions}
       <nav aria-label="Destinations">
         <h3>Go to</h3>
         <ul>
           {#each ways as w (w.dest)}
-            <li>
-              <button disabled={busy || !w.open} onclick={() => go(w.dest)}>{w.label}</button>
-              {#if !w.open}<span class="why">{w.reason}</span>{/if}
-            </li>
+            <li>{@render destination(w)}</li>
           {/each}
         </ul>
       </nav>
@@ -265,12 +273,9 @@
   h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin: 0 0 6px; font-weight: 500; }
   nav ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
   nav li { display: grid; }
-  nav button { width: 100%; text-align: left; margin: 0; }
+  .way { width: 100%; text-align: left; margin: 0; }
   .why { color: var(--muted); font-size: 11px; padding: 2px 2px 4px; }
   .actions { margin: 0; padding: 10px 12px; }
-  .sheet-toggle { display: grid; gap: 2px; margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--line); }
-  .sheet-toggle.alone { margin-top: 0; padding-top: 0; border-top: 0; }
-  .sheet-toggle .wide { width: 100%; text-align: left; margin: 0; }
 
   /* An illustrated place: the same areas over the picture. Each working
      panel is near-opaque, so its text reads over any part of the picture;
@@ -294,7 +299,6 @@
      hiding the party gives them its room. */
   .frame.illustrated .body { grid-template-rows: minmax(var(--top), 1fr) fit-content(45%); }
   .frame.illustrated .content-area > :global(section) { margin-top: 0; }
-  .frame.illustrated .sheet-toggle { border-top-color: var(--glass-line); }
   /* The picture alone: one way back, in the corner. */
   .frame.bare { display: flex; justify-content: flex-end; align-items: flex-start; }
   .restore {
