@@ -67,6 +67,7 @@
           <dt>Age</dt><dd>{who.age} years</dd>
           {#if who.mage}<dt>Mage spells</dt><dd>{who.mage}</dd>{/if}
           {#if who.priest}<dt>Priest spells</dt><dd>{who.priest}</dd>{/if}
+          {#if who.spellsShort}<dt></dt><dd class="spellnote">Spell points used: any stay, the free Stables too, restores them all.</dd>{/if}
           <dt>Experience</dt><dd>{who.xp}{who.nextXp ? ` · level ${who.level + 1} at ${who.nextXp}` : ''}</dd>
         </dl>
         <div class="row">
@@ -154,7 +155,8 @@
           </tbody>
         </table>
       </div>
-      <p class="notes muted">Every stay restores spell points and ends with a level check. Age matters past 50: it
+      <p class="notes muted">Every stay, a free night in the Stables included, restores all spell points and ends
+        with a level check. Spell points come back only here: not on entering the maze. Age matters past 50: it
         weighs on the attribute changes at each new level. Istary does not yet age characters for Inn stays — the
         original's rate is not established.</p>
     {:else}
@@ -186,6 +188,7 @@
   .explain { margin: 0; font-size: 12px; }
   .notes { margin: 8px 0 0; font-size: 12px; }
   .refusal { margin: 8px 0 0; color: var(--error); font-weight: 600; }
+  .spellnote { color: var(--gold); font-size: 12px; }
   .receipt { padding: 6px 10px; border-radius: 4px; font-size: 13px; border-left: 3px solid; }
   .receipt .status { font-weight: 600; font-size: 12px; margin-left: 6px; }
   .receipt ul { margin: 4px 0 0; padding-left: 18px; columns: 2 220px; }

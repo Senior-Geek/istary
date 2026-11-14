@@ -58,8 +58,8 @@ func TestNewCastersStartWithTheirCasts(t *testing.T) {
 }
 
 // caster turns party member i of a combat controller into a level 1 mage
-// knowing the four level 1 mage spells, as a reloaded first-level mage does
-// (finding #32), with left of 2 casts.
+// knowing the four level 1 mage spells (as one whose saved spells an
+// earlier Istary widened, #32), with left of 2 casts.
 func caster(p []*engine.Character, i, left int) *engine.Character {
 	m := p[i]
 	m.Class = engine.Mage
@@ -287,7 +287,11 @@ func TestSpellDescriptionsMatchTheEngine(t *testing.T) {
 		if mm := ac.FindStringSubmatch(g.Summary); mm != nil {
 			by, _ := strconv.Atoi(mm[2])
 			better := mm[1] == "improves"
-			if (sp.Effect != engine.EffectBuff && sp.Effect != engine.EffectDebuff) || by != abs(sp.ACMod) || better != (sp.ACMod < 0) {
+			mod := sp.ACMod
+			if sp.Name == "MAPORFIC" {
+				mod = -2 // in executeSpell (ACMOD2), checked by TestMaporficImprovesArmourClass
+			}
+			if (sp.Effect != engine.EffectBuff && sp.Effect != engine.EffectDebuff && sp.Name != "MAPORFIC") || by != abs(mod) || better != (mod < 0) {
 				t.Errorf("%s says armour class %s by %d, the engine's change is %+d", sp.Name, mm[1], by, sp.ACMod)
 			}
 		} else if sp.Effect == engine.EffectBuff || sp.Effect == engine.EffectDebuff {

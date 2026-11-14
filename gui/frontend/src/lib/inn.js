@@ -25,7 +25,8 @@ export function guest(inn, roster = []) {
   if (!v || v.guest < 0) return null
   const ch = roster.find((c) => c.name === v.name)
   if (!ch) return { slot: v.guest, name: v.name }
-  const spells = (cur = [], max = []) => max.map((m, i) => (m ? `${cur[i]}/${m}` : null)).filter(Boolean).join(' ')
+  const spells = (cur = [], max = []) => max.map((m, i) => (m ? `L${i + 1} ${cur[i]}/${m}` : null)).filter(Boolean).join(' ')
+  const short = (cur = [], max = []) => max.some((m, i) => (cur[i] ?? 0) < m)
   return {
     slot: v.guest,
     index: ch.index,
@@ -40,6 +41,9 @@ export function guest(inn, roster = []) {
     nextXp: ch.nextXp,
     mage: spells(ch.mageSpells, ch.maxMage),
     priest: spells(ch.priestSpells, ch.maxPriest),
+    // Spell points used since the last stay (COMBAT-1): a stay in any room
+    // restores them, and nothing else does.
+    spellsShort: short(ch.mageSpells, ch.maxMage) || short(ch.priestSpells, ch.maxPriest),
   }
 }
 
@@ -81,7 +85,7 @@ export function rows(inn, mode = 'healed', weeks = 1, quotes = {}) {
       room: r.room,
       name: roomName(r.name),
       free: r.free,
-      rate: r.free ? 'Free · heals nothing' : `${r.hpPerWeek} HP a week · ${r.feePerWeek} GP a week`,
+      rate: r.free ? 'Free · heals nothing · restores spells' : `${r.hpPerWeek} HP a week · ${r.feePerWeek} GP a week · restores spells`,
       text: quoteText(q, r),
       short: chosen ? '' : shortfall(q, v.name),
       request: { action: 'stay', room: r.room, weeks: chosen ? weeks : 0 },
@@ -120,8 +124,10 @@ export function statChanges(st) {
   return out
 }
 
-const spellLine = (before = [], after = []) =>
-  after.map((n, i) => (n !== before[i] ? `L${i + 1} ${before[i]}→${n}` : null)).filter(Boolean).join(', ')
+const spellLine = (book, before = [], after = []) => {
+  const changed = after.map((n, i) => (n !== before[i] ? `L${i + 1} ${before[i]}→${n}` : null)).filter(Boolean)
+  return changed.length ? `${book} ${changed.join(', ')}` : ''
+}
 
 // receipt describes the last stay or pooling and whether it is saved: tone
 // is 'saved', 'notDurable' or 'unsaved'; lines are what the stay did, each
@@ -146,8 +152,14 @@ export function receipt(inn) {
   lines.push({ kind: 'stay', text: st.weeks ? `${room}, ${plural(st.weeks, 'week')}: ${st.charged} GP` : `${room}, one night: free` })
   lines.push({ kind: 'hp', text: st.hpAfter > st.hpBefore || st.died ? `HP ${st.hpBefore} → ${st.hpAfter} of ${st.maxHpAfter}` : `HP ${st.hpAfter} of ${st.maxHpAfter}: no healing` })
   if (st.maxHpAfter !== st.maxHpBefore) lines.push({ kind: 'hp', text: `Maximum HP ${st.maxHpBefore} → ${st.maxHpAfter}` })
-  const sp = [spellLine(st.mageBefore, st.mageAfter), spellLine(st.priestBefore, st.priestAfter)].filter(Boolean)
-  lines.push({ kind: 'spells', text: sp.length ? `Spell points restored: ${sp.join('; ')}` : 'Spell points: nothing to restore' })
+  // Every stay restores every spell point (RestoreSpells), so after the
+  // stay the points are the maximum: none at all means no spells yet.
+  const sp = [spellLine('Mage', st.mageBefore, st.mageAfter), spellLine('Priest', st.priestBefore, st.priestAfter)].filter(Boolean)
+  const hasSpells = [...(st.mageAfter ?? []), ...(st.priestAfter ?? [])].some((n) => n > 0)
+  lines.push({
+    kind: 'spells',
+    text: sp.length ? `Spell points restored: ${sp.join('; ')}` : hasSpells ? 'Spell points: already full' : 'Spell points: none (no spells yet)',
+  })
   lines.push({ kind: 'age', text: st.ageAfter !== st.ageBefore ? `Age ${Math.floor(st.ageBefore / 52)} → ${Math.floor(st.ageAfter / 52)}` : 'Age unchanged' })
   if (st.levelAfter > st.levelBefore) lines.push({ kind: 'level', text: `Made level ${st.levelAfter}` })
   for (const c of statChanges(st)) lines.push({ kind: c.gained ? 'gain' : 'loss', text: `${c.name} ${c.from} → ${c.to}` })

@@ -67,7 +67,7 @@ var spellSummaries = map[string]string{
 	"DIAL":      "Heals one party member 2–16 hit points.",
 	"BADIAL":    "Wounds one monster: 2–16 damage.",
 	"LATUMOFIS": "Cures one party member's poison.",
-	"MAPORFIC":  "Protects the whole party for the rest of the fight.",
+	"MAPORFIC":  "A big shield: the whole party's armour class improves by 2 for the rest of the fight.",
 	// Priest, level 5
 	"DIALMA":   "Heals one party member 3–24 hit points.",
 	"BADIALMA": "Wounds one monster: 3–24 damage.",
@@ -104,7 +104,6 @@ var combatNotes = map[string]string{
 	"KANDI":     "No effect in combat.",
 	"DI":        "No effect in combat.",
 	"KADORTO":   "No effect in combat.",
-	"LATUMOFIS": "No effect in combat in Istary: cast it in Camp.",
 	"LOKTOFEIT": "Not available in combat until its defect (finding #24) is corrected.",
 	"MALOR":     "Not available in combat until its defect (finding #24) is corrected.",
 }

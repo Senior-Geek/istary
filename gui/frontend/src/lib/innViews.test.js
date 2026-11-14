@@ -29,7 +29,10 @@ test('the guest is Go’s, with the roster’s HP, gold, age, spells and experie
   assert.equal(g.slot, v.inn.view.guest)
   for (const k of ['hp', 'maxHp', 'gold', 'age', 'level', 'xp', 'nextXp']) assert.equal(g[k], v.guest[k], k)
   const m = guest(at('mage: little gold').inn, [at('mage: little gold').guest])
-  assert.match(m.mage, /^\d+\/\d+/)
+  assert.match(m.mage, /^L1 \d+\/\d+/)
+  const ch = at('mage: little gold').guest
+  assert.equal(m.spellsShort, ch.mageSpells.some((n, i) => n < ch.maxMage[i]))
+  assert.equal(guest(at('mage: stables').inn, [at('mage: stables').guest]).spellsShort, false, 'after a stay: full')
 })
 
 test('until healed: every room as Go quotes it, the stables free, disabled exactly by Go’s refusal', () => {
@@ -101,7 +104,9 @@ test('a stay’s receipt says what Go did: room, weeks, gold, HP, spells, age, l
   assert.ok(r.messages.includes('YOU MADE A LEVEL!'))
   const stables = receipt(at('mage: stables').inn)
   assert.ok(stables.lines.some((l) => l.text === 'The Stables, one night: free'))
-  assert.ok(stables.lines.some((l) => /^Spell points restored: L1 0→/.test(l.text)), stables.lines)
+  assert.ok(stables.lines.some((l) => /^Spell points restored: Mage L1 0→2$/.test(l.text)), stables.lines)
+  assert.ok(text.includes('Spell points: none (no spells yet)'), text) // a fighter
+  for (const row of rows(at('mage: stables').inn, 'healed')) assert.match(row.rate, /restores spells$/)
   assert.ok(stables.lines.some((l) => l.kind === 'xp'))
 })
 
