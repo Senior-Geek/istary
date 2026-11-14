@@ -55,20 +55,69 @@ Town's Select Game. No rule, save format or saved game changes.
 ## The introductory story
 
 With no game open the Castle's story box (ART-2B) tells the introductory
-story instead of the Castle's own, over the Castle's picture. It closes
-with its × like any story and blocks nothing. When a game opens (or
-closes) the story box opens again (App), so the Castle's own story is
-shown in a game. A window that opens with its last game goes straight to
-the Castle's own story; a window whose last game is gone shows the
-introductory story again. Nothing of it is saved anywhere.
+story instead of the Castle's own, over the Castle's picture, titled
+"Welcome to the Castle". It is the same story box, with its × and the
+top bar's Story toggle: non-modal, closed and reopened like any story,
+and blocking nothing. It opens in the picture's area, no taller than it,
+and the text scrolls inside it (at 980×692 and 1440×900 it is longer
+than the box), clear of the destinations and the party. Its last line is
+emphasised in the story box's own gold, the colour of its title.
 
-Proposed text (**draft, awaiting approval**):
+When a game opens (or closes) the story box opens again (App), so a
+game's Castle shows the Castle's own story. A window that opens with its
+last game goes straight to the Castle's own story; one whose last game
+is gone shows the introductory story again. Nothing of it is saved, in a
+game or in the window's settings.
 
-> Torches gutter along the castle walls, and the town lies quiet. Far
-> below it the maze waits, and no party has yet been named to brave it.
+The approved text (2026-11-14):
+
+> **Welcome to the Castle**
 >
-> Beyond the gate, at the **Edge of Town**, **Select Game** takes up an
-> adventure already begun, or begins a new one.
+> You have arrived at the Castle of Trebor, the Mad Overlord, whose lands
+> lie beneath the shadow of a terrible evil.
+>
+> Deep below the Castle, the wizard Werdna has hidden himself within a
+> vast and treacherous Maze. There he guards a powerful amulet stolen
+> from Trebor himself.
+>
+> The Overlord has called upon adventurers from every corner of the
+> realm. Riches and glory await those brave enough to descend into the
+> labyrinth, defeat Werdna, and return with the stolen amulet.
+>
+> Many have answered the call. Few have returned.
+>
+> Now it is your turn.
+>
+> But no adventurer should face the Maze alone. You must first gather a
+> company of companions, each bringing their own strengths, skills and
+> knowledge of magic.
+>
+> **Your journey begins at the Edge of Town.**
+>
+> There you may establish a new adventure and visit the Training Grounds,
+> where warriors, priests, mages and thieves begin their journeys.
+>
+> Create your characters, choosing their names, races, professions and
+> abilities. Then return to the Castle, where Gilgamesh's Tavern provides
+> a gathering place for your party, Boltac's Trading Post offers
+> equipment, and the Adventurer's Inn provides rest.
+>
+> When your company is assembled and prepared, the Maze awaits.
+>
+> **Trebor has issued his challenge. Will you answer it?**
+
+## Decisions (approved 2026-11-14)
+
+1. **Startup:** Istary always opens at the Castle, unless a valid
+   expedition must resume in the maze; the last valid game opens by
+   itself; with none, the Castle with the introductory story, only the
+   Edge of Town open.
+2. **Select Game** closes the open game at once, as before; the game
+   stays the one remembered for the next start. Choosing or creating a
+   game opens it at the Castle.
+3. **Settings** with no game shows only the window's appearance; the
+   roster tools wait for a game.
+4. **Escape** and the maze's and combat's restrictions are unchanged.
 
 ## Tests
 
@@ -91,10 +140,16 @@ Proposed text (**draft, awaiting approval**):
   (`openedLast`), or start with none remembered (`relibraryNoGame`) where
   they test game selection after a restart. The game selection fixture
   is unchanged.
+- **Frontend** (`nav1a.test.js`): the no-game views recorded from Go
+  (the Castle, the Edge, Settings), the Edge's Select Game, Settings
+  without the roster tools, game selection's way back, and the
+  introductory story: the approved text's eleven paragraphs, its title
+  and its emphasised challenge, and the Castle's own story in a game.
 - **Live** (`--suites startup`, with `nav` for town and UI changes): the
-  no-game Castle, Edge and Settings, the introductory story and its ×,
-  Escape, and Select Game and Continue back to the Castle's own story,
-  at 980×692 and 1440×900.
+  no-game Castle, Edge and Settings; the introductory story, its title,
+  its scrolling inside the box to the last line, the box clear of the
+  controls, the challenge's emphasis, and its ×; Escape; and Select Game
+  and Continue back to the Castle's own story, at 980×692 and 1440×900.
 
 ## Notes
 

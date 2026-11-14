@@ -162,7 +162,9 @@ suites are:
   - game selection's ← Castle (Esc), to the Castle with no game open;
   - with no game: the Castle's picture, only the Edge of Town open, the
     others saying a game must be selected first, the introductory story
-    in the story box, closed with its ×, and nothing in the way;
+    in the story box ("Welcome to the Castle"), scrolling inside it to its
+    emphasised last line, clear of the controls, closed with its ×, and
+    nothing in the way;
   - the Edge's actions with no game (the maze and the Training Grounds
     closed, with their reasons) and Settings with only the appearance;
   - Escape from the Edge and Settings to the Castle;
