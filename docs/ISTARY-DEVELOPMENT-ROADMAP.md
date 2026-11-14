@@ -422,6 +422,11 @@ own before any work.
   window at 980×692 and 1440×900, so the party strip needs a scroll during
   order entry. Make the party's status visible without scrolling at every
   supported window size.
+- **Party and Character Sheet at Boltac's (NAV-1).** Boltac's shows the
+  party bar always and has no sheet toggle (UX-2: the bar and the Selected
+  Character panel are how the customer is chosen), unlike every other place
+  since NAV-1 put both toggles in the top bar. Review their visibility
+  there with the Trading Post's artwork and interface milestone.
 - **Terminal Temple.** The terminal keeps the original: the patient found
   anywhere on the roster, even out in the maze; any party member tithes,
   dead or not; paying and the treatment are two keys, each saved after

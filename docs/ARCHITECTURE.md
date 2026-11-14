@@ -809,7 +809,7 @@ Actions until NAV-1). The areas as Castle-0 drew them:
     `AbandonCreation` without leaving).
   - **Tavern:** Join, Remove, the Tavern's refusals and the password.
   - **Settings:** the save folder, Reload, Reset and Restore.
-  - **The recovery banner's "Try resuming again"** is `TryResumeAgain`,
+  - **The recovery banner's "Try Resuming Again"** is `TryResumeAgain`,
     accepted anywhere in town while an expedition cannot be resumed.
   - **Checked live** (Wails dev, headless Chrome) at 760x532, 980x692 and
     1512x945: the Castle, the Training Grounds and a full character

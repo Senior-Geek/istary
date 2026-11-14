@@ -94,12 +94,33 @@ None of this conflicted with the brief.
   - the scenes suite's panel check, which now names each place's panels:
     the Castle has three (top bar, destinations and party), the Edge four.
 
-## Limitations and notes
+## Decisions (approved 2026-11-14)
 
-- **Capitalisation:** the Edge's labels follow the brief ("Enter the
-  Maze", "Select Game", "Leave the Game"), while the window's other
-  buttons are in sentence case ("Hide party", "Continue into maze").
+1. **The sheet's label:** "Show sheet" / "Hide sheet", as the other top-bar
+   toggles are worded.
+2. **Capitalisation:** Title Case for navigation destinations and for the
+   actions that move the player or manage the game. Sentence case for the
+   interface's toggles ("Hide party", "Show sheet", "Hide panels").
+   - **Title Case:** the Edge's actions; its equipment check (Continue into
+     Maze, Return to Town); the game selection's choices (New Game,
+     Continue, Import Earlier Game Here, Replace with a New Game…, Replace
+     This Game, Keep It); the expedition recovery banner (Try Resuming
+     Again, Return Its Party to the Castle).
+   - **Unchanged:** the places' own services (the Tavern's, the Inn's,
+     Boltac's, the Temple's), Settings' roster tools, the maze, Camp and
+     combat, all in sentence case as before.
+   - `nav1.test.js` checks both rules.
+3. **Practice:** removed from the window; the Session methods remain the
+   automated tests' way in, and no development-mode interface is added.
+
+The Castle stays where a game opens, and the Edge of Town is the menu for
+everything outside the Castle and for managing the game. Escape and the
+maze's restrictions are unchanged.
+
+## Notes
+
 - **No way back at the Castle:** it has no "← Castle", as before; it is
   the place it would lead to.
-- **No practice for players:** they can no longer start practice from the
-  window.
+- **Deferred:** Party and Character Sheet visibility at Boltac's Trading
+  Post is to be reviewed with its artwork and interface milestone (roadmap
+  backlog).
