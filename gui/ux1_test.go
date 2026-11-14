@@ -122,7 +122,7 @@ func equipNamed(t *testing.T, s *Session, index int, name string, equip bool) {
 
 // The equipment check at the Edge of Town: who has no usable weapon or no
 // armor equipped, carried items not counting, a Mage never asked to wear
-// armor. It is a caution: reading it saves nothing, Return to town only
+// armor. It is a caution: reading it saves nothing, Return to Town only
 // goes to the castle, and Continue sets out as before.
 func TestEquipmentCheckAtTheEdge(t *testing.T) {
 	s, dir := partySession(t, false) // AGUI-FGUI: Fighter, Fighter, Thief, Priest, Mage, Fighter; nothing worn
@@ -167,7 +167,7 @@ func TestEquipmentCheckAtTheEdge(t *testing.T) {
 		t.Fatal("reading the check changed the save")
 	}
 
-	// Return to town: the castle, the party and its kit as they were.
+	// Return to Town: the castle, the party and its kit as they were.
 	party := strings.Join(savedParty(t, dir), ",")
 	v := s.Navigate("castle")
 	if v.Error != "" || v.Location != "castle" || v.Readiness != nil {
@@ -180,7 +180,7 @@ func TestEquipmentCheckAtTheEdge(t *testing.T) {
 		t.Fatalf("something changed: %d items, expedition %v", ch.ItemCount, s.ctrl.Game.Expedition)
 	}
 
-	// Continue into maze: setting out is not refused for it.
+	// Continue into Maze: setting out is not refused for it.
 	walkTo(t, s, "edge")
 	if v := s.State(); v.Readiness == nil || v.Departures.Real != "" {
 		t.Fatalf("back at the edge: %+v %+v", v.Readiness, v.Departures)

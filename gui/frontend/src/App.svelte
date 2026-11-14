@@ -148,9 +148,9 @@
           <div class="banner error">
             The saved expedition cannot be resumed: {view.recovery}
             <div class="row">
-              <button class="small" disabled={busy} onclick={() => call(S.TryResumeAgain)}>Try resuming again</button>
+              <button class="small" disabled={busy} onclick={() => call(S.TryResumeAgain)}>Try Resuming Again</button>
               {#if view.canReturn}
-                <button class="small" disabled={busy} onclick={() => call(S.ReturnExpeditionToCastle)}>Return its party to the castle</button>
+                <button class="small" disabled={busy} onclick={() => call(S.ReturnExpeditionToCastle)}>Return Its Party to the Castle</button>
               {/if}
             </div>
           </div>

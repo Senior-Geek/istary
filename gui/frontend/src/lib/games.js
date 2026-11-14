@@ -30,23 +30,23 @@ export function summary(s) {
 export function choices(slot, games) {
   if (games.replacing === slot.slot) {
     return [
-      { label: 'Replace this game', act: 'confirmReplace', kind: 'danger' },
-      { label: 'Keep it', act: 'cancelReplace', kind: '' },
+      { label: 'Replace This Game', act: 'confirmReplace', kind: 'danger' },
+      { label: 'Keep It', act: 'cancelReplace', kind: '' },
     ]
   }
   switch (slot.state) {
     case 'empty': {
-      const out = [{ label: 'New game', act: 'new', kind: 'primary' }]
-      if (games.legacy && !games.legacy.problem) out.push({ label: 'Import earlier game here', act: 'import', kind: '' })
+      const out = [{ label: 'New Game', act: 'new', kind: 'primary' }]
+      if (games.legacy && !games.legacy.problem) out.push({ label: 'Import Earlier Game Here', act: 'import', kind: '' })
       return out
     }
     case 'game':
       return [
         { label: 'Continue', act: 'continue', kind: 'primary' },
-        { label: 'Replace with a new game…', act: 'replace', kind: '' },
+        { label: 'Replace with a New Game…', act: 'replace', kind: '' },
       ]
     default:
-      return [{ label: 'Replace with a new game…', act: 'replace', kind: '' }]
+      return [{ label: 'Replace with a New Game…', act: 'replace', kind: '' }]
   }
 }
 

@@ -3,7 +3,7 @@ package main
 // The equipment check (UX-1) at the Edge of Town: before the party sets out
 // for the maze, who has no usable weapon or no armor equipped
 // (app.Controller.EquipmentCheck). It is a caution only: the page offers
-// Continue into maze or Return to town, and setting out is never refused
+// Continue into Maze or Return to Town, and setting out is never refused
 // for it.
 
 import (

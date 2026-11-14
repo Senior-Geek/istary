@@ -656,7 +656,7 @@ func TestPracticeWritesNoExpedition(t *testing.T) {
 	}
 }
 
-// "Try resuming again" works from anywhere in town while an expedition
+// "Try Resuming Again" works from anywhere in town while an expedition
 // cannot be resumed, and resumes it once it can; it is refused otherwise.
 func TestTryResumeAgain(t *testing.T) {
 	dir := outAndRestarted(t)

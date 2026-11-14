@@ -61,7 +61,7 @@ party bar at the bottom.
 - **Gilgamesh's Tavern:** form the party: Join, Remove, and the password;
   Divvy gold shares the party's gold evenly.
 - **Game selection** (UX-3A): Istary opens on six game slots, each its own
-  adventure. New game in an empty slot, Continue a saved one, or Replace
+  adventure. New Game in an empty slot, Continue a saved one, or Replace
   it (asked twice; the old game is moved aside, not deleted). A game saved
   by an earlier Istary is offered for import into an empty slot; the
   original is left as it was.

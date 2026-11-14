@@ -72,3 +72,31 @@ test('the Edge offers no practice; its Session methods stay for the tests', () =
   const bindings = read('../../wailsjs/go/main/Session.js')
   for (const m of ['PracticeExpedition', 'PracticeEncounter', 'AbandonPractice']) assert.match(bindings, new RegExp(`export function ${m}\\(`), m)
 })
+
+// The labels' case (NAV-1 decision 2): navigation destinations and the
+// actions that move the player or manage the game in Title Case; the
+// interface's toggles in sentence case. A minor word (a, an, the, to,
+// into, with, of) after the first stays lower case.
+const minor = new Set(['a', 'an', 'the', 'to', 'into', 'with', 'of'])
+const titleCase = (s) => s.replace(/^←\s*/, '').split(/\s+/).every((w, i) => (i > 0 && minor.has(w)) || /^[A-Z…]/.test(w))
+
+test('navigation and game management in Title Case, toggles in sentence case', async () => {
+  const { choices } = await import('./games.js')
+  const games = { legacy: { problem: '' } }
+  const labels = [
+    ...choices({ slot: 1, state: 'empty' }, games), ...choices({ slot: 1, state: 'game' }, games),
+    ...choices({ slot: 1, state: 'damaged' }, games), ...choices({ slot: 1, state: 'game' }, { ...games, replacing: 1 }),
+  ].map((c) => c.label)
+  const edge = read('./EdgeScreen.svelte'), app = read('../App.svelte')
+  const shown = (src, ...names) => names.map((n) => { assert.ok(src.includes(`>${n}</button>`), n); return n })
+  labels.push(...shown(edge, 'Enter the Maze', 'Select Game', 'Leave the Game', 'Continue into Maze', 'Return to Town'))
+  labels.push(...shown(app, 'Try Resuming Again', 'Return Its Party to the Castle'))
+  labels.push(...destinations(at('castle')).map((d) => d.label), ...destinations(at('edge')).map((d) => d.label))
+  for (const l of labels) assert.ok(titleCase(l), `Title Case: ${l}`)
+  assert.ok(labels.length >= 18, `${labels.length} labels`)
+  const { toggleLabel } = await import('./sheet.js')
+  for (const t of ['Hide party', 'Show party', toggleLabel(true), toggleLabel(false), 'Hide panels', 'Show panels', 'Story']) {
+    assert.ok(/^[A-Z][a-z]*( [a-z]+)*$/.test(t), `sentence case: ${t}`)
+  }
+  assert.ok(frame.includes("'Hide party' : 'Show party'") && frame.includes('>Hide panels</button>') && frame.includes('>Show panels <kbd>'), 'the frame’s toggles as listed')
+})

@@ -47,8 +47,8 @@
           <p>{caution}</p>
           <p class="why">Items carried but not equipped do not count. A member's sheet (the party list) equips what they carry; Boltac's sells the rest.</p>
           <div class="choices">
-            <button class="primary" disabled={busy} onclick={enter}>Continue into maze</button>
-            <button disabled={busy} onclick={backToTown}>Return to town</button>
+            <button class="primary" disabled={busy} onclick={enter}>Continue into Maze</button>
+            <button disabled={busy} onclick={backToTown}>Return to Town</button>
           </div>
         </div>
       {/if}

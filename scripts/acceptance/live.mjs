@@ -906,7 +906,7 @@ async function main() {
       // the game's own way (Camp, then the stairs up).
       await goto('edge')
       await clickText('Enter the Maze', B)
-      if (await js(`!!document.querySelector('.check-equipment')`)) await clickText('Continue into maze', B)
+      if (await js(`!!document.querySelector('.check-equipment')`)) await clickText('Continue into Maze', B)
       let rv = await view()
       check(rv.real && rv.screen === 'dungeon', `Enter the Maze sets out on a real expedition (${rv.screen})`)
       await esc(); await esc()
