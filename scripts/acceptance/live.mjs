@@ -9,7 +9,7 @@
 // the Training Grounds.
 //
 //   node scripts/acceptance/live.mjs --gui GUI_DIR --library DIR --out DIR
-//        [--size 980x692] [--suites layout,sheet,scenes,creation,combat] [--wails PATH] [--chrome PATH]
+//        [--size 980x692] [--suites layout,sheet,scenes,creation,combat,nav] [--wails PATH] [--chrome PATH]
 //
 // The library must have been written by TestWriteAcceptanceLibrary
 // (gui/acceptance_seed_test.go). Everything it starts (wails dev, the app,
@@ -140,7 +140,8 @@ async function main() {
   }
   const buttons = (within) => js(`[...document.querySelectorAll(${JSON.stringify(within + ' button')})].map((b) => b.innerText.trim())`)
   const sheetName = () => js(`document.querySelector('${A} .sheet .name')?.firstChild?.textContent.trim() ?? ''`)
-  const toggle = () => js(`[...document.querySelectorAll('${B} button')].find((b) => /Character Sheet$/.test(b.innerText.trim()))?.innerText.trim() ?? ''`)
+  // The sheet's toggle, in the top bar (NAV-1).
+  const toggle = () => js(`[...document.querySelectorAll('.frame .head button')].find((b) => /^(Show|Hide) sheet$/.test(b.innerText.trim()))?.innerText.trim() ?? ''`)
   const listNames = (which) => js(`[...document.querySelectorAll('${A} ul.${which} li .what')].map((e) => e.firstChild.textContent.trim())`)
   const typeInto = async (sel, text) => { await js(`(() => { const e = document.querySelector(${JSON.stringify(sel)}); e.focus(); e.value = ''; e.dispatchEvent(new Event('input', { bubbles: true })) })()`); await send('Input.insertText', { text }); await sleep(200) }
   const esc = async () => {
@@ -235,7 +236,7 @@ async function main() {
         check(!sc.big || (sc.moved && sc.still), `${place}: the information scrolls on its own; the display and actions stay`)
         check(await js(`(() => { const e = document.querySelector('${B}'); return getComputedStyle(e).overflowY === 'auto' && [...e.querySelectorAll('button')].every((b) => { const r = b.getBoundingClientRect(); return r.width > 0 && r.right <= innerWidth + 0.5 }) })()`), `${place}: every action is reachable`)
         const t = await toggle()
-        check(place === 'trading' ? t === '' : t === 'Character Sheet', `${place}: the sheet toggle ${place === 'trading' ? 'is not offered at Boltac’s' : 'reads Character Sheet'}`)
+        check(place === 'trading' ? t === '' : t === 'Show sheet', `${place}: the sheet toggle ${place === 'trading' ? 'is not offered at Boltac’s' : 'reads Show sheet, in the top bar'}`)
         await shot(place)
       }
       await goto('training')
@@ -252,7 +253,7 @@ async function main() {
       await goto('castle')
       const art = await rect(A)
       await clickSlot(0)
-      check(await toggle() === 'Hide Character Sheet' && await js(`!!document.querySelector('${A} .sheet') && !document.querySelector('${A} figure.scene')`), 'a party member’s sheet takes the artwork’s place')
+      check(await toggle() === 'Hide sheet' && await js(`!!document.querySelector('${A} .sheet') && !document.querySelector('${A} figure.scene')`), 'a party member’s sheet takes the artwork’s place')
       check(await sheetName() === v.party[0].name, `it is that member’s sheet (${await sheetName()})`)
       const box = await rect(A)
       check(Math.abs(box.y - art.y) < 1 && Math.abs(box.h - art.h) < 1 && Math.abs(box.w - art.w) < 1, 'in exactly the artwork’s area')
@@ -263,12 +264,12 @@ async function main() {
       await shot('sheet')
       await clickSlot(1)
       check(await sheetName() === v.party[1].name, `clicking another member shows theirs (${await sheetName()})`)
-      await clickText('Hide Character Sheet', B)
-      check(await toggle() === 'Character Sheet' && await js(`!!document.querySelector('${A} figure.scene')`), 'Hide Character Sheet brings the artwork back')
-      await clickText('Character Sheet', B)
-      check(await sheetName() === v.party[1].name, 'Character Sheet shows the same member again')
+      await clickText('Hide sheet', '.frame .head')
+      check(await toggle() === 'Show sheet' && await js(`!!document.querySelector('${A} figure.scene')`), 'Hide sheet brings the artwork back')
+      await clickText('Show sheet', '.frame .head')
+      check(await sheetName() === v.party[1].name, 'Show sheet shows the same member again')
       await esc()
-      check(await toggle() === 'Character Sheet' && (await view()).location === 'castle', 'Escape hides the sheet first and stays at the Castle')
+      check(await toggle() === 'Show sheet' && (await view()).location === 'castle', 'Escape hides the sheet first and stays at the Castle')
 
       v = await view()
       let trip = null
@@ -297,12 +298,12 @@ async function main() {
       check(JSON.stringify(disk().roster.find((c) => c.Name === trip.ch.name)) === before, 'the character is saved exactly as before')
       await esc()
       await goto('inn')
-      check(!(await buttons(B)).includes('Character sheet'), 'the Inn has no sheet button of its own')
-      await clickText('Character Sheet', B)
+      check(!(await buttons(B)).some((b) => /sheet/i.test(b)), 'the Inn has no sheet button of its own, in its actions')
+      await clickText('Show sheet', '.frame .head')
       check(await sheetName() === v.party[0].name, `at the Inn the sheet is the guest’s (${await sheetName()})`)
       await esc()
       await goto('temple')
-      await clickText('Character Sheet', B)
+      await clickText('Show sheet', '.frame .head')
       check(!!(await sheetName()), `the Temple shows a sheet (${await sheetName()})`)
       await esc()
     },
@@ -328,8 +329,12 @@ async function main() {
         const d = await rect(A)
         check(await seen([[0.5, 0.5], [0.05, 0.05], [0.95, 0.95]].map(([u, v]) => [d.x + d.w * u, d.y + d.h * v])), `${place}: and it is seen through the display`)
         check(await js(`(() => { const f = document.querySelector('${A} figure.scene.view'); return !!f && !f.querySelector('img') && getComputedStyle(f).backgroundColor === 'rgba(0, 0, 0, 0)' && !!f.getAttribute('aria-label') })()`), `${place}: the display is a described opening onto it`)
-        const alphas = await opaque(`.frame .head, ${B} .actions, ${B} nav, ${C} > section, ${D}`)
-        check(alphas.length >= 4 && alphas.every((x) => x >= 0.85), `${place}: the panels are near-opaque (${alphas.map((x) => x.toFixed(2)).join(' ')})`)
+        // Its panels (NAV-1): the Castle's are the top bar, its
+        // destinations and the party; the Edge's the top bar, its actions,
+        // its information and the party.
+        const panels = place === 'castle' ? ['.frame .head', `${B} nav`, D] : ['.frame .head', `${B} .actions`, `${C} > section`, D]
+        const alphas = await opaque(panels.join(', '))
+        check(alphas.length === panels.length && alphas.every((x) => x >= 0.85), `${place}: the panels are near-opaque (${alphas.map((x) => x.toFixed(2)).join(' ')})`)
         let bad = await controls()
         check(bad.length === 0, `${place}: every control in view and uncovered${bad.length ? ': ' + bad.join(', ') : ''}`)
         check(await pageStill(), `${place}: the page itself does not scroll`)
@@ -433,12 +438,12 @@ async function main() {
       await clickText('The Edge of Town', B)
       check((await view()).location === 'edge' && !(await rect(STORY)), 'going to the Edge of Town does not open it')
       const info = await js(`document.querySelector('${C}').innerText`)
-      check(/Saving\.[\s\S]*saved after every[\s\S]*Practice/.test(info), 'the Edge’s saving and practice notes are below, the story box closed')
+      check(/Saving\.[\s\S]*saved after every/.test(info), 'the Edge’s saving note is below, the story box closed')
       await clickText('Story', '.frame .head')
       st = await rect(STORY)
       check(!!st && await js(`document.querySelector('${STORY} .text').innerText.trim()`) === 'The maze. The party sets out from here.', 'Story opens it, with the Edge’s narrative')
       check(Math.abs(st.x - left.x) < 1 && Math.abs(st.y - left.y) < 1 && Math.abs(st.w - left.w) < 1 && Math.abs(st.h - left.h) < 1, 'where the player left it')
-      check(/Saving\.[\s\S]*Practice/.test(await js(`document.querySelector('${C}').innerText`)), 'and the notes stay below')
+      check(/Saving\./.test(await js(`document.querySelector('${C}').innerText`)), 'and the note stays below')
       await clickText('Hide panels')
       check(!(await rect(STORY)), 'Hide panels hides it')
       await esc()
@@ -803,10 +808,137 @@ async function main() {
       const mi = v.partyBar.findIndex((p) => /-MAG$/.test(p.class))
       check(mi >= 0, `the mage is in the party bar (${mi})`)
       await clickSlot(mi)
-      if (await toggle() === 'Character Sheet') await clickText('Character Sheet', B)
+      if (await toggle() === 'Show sheet') await clickText('Show sheet', '.frame .head')
       const rows = await js(`[...document.querySelectorAll('${A} .sheet ul.spells li')].map((li) => li.innerText.replaceAll(String.fromCharCode(10), ' '))`)
       check(rows.length === 2 && rows.every((r) => /^(HALITO|KATINO)\s+mage 1\s+\S/.test(r)), `the sheet lists the mage's spells with descriptions (${JSON.stringify(rows)})`)
       await shot('sheet-spells')
+    },
+
+    // NAV-1: a game opens at the Castle; the Castle's five destinations and
+    // no Actions; the Edge's five actions, no Go to list and no practice;
+    // the top bar's Castle (Esc) and toggles, on one row, never Settings;
+    // Escape from every place back to the Castle; Escape in the maze and in
+    // combat does nothing; practice is still there for the tests (its
+    // Session methods), and none of it is saved.
+    async nav() {
+      const HEAD = '.frame .head'
+      const headButtons = () => buttons(HEAD)
+      const title = () => js(`document.querySelector('.frame .head .title')?.innerText.trim() ?? ''`)
+      const loc = async () => (await view()).location
+      // The top bar fits: every button whole and in the window, on one row,
+      // and nothing scrolls sideways.
+      const barFits = () => js(`(() => { const h = document.querySelector('${HEAD}'); const bs = [...h.querySelectorAll('button')]; const ys = new Set(bs.map((b) => Math.round(b.getBoundingClientRect().top))); return h.scrollWidth <= h.clientWidth + 1 && document.scrollingElement.scrollWidth <= innerWidth + 1 && ys.size <= 1 && bs.every((b) => { const r = b.getBoundingClientRect(); return r.width > 0 && r.right <= innerWidth + 0.5 && b.scrollWidth <= b.clientWidth + 1 }) })()`)
+
+      // Select Game: the library's own selection; continuing opens the Castle.
+      await goto('edge')
+      await clickText('Select Game', B)
+      check((await view()).screen === 'games' && await js(`!!document.querySelector('.games')`), 'Select Game opens the game selection')
+      await shot('nav-select-game')
+      await reload()
+      await clickIn('.games .slot, .games article, .games section', 'Game 1', 'button')
+      check(await loc() === 'castle' && await title() === 'The Castle', `Continue opens the game at the Castle (${await title()})`)
+
+      // The Castle: the top bar, its five destinations and no Actions.
+      const castle = await headButtons()
+      check(JSON.stringify(castle) === JSON.stringify(['Hide party', 'Story', 'Show sheet', 'Hide panels']), `the Castle's top bar: the toggles, no way back from the Castle itself (${JSON.stringify(castle)})`)
+      check(!castle.some((b) => /Settings/.test(b)), 'no Settings in the top bar')
+      check(await barFits(), 'the top bar fits on one row')
+      const dests = await js(`[...document.querySelectorAll('${B} nav[aria-label=Destinations] button')].map((b) => b.innerText.trim())`)
+      check(JSON.stringify(dests) === JSON.stringify(["Gilgamesh's Tavern", "The Adventurer's Inn", "Boltac's Trading Post", 'The Temple of Cant', 'The Edge of Town']), `the Castle's five destinations (${JSON.stringify(dests)})`)
+      check(await js(`!document.querySelector('${B} section.actions') && [...document.querySelectorAll('${B} button')].length === 5`), 'the Castle has no Actions, and nothing else to press')
+      await shot('nav-castle')
+
+      // Each Castle destination, and Escape back.
+      for (const [label, place] of [["Gilgamesh's Tavern", 'tavern'], ["The Adventurer's Inn", 'inn'], ["Boltac's Trading Post", 'trading'], ['The Temple of Cant', 'temple'], ['The Edge of Town', 'edge']]) {
+        await clickText(label, B)
+        const at = await loc()
+        const bar = await headButtons()
+        check(at === place && bar[0] === '← Castle Esc' && !bar.some((b) => /Settings/.test(b)), `${label} is open from the Castle, Castle (Esc) first in its top bar (${at}, ${JSON.stringify(bar)})`)
+        check(await barFits(), `${place}: the top bar fits on one row`)
+        await esc()
+        check(await loc() === 'castle', `Escape at ${label} returns to the Castle`)
+      }
+
+      // The Edge of Town: its five actions, no Go to list, no practice.
+      await clickText('The Edge of Town', B)
+      const edge = await buttons(`${B} section.actions`)
+      check(JSON.stringify(edge) === JSON.stringify(['Enter the Maze', 'The Training Grounds', 'Select Game', 'Settings', 'Leave the Game']), `the Edge's five actions, in order (${JSON.stringify(edge)})`)
+      check(await js(`!document.querySelector('${B} nav[aria-label=Destinations]') && [...document.querySelectorAll('${B} button')].length === 5`), 'no Go to list at the Edge')
+      check(!/practice|guards a chest/i.test(await js(`document.querySelector('.frame').innerText`)) && await js(`!document.querySelector('.frame input[type=checkbox]')`), 'no practice controls at the Edge')
+      const bar = await headButtons()
+      check(JSON.stringify(bar) === JSON.stringify(['← Castle Esc', 'Hide party', 'Story', 'Show sheet', 'Hide panels']), `the Edge's top bar: Castle (Esc), party, story, sheet, panels (${JSON.stringify(bar)})`)
+      await clickSlot(0)
+      check(JSON.stringify(await headButtons()) === JSON.stringify(['← Castle Esc', 'Hide party', 'Story', 'Hide sheet', 'Hide panels']) && await barFits(), 'with a sheet shown, Hide sheet, and the bar still fits')
+      await shot('nav-edge')
+      await clickText('Hide sheet', HEAD)
+      check(await js(`!!document.querySelector('${A} figure.scene')`), 'Hide sheet brings the picture back')
+      check(await barFits(), 'the Edge’s top bar fits on one row')
+
+      // The Training Grounds and Settings, from the Edge's actions; Escape back.
+      for (const [label, place] of [['The Training Grounds', 'training'], ['Settings', 'settings']]) {
+        await goto('edge')
+        await clickText(label, `${B} section.actions`)
+        check(await loc() === place, `${label} opens from the Edge's actions`)
+        if (place === 'settings') check(await js(`!!document.querySelector('.frame select, .frame input[type=radio], .frame fieldset')`), 'Settings shows its choices')
+        await esc()
+        check(await loc() === 'castle', `Escape at ${label} returns to the Castle`)
+      }
+      await goto('edge'); await esc()
+      check(await loc() === 'castle', 'Escape at the Edge of Town returns to the Castle')
+
+      // The toggles: party, story and panels.
+      await goto('edge')
+      await clickText('Hide party', HEAD)
+      check(!(await rect(D)) && (await headButtons()).includes('Show party'), 'Hide party hides the bar')
+      await clickText('Show party', HEAD)
+      check(!!(await rect(D)), 'Show party brings it back')
+      const storyWas = !!(await rect(STORY))
+      await clickText('Story', HEAD)
+      check(!!(await rect(STORY)) !== storyWas, 'Story opens or closes the story box')
+      if (!(await rect(STORY))) await clickText('Story', HEAD)
+      await clickText('Hide panels', HEAD)
+      check(!(await rect(B)) && !!(await rect('.restore')), 'Hide panels leaves the picture')
+      await esc()
+      check(!!(await rect(B)) && await loc() === 'edge', 'Escape shows the panels again, at the Edge')
+
+      // A real expedition, as the player sets out: Escape in the maze
+      // leaves nothing and the Castle is refused; the party comes home by
+      // the game's own way (Camp, then the stairs up).
+      await goto('edge')
+      await clickText('Enter the Maze', B)
+      if (await js(`!!document.querySelector('.check-equipment')`)) await clickText('Continue into maze', B)
+      let rv = await view()
+      check(rv.real && rv.screen === 'dungeon', `Enter the Maze sets out on a real expedition (${rv.screen})`)
+      await esc(); await esc()
+      rv = await view()
+      check(rv.real && rv.screen === 'dungeon' && rv.location === 'maze', `Escape in the maze leaves nothing (${rv.screen}, ${rv.location})`)
+      rv = JSON.parse(await js(`${S}.ReturnToCastle().then((v) => JSON.stringify(v))`))
+      check(!!rv.error && rv.real, `and the Castle is refused during the expedition (${rv.error})`)
+      await js(`${S}.DungeonAction('leave-camp', 0)`)
+      rv = JSON.parse(await js(`${S}.DungeonAction('yes', 0).then((v) => JSON.stringify(v))`))
+      await reload()
+      check(!rv.real && rv.location === 'castle' && await title() === 'The Castle', `the party climbs out to the Castle (${rv.location})`)
+
+      // The maze and combat in practice: Escape leaves neither; practice is
+      // still the tests' (its Session methods), and it saves nothing.
+      const before = sha(GAME)
+      await goto('edge')
+      let pv = JSON.parse(await js(`${S}.PracticeExpedition().then((v) => JSON.stringify(v))`))
+      check(!pv.error && pv.screen === 'dungeon', `a practice expedition starts through its Session method (${pv.error || pv.screen})`)
+      await reload(); await esc(); await esc()
+      pv = await view()
+      check(pv.screen === 'dungeon' && pv.location === 'maze', `Escape in the maze leaves nothing (${pv.screen}, ${pv.location})`)
+      pv = JSON.parse(await js(`${S}.ReturnToCastle().then((v) => JSON.stringify(v))`))
+      check(!!pv.error && pv.location === 'maze', `and the Castle is refused there (${pv.error})`)
+      await js(`${S}.AbandonPractice()`)
+      await goto('edge')
+      pv = JSON.parse(await js(`${S}.PracticeEncounter(true).then((v) => JSON.stringify(v))`))
+      check(!pv.error && pv.screen === 'combat', `a practice encounter with a chest starts through its Session method (${pv.error || pv.screen})`)
+      await reload(); await esc(); await esc()
+      check((await view()).screen === 'combat', 'Escape in combat leaves nothing')
+      await js(`${S}.AbandonPractice()`)
+      await goto('castle')
+      check((await view()).screen === 'roster' && sha(GAME) === before, 'practice ended; nothing of it was saved')
     },
   }
 

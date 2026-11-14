@@ -25,7 +25,7 @@ test('a frontend change tests the frontend and builds it, and no Go', () => {
   assert.equal(p.frontend, true)
   assert.equal(p.frontendBuild, true)
   assert.equal(p.broad, false)
-  assert.deepEqual(p.live, ['layout', 'sheet', 'scenes'])
+  assert.deepEqual(p.live, ['layout', 'sheet', 'scenes', 'nav'])
 })
 
 test('combat in the frontend adds the combat live checks (COMBAT-1)', () => {
@@ -90,7 +90,7 @@ test('an unknown file, the Go modules or the frontend dependencies broaden to ev
     assert.equal(p.goPackages.length, PKGS.length, f)
     assert.equal(p.frontend && p.wailsBuild && p.makeBuild, true, f)
     assert.ok(p.race.length === 3 && p.gateRequired, f)
-    assert.deepEqual(p.live, ['layout', 'creation', 'sheet', 'scenes', 'combat'], f)
+    assert.deepEqual(p.live, ['layout', 'creation', 'sheet', 'scenes', 'nav', 'combat'], f)
   }
 })
 

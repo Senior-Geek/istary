@@ -160,6 +160,7 @@ export function classify(files, pkgs, root) {
     if (areas.has('creation') || plan.broad) plan.live.push('creation')
     if (areas.has('equipment') || areas.has('ui') || areas.has('town') || plan.broad) plan.live.push('sheet')
     if (areas.has('ui') || areas.has('town') || plan.broad) plan.live.push('scenes')
+    if (areas.has('ui') || areas.has('town') || plan.broad) plan.live.push('nav')
     if (areas.has('combat-maze') || plan.broad) plan.live.push('combat')
   }
   plan.areas = [...areas].sort()
