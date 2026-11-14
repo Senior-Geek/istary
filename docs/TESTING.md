@@ -283,7 +283,7 @@ Apple M3 Pro (5 performance and 6 efficiency cores), 18 GB, at
 | Level 1, `app/shop.go` changed | 54 s (`app`, `cmd/istary`, `gui`) |
 | Level 1, `engine/character.go` changed | 55 s (every package) |
 | Level 1, `--all` | 1 min 23 s (of which the gate's own tests 25 s) |
-| Level 2, `main` against itself (everything, race, live at both sizes) | 5 min 14 s |
+| Level 2, `main` against itself (everything, race, live at both sizes) | 5 min 14 s (before ART-2A; ART-2C against `main`: 9 min 38 s) |
 | Level 2, a branch reaching no concurrent code | about 2 min |
 | Level 3, the full gate | about 2 h (`--per-commit` adds about 8.5 min a commit) |
 
@@ -293,7 +293,7 @@ Within level 2, on everything:
 |---|---|
 | Every Go test, both modules, parallel | 49 s (`go test` one package at a time: about 8.5 min) |
 | Race tests on `engine`, `cmd/istary`, `gui`, parallel | 2 min 9 s (the gate's GUI race alone: 11 min) |
-| Live checks, three suites, each size | 50 s (123 checks; the scenes suite, added since, about 2 min 45 s more with ART-2C's 54 combinations) |
+| Live checks, three suites, each size | 50 s (123 checks); with the scenes suite as of ART-2C (its 54 combinations), 3 min 20 s (182 checks) |
 | The gate's own tests | 23 s |
 | Wails build and codesign | 4 s |
 
