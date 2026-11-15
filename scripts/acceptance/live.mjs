@@ -189,6 +189,12 @@ async function main() {
     await sleep(200)
   }
   const STORY = '.frame aside.story'
+  // The story box shows the View's story (CONTENT-1A): Go's, from the
+  // story's Markdown file, so its text is what the box must show.
+  const runsText = (runs) => runs.map((r) => r.text).join('')
+  const storyPlain = (st) => (st?.blocks ?? []).map((b) => (b.text ? runsText(b.text) : b.items.map(runsText).join(' '))).join(' ')
+  const squash = (t) => t.replace(/\s+/g, ' ').trim()
+  const storyShown = async (st) => !!st?.blocks.length && squash(await js(`document.querySelector('${STORY} .text')?.innerText ?? ''`)) === squash(storyPlain(st))
   // The appearance (ART-2C), set as Settings sets it, then shown at place.
   const LOOKS = { panels: ['slate', 'dark', 'light'], story: ['parchment', 'dark', 'slate'], artwork: ['full', 'subdued', 'hidden'] }
   const setLook = async (l, place) => { const v = JSON.parse(await js(`${S}.SetAppearance(${JSON.stringify(l.panels)}, ${JSON.stringify(l.story)}, ${JSON.stringify(l.artwork)}).then((v) => JSON.stringify(v))`)); if (v.error) throw new Error(v.error); await goto(place); await loaded() }
@@ -399,7 +405,8 @@ async function main() {
       await goto('castle')
       let st = await rect(STORY), disp = await rect(A)
       check(!!st && st.x >= disp.x && st.x < disp.x + 40 && Math.abs(st.b - (disp.b - 12)) < 2 && st.y >= disp.y, `castle: the story box is open, in the lower left of the display (${st && Math.round(st.x)},${st && Math.round(st.y)} ${st && Math.round(st.w)}x${st && Math.round(st.h)})`)
-      check(await js(`document.querySelector('${STORY} .text').innerText.includes("The party is formed at Gilgamesh's Tavern")`) && !(await js(`document.querySelector('${C}').innerText.includes('The party is formed')`)), 'castle: the description is in it, and no longer below')
+      const castleStory = (await view()).story
+      check(await storyShown(castleStory) && !(await js(`document.querySelector('${C}').innerText.includes(${JSON.stringify(storyPlain(castleStory).slice(0, 40))})`)), 'castle: the description is in it, and no longer below')
       let bad = await controls()
       check(bad.length === 0, `castle: it covers no control${bad.length ? ': ' + bad.join(', ') : ''}`)
       let bar = await rect(`${STORY} .bar`)
@@ -444,7 +451,7 @@ async function main() {
       check(/Saving\.[\s\S]*saved after every/.test(info), 'the Edge’s saving note is below, the story box closed')
       await clickText('Story', '.frame .head')
       st = await rect(STORY)
-      check(!!st && await js(`document.querySelector('${STORY} .text').innerText.trim()`) === 'The maze. The party sets out from here.', 'Story opens it, with the Edge’s narrative')
+      check(!!st && await storyShown((await view()).story), 'Story opens it, with the Edge’s narrative')
       check(Math.abs(st.x - left.x) < 1 && Math.abs(st.y - left.y) < 1 && Math.abs(st.w - left.w) < 1 && Math.abs(st.h - left.h) < 1, 'where the player left it')
       check(/Saving\./.test(await js(`document.querySelector('${C}').innerText`)), 'and the note stays below')
       await clickText('Hide panels')
@@ -957,8 +964,6 @@ async function main() {
     const HEAD = '.frame .head'
     const fits = () => js(`(() => { const h = document.querySelector('${HEAD}'); const bs = [...h.querySelectorAll('button')]; const ys = new Set(bs.map((b) => Math.round(b.getBoundingClientRect().top))); return h.scrollWidth <= h.clientWidth + 1 && document.scrollingElement.scrollWidth <= innerWidth + 1 && ys.size <= 1 })()`)
     const ways = (sel) => js(`[...document.querySelectorAll(${JSON.stringify(sel)})].map((b) => [b.innerText.trim(), !b.disabled])`)
-    const storyText = () => js(`document.querySelector('${STORY}')?.innerText ?? ''`)
-    const INTRO = 'You have arrived at the Castle of Trebor'
 
     // No game: Select Game closes this one, and Escape leaves game selection.
     await goto('edge')
@@ -974,9 +979,9 @@ async function main() {
     check(JSON.stringify(dests) === JSON.stringify([["Gilgamesh's Tavern", false], ["The Adventurer's Inn", false], ["Boltac's Trading Post", false], ['The Temple of Cant', false], ['The Edge of Town', true]]), `only the Edge of Town is open (${JSON.stringify(dests)})`)
     const why = await js(`[...document.querySelectorAll('${B} nav[aria-label=Destinations] .why')].map((e) => e.innerText.trim())`)
     check(why.length === 4 && why.every((w) => w === 'Select a game first: Select Game is at the Edge of Town.'), `the closed ones say a game must be selected first (${JSON.stringify(why)})`)
-    const intro = await storyText()
-    check(await js(`!document.querySelector('${B} section.actions')`) && intro.includes(INTRO) && intro.includes('Your journey begins at the Edge of Town.') && intro.includes('Trebor has issued his challenge. Will you answer it?'), 'the introductory story, in the story box')
-    check(await js(`document.querySelector('${STORY} h3')?.textContent.trim()`) === 'Welcome to the Castle', 'titled Welcome to the Castle')
+    const intro = (await view()).story
+    check(await js(`!document.querySelector('${B} section.actions')`) && intro?.blocks.at(-1).kind === 'challenge' && await storyShown(intro), 'the introductory story, from its file, in the story box')
+    check(!!intro.title && await js(`document.querySelector('${STORY} h3')?.textContent.trim()`) === intro.title, `titled from its file's heading (${intro.title})`)
     // Longer than the box: it scrolls inside the story box, which stays in
     // the picture's area, clear of the destinations and the party.
     const box = await rect(STORY), area = await rect(A), nav = await rect(`${B}`), party = await rect(D)
@@ -1024,8 +1029,7 @@ async function main() {
     await clickIn('.games .slot', 'Game 1', 'button')
     await loaded()
     v = await view()
-    const st = await storyText()
-    check(v.game === 1 && v.location === 'castle' && !st.includes(INTRO) && st.includes("Gilgamesh's Tavern"), `Continue opens game 1 at the Castle, its own story shown again (${v.game}, ${v.location})`)
+    check(v.game === 1 && v.location === 'castle' && JSON.stringify(v.story) !== JSON.stringify(intro) && await storyShown(v.story) && await js(`document.querySelector('${STORY} h3')?.textContent.trim()`) !== intro.title, `Continue opens game 1 at the Castle, its own story shown again (${v.game}, ${v.location})`)
     const open = await ways(`${B} nav[aria-label=Destinations] button`)
     check(open.every(([, o]) => o) && !(await js(`!!document.querySelector('${C} .no-game')`)), `in the game every destination is open (${JSON.stringify(open)})`)
     await shot('startup-castle-game')

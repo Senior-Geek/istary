@@ -29,8 +29,9 @@ const AREAS = [
 // Code that runs on more than one goroutine, or guards a file shared between
 // processes: a change here wants race tests and the full gate.
 const CONCURRENT = [/^gui\/(session|lock|lock_other|close|main|games|backups|settings|startup)\.go$/, /^engine\/(game|save|atomicfile)\.go$/, /^cmd\/istary\/main\.go$/, /^render\/title_anim\.go$/]
-// Files that change nothing tested or built.
-const INERT = [/\.md$/i, /^docs\//, /^images\//, /^LICENSE$/, /^\.gitignore$/]
+// Files that change nothing tested or built. The GUI's stories are
+// Markdown built into it (gui/content, CONTENT-1A), not documentation.
+const INERT = [/^(?!gui\/content\/).*\.md$/i, /^docs\//, /^images\//, /^LICENSE$/, /^\.gitignore$/]
 
 export function goPackages(root) {
   // Every package of both modules with its directory and everything its tests
@@ -116,7 +117,7 @@ export function classify(files, pkgs, root) {
         entry.kind = 'unclassified'
         broaden(`${f}: not part of any package or known file`)
       } else if (/_test\.go$/.test(f) || dir !== p.rel) {
-        entry.kind = dir !== p.rel ? 'test data' : 'go test'
+        entry.kind = dir === p.rel ? 'go test' : /\/testdata(\/|$)/.test(dir) ? 'test data' : 'embedded data'
         entry.package = p.importPath
         // Test files and testdata are the package's own tests, but a
         // non-test file elsewhere in a package directory could be embedded.

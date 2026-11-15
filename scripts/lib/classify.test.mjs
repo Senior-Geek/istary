@@ -83,6 +83,16 @@ test('documentation alone tests nothing', () => {
   assert.equal(p.gateRequired, false)
 })
 
+test('a story file is the GUI’s embedded data, not documentation (CONTENT-1A)', () => {
+  const p = plan('gui/content/castle/introduction.md', 'gui/content/edge-of-town/story.md')
+  assert.deepEqual(pkgs(p), ['gui'])
+  assert.deepEqual(p.files.map((f) => f.kind), ['embedded data', 'embedded data'])
+  assert.equal(p.frontend && p.wailsBuild, true)
+  assert.deepEqual(p.areas, ['town'])
+  assert.deepEqual(p.live, ['layout', 'sheet', 'scenes', 'nav', 'startup'])
+  assert.equal(p.gateRequired, false)
+})
+
 test('an unknown file, the Go modules or the frontend dependencies broaden to everything', () => {
   for (const f of ['tools/new.sh', 'go.mod', 'gui/go.sum', 'gui/frontend/package-lock.json', 'newdir/x.go']) {
     const p = plan(f)
