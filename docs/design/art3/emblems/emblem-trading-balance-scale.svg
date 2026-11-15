@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" color="#d2b06a" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+  <title>Boltac's Trading Post: a merchant's balance, a coin in one pan</title>
+  <path d="M24 58 L28 54 H36 L40 58 Z"/>
+  <path d="M32 54 V13"/>
+  <circle cx="32" cy="9.5" r="2.5" fill="currentColor"/>
+  <path d="M12 16 H52"/>
+  <path d="M12 16 L2 40 M12 16 L22 40 M52 16 L42 40 M52 16 L62 40" stroke-width="2"/>
+  <path d="M2 40 Q12 49 22 40 Z M42 40 Q52 49 62 40 Z"/>
+  <circle cx="12" cy="34" r="5" fill="currentColor"/>
+</svg>

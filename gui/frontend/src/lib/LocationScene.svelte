@@ -2,7 +2,7 @@
   // A place's artwork (Castle-0, ART-2A). It shows the place's picture
   // (scenes.js), cropped to cover its area around the picture's focus, never
   // stretched, or, while there is no picture or if it fails to load, a
-  // themed panel with the place's emblem and name. It never holds controls
+  // themed panel with the place's emblem (Emblem, ART-3B-0) and name. It never holds controls
   // or text the player needs.
   //
   // Props:
@@ -23,6 +23,8 @@
   //             are unchanged); or hidden, a plain backdrop in the place's
   //             tint, and nothing described
   import { sceneFor } from './scenes.js'
+  import { emblemFor } from './emblems.js'
+  import Emblem from './Emblem.svelte'
 
   let { location, title, mode = 'panel', artwork = 'full' } = $props()
 
@@ -34,7 +36,7 @@
 {#snippet fallback(plain = false)}
   <div class="fallback" class:plain data-place={location}>
     {#if !plain}
-      <span class="emblem" aria-hidden="true">{scene.emblem}</span>
+      {#if emblemFor(location)}<Emblem {location} size="clamp(32px, 9vmin, 88px)" />{:else}<span class="emblem" aria-hidden="true">{scene.emblem}</span>{/if}
       <span class="name" aria-hidden="true">{title}</span>
     {/if}
   </div>

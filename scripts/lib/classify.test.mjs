@@ -93,6 +93,16 @@ test('a story file is the GUI’s embedded data, not documentation (CONTENT-1A)'
   assert.equal(p.gateRequired, false)
 })
 
+test('an approved emblem drawing runs the frontend’s tests, which check emblems.js against it (ART-3B-0)', () => {
+  const p = plan('docs/design/art3/emblems/emblem-maze-stone-archway.svg')
+  assert.deepEqual(p.files.map((f) => f.kind), ['emblem drawing'])
+  assert.equal(p.frontend, true)
+  assert.deepEqual(pkgs(p), [])
+  assert.equal(p.broad || p.gateRequired, false)
+  // The sheet and notes beside them are documentation.
+  for (const f of ['docs/design/art3/emblems/emblems-design-sheet.png', 'docs/design/art3/emblems/README.md']) assert.deepEqual(plan(f).files.map((x) => x.kind), ['documentation'], f)
+})
+
 test('an unknown file, the Go modules or the frontend dependencies broaden to everything', () => {
   for (const f of ['tools/new.sh', 'go.mod', 'gui/go.sum', 'gui/frontend/package-lock.json', 'newdir/x.go']) {
     const p = plan(f)

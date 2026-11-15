@@ -7,6 +7,7 @@ import { readFileSync } from 'node:fs'
 import { places, title, back, destinations } from './navigation.js'
 import { formation, condition, unwell, hpShare, canOpen } from './party.js'
 import { scenes, sceneFor, fallback, illustrated } from './scenes.js'
+import { emblemFor } from './emblems.js'
 
 const views = JSON.parse(readFileSync(new URL('./testdata/frame-views.json', import.meta.url)))
 const at = (name) => views.find((v) => v.case === name)
@@ -118,7 +119,8 @@ function webpSize(buf) {
 test('ART-2A: the Castle and the Edge of Town have their pictures; every other place its themed panel', () => {
   const art = ['castle', 'edge']
   for (const [place, s] of Object.entries(scenes)) {
-    assert.ok(s.emblem && s.alt, place)
+    assert.ok(s.alt, place)
+    assert.ok(!!emblemFor(place) !== !!s.emblem, `${place}: its emblem (ART-3B-0) or, without one, a symbol`)
     assert.match(s.focus, /^\d+% \d+%$/, place)
     assert.equal(illustrated(place), art.includes(place), place)
     if (!art.includes(place)) {

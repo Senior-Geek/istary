@@ -1,7 +1,9 @@
 // The artwork of each place (Castle-0, ART-2A). Each entry names its
 // image, the point of the picture that must stay in view when it is cropped
-// (CSS object-position), its description for screen readers, and the emblem
-// of the themed panel shown while there is no image, or if it fails to load.
+// (CSS object-position) and its description for screen readers. The themed
+// panel shown while there is no image, or if it fails to load, has the
+// place's emblem (emblems.js, ART-3B-0), or, for a place without one, the
+// scene's emblem here, a symbol.
 //
 // A place with an image is illustrated (ART-2A): the picture fills the
 // window behind the location frame, cropped to cover it around its focus,
@@ -26,26 +28,23 @@ export const scenes = {
     src: new URL('../assets/scenes/castle.webp', import.meta.url).href,
     focus: '45% 50%',
     alt: "The castle courtyard: Gilgamesh's Tavern, the Adventurer's Inn, Boltac's Trading Post and the Temple of Cant around a fountain, the Keep above them, and the gate out to the Training Grounds and the maze",
-    emblem: glyph('♜'),
   },
-  tavern: { src: null, focus: '50% 50%', alt: "Gilgamesh's Tavern", emblem: glyph('⚜') },
-  inn: { src: null, focus: '50% 50%', alt: "The Adventurer's Inn", emblem: glyph('☾') },
-  trading: { src: null, focus: '50% 50%', alt: "Boltac's Trading Post", emblem: glyph('⚖') },
-  temple: { src: null, focus: '50% 45%', alt: 'The Temple of Cant', emblem: glyph('✠') },
+  tavern: { src: null, focus: '50% 50%', alt: "Gilgamesh's Tavern" },
+  inn: { src: null, focus: '50% 50%', alt: "The Adventurer's Inn" },
+  trading: { src: null, focus: '50% 50%', alt: "Boltac's Trading Post" },
+  temple: { src: null, focus: '50% 45%', alt: 'The Temple of Cant' },
   edge: {
     src: new URL('../assets/scenes/edge.webp', import.meta.url).href,
     focus: '50% 50%',
     alt: 'Outside the castle walls: the gatehouse, the Training Grounds on one side and the guarded entrance to the maze on the other',
-    emblem: glyph('⚑'),
   },
   training: {
     src: null,
     focus: '50% 55%',
     alt: 'The Training Grounds: a tournament field outside the castle walls',
-    emblem: glyph('⚔'),
   },
   settings: { src: null, focus: '50% 50%', alt: 'Settings', emblem: glyph('⚙') },
-  maze: { src: null, focus: '50% 50%', alt: 'The maze', emblem: glyph('▦') },
+  maze: { src: null, focus: '50% 50%', alt: 'The maze' },
 }
 
 // fallback is the scene of a place with no entry.

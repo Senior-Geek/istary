@@ -31,7 +31,10 @@ const AREAS = [
 const CONCURRENT = [/^gui\/(session|lock|lock_other|close|main|games|backups|settings|startup)\.go$/, /^engine\/(game|save|atomicfile)\.go$/, /^cmd\/istary\/main\.go$/, /^render\/title_anim\.go$/]
 // Files that change nothing tested or built. The GUI's stories are
 // Markdown built into it (gui/content, CONTENT-1A), not documentation.
-const INERT = [/^(?!gui\/content\/).*\.md$/i, /^docs\//, /^images\//, /^LICENSE$/, /^\.gitignore$/]
+// The approved emblems (docs/design/art3/emblems, ART-3B-0) are the
+// drawings the frontend's emblems.js must match, which its tests check.
+const EMBLEM = /^docs\/design\/art3\/emblems\/[^/]+\.svg$/
+const INERT = [/^(?!gui\/content\/).*\.md$/i, /^docs\/(?!design\/art3\/emblems\/[^/]+\.svg$)/, /^images\//, /^LICENSE$/, /^\.gitignore$/]
 
 export function goPackages(root) {
   // Every package of both modules with its directory and everything its tests
@@ -74,6 +77,10 @@ export function classify(files, pkgs, root) {
     if (INERT.some((re) => re.test(f))) {
       entry.kind = 'documentation'
       entry.areas = []
+    } else if (EMBLEM.test(f)) {
+      entry.kind = 'emblem drawing'
+      entry.areas = []
+      plan.frontend = true
     } else if (/^gui\/frontend\/src\/lib\/testdata\//.test(f)) {
       // Recorded by the GUI's Go tests, read by the frontend's.
       entry.kind = 'fixture'

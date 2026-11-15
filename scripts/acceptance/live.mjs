@@ -231,6 +231,39 @@ async function main() {
     return worst
   })()`)
 
+  // The place's emblem in its title (ART-3B-0), or none where it has none
+  // (place null): 34 px, centred on the title's text, before it; in the
+  // panel's gold (its appearance's --gold), standing out from the panel at
+  // 3:1 or more (WCAG's for graphics); hidden from screen readers, so the
+  // heading says only the title; every shape drawn. What is wrong, or [].
+  const emblemIssues = (sel, place) => js(`(() => {
+    const h = document.querySelector(${JSON.stringify(sel)}); if (!h) return ['no title']
+    const e = h.querySelector('svg.emblem'), want = ${JSON.stringify(place)}, out = []
+    if (!want) return e ? ['an emblem where there is none'] : []
+    if (!e) return ['no emblem']
+    if (e.dataset.emblem !== want) out.push('the emblem of ' + e.dataset.emblem)
+    const r = e.getBoundingClientRect()
+    if (Math.abs(r.width - 34) > 0.5 || Math.abs(r.height - 34) > 0.5) out.push('size ' + r.width + 'x' + r.height)
+    const text = [...h.childNodes].find((n) => n.nodeType === 3 && n.textContent.trim())
+    const range = document.createRange(); range.selectNodeContents(text); const t = range.getBoundingClientRect()
+    if (Math.abs((r.top + r.bottom) / 2 - (t.top + t.bottom) / 2) > 2) out.push('not centred on the title (' + Math.round((r.top + r.bottom) / 2) + ' vs ' + Math.round((t.top + t.bottom) / 2) + ')')
+    if (t.left < r.right + 6) out.push('too close to the title')
+    if (e.getAttribute('aria-hidden') !== 'true' || h.textContent.trim() !== text.textContent.trim()) out.push('spoken with the title')
+    const rgb = (s) => (s = s.trim()).startsWith('#') ? [1, 3, 5].map((i) => parseInt(s.slice(i, i + 2), 16)) : s.match(/[\\d.]+/g).slice(0, 3).map(Number)
+    const fg = rgb(getComputedStyle(e).color), gold = rgb(getComputedStyle(h).getPropertyValue('--gold'))
+    if (fg.some((v, i) => Math.abs(v - gold[i]) > 1)) out.push('colour ' + fg + ', not the gold ' + gold)
+    const rgba = (s) => { const m = s.match(/[\\d.]+/g).map(Number); return [m[0], m[1], m[2], m.length > 3 ? m[3] : 1] }
+    const over = (a, b) => [0, 1, 2].map((i) => a[i] * a[3] + b[i] * (1 - a[3])).concat(1)
+    const lin = (c) => { c /= 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4 }
+    const lum = (c) => 0.2126 * lin(c[0]) + 0.7152 * lin(c[1]) + 0.0722 * lin(c[2])
+    const chain = []; for (let x = h; x && x !== document.documentElement; x = x.parentElement) { const f = rgba(getComputedStyle(x).backgroundColor); if (f[3] > 0) chain.push(f) }
+    let min = Infinity
+    for (const base of [[0, 0, 0, 1], [255, 255, 255, 1]]) { const bg = [...chain].reverse().reduce((acc, f) => over(f, acc), base); const [p, q] = [lum(fg), lum(bg)].sort((a, b) => b - a); min = Math.min(min, (p + 0.05) / (q + 0.05)) }
+    if (min < 3) out.push('contrast ' + min.toFixed(2))
+    if (![...e.querySelectorAll('path, circle')].every((x) => { const b = x.getBBox(); return b.width > 0 || b.height > 0 })) out.push('a shape not drawn')
+    return out
+  })()`)
+
   const suites = {
     // The four areas at every place in town; the party bar hidden and shown.
     async layout() {
@@ -244,6 +277,9 @@ async function main() {
         const sc = await js(`(() => { const c = document.querySelector('${C}'); const big = c.scrollHeight > c.clientHeight + 2; const y = document.querySelector('${A}').getBoundingClientRect().top; c.scrollTop = c.scrollHeight; const moved = c.scrollTop > 0; const y2 = document.querySelector('${A}').getBoundingClientRect().top; const by = document.querySelector('${B}').getBoundingClientRect().top; c.scrollTop = 0; return { big, moved, still: Math.abs(y - y2) < 0.5 && Math.abs(by - y) < 0.5 } })()`)
         check(!sc.big || (sc.moved && sc.still), `${place}: the information scrolls on its own; the display and actions stay`)
         check(await js(`(() => { const e = document.querySelector('${B}'); return getComputedStyle(e).overflowY === 'auto' && [...e.querySelectorAll('button')].every((b) => { const r = b.getBoundingClientRect(); return r.width > 0 && r.right <= innerWidth + 0.5 }) })()`), `${place}: every action is reachable`)
+        const em = await emblemIssues('.frame .head h2.title', place === 'settings' ? null : place)
+        check(em.length === 0, `${place}: ${place === 'settings' ? 'no emblem in its title' : 'its emblem beside its title, 34 px, centred, in the gold'}${em.length ? ': ' + em.join('; ') : ''}`)
+        if (place !== 'castle' && place !== 'edge') check(await js(`(() => { const f = document.querySelector('${A} .fallback'); const e = f && f.querySelector('.emblem'); return !!e && (${place === 'settings'} ? e.tagName === 'SPAN' : e.tagName === 'svg' && e.dataset.emblem === '${place}' && e.getBoundingClientRect().width >= 32) })()`), `${place}: its themed panel shows ${place === 'settings' ? 'its symbol' : 'its emblem'}`)
         const t = await toggle()
         check(place === 'trading' ? t === '' : t === 'Show sheet', `${place}: the sheet toggle ${place === 'trading' ? 'is not offered at Boltac’s' : 'reads Show sheet, in the top bar'}`)
         await shot(place)
@@ -530,11 +566,13 @@ async function main() {
           if (low.length) issues.push(`${name}: contrast ${low.slice(0, 3).join('; ')}`)
           const bad = await controls()
           if (bad.length) issues.push(`${name}: covered ${bad.join(', ')}`)
+          const em = await emblemIssues('.frame .head h2.title', place)
+          if (em.length) issues.push(`${name}: emblem ${em.join('; ')}`)
           const on = await js(`[...document.querySelectorAll('.frame button')].filter((b) => !b.disabled).length`)
           if (on !== enabled - (l.artwork === 'hidden' ? 1 : 0)) issues.push(`${name}: ${on} controls enabled, ${enabled} in the defaults`)
           if (!(await pageStill())) issues.push(`${name}: the page scrolls`)
         }
-        check(issues.length === 0, `${place}: all ${combos.length} combinations shown as chosen, the layout unchanged, 90–95% opaque, every text at WCAG AA, every control in view, uncovered and enabled${issues.length ? ': ' + issues.slice(0, 6).join(' | ') : ''}`)
+        check(issues.length === 0, `${place}: all ${combos.length} combinations shown as chosen, the layout unchanged, 90–95% opaque, every text at WCAG AA, the emblem in the panels' gold at 3:1, every control in view, uncovered and enabled${issues.length ? ': ' + issues.slice(0, 6).join(' | ') : ''}`)
       }
       // The picture hidden: the place's tint alone; the display describes
       // nothing; Escape still goes Back.
@@ -545,6 +583,21 @@ async function main() {
       await setLook({ panels: 'slate', story: 'parchment', artwork: 'full' }, 'castle')
       await goto('tavern')
       check(await js(`!document.querySelector('[data-appearance]') && !document.querySelector('.backdrop') && !!document.querySelector('${A} figure.scene:not(.view) .fallback .emblem')`), 'a place without artwork is as it was')
+
+      // Long information at an illustrated place keeps the room a place
+      // without a picture gives it (ART-3B-0): the display and actions keep
+      // their --top, the information has the rest and scrolls.
+      await goto('castle')
+      const room = await js(`(() => {
+        const c = document.querySelector('${C}'), a = document.querySelector('${A}'), body = c.parentElement
+        const probe = document.createElement('div'); probe.style.height = 'var(--top)'; body.append(probe)
+        const top = probe.getBoundingClientRect().height; probe.remove()
+        const long = document.createElement('section'); long.style.height = '3000px'; c.append(long)
+        const r = { top, a: a.getBoundingClientRect().height, c: c.getBoundingClientRect().height, body: body.getBoundingClientRect().height, scrolls: c.scrollHeight > c.clientHeight }
+        long.remove(); r.after = a.getBoundingClientRect().height
+        return r
+      })()`)
+      check(Math.abs(room.a - room.top) < 1 && Math.abs(room.c - (room.body - room.top - 12)) < 1 && room.scrolls && room.after > room.a, `long information keeps a place without a picture's room: display ${Math.round(room.a)} px (--top ${Math.round(room.top)}), information ${Math.round(room.c)} of ${Math.round(room.body)} px, scrolling; the display takes it back after (${Math.round(room.after)} px)`)
 
       check(sha(GAME) === before, 'the game is saved exactly as before: the pictures and panels change nothing')
     },
@@ -882,6 +935,19 @@ async function main() {
       await shot('nav-edge')
       await clickText('Hide sheet', HEAD)
       check(await js(`!!document.querySelector('${A} figure.scene')`), 'Hide sheet brings the picture back')
+      // A shown sheet has priority over the story box (ART-3B-0): the box
+      // is not drawn over it and comes back where it was when the sheet is
+      // hidden; Story with the sheet shown shows the story instead.
+      if (!(await rect(STORY))) await clickText('Story', HEAD)
+      const storyAt = await rect(STORY)
+      await clickSlot(0)
+      check(!!(await rect(`${A} .sheet`)) && !(await rect(STORY)), 'a sheet shown: the story box is not drawn over it')
+      await clickText('Hide sheet', HEAD)
+      const storyBack = await rect(STORY)
+      check(!!storyBack && Math.abs(storyBack.x - storyAt.x) < 1 && Math.abs(storyBack.y - storyAt.y) < 1, 'the sheet hidden: the story box is back, where it was')
+      await clickSlot(0)
+      await clickText('Story', HEAD)
+      check(!(await rect(`${A} .sheet`)) && !!(await rect(STORY)) && (await headButtons()).includes('Show sheet'), 'Story with a sheet shown hides the sheet and shows the story')
       check(await barFits(), 'the Edge’s top bar fits on one row')
 
       // The Training Grounds and Settings, from the Edge's actions; Escape back.
@@ -919,6 +985,8 @@ async function main() {
       if (await js(`!!document.querySelector('.check-equipment')`)) await clickText('Continue into Maze', B)
       let rv = await view()
       check(rv.real && rv.screen === 'dungeon', `Enter the Maze sets out on a real expedition (${rv.screen})`)
+      const mz = await emblemIssues('.dungeon .bar h2', 'maze')
+      check(mz.length === 0, `the maze's emblem beside its title${mz.length ? ': ' + mz.join('; ') : ''}`)
       await esc(); await esc()
       rv = await view()
       check(rv.real && rv.screen === 'dungeon' && rv.location === 'maze', `Escape in the maze leaves nothing (${rv.screen}, ${rv.location})`)

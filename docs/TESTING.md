@@ -32,7 +32,9 @@ name. For each changed file:
   Go tests, which record them, and the frontend tests, which read them.
 - **Documentation** (`*.md`, `docs/`, `images/`) runs nothing, but for
   the GUI's stories (`gui/content`, CONTENT-1A), which are its embedded
-  data.
+  data, and the approved emblems (`docs/design/art3/emblems/*.svg`,
+  ART-3B-0), which run the frontend tests that check `emblems.js` against
+  them.
 - **The gate or the test scripts** run their own tests.
 - **Anything else** broadens the plan to everything, and says why:
   - the Go modules (`go.mod`, `go.sum`);

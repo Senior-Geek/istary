@@ -85,6 +85,7 @@
   import { SHEET, subject, toggleLabel, available } from './sheet.js'
   import StoryBox from './StoryBox.svelte'
   import StoryText from './StoryText.svelte'
+  import Emblem from './Emblem.svelte'
   import { PANELS, illustrated, lookOf } from './scenes.js'
 
   let { view, busy = false, call, onopen, scene, actions, aside, children, pick, onpick, current = -1, fill = false, partyAlways = false, compact = false, noSheet = false, waysInActions = false } = $props()
@@ -118,11 +119,18 @@
   const showPanels = () => { moved = true; panels?.show() }
 
   const storyHere = $derived(art && !!view.story && !!panels)
-  const storyOpen = $derived(storyHere && panels.story.open)
+  // A shown character sheet has priority (ART-3B-0): the story box is not
+  // drawn over it, and comes back, where it was, when the sheet is hidden.
+  // Story while the sheet is shown hides the sheet to show the story.
+  const storyOpen = $derived(storyHere && panels.story.open && !sheetShown)
   let display = $state(), storyButton = $state()
   function closeStory() {
     panels.story.open = false
     storyButton?.focus()
+  }
+  function openStory() {
+    if (sheetShown) sheet.hide()
+    panels.story.open = true
   }
 
   const go = (dest) => call(S.Navigate, dest)
@@ -159,7 +167,7 @@
 {:else}
 <div class="frame" class:fill class:compact class:illustrated={art} data-location={view.location} data-appearance={look?.panels}>
   <header class="head">
-    <h2 class="title">{here}</h2>
+    <h2 class="title"><Emblem location={view.location} size="34px" />{here}</h2>
     {#if way}
       <button class="back" disabled={busy || !way.open} onclick={() => call(S.ReturnToCastle)}
         title="Back to the Castle (Esc)">← {way.label} <kbd>Esc</kbd></button>
@@ -170,7 +178,7 @@
     {/if}
     {#if storyHere}
       <button class="toggle" bind:this={storyButton} aria-pressed={storyOpen}
-        onclick={() => (storyOpen ? closeStory() : (panels.story.open = true))}
+        onclick={() => (storyOpen ? closeStory() : openStory())}
         title={storyOpen ? 'Close the story' : 'Open the story'}>Story</button>
     {/if}
     {#if sheetHere}
@@ -249,7 +257,10 @@
   }
   .frame.fill, .frame.compact { --top: clamp(130px, calc((100vw - 380px) * 0.5625), 30vh); }
   .head { grid-area: head; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
-  .title { margin: 0 auto 0 0; font-size: 20px; color: var(--text); letter-spacing: 0.02em; }
+  .title { margin: 0 auto 0 0; font-size: 20px; color: var(--text); letter-spacing: 0.02em;
+    display: flex; align-items: center; gap: 10px; }
+  /* The place's emblem (ART-3B-0), in the appearance's gold. */
+  .title :global(.emblem) { color: var(--gold); margin: -4px 0; }
   .head button { margin: 0; }
   .back kbd { font: 600 10px ui-monospace, Menlo, monospace; opacity: 0.7; margin-left: 4px; }
   .head-why { flex-basis: 100%; margin: 0; text-align: right; }
@@ -293,11 +304,13 @@
   .frame.illustrated .head { padding: 6px 8px 6px 12px; }
   .frame.illustrated nav { padding: 10px 12px; }
   .frame.illustrated .party-area { padding: 6px; }
-  /* The information is as tall as it needs, up to 45% of the body, and
-     scrolls on its own past that; the display and the actions take the
-     rest, so the actions are long enough for all of them more often, and
-     hiding the party gives them its room. */
-  .frame.illustrated .body { grid-template-rows: minmax(var(--top), 1fr) fit-content(45%); }
+  /* The information is as tall as it needs, and scrolls on its own past
+     what a place without a picture would give it (all but the display's
+     and actions' --top: ART-3B-0, so a roster, Boltac's goods or a
+     character being created keep their room); the display and the actions
+     take the rest, so the actions are long enough for all of them more
+     often, and hiding the party gives them its room. */
+  .frame.illustrated .body { grid-template-rows: minmax(var(--top), 1fr) fit-content(calc(100% - var(--top) - 12px)); }
   .frame.illustrated .content-area > :global(section) { margin-top: 0; }
   /* The picture alone: one way back, in the corner. */
   .frame.bare { display: flex; justify-content: flex-end; align-items: flex-start; }

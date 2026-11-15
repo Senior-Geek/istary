@@ -35,6 +35,7 @@
   import MapSvg from './MapSvg.svelte'
   import AutomapPopup from './AutomapPopup.svelte'
   import { mapKey } from './automap.js'
+  import Emblem from './Emblem.svelte'
   import { where, whereTitle, strandedHint } from './position.js'
 
   let { view, busy = false, call } = $props()
@@ -82,7 +83,7 @@
 
 <div class="dungeon">
   <header class="bar">
-    <h2>{d.phase === 'camp' ? 'Camp' : 'The maze'}</h2>
+    <h2>{#if d.phase !== 'camp'}<Emblem location="maze" size="34px" />{/if}{d.phase === 'camp' ? 'Camp' : 'The maze'}</h2>
     {#if view.position}
       <span class="where" class:prominent={d.phase === 'camp'} title={whereTitle(view.position)}
         aria-label="Position: {whereTitle(view.position)}">{where(view.position)}</span>
@@ -214,7 +215,9 @@
   .middle.maze > section { margin-top: 0; }
   .middle.maze.inspecting { grid-template-rows: minmax(110px, 1fr) max-content max-content; }
   .bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .bar h2 { margin: 0; }
+  .bar h2 { margin: 0; display: flex; align-items: center; gap: 10px; }
+  /* The maze's emblem (ART-3B-0), in the gold of the town's titles. */
+  .bar h2 :global(.emblem) { color: var(--gold); margin: -4px 0; }
   .where { font: 600 13px ui-monospace, Menlo, monospace; color: var(--accent); border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px; white-space: nowrap; }
   .where.prominent { font-size: 17px; padding: 2px 10px; border-color: var(--accent); }
   .where.unknown { color: var(--muted); font-weight: 400; }
