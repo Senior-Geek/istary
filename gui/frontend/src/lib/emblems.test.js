@@ -71,7 +71,7 @@ test('an emblem is decoration, in the colour around it, and nothing for a place 
   assert.equal(html({ location: undefined }).trim(), '')
 })
 
-test('the emblem stands beside the title, in the appearance’s gold, and on the themed panel', () => {
+test('the emblem stands beside the title and each destination, in the appearance’s gold, and on the themed panel', () => {
   const frame = read('./LocationFrame.svelte')
   assert.match(frame, /<h2 class="title"><Emblem location=\{view\.location\} size="34px" \/>\{here\}<\/h2>/, 'before the title, inside its heading: the title alone is spoken')
   assert.match(frame, /\.title \{[^}]*display: flex; align-items: center; gap: 10px;/, 'centred on the title')
@@ -82,6 +82,13 @@ test('the emblem stands beside the title, in the appearance’s gold, and on the
   assert.equal(gold(":root"), '#d2b06a')
   assert.equal(gold("[data-appearance='light']"), '#7a5a14', 'darker on the light panels')
   for (const id of ['dark', 'slate']) assert.ok(gold(`[data-appearance='${id}']`), id)
+  // Each destination's button has its emblem before its name (ART-3B), the
+  // one snippet the Go to list and the Edge's actions draw them with; the
+  // button's height is its text's.
+  assert.match(frame, /<button class="way" [^\n]*?\}><Emblem location=\{w\.dest\} size="22px" \/>\{w\.label\}<\/button>/, 'before the name, inside the button: the name alone is spoken')
+  assert.equal(frame.match(/class="way"/g).length, 1, 'one destination button, everywhere')
+  assert.match(frame, /\.way \{[^}]*display: flex; align-items: center; gap: 8px;/)
+  assert.match(frame, /\.way :global\(\.emblem\) \{ color: var\(--gold\); margin: -4px 0; \}/)
   // The maze, as in town; not at Camp.
   const dungeon = read('./DungeonScreen.svelte')
   assert.match(dungeon, /<h2>\{#if d\.phase !== 'camp'\}<Emblem location="maze" size="34px" \/>\{\/if\}/)

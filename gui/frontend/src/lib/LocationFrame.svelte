@@ -148,9 +148,11 @@
 
 <!-- One destination: its button, and Go's reason when it is closed. The
      Go to list draws each with it, and a place that puts its destinations
-     among its actions (waysInActions) is given it with them. -->
+     among its actions (waysInActions) is given it with them. The button
+     has the destination's emblem before its name (ART-3B), decoration:
+     the name alone is spoken. -->
 {#snippet destination(w)}
-  <button class="way" disabled={busy || !w.open} onclick={() => go(w.dest)}>{w.label}</button>
+  <button class="way" disabled={busy || !w.open} onclick={() => go(w.dest)}><Emblem location={w.dest} size="22px" />{w.label}</button>
   {#if !w.open}<span class="why">{w.reason}</span>{/if}
 {/snippet}
 
@@ -284,7 +286,10 @@
   h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin: 0 0 6px; font-weight: 500; }
   nav ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
   nav li { display: grid; }
-  .way { width: 100%; text-align: left; margin: 0; }
+  .way { width: 100%; text-align: left; margin: 0; display: flex; align-items: center; gap: 8px; }
+  /* The emblem's margins keep the button the height of its text alone. */
+  .way :global(.emblem) { color: var(--gold); margin: -4px 0; }
+  .way:disabled :global(.emblem) { opacity: 0.5; }
   .why { color: var(--muted); font-size: 11px; padding: 2px 2px 4px; }
   .actions { margin: 0; padding: 10px 12px; }
 

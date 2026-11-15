@@ -264,6 +264,54 @@ async function main() {
     return out
   })()`)
 
+  // The destinations' buttons (ART-3B): each has its place's emblem before
+  // its name, 22 px, centred on it, in the panel's gold at 3:1 or more,
+  // hidden from screen readers (the button's text is its name alone);
+  // Settings has none. The button is the height it is with its text alone,
+  // and its name is not cut off. { ways: the names, issues: what is wrong }.
+  const wayIssues = () => js(`(() => {
+    const dest = { "Gilgamesh's Tavern": 'tavern', "The Adventurer's Inn": 'inn', "Boltac's Trading Post": 'trading', 'The Temple of Cant': 'temple', 'The Edge of Town': 'edge', 'The Training Grounds': 'training', 'Settings': 'settings', 'The Castle': 'castle' }
+    const rgb = (s) => (s = s.trim()).startsWith('#') ? [1, 3, 5].map((i) => parseInt(s.slice(i, i + 2), 16)) : s.match(/[\\d.]+/g).slice(0, 3).map(Number)
+    const rgba = (s) => { const m = s.match(/[\\d.]+/g).map(Number); return [m[0], m[1], m[2], m.length > 3 ? m[3] : 1] }
+    const over = (a, b) => [0, 1, 2].map((i) => a[i] * a[3] + b[i] * (1 - a[3])).concat(1)
+    const lin = (c) => { c /= 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4 }
+    const lum = (c) => 0.2126 * lin(c[0]) + 0.7152 * lin(c[1]) + 0.0722 * lin(c[2])
+    const ways = [], issues = []
+    for (const b of document.querySelectorAll('.frame button.way')) {
+      const name = b.textContent.trim(), want = dest[name], e = b.querySelector('svg.emblem'), out = []
+      ways.push(name)
+      if (!want) out.push('not a place')
+      else if (want === 'settings') { if (e) out.push('an emblem where there is none') }
+      else if (!e) out.push('no emblem')
+      else {
+        if (e.dataset.emblem !== want) out.push('the emblem of ' + e.dataset.emblem)
+        const r = e.getBoundingClientRect()
+        if (Math.abs(r.width - 22) > 0.5 || Math.abs(r.height - 22) > 0.5) out.push('size ' + r.width + 'x' + r.height)
+        const text = [...b.childNodes].find((n) => n.nodeType === 3 && n.textContent.trim())
+        const range = document.createRange(); range.selectNodeContents(text); const t = range.getBoundingClientRect()
+        if (Math.abs((r.top + r.bottom) / 2 - (t.top + t.bottom) / 2) > 2) out.push('not centred on the name')
+        if (t.left < r.right + 6) out.push('too close to the name')
+        if (r.top < b.getBoundingClientRect().top || r.bottom > b.getBoundingClientRect().bottom) out.push('outside its button')
+        if (e.getAttribute('aria-hidden') !== 'true' || name !== text.textContent.trim()) out.push('spoken with the name')
+        const fg = rgb(getComputedStyle(e).color), gold = rgb(getComputedStyle(b).getPropertyValue('--gold'))
+        if (fg.some((v, i) => Math.abs(v - gold[i]) > 1)) out.push('colour ' + fg + ', not the gold ' + gold)
+        if (!b.disabled) {
+          const chain = []; for (let x = b; x && x !== document.documentElement; x = x.parentElement) { const f = rgba(getComputedStyle(x).backgroundColor); if (f[3] > 0) chain.push(f) }
+          let min = Infinity
+          for (const base of [[0, 0, 0, 1], [255, 255, 255, 1]]) { const bg = [...chain].reverse().reduce((acc, f) => over(f, acc), base); const [p, q] = [lum(fg), lum(bg)].sort((a, b) => b - a); min = Math.min(min, (p + 0.05) / (q + 0.05)) }
+          if (min < 3) out.push('contrast ' + min.toFixed(2))
+        }
+        // The same button without its emblem, beside it: the same height.
+        const plain = b.cloneNode(true); plain.querySelector('svg')?.remove(); plain.style.visibility = 'hidden'; plain.style.position = 'absolute'; plain.style.width = b.getBoundingClientRect().width + 'px'
+        b.parentElement.append(plain); const ph = plain.getBoundingClientRect().height; plain.remove()
+        if (Math.abs(b.getBoundingClientRect().height - ph) > 0.5) out.push('height ' + b.getBoundingClientRect().height + ', not ' + ph + ' as text alone')
+        if (t.right > b.getBoundingClientRect().right - parseFloat(getComputedStyle(b).paddingRight) + 0.5 || b.scrollWidth > b.clientWidth + 1 || t.height > r.height + 4) out.push('its name cut off or wrapped')
+      }
+      if (out.length) issues.push(name + ': ' + out.join(', '))
+    }
+    return { ways, issues }
+  })()`)
+
   const suites = {
     // The four areas at every place in town; the party bar hidden and shown.
     async layout() {
@@ -279,6 +327,9 @@ async function main() {
         check(await js(`(() => { const e = document.querySelector('${B}'); return getComputedStyle(e).overflowY === 'auto' && [...e.querySelectorAll('button')].every((b) => { const r = b.getBoundingClientRect(); return r.width > 0 && r.right <= innerWidth + 0.5 }) })()`), `${place}: every action is reachable`)
         const em = await emblemIssues('.frame .head h2.title', place === 'settings' ? null : place)
         check(em.length === 0, `${place}: ${place === 'settings' ? 'no emblem in its title' : 'its emblem beside its title, 34 px, centred, in the gold'}${em.length ? ': ' + em.join('; ') : ''}`)
+        const wi = await wayIssues()
+        check(wi.issues.length === 0, `${place}: ${wi.ways.length ? `each destination's emblem before its name, 22 px, centred, in the gold; the button's height and name as without it (${wi.ways.join(', ')})` : 'no destination buttons'}${wi.issues.length ? ': ' + wi.issues.join('; ') : ''}`)
+        if (place === 'castle' || place === 'edge') check(wi.ways.length === (place === 'castle' ? 5 : 2), `${place}: its destinations are there (${wi.ways.length})`)
         if (place !== 'castle' && place !== 'edge') check(await js(`(() => { const f = document.querySelector('${A} .fallback'); const e = f && f.querySelector('.emblem'); return !!e && (${place === 'settings'} ? e.tagName === 'SPAN' : e.tagName === 'svg' && e.dataset.emblem === '${place}' && e.getBoundingClientRect().width >= 32) })()`), `${place}: its themed panel shows ${place === 'settings' ? 'its symbol' : 'its emblem'}`)
         const t = await toggle()
         check(place === 'trading' ? t === '' : t === 'Show sheet', `${place}: the sheet toggle ${place === 'trading' ? 'is not offered at Boltac’s' : 'reads Show sheet, in the top bar'}`)
@@ -568,11 +619,13 @@ async function main() {
           if (bad.length) issues.push(`${name}: covered ${bad.join(', ')}`)
           const em = await emblemIssues('.frame .head h2.title', place)
           if (em.length) issues.push(`${name}: emblem ${em.join('; ')}`)
+          const wi = await wayIssues()
+          if (wi.issues.length) issues.push(`${name}: destinations ${wi.issues.join('; ')}`)
           const on = await js(`[...document.querySelectorAll('.frame button')].filter((b) => !b.disabled).length`)
           if (on !== enabled - (l.artwork === 'hidden' ? 1 : 0)) issues.push(`${name}: ${on} controls enabled, ${enabled} in the defaults`)
           if (!(await pageStill())) issues.push(`${name}: the page scrolls`)
         }
-        check(issues.length === 0, `${place}: all ${combos.length} combinations shown as chosen, the layout unchanged, 90–95% opaque, every text at WCAG AA, the emblem in the panels' gold at 3:1, every control in view, uncovered and enabled${issues.length ? ': ' + issues.slice(0, 6).join(' | ') : ''}`)
+        check(issues.length === 0, `${place}: all ${combos.length} combinations shown as chosen, the layout unchanged, 90–95% opaque, every text at WCAG AA, the emblems in the panels' gold at 3:1 (title and destinations), every control in view, uncovered and enabled${issues.length ? ': ' + issues.slice(0, 6).join(' | ') : ''}`)
       }
       // The picture hidden: the place's tint alone; the display describes
       // nothing; Escape still goes Back.
