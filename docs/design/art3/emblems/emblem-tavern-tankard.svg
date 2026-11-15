@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" color="#d2b06a" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+  <title>Gilgamesh's Tavern: a tankard</title>
+  <path d="M10 58 H50"/>
+  <path d="M18 21 H40 L38.5 56 H19.5 Z"/>
+  <path d="M18 21 Q15 14 21 13 Q23 8 29 10 Q33 7 37 10 Q43 10 40 16 Q41 19 40 21"/>
+  <path d="M40 27 C53 27 53 47 39 47"/>
+  <path d="M19 31 H39 M19.5 49 H38.5" stroke-width="2"/>
+</svg>

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" color="#d2b06a" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+  <title>Boltac's Trading Post: crossed swords</title>
+  <path d="M21 47 L50 18 L54 10 L46 14 L17 43 Z"/>
+  <path d="M43 47 L14 18 L10 10 L18 14 L47 43 Z"/>
+  <path d="M13 39 L25 51 M51 39 L39 51"/>
+  <path d="M19 45 L13 51 M45 45 L51 51"/>
+  <circle cx="11" cy="53" r="2.5"/>
+  <circle cx="53" cy="53" r="2.5"/>
+</svg>

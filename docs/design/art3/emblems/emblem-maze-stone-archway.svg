@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" color="#d2b06a" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+  <title>The maze: an ancient stone archway, steps descending into the dark</title>
+  <path d="M20 58 V40 L23 32 L28 27 L36 27 L41 32 L44 40 V58 Z" fill="#120f0a" stroke="none"/>
+  <path d="M5 58 H59"/>
+  <path d="M8 58 L9 41 L11.5 29 L18.5 18 L28 11.5 L37 11 L46.5 17 L52.5 27.5 L55 40 L56 58"/>
+  <path d="M20 58 V40 L23 32 L28 27 L36 27 L41 32 L44 40 V58"/>
+  <path d="M20 47 L8.6 46 M21.5 35.5 L10.5 33.5 M25 29.5 L17 19.5 M29 27 L28 11.5 M35 27 L37 11 M39 29.5 L47.5 18.5 M42.5 35.5 L53.5 34 M44 47 L55.5 47.5" stroke-width="2"/>
+  <path d="M23 54 H41 M25.5 50 H38.5 M27.5 46.5 H36.5 M29 43.5 H35" stroke-width="2"/>
+</svg>

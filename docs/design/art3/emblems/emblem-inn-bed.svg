@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" color="#d2b06a" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+  <title>The Adventurer's Inn: a bed</title>
+  <path d="M9 57 V22 A3 3 0 0 1 15 22 V57"/>
+  <path d="M51 57 V36 A3 3 0 0 1 57 36 V57"/>
+  <path d="M15 48 H51"/>
+  <path d="M15 39 H51"/>
+  <path d="M18 39 V34 Q18 31 21 31 H27 Q30 31 30 34 V39"/>
+  <path d="M33 39 V37 Q33 34 36 34 H51" stroke-width="2"/>
+</svg>

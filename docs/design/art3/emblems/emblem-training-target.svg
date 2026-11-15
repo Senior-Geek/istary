@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" color="#d2b06a" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+  <title>The Training Grounds: an archery target</title>
+  <path d="M20 51 L14 61 M40 51 L46 61"/>
+  <circle cx="30" cy="31" r="22"/>
+  <circle cx="30" cy="31" r="14"/>
+  <circle cx="30" cy="31" r="6" fill="currentColor"/>
+  <path d="M30 31 L54 7" stroke-width="2.5"/>
+  <path d="M49 12 L48 6.5 L52.5 2.5 L53.5 7.5 Z M49 12 L54.5 13 L58.5 8.5 L53.5 7.5 Z" fill="currentColor" stroke-width="1.5"/>
+</svg>

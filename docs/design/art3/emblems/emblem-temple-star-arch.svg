@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" color="#d2b06a" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+  <title>The Temple of Cant: a star within a Gothic arch</title>
+  <path d="M10 58 H54"/>
+  <path d="M14 58 V32 A26 26 0 0 1 32 13.2 A26 26 0 0 1 50 32 V58"/>
+  <path d="M32.0 26.0 L33.1 36.7 L37.3 34.2 L34.8 38.4 L45.5 39.5 L34.8 40.6 L37.3 44.8 L33.1 42.3 L32.0 53.0 L30.9 42.3 L26.7 44.8 L29.2 40.6 L18.5 39.5 L29.2 38.4 L26.7 34.2 L30.9 36.7 Z" fill="currentColor" stroke-width="1.5"/>
+</svg>
