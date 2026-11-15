@@ -21,6 +21,7 @@
   //   onopen  (rosterIndex) => void      open a party member's sheet
   import * as S from '../../wailsjs/go/main/Session.js'
   import LocationFrame from './LocationFrame.svelte'
+  import Emblem from './Emblem.svelte'
 
   let { view, busy = false, call, onopen } = $props()
 
@@ -44,7 +45,7 @@
 <LocationFrame {view} {busy} {call} {onopen} waysInActions>
   {#snippet actions(ways, destination)}
     <div class="group">
-      <button class="primary wide" disabled={busy || !!real || checking} onclick={enter}>Enter the Maze</button>
+      <button class="primary wide enter" disabled={busy || !!real || checking} onclick={enter}><Emblem location="maze" size="22px" />Enter the Maze</button>
       {#if real}<span class="why">{real}</span>{/if}
       {#if checking && caution && !real}
         <div class="check-equipment" role="alertdialog" aria-label="Equipment check">
@@ -83,6 +84,10 @@
   .group { display: grid; gap: 4px; margin-bottom: 10px; }
   .group:last-child { margin-bottom: 0; }
   .wide { width: 100%; text-align: left; margin: 0; }
+  /* Into the maze: its emblem before the words, as a destination's (ART-3B). */
+  .enter { display: flex; align-items: center; gap: 8px; }
+  .enter :global(.emblem) { color: var(--gold); margin: -4px 0; }
+  .enter:disabled :global(.emblem) { opacity: 0.5; }
   .check-equipment { border: 1px solid var(--notice); border-radius: 6px; padding: 6px 8px; display: grid; gap: 4px; }
   .check-equipment p { margin: 0; }
   .choices { display: flex; gap: 6px; flex-wrap: wrap; }

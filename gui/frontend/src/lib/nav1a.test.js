@@ -37,7 +37,7 @@ test('with no game, the Edge closes the maze and the Training Grounds, and Setti
   assert.deepEqual(destinations(v).map((d) => [d.dest, d.open, d.reason]), [['training', false, REASON], ['settings', true, '']])
   assert.equal(v.departures.real, REASON, 'Enter the Maze closed, with the reason')
   const edge = read('./EdgeScreen.svelte')
-  assert.match(edge, /disabled=\{busy \|\| !!real \|\| checking\} onclick=\{enter\}>Enter the Maze/, 'Enter the Maze follows Go')
+  assert.match(edge, /disabled=\{busy \|\| !!real \|\| checking\} onclick=\{enter\}><Emblem location="maze" size="22px" \/>Enter the Maze/, 'Enter the Maze follows Go')
   assert.match(edge, /\{#if real\}<span class="why">\{real\}<\/span>/, 'and shows its reason')
   assert.match(edge, /<button class="wide" disabled=\{busy\} onclick=\{\(\) => call\(S\.ChangeGame\)\}>Select Game<\/button>/, 'Select Game whether or not a game is open')
   assert.ok(!/\{#if view\.game\}\s*<button[^>]*ChangeGame/.test(edge), 'not only in a game')

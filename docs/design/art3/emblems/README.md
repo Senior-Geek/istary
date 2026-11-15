@@ -62,8 +62,8 @@ device pixels.
   in the maze (not at Camp; `DungeonScreen.svelte`). They are
   `aria-hidden`: the heading says only the title. And before each
   destination's name in its button (ART-3B: the Castle's Go to list, the
-  Edge's Training Grounds), 22 px, also `aria-hidden`; the button keeps
-  its height.
+  Edge's Training Grounds), and the maze's before Enter the Maze at the
+  Edge, 22 px, also `aria-hidden`; the button keeps its height.
 - **Colour:** the appearance's `--gold`: `#d2b06a`, the darker `#7a5a14`
   on the Light panels, `#e0bd6a` on Slate.
 - **The themed panels** of the places without a picture show the emblem,

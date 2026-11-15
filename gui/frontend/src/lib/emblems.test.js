@@ -89,6 +89,12 @@ test('the emblem stands beside the title and each destination, in the appearance
   assert.equal(frame.match(/class="way"/g).length, 1, 'one destination button, everywhere')
   assert.match(frame, /\.way \{[^}]*display: flex; align-items: center; gap: 8px;/)
   assert.match(frame, /\.way :global\(\.emblem\) \{ color: var\(--gold\); margin: -4px 0; \}/)
+  // Enter the Maze, at the Edge, has the maze's, the same way; no other action.
+  const edge = read('./EdgeScreen.svelte')
+  assert.match(edge, /<button class="primary wide enter" [^\n]*?\}><Emblem location="maze" size="22px" \/>Enter the Maze<\/button>/)
+  assert.equal(edge.match(/<Emblem /g).length, 1, 'only Enter the Maze')
+  assert.match(edge, /\.enter \{ display: flex; align-items: center; gap: 8px; \}/)
+  assert.match(edge, /\.enter :global\(\.emblem\) \{ color: var\(--gold\); margin: -4px 0; \}/)
   // The maze, as in town; not at Camp.
   const dungeon = read('./DungeonScreen.svelte')
   assert.match(dungeon, /<h2>\{#if d\.phase !== 'camp'\}<Emblem location="maze" size="34px" \/>\{\/if\}/)

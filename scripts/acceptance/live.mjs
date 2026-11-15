@@ -264,20 +264,23 @@ async function main() {
     return out
   })()`)
 
-  // The destinations' buttons (ART-3B): each has its place's emblem before
-  // its name, 22 px, centred on it, in the panel's gold at 3:1 or more,
-  // hidden from screen readers (the button's text is its name alone);
-  // Settings has none. The button is the height it is with its text alone,
+  // The destinations' buttons, and Enter the Maze at the Edge (ART-3B):
+  // each has its place's emblem before its name, 22 px, centred on it, in
+  // the panel's gold at 3:1 or more, hidden from screen readers (the
+  // button's text is its name alone); Settings has none, nor has any other
+  // action. The button is the height it is with its text alone,
   // and its name is not cut off. { ways: the names, issues: what is wrong }.
   const wayIssues = () => js(`(() => {
-    const dest = { "Gilgamesh's Tavern": 'tavern', "The Adventurer's Inn": 'inn', "Boltac's Trading Post": 'trading', 'The Temple of Cant': 'temple', 'The Edge of Town': 'edge', 'The Training Grounds': 'training', 'Settings': 'settings', 'The Castle': 'castle' }
+    const dest = { "Gilgamesh's Tavern": 'tavern', "The Adventurer's Inn": 'inn', "Boltac's Trading Post": 'trading', 'The Temple of Cant': 'temple', 'The Edge of Town': 'edge', 'The Training Grounds': 'training', 'Settings': 'settings', 'The Castle': 'castle', 'Enter the Maze': 'maze' }
     const rgb = (s) => (s = s.trim()).startsWith('#') ? [1, 3, 5].map((i) => parseInt(s.slice(i, i + 2), 16)) : s.match(/[\\d.]+/g).slice(0, 3).map(Number)
     const rgba = (s) => { const m = s.match(/[\\d.]+/g).map(Number); return [m[0], m[1], m[2], m.length > 3 ? m[3] : 1] }
     const over = (a, b) => [0, 1, 2].map((i) => a[i] * a[3] + b[i] * (1 - a[3])).concat(1)
     const lin = (c) => { c /= 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4 }
     const lum = (c) => 0.2126 * lin(c[0]) + 0.7152 * lin(c[1]) + 0.0722 * lin(c[2])
     const ways = [], issues = []
-    for (const b of document.querySelectorAll('.frame button.way')) {
+    const others = [...document.querySelectorAll('.frame svg.emblem')].filter((e) => !e.closest('h2.title, .fallback, button.way, button.enter'))
+    if (others.length) issues.push('an emblem on ' + others.map((e) => e.closest('button')?.textContent.trim() ?? e.parentElement.tagName).join(', '))
+    for (const b of document.querySelectorAll('.frame button.way, .frame button.enter')) {
       const name = b.textContent.trim(), want = dest[name], e = b.querySelector('svg.emblem'), out = []
       ways.push(name)
       if (!want) out.push('not a place')
@@ -328,8 +331,8 @@ async function main() {
         const em = await emblemIssues('.frame .head h2.title', place === 'settings' ? null : place)
         check(em.length === 0, `${place}: ${place === 'settings' ? 'no emblem in its title' : 'its emblem beside its title, 34 px, centred, in the gold'}${em.length ? ': ' + em.join('; ') : ''}`)
         const wi = await wayIssues()
-        check(wi.issues.length === 0, `${place}: ${wi.ways.length ? `each destination's emblem before its name, 22 px, centred, in the gold; the button's height and name as without it (${wi.ways.join(', ')})` : 'no destination buttons'}${wi.issues.length ? ': ' + wi.issues.join('; ') : ''}`)
-        if (place === 'castle' || place === 'edge') check(wi.ways.length === (place === 'castle' ? 5 : 2), `${place}: its destinations are there (${wi.ways.length})`)
+        check(wi.issues.length === 0, `${place}: ${wi.ways.length ? `each destination's (and the maze's) emblem before its name, 22 px, centred, in the gold; the button's height and name as without it (${wi.ways.join(', ')})` : 'no destination buttons'}${wi.issues.length ? ': ' + wi.issues.join('; ') : ''}`)
+        if (place === 'castle' || place === 'edge') check(wi.ways.length === (place === 'castle' ? 5 : 3), `${place}: its destinations${place === 'edge' ? ' and Enter the Maze' : ''} are there (${wi.ways.length})`)
         if (place !== 'castle' && place !== 'edge') check(await js(`(() => { const f = document.querySelector('${A} .fallback'); const e = f && f.querySelector('.emblem'); return !!e && (${place === 'settings'} ? e.tagName === 'SPAN' : e.tagName === 'svg' && e.dataset.emblem === '${place}' && e.getBoundingClientRect().width >= 32) })()`), `${place}: its themed panel shows ${place === 'settings' ? 'its symbol' : 'its emblem'}`)
         const t = await toggle()
         check(place === 'trading' ? t === '' : t === 'Show sheet', `${place}: the sheet toggle ${place === 'trading' ? 'is not offered at Boltac’s' : 'reads Show sheet, in the top bar'}`)
