@@ -3,7 +3,7 @@
 # tests, shuffled order, the build, race, the GUI module, the frontend,
 # fixture regeneration and the Wails build), and with --per-commit first
 # every commit after BASE up to CANDIDATE alone (root vet and tests, GUI vet
-# and tests, frontend tests). Each commit is checked out in its own temporary
+# and tests, the frontend's dependencies and tests). Each commit is checked out in its own temporary
 # worktree, so the checkout the gate is run from is never built in or changed.
 #
 #   scripts/gate.sh [--per-commit] BASE [CANDIDATE]     e.g. scripts/gate.sh main g1-regression-gate
@@ -364,6 +364,9 @@ for c in $COMMITS; do
   stage "commit $i: root test" "$wt" "$STAGE_TIMEOUT" go test ./engine ./cmd/istary ./app -count=1
   stage "commit $i: gui vet" "$wt/gui" "$STAGE_TIMEOUT" go vet ./...
   stage "commit $i: gui test" "$wt/gui" "$STAGE_TIMEOUT" go test ./... -count=1
+  # The frontend tests may use the frontend's packages (CONTENT-1A renders
+  # Svelte): each commit's own, from its package-lock.json, as at the tip.
+  stage "commit $i: frontend dependencies" "$wt/gui/frontend" "$STAGE_TIMEOUT" npm ci --prefer-offline --no-audit --no-fund
   stage "commit $i: frontend test" "$wt/gui/frontend" "$STAGE_TIMEOUT" npm test
   check "commit $i: remove worktree" drop_worktree "$wt"
   COMMITS_TESTED=$i

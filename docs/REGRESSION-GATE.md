@@ -37,7 +37,12 @@ repository. Your checkout is never built in or changed.
 
 - root `go vet ./...` and `go test ./engine ./cmd/istary ./app`;
 - GUI `go vet ./...` and `go test ./...`;
-- frontend `npm test`.
+- frontend `npm ci` (from the npm cache when it can) and `npm test`.
+
+Each commit's frontend tests run with that commit's own packages,
+installed from its `package-lock.json`, because a test may use them (the
+story tests render Svelte components with Svelte's compiler, CONTENT-1A).
+A failed installation fails the gate, as any stage does.
 
 **The candidate in full:**
 

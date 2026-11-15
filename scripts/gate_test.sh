@@ -203,6 +203,7 @@ t_pass() {
     called "wt-$c|go test ./engine ./cmd/istary ./app -count=1"
     called "wt-$c/gui|go vet ./..."
     called "wt-$c/gui|go test ./... -count=1"
+    called "wt-$c/gui/frontend|npm ci --prefer-offline --no-audit --no-fund"
     called "wt-$c/gui/frontend|npm test"
   done
   for s in "|go test ./... -count=1" "|go test ./... -count=1 -shuffle=on" "|make build" "|go test -race ./... -count=1 -timeout 9000s" \
@@ -229,7 +230,17 @@ t_pipeline() {
   gate base feature
   expect_rc 1
   expect_out "== RESULT: FAIL"
-  expect_out "failed:     [06] commit 1: frontend test: npm test (FAIL)"
+  expect_out "failed:     [07] commit 1: frontend test: npm test (FAIL)"
+  expect_clean
+  pass_case
+  # A commit's frontend dependencies that do not install fail the gate
+  # before its frontend tests run.
+  setup per-commit-npm-ci || return
+  ENV=(STUB_FAIL="npm ci")
+  gate base feature
+  expect_rc 1
+  expect_out "failed:     [06] commit 1: frontend dependencies: npm ci --prefer-offline --no-audit --no-fund (FAIL)"
+  not_called "npm test"
   expect_clean
   pass_case
   # And a failing command inside the gate's own pipeline (git diff | shasum).
