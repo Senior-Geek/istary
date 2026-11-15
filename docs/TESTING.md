@@ -30,7 +30,9 @@ name. For each changed file:
   build, and no Go tests.
 - **Recorded GUI fixtures** (`gui/frontend/src/lib/testdata`) run the GUI's
   Go tests, which record them, and the frontend tests, which read them.
-- **Documentation** (`*.md`, `docs/`, `images/`) runs nothing.
+- **Documentation** (`*.md`, `docs/`, `images/`) runs nothing, but for
+  the GUI's stories (`gui/content`, CONTENT-1A), which are its embedded
+  data.
 - **The gate or the test scripts** run their own tests.
 - **Anything else** broadens the plan to everything, and says why:
   - the Go modules (`go.mod`, `go.sum`);

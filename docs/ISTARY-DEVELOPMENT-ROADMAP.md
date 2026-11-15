@@ -333,7 +333,9 @@ decided by then.
   NAV-1A (2026-11-14): Istary always opens at the Castle, with the game
   last chosen open, or with none and an introductory story, only the Edge
   of Town open; game selection is reached by Select Game
-  (`design/nav1/NAV-1A.md`).*
+  (`design/nav1/NAV-1A.md`). CONTENT-1A (2026-11-14): the places' stories
+  are Markdown files in `gui/content`, built in
+  (`design/content1/CONTENT-1A.md`).*
 - **Compatibility audit:** close or explicitly defer every "Not
   investigated" row.
 - **Playtest:** a guided playtest against the Hawkwind walkthrough

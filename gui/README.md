@@ -141,6 +141,13 @@ and the live checks do.
   - the chest, victory, defeat and escape;
   - an expandable "details" log.
 
+**Stories.** The story box's narrative is a Markdown file per place in
+`content/` (`castle/introduction.md` with no game open,
+`castle/story.md`, `edge-of-town/story.md`), built into the app and
+chosen by Go (`story.go`); edit the file and build again. The Markdown
+supported and how to add a place's story are in
+`docs/design/content1/CONTENT-1A.md`.
+
 All rules come from the Go engine through `app.Controller`. The Svelte code
 only renders `View` (see `view.go`) and calls `Session` methods
 (`session.go`); it holds no game state or rules of its own.
