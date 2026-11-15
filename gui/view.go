@@ -36,6 +36,8 @@ type View struct {
 	Exits    []ExitView     `json:"exits"`
 	PartyBar []PartyBarSlot `json:"partyBar"`
 	Return   *ReturnView    `json:"return"` // the way back to the Castle, or nil
+	// Story is the place's story for its story box (story.go), or nil.
+	Story *Story `json:"story,omitempty"`
 
 	// Settings are the window's own preferences (settings.go).
 	Settings SettingsView `json:"settings"`
@@ -460,6 +462,9 @@ func (s *Session) view(err error) View {
 			cv.Class = cs.Class.String()
 		}
 		v.Creation = cv
+	}
+	if v.Screen == "roster" {
+		v.Story = storyFor(v.Location, true)
 	}
 	return v
 }

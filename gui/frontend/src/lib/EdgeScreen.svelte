@@ -68,12 +68,9 @@
     </div>
   {/snippet}
 
-  <!-- The story box has the place's narrative (ART-2B); what the player
-       needs to know to play, saving, stays here, whether or not it is
-       open. -->
-  {#snippet story()}
-    <p><b>The maze.</b> The party sets out from here.</p>
-  {/snippet}
+  <!-- The story box has the place's narrative (ART-2B), its Markdown file
+       gui/content/edge-of-town (CONTENT-1A); what the player needs to
+       know to play, saving, stays here, whether or not it is open. -->
 
   <section class="about">
     <p><b>Saving.</b> Everything that happens to the party in the maze is saved after every

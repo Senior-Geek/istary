@@ -30,7 +30,9 @@
   // ART-2B: a place's narrative is in a story box over the picture
   // (StoryBox), closed with its ×, opened again with Story in the head, and
   // not reopened by going elsewhere. What the player needs to play stays
-  // in C.
+  // in C. The story is the View's (CONTENT-1A: Go's, from its Markdown
+  // file, gui/content), drawn by StoryText; a place without one has no
+  // story box.
   //
   // ART-2C: the illustrated places' appearance is chosen in Settings and
   // kept by Go (App's PANELS look): the panels' (slate, dark or light) and
@@ -60,9 +62,6 @@
   //             is no Go to list (NAV-1, the Edge of Town) (optional)
   //   aside     snippet under the actions, e.g. a map (optional)
   //   children  the place's information, in C (optional)
-  //   story     snippet: the place's narrative, in the story box at an
-  //             illustrated place (ART-2B) (optional)
-  //   storyTitle  the story box's title (optional; the place's name)
   //   fill      the place lays out C itself (UX-2, Boltac's): C does not
   //             scroll, the place's own lists inside it do, and the
   //             artwork is shorter (optional)
@@ -85,9 +84,10 @@
   import { title, back, destinations } from './navigation.js'
   import { SHEET, subject, toggleLabel, available } from './sheet.js'
   import StoryBox from './StoryBox.svelte'
+  import StoryText from './StoryText.svelte'
   import { PANELS, illustrated, lookOf } from './scenes.js'
 
-  let { view, busy = false, call, onopen, scene, actions, aside, children, story, storyTitle, pick, onpick, current = -1, fill = false, partyAlways = false, compact = false, noSheet = false, waysInActions = false } = $props()
+  let { view, busy = false, call, onopen, scene, actions, aside, children, pick, onpick, current = -1, fill = false, partyAlways = false, compact = false, noSheet = false, waysInActions = false } = $props()
 
   const here = $derived(title(view.location))
   const way = $derived(back(view))
@@ -117,7 +117,7 @@
   const hidePanels = () => { moved = true; panels?.hide() }
   const showPanels = () => { moved = true; panels?.show() }
 
-  const storyHere = $derived(art && !!story && !!panels)
+  const storyHere = $derived(art && !!view.story && !!panels)
   const storyOpen = $derived(storyHere && panels.story.open)
   let display = $state(), storyButton = $state()
   function closeStory() {
@@ -229,8 +229,8 @@
   {/if}
 
   {#if storyOpen && display}
-    <StoryBox title={storyTitle ?? here} anchor={display} look={look.story} rect={panels.story.rect}
-      onmove={(r) => (panels.story.rect = r)} onclose={closeStory}>{@render story()}</StoryBox>
+    <StoryBox title={view.story.title || here} anchor={display} look={look.story} rect={panels.story.rect}
+      onmove={(r) => (panels.story.rect = r)} onclose={closeStory}><StoryText story={view.story} /></StoryBox>
   {/if}
 </div>
 {/if}

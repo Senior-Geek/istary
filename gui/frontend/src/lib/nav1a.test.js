@@ -3,7 +3,8 @@
 // the others closed with Go's reason; the Edge offers Select Game,
 // Settings and Leave the Game, the maze and the Training Grounds closed;
 // Settings has only the appearance; the Castle's story is the
-// introductory one; and game selection has a way back to the Castle.
+// introductory one (chosen by Go, CONTENT-1A); and game selection has a
+// way back to the Castle.
 // Checked in views recorded from Go (testdata/frame-views.json) and in
 // the components' source, as nav1.test.js is.
 import { test } from 'node:test'
@@ -55,20 +56,13 @@ test('Settings with no game: the appearance, not the roster tools', () => {
 })
 
 test('the Castle’s story: the introductory one with no game, its own in one', () => {
+  // Go chooses it (story.go, CONTENT-1A): its text is its file's, checked
+  // against the approved text in Go (story_test.go) and drawn in
+  // content1a.test.js.
+  const intro = at('no game, castle').story, own = views.find((v) => v.case === 'castle').story
+  assert.ok(intro?.title && intro.blocks.at(-1).kind === 'challenge', 'titled, ending in its challenge')
+  assert.ok(own && !own.title && own.blocks.every((b) => b.kind !== 'challenge'), 'the Castle’s own in a game, titled with the place')
   const src = read('./CastleScreen.svelte')
-  const story = src.slice(src.indexOf('{#snippet story()}'), src.indexOf('{/snippet}'))
-  const intro = story.slice(story.indexOf('{#if !view.game}'), story.indexOf('{:else}'))
-  const own = story.slice(story.indexOf('{:else}'))
-  // The approved text (NAV-1A), its first line, its directions and its
-  // challenge, emphasised in the story box's own gold.
-  assert.match(intro, /<p>You have arrived at the Castle of Trebor, the Mad Overlord,/)
-  assert.match(intro, /<p><b>Your journey begins at the Edge of Town\.<\/b><\/p>/)
-  assert.match(intro, /<p class="challenge">Trebor has issued his challenge\. Will you answer it\?<\/p>/)
-  assert.equal((intro.match(/<p[ >]/g) ?? []).length, 11, 'eleven paragraphs, as approved')
-  assert.match(src, /\.challenge \{ color: var\(--gold\); font-weight: 700; \}/)
-  assert.match(src, /storyTitle=\{view\.game \? undefined : 'Welcome to the Castle'\}/, 'titled Welcome to the Castle; the Castle in a game')
-  assert.match(own, /Gilgamesh's Tavern/)
-  assert.ok(!/Select Game/.test(own), 'the Castle’s own story is as before')
   assert.match(src, /\{#if !view\.game\}\s*<section class="no-game"/, 'and the information says no game is selected')
   // App opens the story box again when the game changes, so the Castle's
   // own story is shown once a game is chosen.

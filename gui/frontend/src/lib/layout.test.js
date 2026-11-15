@@ -127,16 +127,16 @@ test('ART-2B: the appearances change colours only, and the story box holds narra
   const frame = read('./LocationFrame.svelte')
   assert.match(frame, /data-appearance=\{look\??\.panels\}/)
   assert.ok(!/S\.\w*(Appearance|Story)/.test(frame), 'nothing about the appearance or the story box is sent to Go from the frame')
-  // The Castle's description is its story; the Edge keeps saving in its
-  // information, outside the story, and says nothing of practice, which
-  // it no longer offers (NAV-1).
+  // The Castle's description is its story (from its file, CONTENT-1A);
+  // the Edge keeps saving in its information, outside the story, and says
+  // nothing of practice, which it no longer offers (NAV-1).
   const castle = read('./CastleScreen.svelte'), edge = read('./EdgeScreen.svelte')
-  assert.match(castle, /\{#snippet story\(\)\}[\s\S]*The party is formed at[\s\S]*\{\/snippet\}/)
-  const story = edge.slice(edge.indexOf('{#snippet story()}'), edge.indexOf('{/snippet}', edge.indexOf('{#snippet story()}')))
-  assert.match(story, /The party sets out from here/)
+  const fixture = JSON.parse(read('./testdata/frame-views.json'))
+  const storyOf = (c) => fixture.find((v) => v.case === c).story.blocks.map((b) => (b.text ?? b.items.flat()).map((r) => r.text).join('')).join(' ')
+  assert.ok(storyOf('castle') && !/snippet story/.test(castle), 'the Castle’s story is its file’s')
+  const story = storyOf('edge')
   assert.ok(!/saved|Practice|practice/.test(story), 'no saving or practice in the story')
-  const rest = edge.replace(story, '')
-  assert.match(rest, /saved after every/)
+  assert.match(edge, /saved after every/)
   assert.ok(!/Practice|practice/.test(edge.replace(/^\s*\/\/.*$/gm, '')), 'no practice at the Edge, outside its comments')
 })
 

@@ -125,7 +125,33 @@
   },
   "return": null,
   "expedition": false,
-  "real": false
+  "real": false,
+  "story": {
+   "blocks": [
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "The party is formed at "
+      },
+      {
+       "text": "Gilgamesh's Tavern",
+       "bold": true
+      },
+      {
+       "text": ". Beyond the castle walls, the "
+      },
+      {
+       "text": "Edge of Town",
+       "bold": true
+      },
+      {
+       "text": " leads to the Training Grounds, where characters are created, and to the maze."
+      }
+     ]
+    }
+   ]
+  }
  },
  {
   "case": "castle",
@@ -253,7 +279,33 @@
   },
   "return": null,
   "expedition": false,
-  "real": false
+  "real": false,
+  "story": {
+   "blocks": [
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "The party is formed at "
+      },
+      {
+       "text": "Gilgamesh's Tavern",
+       "bold": true
+      },
+      {
+       "text": ". Beyond the castle walls, the "
+      },
+      {
+       "text": "Edge of Town",
+       "bold": true
+      },
+      {
+       "text": " leads to the Training Grounds, where characters are created, and to the maze."
+      }
+     ]
+    }
+   ]
+  }
  },
  {
   "case": "tavern",
@@ -485,7 +537,23 @@
    "note": ""
   },
   "expedition": false,
-  "real": false
+  "real": false,
+  "story": {
+   "blocks": [
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "The maze.",
+       "bold": true
+      },
+      {
+       "text": " The party sets out from here."
+      }
+     ]
+    }
+   ]
+  }
  },
  {
   "case": "training",
@@ -835,7 +903,33 @@
   },
   "return": null,
   "expedition": false,
-  "real": false
+  "real": false,
+  "story": {
+   "blocks": [
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "The party is formed at "
+      },
+      {
+       "text": "Gilgamesh's Tavern",
+       "bold": true
+      },
+      {
+       "text": ". Beyond the castle walls, the "
+      },
+      {
+       "text": "Edge of Town",
+       "bold": true
+      },
+      {
+       "text": " leads to the Training Grounds, where characters are created, and to the maze."
+      }
+     ]
+    }
+   ]
+  }
  },
  {
   "case": "confirming a new character",
@@ -1389,7 +1483,103 @@
   },
   "return": null,
   "expedition": false,
-  "real": false
+  "real": false,
+  "story": {
+   "title": "Welcome to the Castle",
+   "blocks": [
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "You have arrived at the Castle of Trebor, the Mad Overlord, whose lands lie beneath the shadow of a terrible evil."
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "Deep below the Castle, the wizard Werdna has hidden himself within a vast and treacherous Maze. There he guards a powerful amulet stolen from Trebor himself."
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "The Overlord has called upon adventurers from every corner of the realm. Riches and glory await those brave enough to descend into the labyrinth, defeat Werdna, and return with the stolen amulet."
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "Many have answered the call. Few have returned."
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "Now it is your turn."
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "But no adventurer should face the Maze alone. You must first gather a company of companions, each bringing their own strengths, skills and knowledge of magic."
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "Your journey begins at the Edge of Town.",
+       "bold": true
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "There you may establish a new adventure and visit the Training Grounds, where warriors, priests, mages and thieves begin their journeys."
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "Create your characters, choosing their names, races, professions and abilities. Then return to the Castle, where Gilgamesh's Tavern provides a gathering place for your party, Boltac's Trading Post offers equipment, and the Adventurer's Inn provides rest."
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "When your company is assembled and prepared, the Maze awaits."
+      }
+     ]
+    },
+    {
+     "kind": "challenge",
+     "items": [
+      [
+       {
+        "text": "Trebor has issued his challenge. Will you answer it?"
+       }
+      ]
+     ]
+    }
+   ]
+  }
  },
  {
   "case": "no game, edge",
@@ -1510,7 +1700,23 @@
    "note": ""
   },
   "expedition": false,
-  "real": false
+  "real": false,
+  "story": {
+   "blocks": [
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "The maze.",
+       "bold": true
+      },
+      {
+       "text": " The party sets out from here."
+      }
+     ]
+    }
+   ]
+  }
  },
  {
   "case": "no game, settings",

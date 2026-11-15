@@ -107,6 +107,7 @@ func (s *Session) lobbyView(v *View) {
 	}
 	v.PartyMax, v.FrontRow = app.MaxPartySize, app.FrontRowSize
 	v.Departures = DeparturesView{Real: errChooseGame.Error(), Practice: errChooseGame.Error()}
+	v.Story = storyFor(s.lobby, false)
 }
 
 // lobbyNavigate goes to dest with no game open.
