@@ -126,3 +126,9 @@ the emblems.
   beside the story box; Hide party's room goes to the actions or to the
   information (the Tavern's roster at 980×692, as ART-3B-0 intends); and
   the themed panel is checked only at the places without a picture.
+
+## Visual review
+
+`docs/design/art3/review/art-3b-1-tavern/`: the Tavern at 1440×900 and
+980×692, in Full and Subdued, the story box open and closed, the sheet
+shown, the roster's end and the panels hidden.
