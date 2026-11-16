@@ -58,14 +58,14 @@ test('a story’s HTML and script are text, never elements', () => {
   for (const src of [...sources('./'), read('../App.svelte')]) assert.ok(!/\{@html/.test(src), 'no {@html}')
 })
 
-test('the three stories, from their files, as Go chose them for each place', () => {
-  const intro = at('no game, castle').story, castle = at('castle').story, edge = at('edge').story
-  assert.ok(intro && castle && edge, 'the Castle with and without a game, and the Edge, have stories')
+test('the four stories, from their files, as Go chose them for each place', () => {
+  const intro = at('no game, castle').story, castle = at('castle').story, edge = at('edge').story, tavern = at('tavern').story
+  assert.ok(intro && castle && edge && tavern, 'the Castle with and without a game, the Edge and (ART-3B-1) the Tavern have stories')
   assert.notDeepEqual(intro, castle, 'with no game, the introduction; in a game, the Castle’s own')
   assert.deepEqual(at('no game, edge').story, edge, 'the Edge’s, with or without a game')
-  for (const c of ['tavern', 'training', 'settings', 'no game, settings', 'real expedition']) assert.equal(at(c).story, undefined, `${c}: no story`)
+  for (const c of ['training', 'settings', 'no game, settings', 'real expedition']) assert.equal(at(c).story, undefined, `${c}: no story`)
   // Drawn whole: every block, and its text as Go read it.
-  for (const st of [intro, castle, edge]) {
+  for (const st of [intro, castle, edge, tavern]) {
     const out = html(st)
     const text = st.blocks.map((b) => (b.text ? plain(b.text) : b.items.map(plain).join(''))).join('')
     assert.equal(decode(out), text)
@@ -76,6 +76,12 @@ test('the three stories, from their files, as Go chose them for each place', () 
   assert.equal(castle.title, undefined, 'the Castle’s own story is titled with the place')
   assert.deepEqual(intro.blocks.map((b) => b.kind), [...Array(10).fill('paragraph'), 'challenge'])
   assert.match(html(intro), /<\/p><p class="challenge">[^<]+<\/p>$/, 'the challenge last, as its own paragraph')
+  // The Tavern's own (its approved text is checked in Go, story_test.go):
+  // titled, eight paragraphs, its challenge; not the Castle's.
+  assert.equal(tavern.title, "Gilgamesh's Tavern")
+  assert.deepEqual(tavern.blocks.map((b) => b.kind), [...Array(8).fill('paragraph'), 'challenge'])
+  assert.match(html(tavern), /<\/p><p class="challenge">Your adventure begins with good company\. Gather your party\.<\/p>$/)
+  for (const other of [intro, castle, edge]) assert.notDeepEqual(tavern, other)
 })
 
 test('the challenge is the story box’s gold, bold; an ordinary quote is not', () => {
@@ -89,7 +95,7 @@ test('the frame draws the View’s story; the places hold no story text', () => 
   const frame = read('./LocationFrame.svelte')
   assert.match(frame, /const storyHere = \$derived\(art && !!view\.story && !!panels\)/, 'a story box only where there is a story')
   assert.match(frame, /<StoryBox title=\{view\.story\.title \|\| here\}[\s\S]*?<StoryText story=\{view\.story\} \/><\/StoryBox>/)
-  for (const f of ['./CastleScreen.svelte', './EdgeScreen.svelte']) {
+  for (const f of ['./CastleScreen.svelte', './EdgeScreen.svelte', './TavernScreen.svelte']) {
     const src = read(f)
     assert.ok(!/snippet story|storyTitle|class="challenge"/.test(src), `${f}: no story of its own`)
   }

@@ -79,6 +79,8 @@ place of the descriptive panel:
 - **For the session:**
   - It is open at first.
   - Once closed, it stays closed at every place until Story is pressed.
+    Since ART-3B-1, at that place only: each place's story box is its own
+    (`docs/design/art3/tavern/README.md`).
   - Once moved or resized, it stays where the player left it.
   - None of it is saved.
 - **Hide panels hides it** with the rest.

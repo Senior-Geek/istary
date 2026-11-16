@@ -64,10 +64,11 @@ test('the Castle’s story: the introductory one with no game, its own in one', 
   assert.ok(own && !own.title && own.blocks.every((b) => b.kind !== 'challenge'), 'the Castle’s own in a game, titled with the place')
   const src = read('./CastleScreen.svelte')
   assert.match(src, /\{#if !view\.game\}\s*<section class="no-game"/, 'and the information says no game is selected')
-  // App opens the story box again when the game changes, so the Castle's
-  // own story is shown once a game is chosen.
+  // App opens every place's story box again when the game changes, so the
+  // Castle's own story is shown once a game is chosen (each place's own
+  // since ART-3B-1).
   const app = read('../App.svelte')
-  assert.match(app, /if \(view && !view\.fatal && game !== storyGame\) \{\s*storyGame = game\s*storyOpen = true/)
+  assert.match(app, /if \(view && !view\.fatal && game !== storyGame\) \{\s*storyGame = game\s*storyClosed = \{\}/)
 })
 
 test('game selection has ← Castle (Esc), which App’s Escape also is', () => {

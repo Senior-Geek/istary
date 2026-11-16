@@ -23,11 +23,11 @@ func TestTheStoryFilesLoad(t *testing.T) {
 	}); err != nil {
 		t.Fatal(err)
 	}
-	want := []string{"content/castle/introduction.md", "content/castle/story.md", "content/edge-of-town/story.md"}
+	want := []string{"content/castle/introduction.md", "content/castle/story.md", "content/edge-of-town/story.md", "content/tavern/story.md"}
 	if !reflect.DeepEqual(files, want) {
 		t.Fatalf("the built-in story files: %v, not %v", files, want)
 	}
-	for _, name := range []string{"castle/introduction", "castle/story", "edge-of-town/story"} {
+	for _, name := range []string{"castle/introduction", "castle/story", "edge-of-town/story", "tavern/story"} {
 		st := stories[name]
 		if st == nil || len(st.Blocks) == 0 {
 			t.Fatalf("%s: no story", name)
@@ -50,14 +50,22 @@ func TestTheStoryFilesLoad(t *testing.T) {
 // records it: its paragraphs, the first its title.
 func approvedIntroduction(t *testing.T) []string {
 	t.Helper()
-	raw, err := os.ReadFile("../docs/design/nav1/NAV-1A.md")
+	return approvedText(t, "../docs/design/nav1/NAV-1A.md")
+}
+
+// approvedText is a story's approved text, quoted after "The approved
+// text" in its design document: its paragraphs, the first its title and,
+// in the stories that have one, the last its challenge.
+func approvedText(t *testing.T, file string) []string {
+	t.Helper()
+	raw, err := os.ReadFile(file)
 	if err != nil {
 		t.Fatal(err)
 	}
 	doc := string(raw)
 	i := strings.Index(doc, "The approved text")
 	if i < 0 {
-		t.Fatal("NAV-1A.md: no approved text")
+		t.Fatalf("%s: no approved text", file)
 	}
 	var paras, p []string
 	for _, line := range strings.Split(doc[i:], "\n")[1:] {
@@ -102,6 +110,38 @@ func TestTheApprovedIntroductionIsKept(t *testing.T) {
 	// The challenge, emphasised as a challenge, not an ordinary quote.
 	last := st.Blocks[10]
 	if want := plain(inline(approved[11])); last.Kind != "challenge" || len(last.Items) != 1 || plain(last.Items[0]) != want {
+		t.Fatalf("the closing challenge: %s %+v, not %q", last.Kind, last.Items, want)
+	}
+}
+
+// ART-3B-1: the Tavern's story is its approved text, word for word: its
+// title, eight paragraphs ("Gilgamesh" bold where he is named) and its
+// challenge.
+func TestTheApprovedTavernStoryIsKept(t *testing.T) {
+	approved := approvedText(t, "../docs/design/art3/tavern/README.md")
+	if len(approved) != 10 {
+		t.Fatalf("ART-3B-1's approved text: %d paragraphs, not a title, 8 and a challenge", len(approved))
+	}
+	st := storyFor("tavern", true)
+	if st != stories["tavern/story"] || storyFor("tavern", false) != st {
+		t.Fatal("the Tavern's story is not its own, with or without a game")
+	}
+	if want := plain(inline(approved[0])); st.Title != want {
+		t.Fatalf("title %q, not %q", st.Title, want)
+	}
+	if len(st.Blocks) != 9 {
+		t.Fatalf("%d blocks, not 9", len(st.Blocks))
+	}
+	for i, b := range st.Blocks[:8] {
+		if want := inline(approved[i+1]); b.Kind != "paragraph" || !reflect.DeepEqual(b.Text, want) {
+			t.Fatalf("paragraph %d: %s %+v, not %+v", i+1, b.Kind, b.Text, want)
+		}
+	}
+	if b := st.Blocks[3]; len(b.Text) != 3 || !b.Text[1].Bold || b.Text[1].Text != "Gilgamesh" {
+		t.Fatalf("Gilgamesh is not named in bold: %+v", b.Text)
+	}
+	last := st.Blocks[8]
+	if want := plain(inline(approved[9])); last.Kind != "challenge" || len(last.Items) != 1 || plain(last.Items[0]) != want {
 		t.Fatalf("the closing challenge: %s %+v, not %q", last.Kind, last.Items, want)
 	}
 }
@@ -203,5 +243,6 @@ func TestTheStoryForEachPlace(t *testing.T) {
 	is(fine(t, s.Navigate("edge")), "edge-of-town/story")
 	is(fine(t, s.Navigate("training")), "")
 	is(fine(t, s.ReturnToCastle()), "castle/story")
-	is(fine(t, s.Navigate("tavern")), "")
+	is(fine(t, s.Navigate("tavern")), "tavern/story") // ART-3B-1: its own
+	is(fine(t, s.ReturnToCastle()), "castle/story")
 }

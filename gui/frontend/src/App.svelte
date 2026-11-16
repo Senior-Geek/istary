@@ -34,16 +34,19 @@
   let selected = $state(-1) // roster index of the character sheet's character, or -1
   let sheetShown = $state(false) // the sheet is shown in place of the artwork
   let bareAt = $state('') // the place whose panels are hidden, or ''
-  let storyOpen = $state(true) // the story box: open until it is closed
+  // The story box is each place's own (ART-3B-1): open at a place until it
+  // is closed there, and closed there until Story opens it again; closing
+  // one place's leaves the others' as they were. For the session only.
+  let storyClosed = $state({}) // the places whose story box is closed
   let storyRect = $state(null) // where the player left it, or null
   // A game opened or closed (NAV-1A): the Castle's story is another one,
-  // so the story box is open again.
+  // so every place's story box is open again.
   let storyGame = 0
   $effect(() => {
     const game = view?.game ?? 0
     if (view && !view.fatal && game !== storyGame) {
       storyGame = game
-      storyOpen = true
+      storyClosed = {}
     }
   })
 
@@ -101,8 +104,8 @@
     show: () => { bareAt = '' },
     get look() { return look },
     story: {
-      get open() { return storyOpen },
-      set open(v) { storyOpen = v },
+      get open() { return !storyClosed[view?.location] },
+      set open(v) { storyClosed[view.location] = !v },
       get rect() { return storyRect },
       set rect(r) { storyRect = r },
     },

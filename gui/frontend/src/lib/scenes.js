@@ -12,7 +12,8 @@
 //
 // To add a place's artwork, put the 1920x1080 WebP in
 // src/assets/scenes/<place>.webp (the masters are kept outside Git; ART-2A's
-// in images/Artwork Samples/, untracked) and set its src as castle's is:
+// in images/Artwork Samples/, the Tavern's (ART-3B-1) in images/Tavern/,
+// untracked) and set its src as castle's is:
 // new URL(..., import.meta.url) is an asset to Vite and an ordinary URL to
 // the Node tests. The picture is shown whole only with the panels hidden;
 // keep what matters away from the right edge (the actions) and the bottom
@@ -29,7 +30,11 @@ export const scenes = {
     focus: '45% 50%',
     alt: "The castle courtyard: Gilgamesh's Tavern, the Adventurer's Inn, Boltac's Trading Post and the Temple of Cant around a fountain, the Keep above them, and the gate out to the Training Grounds and the maze",
   },
-  tavern: { src: null, focus: '50% 50%', alt: "Gilgamesh's Tavern" },
+  tavern: {
+    src: new URL('../assets/scenes/tavern.webp', import.meta.url).href,
+    focus: '50% 50%',
+    alt: "Gilgamesh's Tavern: Gilgamesh, gray-bearded and smiling, behind his bar beneath the tavern's sign; a hearth and a lute player, adventurers at their tables, and a gallery above",
+  },
   inn: { src: null, focus: '50% 50%', alt: "The Adventurer's Inn" },
   trading: { src: null, focus: '50% 50%', alt: "Boltac's Trading Post" },
   temple: { src: null, focus: '50% 45%', alt: 'The Temple of Cant' },
@@ -66,10 +71,12 @@ export function illustrated(location) {
 //   look                     { panels, story, artwork }: the appearance
 //                            chosen in Settings (see looks), kept by Go in
 //                            the window's settings, not in any game
-//   story.open, story.rect   the story box open (until it is closed, and
+//   story.open, story.rect   the story box open here (each place's own,
+//                            ART-3B-1: open until it is closed there, and
 //                            then until it is opened again), and where the
-//                            player left it ({ x, y, w, h }, or null); the
-//                            window's alone, for the session
+//                            player left it ({ x, y, w, h }, or null, the
+//                            same at every place); the window's alone, for
+//                            the session
 export const PANELS = Symbol('panels')
 
 // The illustrated places' appearances (ART-2C), chosen in Settings, each
