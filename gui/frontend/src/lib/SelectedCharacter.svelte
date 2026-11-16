@@ -71,6 +71,11 @@
 <style>
   .selected { margin: 0; padding: 10px 12px; display: grid; grid-template-rows: auto auto auto minmax(0, 1fr); gap: 6px; min-height: 0; height: 100%; box-sizing: border-box; }
   .selected:has(> p) { grid-template-rows: auto auto; }
+  /* Over Boltac's picture (ART-3B-3B), the panel the frame's others have
+     (LocationFrame): the appearance's glass, so the customer's gold and
+     items read over any part of it. Nothing moves. */
+  :global(.frame.illustrated) .selected { background: var(--glass); border: 1px solid var(--glass-line); border-radius: 6px;
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); box-shadow: 0 2px 12px var(--glass-shadow); }
   h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin: 0; font-weight: 500; }
   h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin: 4px 0 2px; font-weight: 600; }
   h4:first-child { margin-top: 0; }

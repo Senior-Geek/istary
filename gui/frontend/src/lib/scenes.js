@@ -13,7 +13,8 @@
 // To add a place's artwork, put the 1920x1080 WebP in
 // src/assets/scenes/<place>.webp (the masters are kept outside Git; ART-2A's
 // in images/Artwork Samples/, the Tavern's (ART-3B-1) in images/Tavern/,
-// the Inn's (ART-3B-2B) in images/Inn/, untracked) and set its src as castle's is:
+// the Inn's (ART-3B-2B) in images/Inn/, Boltac's (ART-3B-3B) in
+// images/Artwork Samples/Trading_Post/, untracked) and set its src as castle's is:
 // new URL(..., import.meta.url) is an asset to Vite and an ordinary URL to
 // the Node tests. The picture is shown whole only with the panels hidden;
 // keep what matters away from the right edge (the actions) and the bottom
@@ -43,7 +44,14 @@ export const scenes = {
     focus: '100% 50%',
     alt: "The Adventurer's Inn: Mistress Elspeth, smiling in a blue-and-gold gown, behind her reception desk with its open ledger, quill and brass bell, beneath the Inn's sign; a fire and armchairs to one side, and a long corridor beyond",
   },
-  trading: { src: null, focus: '50% 50%', alt: "Boltac's Trading Post" },
+  // Boltac's picture is a little right of centre (ART-3B-3A): at 980x692 it
+  // keeps his whole face clear above the shop and the sign's "TRADING"
+  // whole; centred, the actions would cover most of the sign.
+  trading: {
+    src: new URL('../assets/scenes/trading.webp', import.meta.url).href,
+    focus: '75% 50%',
+    alt: "Boltac's Trading Post: Boltac, white-haired and shrewdly smiling, behind his counter with its open ledger, coins and scales, beneath the Trading Post's sign; a black cat with emerald eyes and a diamond on its collar asleep on a cushion, and armour, swords and bright potions all around",
+  },
   temple: { src: null, focus: '50% 45%', alt: 'The Temple of Cant' },
   edge: {
     src: new URL('../assets/scenes/edge.webp', import.meta.url).href,

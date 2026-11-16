@@ -14,7 +14,7 @@ const at = (name) => views.find((v) => v.case === name)
 
 test('the recording covers every place the window reaches, and every kind of party', () => {
   const locations = new Set(views.map((v) => v.location))
-  for (const l of ['castle', 'tavern', 'inn', 'edge', 'training', 'settings', 'maze']) assert.ok(locations.has(l), l)
+  for (const l of ['castle', 'tavern', 'inn', 'trading', 'edge', 'training', 'settings', 'maze']) assert.ok(locations.has(l), l)
   assert.ok(views.some((v) => v.partyBar.every((p) => !p.name)), 'no party')
   assert.ok(views.some((v) => v.partyBar.some((p) => p.poisoned)), 'poison')
   assert.ok(views.some((v) => v.partyBar.some((p) => p.name && p.index < 0)), 'practice copies')
@@ -116,8 +116,8 @@ function webpSize(buf) {
   return [buf.readUIntLE(24, 3) + 1, buf.readUIntLE(27, 3) + 1]
 }
 
-test('ART-2A: the Castle, the Edge of Town, (ART-3B-1) the Tavern and (ART-3B-2B) the Inn have their pictures; every other place its themed panel', () => {
-  const art = ['castle', 'edge', 'tavern', 'inn']
+test('ART-2A: the Castle, the Edge of Town, (ART-3B-1) the Tavern, (ART-3B-2B) the Inn and (ART-3B-3B) Boltac’s have their pictures; every other place its themed panel', () => {
+  const art = ['castle', 'edge', 'tavern', 'inn', 'trading']
   for (const [place, s] of Object.entries(scenes)) {
     assert.ok(s.alt, place)
     assert.ok(!!emblemFor(place) !== !!s.emblem, `${place}: its emblem (ART-3B-0) or, without one, a symbol`)

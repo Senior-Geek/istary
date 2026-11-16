@@ -45,7 +45,7 @@ func TestFrameViewFixture(t *testing.T) {
 	join(t, s, 1, "")
 	s.ctrl.Game.Town.Party.Members[1].PoisonAmt = 3
 	s.ctrl.Game.Town.Party.Members[1].HP = 2
-	for _, place := range []string{"castle", "tavern", "inn", "edge", "training", "settings"} {
+	for _, place := range []string{"castle", "tavern", "inn", "trading", "edge", "training", "settings"} {
 		views = append(views, frameOf(place, walkTo(t, s, place)))
 	}
 	s.SetPartyVisible(false)
