@@ -78,6 +78,8 @@
   button.slot.pickable { background: var(--pick); }
   button.slot.pickable:hover:not(:disabled) { background: var(--pick-hover); }
   .slot.current, button.slot.current { background: var(--selected); }
+  /* Its secondary text at AA on that ground, still below the name (ART-3B-3C). */
+  .slot.current :is(.num, .cls, .row, .line2) { color: var(--selected-muted); }
   .line1, .line2 { display: flex; gap: 6px; align-items: baseline; min-width: 0; white-space: nowrap; }
   .num { color: var(--muted); font-variant-numeric: tabular-nums; }
   .name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; min-width: 0; }

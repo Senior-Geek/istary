@@ -189,8 +189,9 @@
   .tablewrap { overflow: auto; min-height: 0; }
   .tablewrap thead th { position: sticky; top: 0; background: var(--panel); z-index: 1; }
   table.lines td { vertical-align: top; }
-  /* A line brought into view stops below the column heads. */
-  table.lines tbody tr { scroll-margin-top: 30px; }
+  /* A line brought into view stops below the column heads; so does its
+     button, focused with Tab or Shift-Tab (ART-3B-3C). */
+  table.lines tbody tr, table.lines td.act button { scroll-margin-top: 30px; }
   td.name { min-width: 150px; }
   td.name .mark { display: inline-block; margin-left: 6px; padding: 0 5px; border-radius: 3px; font-size: 10px;
     text-transform: uppercase; letter-spacing: 0.04em; background: var(--card); color: var(--muted); }

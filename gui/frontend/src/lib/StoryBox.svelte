@@ -7,6 +7,10 @@
   // and closed with ×, to be opened again with the frame's Story button.
   // Where it is, once moved or resized, and whether it is open are the
   // window's, for the session (App, PANELS): nothing is saved or sent to Go.
+  // Where the player left it is the same at every place; entering a place
+  // (or opening its story), if it would stand over a control there, it is
+  // drawn at the nearest place clear of them, and the player's place is
+  // kept for the next (ART-3B-3C, lib/storyPlace.js).
   //
   // It holds narrative only. What the player needs to know to play (saving,
   // practice, warnings) stays in the frame's information, whether or not
@@ -24,6 +28,7 @@
   //   onclose   () => void       × was pressed
   //   children  the story
   import { onMount } from 'svelte'
+  import { clearOf } from './storyPlace.js'
 
   let { title, anchor, look = 'parchment', rect = null, onmove, onclose, children } = $props()
 
@@ -32,7 +37,11 @@
   let box = $state()
   let win = $state({ w: innerWidth, h: innerHeight })
   let auto = $state(null) // where it opens while the player has not moved it
-  const at = $derived(fit(rect ?? auto, win))
+  // Here, if the player's place would stand over a control: the clear place
+  // to draw it, or 'opening' (auto) if there is none; null, the player's.
+  let clear = $state(null)
+  let checking = $state(!!rect) // hidden until that is known
+  const at = $derived(fit(clear === 'opening' ? auto : clear ?? rect ?? auto, win))
 
   // fit keeps r inside the window, no smaller than the minimum.
   function fit(r, { w: W, h: H }) {
@@ -50,15 +59,44 @@
     const w = Math.round(Math.min(380, Math.max(MIN_W, a.width * 0.45)))
     auto = { x: a.x + 12, y: a.bottom - 12, w, h: null, measuring: true }
     requestAnimationFrame(() => {
-      if (!box || rect) return
+      if (!box || (rect && clear !== 'opening')) return
       const h = Math.min(box.offsetHeight, Math.max(MIN_H, a.bottom - a.y - 24))
       auto = { x: a.x + 12, y: a.bottom - 12 - h, w, h: box.offsetHeight > h ? h : null }
     })
   }
-  onMount(place)
+  // The controls in view here: their boxes, where nothing but this box
+  // stands over them.
+  function controls() {
+    const out = []
+    for (const e of document.querySelectorAll('.frame button, .frame input, .frame select, .frame textarea, .frame [role=tab], .frame [href]')) {
+      if (box?.contains(e)) continue
+      const r = e.getBoundingClientRect()
+      if (!r.width || !r.height) continue
+      const top = document.elementsFromPoint(r.x + r.width / 2, r.y + r.height / 2).find((el) => !box?.contains(el))
+      if (top && (top === e || e.contains(top))) out.push({ x: r.x, y: r.y, w: r.width, h: r.height })
+    }
+    return out
+  }
+
+  // Where to draw the player's place here (clear, above).
+  function avoid() {
+    if (!rect) { clear = null; checking = false; return }
+    requestAnimationFrame(() => {
+      if (!box || !rect) { checking = false; return }
+      const r = fit(rect, win)
+      const want = { x: r.x, y: r.y, w: r.w, h: r.h ?? box.offsetHeight }
+      const got = clearOf(want, controls(), win, { margin: M, minH: MIN_H })
+      if (got === want) clear = null
+      else if (got) clear = { ...got, h: Math.round(got.h), y: Math.round(got.y), x: Math.round(got.x) }
+      else { clear = 'opening'; place() }
+      checking = false
+    })
+  }
+  onMount(() => { place(); avoid() })
 
   function moved(r) {
     const { x, y, w, h } = fit({ ...r, h: r.h ?? box.offsetHeight }, win)
+    clear = null
     onmove?.({ x, y, w, h })
   }
 
@@ -90,12 +128,12 @@
   }
 </script>
 
-<svelte:window onresize={() => { win = { w: innerWidth, h: innerHeight }; if (!rect) place() }} />
+<svelte:window onresize={() => { win = { w: innerWidth, h: innerHeight }; if (!rect) place(); else avoid() }} />
 
 {#if at}
   <aside class="story" bind:this={box} aria-label="Story: {title}" data-appearance={look}
     style:left="{at.x}px" style:top="{at.y}px" style:width="{at.w}px" style:height={at.h == null ? null : `${at.h}px`}
-    style:visibility={at.measuring ? 'hidden' : null}>
+    style:visibility={at.measuring || checking ? 'hidden' : null}>
     <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
     <header class="bar" tabindex="0" onpointerdown={(e) => drag(e, 'move')} onkeydown={key}
       title="Drag to move; with the keyboard, the arrow keys move it and Shift with them resizes it">

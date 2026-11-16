@@ -17,7 +17,7 @@ Parchment story and Full artwork.
 | `ask-sell-worn-980x692.png` | Selling the worn CHAIN MAIL: Boltac's question, the lists and equipment waiting |
 | `no-customer-1440x900.png` | After Leave the counter: nobody served; Boltac, the sign and the cat in view |
 
-## Checked (targeted, 50 at each size)
+## Checked (targeted, 66 at each size)
 
 These ran at each size, on a fresh copy:
 - **Arrival:** Boltac's own story, titled, with its challenge; the
@@ -50,37 +50,68 @@ These ran at each size, on a fresh copy:
   there is no overlap between the shop, the Selected Character panel,
   the party bar, the head, the Actions panel and the story box.
 
-All passed at 1440×900. At 980×692, two did not. Both are the
-Uncurse tab's "Uncurse" buttons, scrolled into view from below in a list
-two rows tall, under the list's sticky column heads (see below).
+In ART-3B-3B, all passed at 1440×900, and at 980×692 two did not. Both
+were the Uncurse tab's "Uncurse" buttons, scrolled into view from below
+in a list two rows tall, under the list's sticky column heads (finding 2
+below). With ART-3B-3C's corrections, all 66 checks pass at each size.
+The 66 include the keyboard and story-box checks below.
 
-## Open findings
+## The live suite's findings, corrected (ART-3B-3C)
 
-The live suite's `scenes` checks now include Boltac's, which they had
-never reached. They found three things, none of them caused by the
-picture:
+The live suite's `scenes` checks reached Boltac's for the first time here.
+They found three things, none of them caused by the picture. ART-3B-3C
+corrects them, and the live suite passes them unchanged (319 checks at
+each size).
 
-1. **The current customer's party-bar slot: muted text below AA**
-   (`PartyBar.svelte`, `.slot.current`, since M8-4). The slot number,
-   class and row ("1", "N-FIG", "Front") are `--muted` on `--selected`:
-   4.29:1 in Slate and 3.77:1 in Dark (and on the game's own colours),
-   against AA's 4.5:1. Light passes, at 5.43:1. Both colours are
-   opaque, so the picture plays no part. A current slot is shown only at
-   Boltac's and in Camp.
-2. **A focused Buy, Sell, Identify or Uncurse button can stop under the
-   list's sticky column heads.** Rows have `scroll-margin-top` (UX-2), so
-   a row brought into view stops below the heads, and the shop does this
-   itself. A button scrolled into view on its own, as the suite does and
-   as Shift-Tab would, can be left under them. With the list at its top,
-   every control at every window size is in view. The suite's check
-   leaves the list scrolled at one size, and the next size's check then
-   finds the first Buy under the heads. This is the same in the shop
-   without a picture.
-3. **A story box the player has moved or enlarged elsewhere can cover
-   Boltac's tabs at 980×692** (ART-2B: where the box stands and its size
-   are the player's, the same at every place). Boltac's shop starts
-   higher than other places' information. Where it first opens, the
-   story box covers nothing at Boltac's at either size.
+1. **The current member's party-bar slot: secondary text below AA.**
+   Since M8-4, `PartyBar.svelte` drew the slot number, class, row and
+   the "Lv / HP / AC" line in `--muted` on `--selected`: 3.77:1 in Dark
+   and on the game's own colours, and 4.29:1 in Slate. AA asks 4.5:1.
+   Both colours are opaque, so the picture played no part. Now, in the
+   current slot only, they are `--selected-muted`, a new token in each
+   appearance halfway from `--muted` to `--text`:
 
-None of these is changed here, and the live suite's checks are left as
-they are, failing on them.
+   | Appearance | Before | Now |
+   |---|---|---|
+   | Dark (and the game's own) | 3.77:1 | 5.82:1 |
+   | Slate | 4.29:1 | 5.58:1 |
+   | Light / Parchment | 5.43:1 | 7.72:1 |
+
+   The highlight (`--selected`) and the name are unchanged, and these
+   texts are still below the name. The same component draws Boltac's
+   customer and Camp's member, so both are corrected.
+   (`partyBarContrast.test.js`)
+2. **A focused shop button could stop under the sticky column heads.**
+   The rows had `scroll-margin-top: 30px` (UX-2), so a row brought into
+   view stopped below the heads. A button brought into view on its own,
+   by Shift-Tab or by the suite, did not. Now the row's button has the
+   same margin. The heads stay sticky, and nothing else in the table
+   changes. Checked live: Shift-Tab up and Tab down each list's enabled
+   buttons (Buy 27, Sell 5, Identify 1, Uncurse 1), each wholly in view
+   below the heads, at both sizes. Without the margin, the same check
+   fails on Buy and Sell.
+3. **A story box moved or enlarged at one place could cover another's
+   controls** (ART-2B: where the player leaves it is the same at every
+   place). As a place is entered, or its story opened, the box now finds
+   the controls in view there (`StoryBox.svelte`, `lib/storyPlace.js`).
+   If the player's place covers none, it is drawn there. Otherwise it is
+   drawn at the nearest clear place inside the window, chosen in this
+   order:
+   - moved up or down, or made shorter, its left and width kept,
+     whichever changes it least;
+   - only if there is no such place, moved aside;
+   - only if there is no clear place at all, where it first opens.
+
+   The player's place is not changed, so other places draw it where the
+   player left it. Moving or resizing it starts from where it is drawn
+   and becomes the player's place. Closing and opening it work as
+   before. No place or coordinate is special. Checked live at both sizes:
+   - with the player's place where the Tavern's opens, the Inn, the
+     Castle and the Tavern draw it there;
+   - Boltac's draws it moved up clear of the tabs (54px at 980×692, 79px
+     at 1440×900);
+   - Story reopens it clear;
+   - a move at Boltac's starts from there and is kept at the Tavern.
+
+   The live suite's own moves and resizes at the Edge and the Castle are
+   kept as before. (`storyPlace.test.js`)

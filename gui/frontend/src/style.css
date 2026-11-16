@@ -38,6 +38,9 @@
   --pick: #2f3526;
   --pick-hover: #3b4430;
   --selected: #4a3d22;
+  /* Secondary text on --selected (the party bar's current member): halfway
+     from --muted to --text, at AA (4.5:1) where --muted is not (ART-3B-3C). */
+  --selected-muted: #c0c0c0;
   --hp: #6fae5f;
   color-scheme: dark;
 }
@@ -229,6 +232,7 @@ table.roster td, table.roster th { white-space: nowrap; }
   --pick: #2f3526;
   --pick-hover: #3b4430;
   --selected: #4a3d22;
+  --selected-muted: #c0c0c0;
   --hp: #6fae5f;
   --dash: #444;
   color-scheme: dark;
@@ -272,6 +276,7 @@ table.roster td, table.roster th { white-space: nowrap; }
   --pick: #dfe3c4;
   --pick-hover: #d3dab2;
   --selected: #e6d29b;
+  --selected-muted: #443726;
   --hp: #4f8a3f;
   --dash: rgba(110, 84, 40, 0.45);
   color-scheme: light;
@@ -313,6 +318,7 @@ table.roster td, table.roster th { white-space: nowrap; }
   --pick: #35453a;
   --pick-hover: #3f5244;
   --selected: #5b4d2b;
+  --selected-muted: #cdd5e0;
   --hp: #6fae5f;
   --dash: rgba(170, 186, 208, 0.4);
   color-scheme: dark;

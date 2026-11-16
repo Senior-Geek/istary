@@ -32,3 +32,9 @@ test('over a picture, the Selected Character panel is glass, as the Actions pane
   assert.ok(!/(margin|padding|width|height|position|grid|display)\s*:/.test(glass[1]), 'no size or place of its own')
   assert.match(panel, /\n  \.selected \{ margin: 0; padding: 10px 12px;/, 'its padding as it was')
 })
+
+test('a shop button brought into view (Tab, Shift-Tab) stops below the sticky column heads, as its line does', () => {
+  const src = readFileSync(new URL('./TradingScreen.svelte', import.meta.url), 'utf8')
+  assert.match(src, /\.tablewrap thead th \{ position: sticky; top: 0;/, 'the heads stay')
+  assert.match(src, /table\.lines tbody tr, table\.lines td\.act button \{ scroll-margin-top: 30px; \}/)
+})

@@ -133,8 +133,9 @@ format and the settings.
   on return, Story opens it, the others' left as they were. The Temple is
   now the place without artwork the suite checks. Reaching Boltac's for
   the first time, these checks found three things that the picture does
-  not cause. They are left failing, and are described in the review
-  README's open findings.
+  not cause. ART-3B-3C corrects them: the party bar's current slot, the
+  shop's buttons under the column heads, and the story box at a place
+  whose controls it would cover. See the review README.
 
 ## Visual review
 
