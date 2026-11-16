@@ -505,6 +505,227 @@
   }
  },
  {
+  "case": "inn",
+  "screen": "roster",
+  "location": "inn",
+  "exits": [
+   {
+    "dest": "castle",
+    "open": true,
+    "reason": ""
+   }
+  ],
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "LEAD",
+    "class": "G-FIG",
+    "level": 1,
+    "ac": 10,
+    "hp": 8,
+    "maxHp": 8,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "SECOND",
+    "class": "G-FIG",
+    "level": 1,
+    "ac": 10,
+    "hp": 2,
+    "maxHp": 8,
+    "status": "OK",
+    "poisoned": true,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "ac": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "ac": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "ac": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "ac": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "frontRow": 3,
+  "settings": {
+   "partyVisible": true,
+   "minimapVisible": true,
+   "panels": "slate",
+   "story": "parchment",
+   "artwork": "full",
+   "note": ""
+  },
+  "departures": {
+   "real": "",
+   "practice": ""
+  },
+  "return": {
+   "open": true,
+   "note": ""
+  },
+  "expedition": false,
+  "real": false,
+  "story": {
+   "title": "The Adventurer's Inn",
+   "blocks": [
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "The heavy oak door closes behind you, shutting out the noise of the castle courtyard. Warmth, candlelight, and the comforting smell of fresh bread greet you. Across the hall, a fire crackles, and the distant sound of laughter drifts down a corridor."
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "Behind a polished wooden desk stands a smiling woman in a blue-and-gold gown. An enormous ledger lies open before her, beside a brass bell and a quill and inkwell."
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "\"Welcome to the Adventurer's Inn,\" she says. \"I'm "
+      },
+      {
+       "text": "Mistress Elspeth",
+       "bold": true
+      },
+      {
+       "text": ". You look as though you've come from the Maze. Or are about to. It's sometimes difficult to tell.\""
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "She glances at your companions with a practiced eye."
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "\"Stables are free, of course. A little straw, a roof overhead, and time enough to recover your spells. But if you've acquired a few injuries, I recommend a proper bed. We have accommodations for every purse, from a modest cot to the Royal Suite.\""
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "She pauses, turning a page in her ledger."
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "\"Naturally, the better the room, the quicker the recovery. Gold has a remarkable effect on one's health, I've found.\""
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "Her smile softens."
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "\"And should one of your companions be in a condition that sleep cannot remedy, I'm afraid you'll need the Temple of Cant. We provide beds, not miracles.\""
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "She reaches for her quill."
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "\"Now then, who's staying, and how long?\""
+      }
+     ]
+    },
+    {
+     "kind": "challenge",
+     "items": [
+      [
+       {
+        "text": "Rest your adventurers, restore their spells, and heal their wounds. Choose your accommodations carefully; comfort has its price."
+       }
+      ]
+     ]
+    }
+   ]
+  }
+ },
+ {
   "case": "edge",
   "screen": "roster",
   "location": "edge",

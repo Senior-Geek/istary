@@ -13,7 +13,7 @@
 // To add a place's artwork, put the 1920x1080 WebP in
 // src/assets/scenes/<place>.webp (the masters are kept outside Git; ART-2A's
 // in images/Artwork Samples/, the Tavern's (ART-3B-1) in images/Tavern/,
-// untracked) and set its src as castle's is:
+// the Inn's (ART-3B-2B) in images/Inn/, untracked) and set its src as castle's is:
 // new URL(..., import.meta.url) is an asset to Vite and an ordinary URL to
 // the Node tests. The picture is shown whole only with the panels hidden;
 // keep what matters away from the right edge (the actions) and the bottom
@@ -35,7 +35,14 @@ export const scenes = {
     focus: '50% 50%',
     alt: "Gilgamesh's Tavern: Gilgamesh, gray-bearded and smiling, behind his bar beneath the tavern's sign; a hearth and a lute player, adventurers at their tables, and a gallery above",
   },
-  inn: { src: null, focus: '50% 50%', alt: "The Adventurer's Inn" },
+  // The Inn's picture keeps its right edge (ART-3B-2A): centred, the
+  // actions would cover the sign and, with a guest, Mistress Elspeth's face
+  // at 980x692.
+  inn: {
+    src: new URL('../assets/scenes/inn.webp', import.meta.url).href,
+    focus: '100% 50%',
+    alt: "The Adventurer's Inn: Mistress Elspeth, smiling in a blue-and-gold gown, behind her reception desk with its open ledger, quill and brass bell, beneath the Inn's sign; a fire and armchairs to one side, and a long corridor beyond",
+  },
   trading: { src: null, focus: '50% 50%', alt: "Boltac's Trading Post" },
   temple: { src: null, focus: '50% 45%', alt: 'The Temple of Cant' },
   edge: {

@@ -23,11 +23,11 @@ func TestTheStoryFilesLoad(t *testing.T) {
 	}); err != nil {
 		t.Fatal(err)
 	}
-	want := []string{"content/castle/introduction.md", "content/castle/story.md", "content/edge-of-town/story.md", "content/tavern/story.md"}
+	want := []string{"content/castle/introduction.md", "content/castle/story.md", "content/edge-of-town/story.md", "content/inn/story.md", "content/tavern/story.md"}
 	if !reflect.DeepEqual(files, want) {
 		t.Fatalf("the built-in story files: %v, not %v", files, want)
 	}
-	for _, name := range []string{"castle/introduction", "castle/story", "edge-of-town/story", "tavern/story"} {
+	for _, name := range []string{"castle/introduction", "castle/story", "edge-of-town/story", "inn/story", "tavern/story"} {
 		st := stories[name]
 		if st == nil || len(st.Blocks) == 0 {
 			t.Fatalf("%s: no story", name)
@@ -142,6 +142,38 @@ func TestTheApprovedTavernStoryIsKept(t *testing.T) {
 	}
 	last := st.Blocks[8]
 	if want := plain(inline(approved[9])); last.Kind != "challenge" || len(last.Items) != 1 || plain(last.Items[0]) != want {
+		t.Fatalf("the closing challenge: %s %+v, not %q", last.Kind, last.Items, want)
+	}
+}
+
+// ART-3B-2B: the Inn's story is its approved text, word for word: its
+// title, eleven paragraphs ("Mistress Elspeth" bold where she is named) and
+// its challenge.
+func TestTheApprovedInnStoryIsKept(t *testing.T) {
+	approved := approvedText(t, "../docs/design/art3/inn/README.md")
+	if len(approved) != 13 {
+		t.Fatalf("ART-3B-2B's approved text: %d paragraphs, not a title, 11 and a challenge", len(approved))
+	}
+	st := storyFor("inn", true)
+	if st != stories["inn/story"] || storyFor("inn", false) != st {
+		t.Fatal("the Inn's story is not its own, with or without a game")
+	}
+	if want := plain(inline(approved[0])); st.Title != want {
+		t.Fatalf("title %q, not %q", st.Title, want)
+	}
+	if len(st.Blocks) != 12 {
+		t.Fatalf("%d blocks, not 12", len(st.Blocks))
+	}
+	for i, b := range st.Blocks[:11] {
+		if want := inline(approved[i+1]); b.Kind != "paragraph" || !reflect.DeepEqual(b.Text, want) {
+			t.Fatalf("paragraph %d: %s %+v, not %+v", i+1, b.Kind, b.Text, want)
+		}
+	}
+	if b := st.Blocks[2]; len(b.Text) != 3 || !b.Text[1].Bold || b.Text[1].Text != "Mistress Elspeth" {
+		t.Fatalf("Mistress Elspeth is not named in bold: %+v", b.Text)
+	}
+	last := st.Blocks[11]
+	if want := plain(inline(approved[12])); last.Kind != "challenge" || len(last.Items) != 1 || plain(last.Items[0]) != want {
 		t.Fatalf("the closing challenge: %s %+v, not %q", last.Kind, last.Items, want)
 	}
 }

@@ -100,7 +100,8 @@ own scene (the frame's `scene` snippet) is never illustrated.
   the pictures.
 - **The Training Grounds, the Tavern, Boltac's, the Inn and the Temple**
   keep their themed panels until their pictures are approved. (The
-  Tavern's was, in ART-3B-1: `docs/design/art3/tavern/README.md`.) The frame
+  Tavern's was, in ART-3B-1: `docs/design/art3/tavern/README.md`; the
+  Inn's in ART-3B-2B: `docs/design/art3/inn/README.md`.) The frame
   is ready for them: give a scene a `src`. Two places will need a look
   then:
   - Boltac's lays out C itself (`fill`);
