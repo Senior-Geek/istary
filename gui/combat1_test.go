@@ -79,6 +79,10 @@ func TestFirstExpeditionSpells(t *testing.T) {
 	walkTo(t, r, "edge")
 	realEncounter(t, r)
 	r.ctrl.Game.Combat.HasChest = false
+	// The first orders, before anyone acts. Monsters that surprise the party
+	// (about one encounter in seven) act first, and can kill the 4 HP mage in
+	// slot 1, who is then sorted to the back (TEST-FLAKE-1).
+	r.ctrl.Game.Combat.Surprised = 0
 	v := toOrders(t, r, 1) // ELEN joined first
 	if v.Combat.Party[0].Name != "ELEN" {
 		t.Fatalf("slot 1 is %s", v.Combat.Party[0].Name)
