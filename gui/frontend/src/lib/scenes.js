@@ -90,7 +90,7 @@ export function illustrated(location) {
 }
 
 // PANELS is the context key of the illustrated places' window state, which
-// App keeps and LocationFrame offers (ART-2A, ART-2B, ART-2C).
+// App keeps and LocationFrame offers (ART-2A, ART-2B, ART-2C, ART-3E).
 //   hidden, hide(), show()   the panels hidden to look at the picture; they
 //                            come back at every other place
 //   look                     { panels, story, artwork }: the appearance
@@ -102,6 +102,9 @@ export function illustrated(location) {
 //                            player left it ({ x, y, w, h }, or null, the
 //                            same at every place); the window's alone, for
 //                            the session
+//   actions.collapsed        the Actions collapsed to their heading, to see
+//                            the picture (ART-3E): the same at every place,
+//                            for the session; expanded at the start
 export const PANELS = Symbol('panels')
 
 // The illustrated places' appearances (ART-2C), chosen in Settings, each

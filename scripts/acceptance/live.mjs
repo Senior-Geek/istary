@@ -169,7 +169,8 @@ async function main() {
   const loaded = async () => { for (let i = 0; i < 40; i++) { if (await js(`!!document.querySelector('.backdrop img')?.complete`)) break; await sleep(100) } }
   // Every button of the frame can be brought into view and is the
   // topmost thing where it is drawn, and no label is cut off.
-  const controls = () => js(`(() => { const bad = []; for (const b of document.querySelectorAll('.frame button')) { b.scrollIntoView({ block: 'nearest', inline: 'nearest' }); const r = b.getBoundingClientRect(); const x = r.x + r.width / 2, y = r.y + r.height / 2; const top = document.elementFromPoint(x, y); if (r.width === 0 || r.right > innerWidth + 0.5 || r.bottom > innerHeight + 0.5 || r.x < -0.5 || r.y < -0.5 || !(top === b || b.contains(top))) bad.push(b.innerText.trim() || b.title); else if (b.scrollWidth > b.clientWidth + 1) bad.push(b.innerText.trim() + ' (cut off)') } for (const e of document.querySelectorAll('.frame [data-area], .frame .body')) e.scrollTop = 0; return bad })()`)
+  // A button in a hidden part (the Actions collapsed, ART-3E) is not shown at all, and is not counted.
+  const controls = () => js(`(() => { const bad = []; for (const b of document.querySelectorAll('.frame button')) { if (b.closest('[hidden]')) continue; b.scrollIntoView({ block: 'nearest', inline: 'nearest' }); const r = b.getBoundingClientRect(); const x = r.x + r.width / 2, y = r.y + r.height / 2; const top = document.elementFromPoint(x, y); if (r.width === 0 || r.right > innerWidth + 0.5 || r.bottom > innerHeight + 0.5 || r.x < -0.5 || r.y < -0.5 || !(top === b || b.contains(top))) bad.push(b.innerText.trim() || b.title); else if (b.scrollWidth > b.clientWidth + 1) bad.push(b.innerText.trim() + ' (cut off)') } for (const e of document.querySelectorAll('.frame [data-area], .frame .body')) e.scrollTop = 0; return bad })()`)
   // A panel's background: near-opaque, so its text reads over the picture.
   const opaque = (sel) => js(`[...document.querySelectorAll(${JSON.stringify(sel)})].map((e) => { const m = getComputedStyle(e).backgroundColor.match(/[\\d.]+/g).map(Number); return m.length < 4 ? 1 : m[3] })`)
   // The picture is seen at these points of the window: everything above
@@ -768,6 +769,119 @@ async function main() {
       check(Math.abs(room.a - room.top) < 1 && Math.abs(room.c - (room.body - room.top - 12)) < 1 && room.scrolls && room.after > room.a, `long information keeps a place without a picture's room: display ${Math.round(room.a)} px (--top ${Math.round(room.top)}), information ${Math.round(room.c)} of ${Math.round(room.body)} px, scrolling; the display takes it back after (${Math.round(room.after)} px)`)
 
       check(sha(GAME) === before, 'the game is saved exactly as before: the pictures and panels change nothing')
+
+      // ART-3E: over a picture, the Actions collapse to their heading, to
+      // see what they cover, and come back; by mouse and by keyboard; one
+      // choice for every illustrated place, kept moving between them by
+      // their buttons (goto reloads the page, which starts expanded). The
+      // picture, the display and the information do not move; the column
+      // under the heading lets clicks through; nothing of the game changes.
+      // While a character is being created they are not collapsed.
+      const ACT = `${B} section.actions`
+      const acts = () => js(`(() => { const s = document.querySelector('${ACT}'); if (!s) return null; const t = s.querySelector('.actions-head button'), b = s.querySelector('.actions-body'), r = s.getBoundingClientRect()
+        return { toggle: t ? { text: t.innerText.trim(), name: t.getAttribute('aria-label') || t.innerText.trim(), expanded: t.getAttribute('aria-expanded'), controls: t.getAttribute('aria-controls'), title: t.title, focused: document.activeElement === t } : null,
+          body: !!b && !b.hidden && getComputedStyle(b).display !== 'none' && b.getBoundingClientRect().height > 0, text: b ? b.innerText.replace(/\\s+/g, ' ').trim() : '', w: r.width, h: r.height, b: r.bottom, x: r.x, r: r.right } })()`)
+      const keyOn = async (key, code, vk, text) => {
+        await send('Input.dispatchKeyEvent', { type: 'keyDown', key, code, windowsVirtualKeyCode: vk, text })
+        await send('Input.dispatchKeyEvent', { type: 'keyUp', key, code, windowsVirtualKeyCode: vk }); await sleep(400)
+      }
+      const picture = () => js(`(() => { const i = document.querySelector('.backdrop img'); if (!i) return null; const r = i.getBoundingClientRect(); return [r.x, r.y, r.width, r.height].map(Math.round).join(',') + ' ' + getComputedStyle(i).objectPosition + ' ' + i.currentSrc.split('/').pop() })()`)
+      // The principal figures' faces (eyes, nose, mouth), in the picture's
+      // own proportions, where the crop puts them.
+      const FACES = { training: [[0.796, 0.267], [0.804, 0.304], [0.8, 0.348]], temple: [[0.85, 0.373], [0.854, 0.407], [0.846, 0.444]] }
+      const face = (place) => js(`(() => { const i = document.querySelector('.backdrop img'); const r = i.getBoundingClientRect(); const [fx, fy] = getComputedStyle(i).objectPosition.split(' ').map((p) => parseFloat(p) / 100)
+        const k = Math.max(r.width / i.naturalWidth, r.height / i.naturalHeight), dw = i.naturalWidth * k, dh = i.naturalHeight * k, ox = r.x + (r.width - dw) * fx, oy = r.y + (r.height - dh) * fy
+        return ${JSON.stringify(FACES)}[${JSON.stringify('PLACE')}].map(([u, v]) => [ox + u * dw, oy + v * dh]) })()`.replace('"PLACE"', JSON.stringify(place)))
+      const passes = () => js(`(() => { const n = document.querySelector('${B}').getBoundingClientRect(), s = document.querySelector('${ACT}').getBoundingClientRect(); const pts = [[n.x + n.width / 2, s.bottom + 20], [n.x + 10, n.bottom - 10], [n.right - 10, (s.bottom + n.bottom) / 2]].filter(([, y]) => y < n.bottom); return pts.length > 0 && pts.every(([x, y]) => !document.elementFromPoint(x, y)?.closest('[data-area=actions]')) })()`)
+
+      await goto('training'); await loaded()
+      let ac = await acts()
+      check(!!ac?.toggle && ac.toggle.text === 'Collapse' && ac.toggle.name === 'Collapse Actions' && ac.toggle.expanded === 'true' && ac.toggle.controls === 'actions-body' && /Collapse Actions/.test(ac.toggle.title) && ac.body, `training: the Actions start expanded, with “${ac?.toggle?.name}” in their heading (aria-expanded ${ac?.toggle?.expanded}, “${ac?.toggle?.title}”)`)
+      const expandedText = ac.text, expandedBox = ac
+      const was = { v: JSON.stringify(await view()), pic: await picture(), a: JSON.stringify(await rect(A)), c: JSON.stringify(await rect(C)), story: JSON.stringify(await rect(STORY)) }
+      await js(`document.querySelector('${ACT} .actions-head button').focus()`)
+      await keyOn('Enter', 'Enter', 13, '\r')
+      ac = await acts()
+      check(!ac.body && ac.toggle?.text === 'Show Actions' && ac.toggle.expanded === 'false' && ac.toggle.focused, `training: Enter on Collapse hides the Actions' body; Show Actions takes the focus (aria-expanded ${ac.toggle?.expanded})`)
+      check(ac.h < 60 && ac.w < expandedBox.w && ac.w < 220 && Math.abs(ac.r - expandedBox.r) < 1 && Math.abs(ac.x + ac.w - expandedBox.x - expandedBox.w) < 1, `training: collapsed, only the heading, at the column's top right (${Math.round(ac.w)}×${Math.round(ac.h)} px, was ${Math.round(expandedBox.w)}×${Math.round(expandedBox.h)})`)
+      check(await picture() === was.pic && JSON.stringify(await rect(A)) === was.a && JSON.stringify(await rect(C)) === was.c && JSON.stringify(await rect(STORY)) === was.story, `training: the picture, its crop, the display, the information and the story box do not move (${was.pic})`)
+      check(JSON.stringify(await view()) === was.v, 'training: collapsing changes nothing of the game: the place, the roster, the party, the screen')
+      check(await passes(), 'training: under the heading, the column lets clicks through to the picture')
+      check(await seen(await face('training')), 'training: Sergeant Major Brannock Ironheel’s face is in view')
+      bad = await controls()
+      check(bad.length === 0, `training: collapsed, every control in view and uncovered${bad.length ? ': ' + bad.join(', ') : ''}`)
+      check(!!(await rect(STORY)) && (await buttons('.frame .head')).includes('Story'), 'training: the story box and Story as they were')
+      await shot('actions-collapsed-training')
+      // The roster's sheets, and Hide panels with Escape, as they were.
+      await js(`document.querySelector('${C} table.roster tbody tr')?.click()`); await sleep(600)
+      check(!!(await rect(`${A} .sheet`)) && !(await acts()).body, 'training: a roster row shows its sheet; the Actions stay collapsed')
+      await esc()
+      check(!(await rect(`${A} .sheet`)) && (await view()).location === 'training', 'training: Escape hides the sheet, as before')
+      await clickText('Hide panels')
+      await esc()
+      ac = await acts()
+      check(!!(await rect(B)) && (await view()).location === 'training' && !ac.body && ac.toggle?.text === 'Show Actions', 'training: Hide panels and Escape as before; the Actions still collapsed')
+      // Kept from place to place by their buttons; each place's own Actions.
+      await clickText('← Castle Esc', '.frame .head')
+      check((await view()).location === 'castle' && !(await js(`!!document.querySelector('.actions-head')`)) && !!(await rect(`${B} nav`)), 'the Castle: its destinations, no Actions to collapse')
+      await clickText('The Temple of Cant', B); await loaded()
+      ac = await acts()
+      check((await view()).location === 'temple' && !ac.body && ac.toggle?.text === 'Show Actions', 'the Temple: the Actions still collapsed, Show Actions in their heading')
+      check(await seen(await face('temple')), 'temple: Father Caelion’s face is in view')
+      bad = await controls()
+      check(bad.length === 0 && await passes(), `temple: collapsed, every control in view and uncovered; the column lets clicks through${bad.length ? ': ' + bad.join(', ') : ''}`)
+      await shot('actions-collapsed-temple')
+      await js(`document.querySelector('${ACT} .actions-head button').focus()`)
+      await keyOn(' ', 'Space', 32, ' ')
+      ac = await acts()
+      check(ac.body && /Tithing/.test(ac.text) && ac.toggle?.text === 'Collapse' && ac.toggle.focused, `temple: Space on Show Actions brings the Temple's own Actions back (“${ac.text.slice(0, 40)}…”); Collapse takes the focus`)
+      await clickText('Collapse', ACT)
+      await clickText('← Castle Esc', '.frame .head')
+      await clickText("Gilgamesh's Tavern", B); await loaded()
+      ac = await acts()
+      check((await view()).location === 'tavern' && !ac.body && ac.toggle?.text === 'Show Actions', 'the Tavern: still collapsed')
+      await clickText('Show Actions', ACT)
+      ac = await acts()
+      check(ac.body && ac.text && !/Tithing/.test(ac.text) && ac.text !== expandedText && (await controls()).length === 0, `tavern: Show Actions brings the Tavern's own Actions (“${ac.text.slice(0, 40)}…”)`)
+      // A treatment asked for with the Actions collapsed: a dead character
+      // on the roster (the scratch library's save, read again by Reload
+      // from disk in Settings), its question, Cancel. Put back after.
+      const original = readFileSync(GAME), originalSha = sha(GAME)
+      const reloadFromDisk = async () => { await clickText('← Castle Esc', '.frame .head'); await clickText('The Edge of Town', B); await clickText('Settings', B); await clickText('Reload from disk', B); return (await view()).error ?? '' }
+      const dead = disk(); const reserve = dead.roster.find((c) => !dead.party.includes(c.Name)); reserve.Status = 5; reserve.HP = 0
+      writeFileSync(GAME, JSON.stringify(dead, null, 2))
+      const reloadErr = await reloadFromDisk()
+      check(!reloadErr && (await view()).roster.find((c) => c.name === reserve.Name)?.status === 'DEAD', `(the scratch library: ${reserve.Name} dead, read again from disk${reloadErr ? ': ' + reloadErr : ''})`)
+      await clickText('← Castle Esc', '.frame .head')
+      await clickText('The Temple of Cant', B); await loaded()
+      await clickText('Collapse', ACT)
+      await js(`[...document.querySelectorAll('${C} table.patients tbody tr')].find((t) => t.innerText.includes(${JSON.stringify(reserve.Name)}))?.querySelector('td.act button')?.click()`); await sleep(600)
+      ac = await acts()
+      const asking = await js(`!!document.querySelector('${C} [role=alertdialog]')`)
+      bad = await controls()
+      check(asking && !ac.body && bad.length === 0 && (await buttons(`${C} [role=alertdialog]`)).includes('Cancel'), `temple: Treat… asks, with the Actions collapsed; its buttons in view and uncovered${bad.length ? ': ' + bad.join(', ') : ''}`)
+      await clickText('Show Actions', ACT)
+      check((await acts()).body && await js(`!!document.querySelector('${C} [role=alertdialog]')`), 'temple: the Actions expand while it asks; the question stays')
+      await shot('actions-expanded-temple-asking')
+      await clickText('Cancel', `${C} [role=alertdialog]`)
+      check(!(await js(`!!document.querySelector('${C} [role=alertdialog]')`)) && (await view()).roster.find((c) => c.name === reserve.Name)?.status === 'DEAD', 'temple: Cancel, and nothing is treated or charged')
+      // Creating a character: the Actions hold its decisions, not collapsed.
+      await clickText('Collapse', ACT)
+      await clickText('← Castle Esc', '.frame .head')
+      await clickText('The Edge of Town', B); await clickText('The Training Grounds', B); await loaded()
+      await clickText('Show Actions', ACT)
+      await typeInto('#newname', 'Fold')
+      await clickText('Create', B)
+      ac = await acts()
+      bad = await controls()
+      check((await view()).screen === 'confirmCreate' && ac.body && !ac.toggle && bad.length === 0, `training: creating a character, the Actions are not collapsible and its decisions are in view${bad.length ? ': ' + bad.join(', ') : ''}`)
+      await clickText('No', B)
+      ac = await acts()
+      check((await view()).screen === 'roster' && ac.toggle?.text === 'Collapse' && ac.body, 'training: creation declined, the Actions as they were chosen, expanded, with Collapse')
+      // The scratch library as it was.
+      writeFileSync(GAME, original)
+      const backErr = await reloadFromDisk()
+      check(!backErr && sha(GAME) === originalSha, `(the scratch library put back as it was${backErr ? ': ' + backErr : ''})`)
     },
 
     // The appearances for review (ART-2C): the Castle and the Edge of Town

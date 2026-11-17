@@ -73,8 +73,8 @@
 
   <section class="appearance" aria-labelledby="appearance-title">
     <h2 id="appearance-title">Appearance</h2>
-    <p class="muted">For the places with pictures, the Castle and the Edge of Town. Kept for this window
-      in every game; no game is changed.</p>
+    <p class="muted">Appearance options control the illustrations shown in supported Castle locations and
+      the Edge of Town. Kept for this window in every game; no game is changed.</p>
     <div class="parts">
       {#each parts as p (p.key)}
         <fieldset class="part" disabled={busy}>

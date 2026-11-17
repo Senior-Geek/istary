@@ -78,7 +78,9 @@ scenes suite checks that rule at every illustrated place.
 1. **At 980×692 the Actions panel covers the principal figures' faces:**
    Brannock's always, and Father Caelion's eyes while the tithing list is
    long. No crop avoids it; Hide panels or a larger window shows them.
-   Showing them would mean changing the frame's layout.
+   Showing them would mean changing the frame's layout. (ART-3E: the
+   Actions now collapse to their heading, and the faces are in view:
+   `../art-3e-actions/`.)
 2. **The Temple's sentence on what it treats was corrected**, as approved:
    "Petrification may be reversed" in place of "Poison may be cleansed".
    The Temple does not cure poison.
@@ -87,4 +89,4 @@ scenes suite checks that rule at every illustrated place.
    changed.
 4. **Settings' Appearance section still says** "For the places with
    pictures, the Castle and the Edge of Town." This was already out of
-   date before this work, and is not changed here.
+   date before this work, and is not changed here. (Corrected in ART-3E.)

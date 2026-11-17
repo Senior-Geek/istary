@@ -34,6 +34,17 @@
   // file, gui/content), drawn by StoryText; a place without one has no
   // story box.
   //
+  // ART-3E: at an illustrated place, the Actions can be collapsed to their
+  // heading (Collapse, then Show Actions), to see what they cover; the
+  // choice is the same at every illustrated place for the session (App's
+  // PANELS), whether the picture is shown or not.
+  // Collapsed, only the heading is drawn, at the column's top right, and
+  // the rest of the column lets clicks through. While a character is
+  // being created (compact) the Actions hold its decisions, so they are
+  // not collapsed; the choice holds again after. Where the Actions hold
+  // the ways out (the Edge, waysInActions), as the Castle's Go to does,
+  // they are not collapsed either.
+  //
   // ART-2C: the illustrated places' appearance is chosen in Settings and
   // kept by Go (App's PANELS look): the panels' (slate, dark or light) and
   // the story box's (parchment, dark or slate), only colours (style.css
@@ -117,6 +128,23 @@
   })
   const hidePanels = () => { moved = true; panels?.hide() }
   const showPanels = () => { moved = true; panels?.show() }
+
+  // The Actions collapsed (ART-3E): focus goes with the toggle, once pressed.
+  const collapsible = $derived(art && !!actions && !waysInActions && !!panels?.actions && !compact)
+  const collapsed = $derived(collapsible && panels.actions.collapsed)
+  let collapseButton = $state(), expandButton = $state()
+  let toggled = false
+  $effect(() => {
+    const to = collapsed ? expandButton : collapseButton
+    if (toggled && to) {
+      to.focus()
+      toggled = false
+    }
+  })
+  function collapseActions(v) {
+    toggled = true
+    panels.actions.collapsed = v
+  }
 
   const storyHere = $derived(art && !!view.story && !!panels)
   // A shown character sheet has priority (ART-3B-0): the story box is not
@@ -209,11 +237,24 @@
     {:else if scene}{@render scene()}{:else}<LocationScene location={view.location} title={here} mode={art ? 'view' : 'panel'} artwork={look?.artwork} />{/if}
   </div>
 
-  <div class="nav-area" data-area="actions">
+  <div class="nav-area" class:collapsed data-area="actions">
     {#if actions}
-      <section class="actions" aria-label="Actions here">
-        <h3>Actions</h3>
-        {@render actions(ways, destination)}
+      <section class="actions" class:collapsed aria-label="Actions here">
+        {#if collapsible}
+          <div class="actions-head">
+            <h3>Actions</h3>
+            {#if collapsed}
+              <button class="small primary expand" bind:this={expandButton} aria-expanded="false" aria-controls="actions-body"
+                title="Show the Actions" onclick={() => collapseActions(false)}>Show Actions</button>
+            {:else}
+              <button class="small collapse" bind:this={collapseButton} aria-expanded="true" aria-controls="actions-body"
+                aria-label="Collapse Actions" title="Collapse Actions, to see the picture" onclick={() => collapseActions(true)}>Collapse</button>
+            {/if}
+          </div>
+        {:else}
+          <h3>Actions</h3>
+        {/if}
+        <div id="actions-body" class="actions-body" hidden={collapsed}>{@render actions(ways, destination)}</div>
       </section>
     {/if}
     {#if aside}<div class="aside-area">{@render aside()}</div>{/if}
@@ -292,6 +333,16 @@
   .way:disabled :global(.emblem) { opacity: 0.5; }
   .why { color: var(--muted); font-size: 11px; padding: 2px 2px 4px; }
   .actions { margin: 0; padding: 10px 12px; }
+  /* The Actions' heading with its Collapse / Show Actions (ART-3E). */
+  .actions-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: -4px 0 6px; }
+  .actions-head h3 { margin: 0; }
+  .actions-head button { margin: 0; }
+  .actions.collapsed .actions-head { margin: 0; }
+  /* Collapsed: the heading alone, at the column's top right; the rest of
+     the column is the picture, and lets clicks through. */
+  .nav-area.collapsed { pointer-events: none; overflow: hidden; }
+  .nav-area.collapsed > :not(.actions) { display: none; }
+  .nav-area.collapsed .actions { pointer-events: auto; justify-self: end; width: max-content; padding: 6px 8px 6px 12px; }
 
   /* An illustrated place: the same areas over the picture. Each working
      panel is near-opaque, so its text reads over any part of the picture;

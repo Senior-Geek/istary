@@ -8,7 +8,8 @@
   // both to the frame (lib/sheet.js SHEET). At a place with artwork the
   // picture fills the window behind the frame, and its panels can be hidden
   // to see it (ART-2A): this page keeps that too (lib/scenes.js PANELS),
-  // with the story box (ART-2B), for the session only: none of it is saved.
+  // with the story box (ART-2B) and whether the Actions are collapsed
+  // (ART-3E), for the session only: none of it is saved.
   // Their appearance (ART-2C) is Go's, a setting of the window chosen in
   // Settings, and this page passes it on.
   import { setContext } from 'svelte'
@@ -39,6 +40,10 @@
   // one place's leaves the others' as they were. For the session only.
   let storyClosed = $state({}) // the places whose story box is closed
   let storyRect = $state(null) // where the player left it, or null
+  // The Actions collapsed to their heading (ART-3E): one choice for every
+  // illustrated place, kept as the player moves between them; expanded at
+  // the start. For the session only.
+  let actionsCollapsed = $state(false)
   // A game opened or closed (NAV-1A): the Castle's story is another one,
   // so every place's story box is open again.
   let storyGame = 0
@@ -108,6 +113,10 @@
       set open(v) { storyClosed[view.location] = !v },
       get rect() { return storyRect },
       set rect(r) { storyRect = r },
+    },
+    actions: {
+      get collapsed() { return actionsCollapsed },
+      set collapsed(v) { actionsCollapsed = v },
     },
   })
 
