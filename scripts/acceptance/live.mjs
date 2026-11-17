@@ -1294,6 +1294,43 @@ async function main() {
       check(pv.screen === 'dungeon' && pv.location === 'maze', `Escape in the maze leaves nothing (${pv.screen}, ${pv.location})`)
       pv = JSON.parse(await js(`${S}.ReturnToCastle().then((v) => JSON.stringify(v))`))
       check(!!pv.error && pv.location === 'maze', `and the Castle is refused there (${pv.error})`)
+
+      // The maze picture (M-ART-1A.2): Enhanced at Standard to start, drawn
+      // exactly as the shared modules give for the view Go sent; the style
+      // and zoom chosen in its corner call no Session method, save nothing
+      // and give the keys back to the maze.
+      if ((await view()).dungeon?.phase === 'camp') await js(`${S}.DungeonAction('leave-camp', 0)`)
+      if ((await view()).dungeon?.actions?.includes('no')) await js(`${S}.DungeonAction('no', 0)`) // not up the stairs
+      await reload()
+      const picture = () => js(`(async () => {
+        const P = await import('/src/lib/mazeProjection.js'), St = await import('/src/lib/mazeStyle.js')
+        const v = await (window.__orig?.State ?? ${S}.State)(), s = document.querySelector('svg.maze-view')
+        const style = ['classic', 'enhanced'].find((k) => s.classList.contains(k))
+        const want = St.painted(P.perspective(v.dungeon), St.styles[style]).map((p) => p.id)
+        const drawn = [...s.querySelectorAll('polygon')].map((p) => p.dataset.surface)
+        const zoom = Object.keys(St.zooms).find((k) => St.zooms[k] === s.getAttribute('viewBox'))
+        return { style, zoom, facing: v.position?.facing, same: JSON.stringify(drawn) === JSON.stringify(want), n: drawn.length, focus: document.activeElement === document.body }
+      })()`)
+      let pic = await picture()
+      check(pic.style === 'enhanced' && pic.zoom === 'standard' && pic.same && pic.n > 0, `the maze picture: Enhanced at Standard, drawn as the shared modules give (${JSON.stringify(pic)})`)
+      await js(`(() => { window.__calls = []; window.__orig = {}; const S = ${S}; for (const k of Object.keys(S)) { const f = (window.__orig[k] = S[k]); S[k] = (...a) => { window.__calls.push(k); return f(...a) } } })()`)
+      const settingsWas = sha(SETTINGS_FILE)
+      const lookClick = async (label) => {
+        const b = await js(`(() => { const b = [...document.querySelectorAll('.stage .look button')].find((b) => b.innerText.trim() === ${JSON.stringify(label)}); if (!b) return null; const r = b.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 } })()`)
+        if (!b) return false
+        await mouse('mousePressed', b.x, b.y); await mouse('mouseReleased', b.x, b.y); await sleep(250)
+        return true
+      }
+      check(await lookClick('Classic') && await lookClick('Wide'), 'Classic and Wide are in the view’s corner')
+      pic = await picture()
+      const calls = await js('window.__calls')
+      check(pic.style === 'classic' && pic.zoom === 'wide' && pic.same && pic.focus && calls.length === 0 && sha(SETTINGS_FILE) === settingsWas,
+        `Classic at Wide: drawn as the modules give, the keys back with the maze, no Session call (${calls.join(',') || 'none'}), no setting changed`)
+      await press('ArrowRight'); await sleep(400)
+      const turned = await picture()
+      check(turned.facing !== pic.facing && turned.same, `a key after the clicks still turns the party, and the picture follows (${pic.facing} -> ${turned.facing})`)
+      await lookClick('Enhanced'); await lookClick('Standard')
+      await js(`(() => { for (const [k, f] of Object.entries(window.__orig ?? {})) ${S}[k] = f; delete window.__orig })()`)
       await js(`${S}.AbandonPractice()`)
       await goto('edge')
       pv = JSON.parse(await js(`${S}.PracticeEncounter(true).then((v) => JSON.stringify(v))`))

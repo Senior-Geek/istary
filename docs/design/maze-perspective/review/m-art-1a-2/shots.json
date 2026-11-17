@@ -1,0 +1,3332 @@
+[
+ {
+  "file": "straight-lit-classic-standard-980x692.png",
+  "name": "straight-lit",
+  "style": "classic",
+  "zoom": "standard",
+  "size": "980x692",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R18:C0",
+   "level": 1,
+   "row": 18,
+   "col": 0,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   }
+  ],
+  "drawn": [
+   "d5.void:void",
+   "d4.left:wall",
+   "d4.right:wall",
+   "d3.left:wall",
+   "d3.right:wall",
+   "d2.left:wall",
+   "d2.right:wall",
+   "d1.left:wall",
+   "d1.right:wall",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [],
+  "svg": {
+   "w": 234,
+   "h": 234,
+   "x": 373,
+   "y": 134
+  }
+ },
+ {
+  "file": "straight-lit-classic-standard-1440x900.png",
+  "name": "straight-lit",
+  "style": "classic",
+  "zoom": "standard",
+  "size": "1440x900",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R18:C0",
+   "level": 1,
+   "row": 18,
+   "col": 0,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   }
+  ],
+  "drawn": [
+   "d5.void:void",
+   "d4.left:wall",
+   "d4.right:wall",
+   "d3.left:wall",
+   "d3.right:wall",
+   "d2.left:wall",
+   "d2.right:wall",
+   "d1.left:wall",
+   "d1.right:wall",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [],
+  "svg": {
+   "w": 360,
+   "h": 360,
+   "x": 540,
+   "y": 174
+  }
+ },
+ {
+  "file": "straight-lit-enhanced-standard-980x692.png",
+  "name": "straight-lit",
+  "style": "enhanced",
+  "zoom": "standard",
+  "size": "980x692",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R18:C0",
+   "level": 1,
+   "row": 18,
+   "col": 0,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   }
+  ],
+  "drawn": [
+   "d5.void:void",
+   "d4.floor:floor",
+   "d4.ceiling:ceiling",
+   "d4.left:wall",
+   "d4.right:wall",
+   "d3.floor:floor",
+   "d3.ceiling:ceiling",
+   "d3.left:wall",
+   "d3.right:wall",
+   "d2.floor:floor",
+   "d2.ceiling:ceiling",
+   "d2.left:wall",
+   "d2.right:wall",
+   "d1.floor:floor",
+   "d1.ceiling:ceiling",
+   "d1.left:wall",
+   "d1.right:wall",
+   "d0.floor:floor",
+   "d0.ceiling:ceiling",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [
+   "d3.floor:flag",
+   "d3.left:mortar",
+   "d3.right:mortar",
+   "d2.floor:flag",
+   "d2.ceiling:flag",
+   "d2.left:mortar",
+   "d2.right:mortar",
+   "d1.floor:flag",
+   "d1.ceiling:flag",
+   "d1.left:mortar",
+   "d1.right:mortar",
+   "d0.floor:flag",
+   "d0.ceiling:flag",
+   "d0.left:mortar",
+   "d0.right:mortar"
+  ],
+  "svg": {
+   "w": 234,
+   "h": 234,
+   "x": 373,
+   "y": 134
+  }
+ },
+ {
+  "file": "straight-lit-enhanced-standard-1440x900.png",
+  "name": "straight-lit",
+  "style": "enhanced",
+  "zoom": "standard",
+  "size": "1440x900",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R18:C0",
+   "level": 1,
+   "row": 18,
+   "col": 0,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   }
+  ],
+  "drawn": [
+   "d5.void:void",
+   "d4.floor:floor",
+   "d4.ceiling:ceiling",
+   "d4.left:wall",
+   "d4.right:wall",
+   "d3.floor:floor",
+   "d3.ceiling:ceiling",
+   "d3.left:wall",
+   "d3.right:wall",
+   "d2.floor:floor",
+   "d2.ceiling:ceiling",
+   "d2.left:wall",
+   "d2.right:wall",
+   "d1.floor:floor",
+   "d1.ceiling:ceiling",
+   "d1.left:wall",
+   "d1.right:wall",
+   "d0.floor:floor",
+   "d0.ceiling:ceiling",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [
+   "d3.floor:flag",
+   "d3.left:mortar",
+   "d3.right:mortar",
+   "d2.floor:flag",
+   "d2.ceiling:flag",
+   "d2.left:mortar",
+   "d2.right:mortar",
+   "d1.floor:flag",
+   "d1.ceiling:flag",
+   "d1.left:mortar",
+   "d1.right:mortar",
+   "d0.floor:flag",
+   "d0.ceiling:flag",
+   "d0.left:mortar",
+   "d0.right:mortar"
+  ],
+  "svg": {
+   "w": 360,
+   "h": 360,
+   "x": 540,
+   "y": 174
+  }
+ },
+ {
+  "file": "straight-lit-enhanced-close-980x692.png",
+  "name": "straight-lit",
+  "style": "enhanced",
+  "zoom": "close",
+  "size": "980x692",
+  "viewBox": "-36 -36 72 72",
+  "position": {
+   "place": "L1:R18:C0",
+   "level": 1,
+   "row": 18,
+   "col": 0,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   }
+  ],
+  "drawn": [
+   "d5.void:void",
+   "d4.floor:floor",
+   "d4.ceiling:ceiling",
+   "d4.left:wall",
+   "d4.right:wall",
+   "d3.floor:floor",
+   "d3.ceiling:ceiling",
+   "d3.left:wall",
+   "d3.right:wall",
+   "d2.floor:floor",
+   "d2.ceiling:ceiling",
+   "d2.left:wall",
+   "d2.right:wall",
+   "d1.floor:floor",
+   "d1.ceiling:ceiling",
+   "d1.left:wall",
+   "d1.right:wall",
+   "d0.floor:floor",
+   "d0.ceiling:ceiling",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [
+   "d3.floor:flag",
+   "d3.left:mortar",
+   "d3.right:mortar",
+   "d2.floor:flag",
+   "d2.ceiling:flag",
+   "d2.left:mortar",
+   "d2.right:mortar",
+   "d1.floor:flag",
+   "d1.ceiling:flag",
+   "d1.left:mortar",
+   "d1.right:mortar",
+   "d0.floor:flag",
+   "d0.ceiling:flag",
+   "d0.left:mortar",
+   "d0.right:mortar"
+  ],
+  "svg": {
+   "w": 234,
+   "h": 234,
+   "x": 373,
+   "y": 134
+  }
+ },
+ {
+  "file": "straight-lit-enhanced-close-1440x900.png",
+  "name": "straight-lit",
+  "style": "enhanced",
+  "zoom": "close",
+  "size": "1440x900",
+  "viewBox": "-36 -36 72 72",
+  "position": {
+   "place": "L1:R18:C0",
+   "level": 1,
+   "row": 18,
+   "col": 0,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   }
+  ],
+  "drawn": [
+   "d5.void:void",
+   "d4.floor:floor",
+   "d4.ceiling:ceiling",
+   "d4.left:wall",
+   "d4.right:wall",
+   "d3.floor:floor",
+   "d3.ceiling:ceiling",
+   "d3.left:wall",
+   "d3.right:wall",
+   "d2.floor:floor",
+   "d2.ceiling:ceiling",
+   "d2.left:wall",
+   "d2.right:wall",
+   "d1.floor:floor",
+   "d1.ceiling:ceiling",
+   "d1.left:wall",
+   "d1.right:wall",
+   "d0.floor:floor",
+   "d0.ceiling:ceiling",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [
+   "d3.floor:flag",
+   "d3.left:mortar",
+   "d3.right:mortar",
+   "d2.floor:flag",
+   "d2.ceiling:flag",
+   "d2.left:mortar",
+   "d2.right:mortar",
+   "d1.floor:flag",
+   "d1.ceiling:flag",
+   "d1.left:mortar",
+   "d1.right:mortar",
+   "d0.floor:flag",
+   "d0.ceiling:flag",
+   "d0.left:mortar",
+   "d0.right:mortar"
+  ],
+  "svg": {
+   "w": 360,
+   "h": 360,
+   "x": 540,
+   "y": 174
+  }
+ },
+ {
+  "file": "straight-lit-enhanced-wide-980x692.png",
+  "name": "straight-lit",
+  "style": "enhanced",
+  "zoom": "wide",
+  "size": "980x692",
+  "viewBox": "-52 -52 104 104",
+  "position": {
+   "place": "L1:R18:C0",
+   "level": 1,
+   "row": 18,
+   "col": 0,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   }
+  ],
+  "drawn": [
+   "d5.void:void",
+   "d4.floor:floor",
+   "d4.ceiling:ceiling",
+   "d4.left:wall",
+   "d4.right:wall",
+   "d3.floor:floor",
+   "d3.ceiling:ceiling",
+   "d3.left:wall",
+   "d3.right:wall",
+   "d2.floor:floor",
+   "d2.ceiling:ceiling",
+   "d2.left:wall",
+   "d2.right:wall",
+   "d1.floor:floor",
+   "d1.ceiling:ceiling",
+   "d1.left:wall",
+   "d1.right:wall",
+   "d0.floor:floor",
+   "d0.ceiling:ceiling",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [
+   "d3.floor:flag",
+   "d3.left:mortar",
+   "d3.right:mortar",
+   "d2.floor:flag",
+   "d2.ceiling:flag",
+   "d2.left:mortar",
+   "d2.right:mortar",
+   "d1.floor:flag",
+   "d1.ceiling:flag",
+   "d1.left:mortar",
+   "d1.right:mortar",
+   "d0.floor:flag",
+   "d0.ceiling:flag",
+   "d0.left:mortar",
+   "d0.right:mortar"
+  ],
+  "svg": {
+   "w": 234,
+   "h": 234,
+   "x": 373,
+   "y": 134
+  }
+ },
+ {
+  "file": "straight-lit-enhanced-wide-1440x900.png",
+  "name": "straight-lit",
+  "style": "enhanced",
+  "zoom": "wide",
+  "size": "1440x900",
+  "viewBox": "-52 -52 104 104",
+  "position": {
+   "place": "L1:R18:C0",
+   "level": 1,
+   "row": 18,
+   "col": 0,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   }
+  ],
+  "drawn": [
+   "d5.void:void",
+   "d4.floor:floor",
+   "d4.ceiling:ceiling",
+   "d4.left:wall",
+   "d4.right:wall",
+   "d3.floor:floor",
+   "d3.ceiling:ceiling",
+   "d3.left:wall",
+   "d3.right:wall",
+   "d2.floor:floor",
+   "d2.ceiling:ceiling",
+   "d2.left:wall",
+   "d2.right:wall",
+   "d1.floor:floor",
+   "d1.ceiling:ceiling",
+   "d1.left:wall",
+   "d1.right:wall",
+   "d0.floor:floor",
+   "d0.ceiling:ceiling",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [
+   "d3.floor:flag",
+   "d3.left:mortar",
+   "d3.right:mortar",
+   "d2.floor:flag",
+   "d2.ceiling:flag",
+   "d2.left:mortar",
+   "d2.right:mortar",
+   "d1.floor:flag",
+   "d1.ceiling:flag",
+   "d1.left:mortar",
+   "d1.right:mortar",
+   "d0.floor:flag",
+   "d0.ceiling:flag",
+   "d0.left:mortar",
+   "d0.right:mortar"
+  ],
+  "svg": {
+   "w": 360,
+   "h": 360,
+   "x": 540,
+   "y": 174
+  }
+ },
+ {
+  "file": "straight-unlit-classic-standard-980x692.png",
+  "name": "straight-unlit",
+  "style": "classic",
+  "zoom": "standard",
+  "size": "980x692",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R18:C0",
+   "level": 1,
+   "row": 18,
+   "col": 0,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   }
+  ],
+  "drawn": [
+   "d2.void:void",
+   "d1.left:wall",
+   "d1.right:wall",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [],
+  "svg": {
+   "w": 234,
+   "h": 234,
+   "x": 373,
+   "y": 134
+  }
+ },
+ {
+  "file": "straight-unlit-classic-standard-1440x900.png",
+  "name": "straight-unlit",
+  "style": "classic",
+  "zoom": "standard",
+  "size": "1440x900",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R18:C0",
+   "level": 1,
+   "row": 18,
+   "col": 0,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   }
+  ],
+  "drawn": [
+   "d2.void:void",
+   "d1.left:wall",
+   "d1.right:wall",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [],
+  "svg": {
+   "w": 360,
+   "h": 360,
+   "x": 540,
+   "y": 174
+  }
+ },
+ {
+  "file": "straight-unlit-enhanced-standard-980x692.png",
+  "name": "straight-unlit",
+  "style": "enhanced",
+  "zoom": "standard",
+  "size": "980x692",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R18:C0",
+   "level": 1,
+   "row": 18,
+   "col": 0,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   }
+  ],
+  "drawn": [
+   "d2.void:void",
+   "d1.floor:floor",
+   "d1.ceiling:ceiling",
+   "d1.left:wall",
+   "d1.right:wall",
+   "d0.floor:floor",
+   "d0.ceiling:ceiling",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [
+   "d1.floor:flag",
+   "d1.ceiling:flag",
+   "d1.left:mortar",
+   "d1.right:mortar",
+   "d0.floor:flag",
+   "d0.ceiling:flag",
+   "d0.left:mortar",
+   "d0.right:mortar"
+  ],
+  "svg": {
+   "w": 234,
+   "h": 234,
+   "x": 373,
+   "y": 134
+  }
+ },
+ {
+  "file": "straight-unlit-enhanced-standard-1440x900.png",
+  "name": "straight-unlit",
+  "style": "enhanced",
+  "zoom": "standard",
+  "size": "1440x900",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R18:C0",
+   "level": 1,
+   "row": 18,
+   "col": 0,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   }
+  ],
+  "drawn": [
+   "d2.void:void",
+   "d1.floor:floor",
+   "d1.ceiling:ceiling",
+   "d1.left:wall",
+   "d1.right:wall",
+   "d0.floor:floor",
+   "d0.ceiling:ceiling",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [
+   "d1.floor:flag",
+   "d1.ceiling:flag",
+   "d1.left:mortar",
+   "d1.right:mortar",
+   "d0.floor:flag",
+   "d0.ceiling:flag",
+   "d0.left:mortar",
+   "d0.right:mortar"
+  ],
+  "svg": {
+   "w": 360,
+   "h": 360,
+   "x": 540,
+   "y": 174
+  }
+ },
+ {
+  "file": "dead-end-classic-standard-980x692.png",
+  "name": "dead-end",
+  "style": "classic",
+  "zoom": "standard",
+  "size": "980x692",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R15:C18",
+   "level": 1,
+   "row": 15,
+   "col": 18,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "wall"
+   }
+  ],
+  "drawn": [
+   "d2.left:wall",
+   "d2.right:wall",
+   "d2.front:wall",
+   "d1.left:wall",
+   "d1.right:wall",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [],
+  "svg": {
+   "w": 234,
+   "h": 234,
+   "x": 373,
+   "y": 134
+  }
+ },
+ {
+  "file": "dead-end-classic-standard-1440x900.png",
+  "name": "dead-end",
+  "style": "classic",
+  "zoom": "standard",
+  "size": "1440x900",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R15:C18",
+   "level": 1,
+   "row": 15,
+   "col": 18,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "wall"
+   }
+  ],
+  "drawn": [
+   "d2.left:wall",
+   "d2.right:wall",
+   "d2.front:wall",
+   "d1.left:wall",
+   "d1.right:wall",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [],
+  "svg": {
+   "w": 360,
+   "h": 360,
+   "x": 540,
+   "y": 174
+  }
+ },
+ {
+  "file": "dead-end-enhanced-standard-980x692.png",
+  "name": "dead-end",
+  "style": "enhanced",
+  "zoom": "standard",
+  "size": "980x692",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R15:C18",
+   "level": 1,
+   "row": 15,
+   "col": 18,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "wall"
+   }
+  ],
+  "drawn": [
+   "d2.floor:floor",
+   "d2.ceiling:ceiling",
+   "d2.left:wall",
+   "d2.right:wall",
+   "d2.front:wall",
+   "d1.floor:floor",
+   "d1.ceiling:ceiling",
+   "d1.left:wall",
+   "d1.right:wall",
+   "d0.floor:floor",
+   "d0.ceiling:ceiling",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [
+   "d2.floor:flag",
+   "d2.ceiling:flag",
+   "d2.left:mortar",
+   "d2.right:mortar",
+   "d2.front:mortar",
+   "d1.floor:flag",
+   "d1.ceiling:flag",
+   "d1.left:mortar",
+   "d1.right:mortar",
+   "d0.floor:flag",
+   "d0.ceiling:flag",
+   "d0.left:mortar",
+   "d0.right:mortar"
+  ],
+  "svg": {
+   "w": 234,
+   "h": 234,
+   "x": 373,
+   "y": 134
+  }
+ },
+ {
+  "file": "dead-end-enhanced-standard-1440x900.png",
+  "name": "dead-end",
+  "style": "enhanced",
+  "zoom": "standard",
+  "size": "1440x900",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R15:C18",
+   "level": 1,
+   "row": 15,
+   "col": 18,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "wall"
+   }
+  ],
+  "drawn": [
+   "d2.floor:floor",
+   "d2.ceiling:ceiling",
+   "d2.left:wall",
+   "d2.right:wall",
+   "d2.front:wall",
+   "d1.floor:floor",
+   "d1.ceiling:ceiling",
+   "d1.left:wall",
+   "d1.right:wall",
+   "d0.floor:floor",
+   "d0.ceiling:ceiling",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [
+   "d2.floor:flag",
+   "d2.ceiling:flag",
+   "d2.left:mortar",
+   "d2.right:mortar",
+   "d2.front:mortar",
+   "d1.floor:flag",
+   "d1.ceiling:flag",
+   "d1.left:mortar",
+   "d1.right:mortar",
+   "d0.floor:flag",
+   "d0.ceiling:flag",
+   "d0.left:mortar",
+   "d0.right:mortar"
+  ],
+  "svg": {
+   "w": 360,
+   "h": 360,
+   "x": 540,
+   "y": 174
+  }
+ },
+ {
+  "file": "t-junction-classic-standard-980x692.png",
+  "name": "t-junction",
+  "style": "classic",
+  "zoom": "standard",
+  "size": "980x692",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R12:C3",
+   "level": 1,
+   "row": 12,
+   "col": 3,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "open",
+    "right": "open",
+    "front": "wall",
+    "leftAhead": "wall",
+    "rightAhead": "wall"
+   }
+  ],
+  "drawn": [
+   "d1.leftAhead:wall",
+   "d1.rightAhead:wall",
+   "d1.front:wall",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [],
+  "svg": {
+   "w": 234,
+   "h": 234,
+   "x": 373,
+   "y": 134
+  }
+ },
+ {
+  "file": "t-junction-classic-standard-1440x900.png",
+  "name": "t-junction",
+  "style": "classic",
+  "zoom": "standard",
+  "size": "1440x900",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R12:C3",
+   "level": 1,
+   "row": 12,
+   "col": 3,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "open",
+    "right": "open",
+    "front": "wall",
+    "leftAhead": "wall",
+    "rightAhead": "wall"
+   }
+  ],
+  "drawn": [
+   "d1.leftAhead:wall",
+   "d1.rightAhead:wall",
+   "d1.front:wall",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [],
+  "svg": {
+   "w": 360,
+   "h": 360,
+   "x": 540,
+   "y": 174
+  }
+ },
+ {
+  "file": "t-junction-enhanced-standard-980x692.png",
+  "name": "t-junction",
+  "style": "enhanced",
+  "zoom": "standard",
+  "size": "980x692",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R12:C3",
+   "level": 1,
+   "row": 12,
+   "col": 3,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "open",
+    "right": "open",
+    "front": "wall",
+    "leftAhead": "wall",
+    "rightAhead": "wall"
+   }
+  ],
+  "drawn": [
+   "d1.floor:floor",
+   "d1.leftFloor:floor",
+   "d1.rightFloor:floor",
+   "d1.ceiling:ceiling",
+   "d1.leftCeiling:ceiling",
+   "d1.rightCeiling:ceiling",
+   "d1.leftAhead:wall",
+   "d1.rightAhead:wall",
+   "d1.front:wall",
+   "d0.floor:floor",
+   "d0.ceiling:ceiling",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [
+   "d1.floor:flag",
+   "d1.leftFloor:flag",
+   "d1.rightFloor:flag",
+   "d1.ceiling:flag",
+   "d1.leftCeiling:flag",
+   "d1.rightCeiling:flag",
+   "d1.leftAhead:mortar",
+   "d1.rightAhead:mortar",
+   "d1.front:mortar",
+   "d0.floor:flag",
+   "d0.ceiling:flag",
+   "d0.left:mortar",
+   "d0.right:mortar"
+  ],
+  "svg": {
+   "w": 234,
+   "h": 234,
+   "x": 373,
+   "y": 134
+  }
+ },
+ {
+  "file": "t-junction-enhanced-standard-1440x900.png",
+  "name": "t-junction",
+  "style": "enhanced",
+  "zoom": "standard",
+  "size": "1440x900",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R12:C3",
+   "level": 1,
+   "row": 12,
+   "col": 3,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "open",
+    "right": "open",
+    "front": "wall",
+    "leftAhead": "wall",
+    "rightAhead": "wall"
+   }
+  ],
+  "drawn": [
+   "d1.floor:floor",
+   "d1.leftFloor:floor",
+   "d1.rightFloor:floor",
+   "d1.ceiling:ceiling",
+   "d1.leftCeiling:ceiling",
+   "d1.rightCeiling:ceiling",
+   "d1.leftAhead:wall",
+   "d1.rightAhead:wall",
+   "d1.front:wall",
+   "d0.floor:floor",
+   "d0.ceiling:ceiling",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [
+   "d1.floor:flag",
+   "d1.leftFloor:flag",
+   "d1.rightFloor:flag",
+   "d1.ceiling:flag",
+   "d1.leftCeiling:flag",
+   "d1.rightCeiling:flag",
+   "d1.leftAhead:mortar",
+   "d1.rightAhead:mortar",
+   "d1.front:mortar",
+   "d0.floor:flag",
+   "d0.ceiling:flag",
+   "d0.left:mortar",
+   "d0.right:mortar"
+  ],
+  "svg": {
+   "w": 360,
+   "h": 360,
+   "x": 540,
+   "y": 174
+  }
+ },
+ {
+  "file": "four-way-classic-standard-980x692.png",
+  "name": "four-way",
+  "style": "classic",
+  "zoom": "standard",
+  "size": "980x692",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R9:C8",
+   "level": 1,
+   "row": 9,
+   "col": 8,
+   "facing": "E",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "open",
+    "right": "open",
+    "front": "open",
+    "leftAhead": "open",
+    "rightAhead": "open"
+   },
+   {
+    "left": "open",
+    "right": "open",
+    "front": "wall",
+    "leftAhead": "wall",
+    "rightAhead": "open"
+   }
+  ],
+  "drawn": [
+   "d2.leftAhead:wall",
+   "d2.front:wall",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [],
+  "svg": {
+   "w": 234,
+   "h": 234,
+   "x": 373,
+   "y": 134
+  }
+ },
+ {
+  "file": "four-way-classic-standard-1440x900.png",
+  "name": "four-way",
+  "style": "classic",
+  "zoom": "standard",
+  "size": "1440x900",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R9:C8",
+   "level": 1,
+   "row": 9,
+   "col": 8,
+   "facing": "E",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "open",
+    "right": "open",
+    "front": "open",
+    "leftAhead": "open",
+    "rightAhead": "open"
+   },
+   {
+    "left": "open",
+    "right": "open",
+    "front": "wall",
+    "leftAhead": "wall",
+    "rightAhead": "open"
+   }
+  ],
+  "drawn": [
+   "d2.leftAhead:wall",
+   "d2.front:wall",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [],
+  "svg": {
+   "w": 360,
+   "h": 360,
+   "x": 540,
+   "y": 174
+  }
+ },
+ {
+  "file": "four-way-enhanced-standard-980x692.png",
+  "name": "four-way",
+  "style": "enhanced",
+  "zoom": "standard",
+  "size": "980x692",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R9:C8",
+   "level": 1,
+   "row": 9,
+   "col": 8,
+   "facing": "E",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "open",
+    "right": "open",
+    "front": "open",
+    "leftAhead": "open",
+    "rightAhead": "open"
+   },
+   {
+    "left": "open",
+    "right": "open",
+    "front": "wall",
+    "leftAhead": "wall",
+    "rightAhead": "open"
+   }
+  ],
+  "drawn": [
+   "d2.floor:floor",
+   "d2.leftFloor:floor",
+   "d2.rightFloor:floor",
+   "d2.ceiling:ceiling",
+   "d2.leftCeiling:ceiling",
+   "d2.rightCeiling:ceiling",
+   "d2.leftAhead:wall",
+   "d2.front:wall",
+   "d1.floor:floor",
+   "d1.leftFloor:floor",
+   "d1.rightFloor:floor",
+   "d1.ceiling:ceiling",
+   "d1.leftCeiling:ceiling",
+   "d1.rightCeiling:ceiling",
+   "d0.floor:floor",
+   "d0.ceiling:ceiling",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [
+   "d2.floor:flag",
+   "d2.leftFloor:flag",
+   "d2.rightFloor:flag",
+   "d2.ceiling:flag",
+   "d2.leftCeiling:flag",
+   "d2.rightCeiling:flag",
+   "d2.leftAhead:mortar",
+   "d2.front:mortar",
+   "d1.floor:flag",
+   "d1.leftFloor:flag",
+   "d1.rightFloor:flag",
+   "d1.ceiling:flag",
+   "d1.leftCeiling:flag",
+   "d1.rightCeiling:flag",
+   "d0.floor:flag",
+   "d0.ceiling:flag",
+   "d0.left:mortar",
+   "d0.right:mortar"
+  ],
+  "svg": {
+   "w": 234,
+   "h": 234,
+   "x": 373,
+   "y": 134
+  }
+ },
+ {
+  "file": "four-way-enhanced-standard-1440x900.png",
+  "name": "four-way",
+  "style": "enhanced",
+  "zoom": "standard",
+  "size": "1440x900",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R9:C8",
+   "level": 1,
+   "row": 9,
+   "col": 8,
+   "facing": "E",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "open",
+    "right": "open",
+    "front": "open",
+    "leftAhead": "open",
+    "rightAhead": "open"
+   },
+   {
+    "left": "open",
+    "right": "open",
+    "front": "wall",
+    "leftAhead": "wall",
+    "rightAhead": "open"
+   }
+  ],
+  "drawn": [
+   "d2.floor:floor",
+   "d2.leftFloor:floor",
+   "d2.rightFloor:floor",
+   "d2.ceiling:ceiling",
+   "d2.leftCeiling:ceiling",
+   "d2.rightCeiling:ceiling",
+   "d2.leftAhead:wall",
+   "d2.front:wall",
+   "d1.floor:floor",
+   "d1.leftFloor:floor",
+   "d1.rightFloor:floor",
+   "d1.ceiling:ceiling",
+   "d1.leftCeiling:ceiling",
+   "d1.rightCeiling:ceiling",
+   "d0.floor:floor",
+   "d0.ceiling:ceiling",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [
+   "d2.floor:flag",
+   "d2.leftFloor:flag",
+   "d2.rightFloor:flag",
+   "d2.ceiling:flag",
+   "d2.leftCeiling:flag",
+   "d2.rightCeiling:flag",
+   "d2.leftAhead:mortar",
+   "d2.front:mortar",
+   "d1.floor:flag",
+   "d1.leftFloor:flag",
+   "d1.rightFloor:flag",
+   "d1.ceiling:flag",
+   "d1.leftCeiling:flag",
+   "d1.rightCeiling:flag",
+   "d0.floor:flag",
+   "d0.ceiling:flag",
+   "d0.left:mortar",
+   "d0.right:mortar"
+  ],
+  "svg": {
+   "w": 360,
+   "h": 360,
+   "x": 540,
+   "y": 174
+  }
+ },
+ {
+  "file": "four-way-enhanced-close-980x692.png",
+  "name": "four-way",
+  "style": "enhanced",
+  "zoom": "close",
+  "size": "980x692",
+  "viewBox": "-36 -36 72 72",
+  "position": {
+   "place": "L1:R9:C8",
+   "level": 1,
+   "row": 9,
+   "col": 8,
+   "facing": "E",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "open",
+    "right": "open",
+    "front": "open",
+    "leftAhead": "open",
+    "rightAhead": "open"
+   },
+   {
+    "left": "open",
+    "right": "open",
+    "front": "wall",
+    "leftAhead": "wall",
+    "rightAhead": "open"
+   }
+  ],
+  "drawn": [
+   "d2.floor:floor",
+   "d2.leftFloor:floor",
+   "d2.rightFloor:floor",
+   "d2.ceiling:ceiling",
+   "d2.leftCeiling:ceiling",
+   "d2.rightCeiling:ceiling",
+   "d2.leftAhead:wall",
+   "d2.front:wall",
+   "d1.floor:floor",
+   "d1.leftFloor:floor",
+   "d1.rightFloor:floor",
+   "d1.ceiling:ceiling",
+   "d1.leftCeiling:ceiling",
+   "d1.rightCeiling:ceiling",
+   "d0.floor:floor",
+   "d0.ceiling:ceiling",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [
+   "d2.floor:flag",
+   "d2.leftFloor:flag",
+   "d2.rightFloor:flag",
+   "d2.ceiling:flag",
+   "d2.leftCeiling:flag",
+   "d2.rightCeiling:flag",
+   "d2.leftAhead:mortar",
+   "d2.front:mortar",
+   "d1.floor:flag",
+   "d1.leftFloor:flag",
+   "d1.rightFloor:flag",
+   "d1.ceiling:flag",
+   "d1.leftCeiling:flag",
+   "d1.rightCeiling:flag",
+   "d0.floor:flag",
+   "d0.ceiling:flag",
+   "d0.left:mortar",
+   "d0.right:mortar"
+  ],
+  "svg": {
+   "w": 234,
+   "h": 234,
+   "x": 373,
+   "y": 134
+  }
+ },
+ {
+  "file": "four-way-enhanced-close-1440x900.png",
+  "name": "four-way",
+  "style": "enhanced",
+  "zoom": "close",
+  "size": "1440x900",
+  "viewBox": "-36 -36 72 72",
+  "position": {
+   "place": "L1:R9:C8",
+   "level": 1,
+   "row": 9,
+   "col": 8,
+   "facing": "E",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "open",
+    "right": "open",
+    "front": "open",
+    "leftAhead": "open",
+    "rightAhead": "open"
+   },
+   {
+    "left": "open",
+    "right": "open",
+    "front": "wall",
+    "leftAhead": "wall",
+    "rightAhead": "open"
+   }
+  ],
+  "drawn": [
+   "d2.floor:floor",
+   "d2.leftFloor:floor",
+   "d2.rightFloor:floor",
+   "d2.ceiling:ceiling",
+   "d2.leftCeiling:ceiling",
+   "d2.rightCeiling:ceiling",
+   "d2.leftAhead:wall",
+   "d2.front:wall",
+   "d1.floor:floor",
+   "d1.leftFloor:floor",
+   "d1.rightFloor:floor",
+   "d1.ceiling:ceiling",
+   "d1.leftCeiling:ceiling",
+   "d1.rightCeiling:ceiling",
+   "d0.floor:floor",
+   "d0.ceiling:ceiling",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [
+   "d2.floor:flag",
+   "d2.leftFloor:flag",
+   "d2.rightFloor:flag",
+   "d2.ceiling:flag",
+   "d2.leftCeiling:flag",
+   "d2.rightCeiling:flag",
+   "d2.leftAhead:mortar",
+   "d2.front:mortar",
+   "d1.floor:flag",
+   "d1.leftFloor:flag",
+   "d1.rightFloor:flag",
+   "d1.ceiling:flag",
+   "d1.leftCeiling:flag",
+   "d1.rightCeiling:flag",
+   "d0.floor:flag",
+   "d0.ceiling:flag",
+   "d0.left:mortar",
+   "d0.right:mortar"
+  ],
+  "svg": {
+   "w": 360,
+   "h": 360,
+   "x": 540,
+   "y": 174
+  }
+ },
+ {
+  "file": "four-way-enhanced-wide-980x692.png",
+  "name": "four-way",
+  "style": "enhanced",
+  "zoom": "wide",
+  "size": "980x692",
+  "viewBox": "-52 -52 104 104",
+  "position": {
+   "place": "L1:R9:C8",
+   "level": 1,
+   "row": 9,
+   "col": 8,
+   "facing": "E",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "open",
+    "right": "open",
+    "front": "open",
+    "leftAhead": "open",
+    "rightAhead": "open"
+   },
+   {
+    "left": "open",
+    "right": "open",
+    "front": "wall",
+    "leftAhead": "wall",
+    "rightAhead": "open"
+   }
+  ],
+  "drawn": [
+   "d2.floor:floor",
+   "d2.leftFloor:floor",
+   "d2.rightFloor:floor",
+   "d2.ceiling:ceiling",
+   "d2.leftCeiling:ceiling",
+   "d2.rightCeiling:ceiling",
+   "d2.leftAhead:wall",
+   "d2.front:wall",
+   "d1.floor:floor",
+   "d1.leftFloor:floor",
+   "d1.rightFloor:floor",
+   "d1.ceiling:ceiling",
+   "d1.leftCeiling:ceiling",
+   "d1.rightCeiling:ceiling",
+   "d0.floor:floor",
+   "d0.ceiling:ceiling",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [
+   "d2.floor:flag",
+   "d2.leftFloor:flag",
+   "d2.rightFloor:flag",
+   "d2.ceiling:flag",
+   "d2.leftCeiling:flag",
+   "d2.rightCeiling:flag",
+   "d2.leftAhead:mortar",
+   "d2.front:mortar",
+   "d1.floor:flag",
+   "d1.leftFloor:flag",
+   "d1.rightFloor:flag",
+   "d1.ceiling:flag",
+   "d1.leftCeiling:flag",
+   "d1.rightCeiling:flag",
+   "d0.floor:flag",
+   "d0.ceiling:flag",
+   "d0.left:mortar",
+   "d0.right:mortar"
+  ],
+  "svg": {
+   "w": 234,
+   "h": 234,
+   "x": 373,
+   "y": 134
+  }
+ },
+ {
+  "file": "four-way-enhanced-wide-1440x900.png",
+  "name": "four-way",
+  "style": "enhanced",
+  "zoom": "wide",
+  "size": "1440x900",
+  "viewBox": "-52 -52 104 104",
+  "position": {
+   "place": "L1:R9:C8",
+   "level": 1,
+   "row": 9,
+   "col": 8,
+   "facing": "E",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "open",
+    "right": "open",
+    "front": "open",
+    "leftAhead": "open",
+    "rightAhead": "open"
+   },
+   {
+    "left": "open",
+    "right": "open",
+    "front": "wall",
+    "leftAhead": "wall",
+    "rightAhead": "open"
+   }
+  ],
+  "drawn": [
+   "d2.floor:floor",
+   "d2.leftFloor:floor",
+   "d2.rightFloor:floor",
+   "d2.ceiling:ceiling",
+   "d2.leftCeiling:ceiling",
+   "d2.rightCeiling:ceiling",
+   "d2.leftAhead:wall",
+   "d2.front:wall",
+   "d1.floor:floor",
+   "d1.leftFloor:floor",
+   "d1.rightFloor:floor",
+   "d1.ceiling:ceiling",
+   "d1.leftCeiling:ceiling",
+   "d1.rightCeiling:ceiling",
+   "d0.floor:floor",
+   "d0.ceiling:ceiling",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [
+   "d2.floor:flag",
+   "d2.leftFloor:flag",
+   "d2.rightFloor:flag",
+   "d2.ceiling:flag",
+   "d2.leftCeiling:flag",
+   "d2.rightCeiling:flag",
+   "d2.leftAhead:mortar",
+   "d2.front:mortar",
+   "d1.floor:flag",
+   "d1.leftFloor:flag",
+   "d1.rightFloor:flag",
+   "d1.ceiling:flag",
+   "d1.leftCeiling:flag",
+   "d1.rightCeiling:flag",
+   "d0.floor:flag",
+   "d0.ceiling:flag",
+   "d0.left:mortar",
+   "d0.right:mortar"
+  ],
+  "svg": {
+   "w": 360,
+   "h": 360,
+   "x": 540,
+   "y": 174
+  }
+ },
+ {
+  "file": "door-classic-standard-980x692.png",
+  "name": "door",
+  "style": "classic",
+  "zoom": "standard",
+  "size": "980x692",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R13:C3",
+   "level": 1,
+   "row": 13,
+   "col": 3,
+   "facing": "S",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "door"
+   }
+  ],
+  "drawn": [
+   "d2.left:wall",
+   "d2.right:wall",
+   "d2.front:wall",
+   "d2.front.door:door",
+   "d1.left:wall",
+   "d1.right:wall",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [],
+  "svg": {
+   "w": 234,
+   "h": 234,
+   "x": 373,
+   "y": 134
+  }
+ },
+ {
+  "file": "door-classic-standard-1440x900.png",
+  "name": "door",
+  "style": "classic",
+  "zoom": "standard",
+  "size": "1440x900",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R13:C3",
+   "level": 1,
+   "row": 13,
+   "col": 3,
+   "facing": "S",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "door"
+   }
+  ],
+  "drawn": [
+   "d2.left:wall",
+   "d2.right:wall",
+   "d2.front:wall",
+   "d2.front.door:door",
+   "d1.left:wall",
+   "d1.right:wall",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [],
+  "svg": {
+   "w": 360,
+   "h": 360,
+   "x": 540,
+   "y": 174
+  }
+ },
+ {
+  "file": "door-enhanced-standard-980x692.png",
+  "name": "door",
+  "style": "enhanced",
+  "zoom": "standard",
+  "size": "980x692",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R13:C3",
+   "level": 1,
+   "row": 13,
+   "col": 3,
+   "facing": "S",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "door"
+   }
+  ],
+  "drawn": [
+   "d2.floor:floor",
+   "d2.ceiling:ceiling",
+   "d2.left:wall",
+   "d2.right:wall",
+   "d2.front:wall",
+   "d2.front.door:door",
+   "d1.floor:floor",
+   "d1.ceiling:ceiling",
+   "d1.left:wall",
+   "d1.right:wall",
+   "d0.floor:floor",
+   "d0.ceiling:ceiling",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [
+   "d2.floor:flag",
+   "d2.ceiling:flag",
+   "d2.left:mortar",
+   "d2.right:mortar",
+   "d2.front:mortar",
+   "d2.front.door:plank",
+   "d2.front.door:band",
+   "d1.floor:flag",
+   "d1.ceiling:flag",
+   "d1.left:mortar",
+   "d1.right:mortar",
+   "d0.floor:flag",
+   "d0.ceiling:flag",
+   "d0.left:mortar",
+   "d0.right:mortar"
+  ],
+  "svg": {
+   "w": 234,
+   "h": 234,
+   "x": 373,
+   "y": 134
+  }
+ },
+ {
+  "file": "door-enhanced-standard-1440x900.png",
+  "name": "door",
+  "style": "enhanced",
+  "zoom": "standard",
+  "size": "1440x900",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R13:C3",
+   "level": 1,
+   "row": 13,
+   "col": 3,
+   "facing": "S",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "door"
+   }
+  ],
+  "drawn": [
+   "d2.floor:floor",
+   "d2.ceiling:ceiling",
+   "d2.left:wall",
+   "d2.right:wall",
+   "d2.front:wall",
+   "d2.front.door:door",
+   "d1.floor:floor",
+   "d1.ceiling:ceiling",
+   "d1.left:wall",
+   "d1.right:wall",
+   "d0.floor:floor",
+   "d0.ceiling:ceiling",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [
+   "d2.floor:flag",
+   "d2.ceiling:flag",
+   "d2.left:mortar",
+   "d2.right:mortar",
+   "d2.front:mortar",
+   "d2.front.door:plank",
+   "d2.front.door:band",
+   "d1.floor:flag",
+   "d1.ceiling:flag",
+   "d1.left:mortar",
+   "d1.right:mortar",
+   "d0.floor:flag",
+   "d0.ceiling:flag",
+   "d0.left:mortar",
+   "d0.right:mortar"
+  ],
+  "svg": {
+   "w": 360,
+   "h": 360,
+   "x": 540,
+   "y": 174
+  }
+ },
+ {
+  "file": "door-enhanced-close-980x692.png",
+  "name": "door",
+  "style": "enhanced",
+  "zoom": "close",
+  "size": "980x692",
+  "viewBox": "-36 -36 72 72",
+  "position": {
+   "place": "L1:R13:C3",
+   "level": 1,
+   "row": 13,
+   "col": 3,
+   "facing": "S",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "door"
+   }
+  ],
+  "drawn": [
+   "d2.floor:floor",
+   "d2.ceiling:ceiling",
+   "d2.left:wall",
+   "d2.right:wall",
+   "d2.front:wall",
+   "d2.front.door:door",
+   "d1.floor:floor",
+   "d1.ceiling:ceiling",
+   "d1.left:wall",
+   "d1.right:wall",
+   "d0.floor:floor",
+   "d0.ceiling:ceiling",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [
+   "d2.floor:flag",
+   "d2.ceiling:flag",
+   "d2.left:mortar",
+   "d2.right:mortar",
+   "d2.front:mortar",
+   "d2.front.door:plank",
+   "d2.front.door:band",
+   "d1.floor:flag",
+   "d1.ceiling:flag",
+   "d1.left:mortar",
+   "d1.right:mortar",
+   "d0.floor:flag",
+   "d0.ceiling:flag",
+   "d0.left:mortar",
+   "d0.right:mortar"
+  ],
+  "svg": {
+   "w": 234,
+   "h": 234,
+   "x": 373,
+   "y": 134
+  }
+ },
+ {
+  "file": "door-enhanced-close-1440x900.png",
+  "name": "door",
+  "style": "enhanced",
+  "zoom": "close",
+  "size": "1440x900",
+  "viewBox": "-36 -36 72 72",
+  "position": {
+   "place": "L1:R13:C3",
+   "level": 1,
+   "row": 13,
+   "col": 3,
+   "facing": "S",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "door"
+   }
+  ],
+  "drawn": [
+   "d2.floor:floor",
+   "d2.ceiling:ceiling",
+   "d2.left:wall",
+   "d2.right:wall",
+   "d2.front:wall",
+   "d2.front.door:door",
+   "d1.floor:floor",
+   "d1.ceiling:ceiling",
+   "d1.left:wall",
+   "d1.right:wall",
+   "d0.floor:floor",
+   "d0.ceiling:ceiling",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [
+   "d2.floor:flag",
+   "d2.ceiling:flag",
+   "d2.left:mortar",
+   "d2.right:mortar",
+   "d2.front:mortar",
+   "d2.front.door:plank",
+   "d2.front.door:band",
+   "d1.floor:flag",
+   "d1.ceiling:flag",
+   "d1.left:mortar",
+   "d1.right:mortar",
+   "d0.floor:flag",
+   "d0.ceiling:flag",
+   "d0.left:mortar",
+   "d0.right:mortar"
+  ],
+  "svg": {
+   "w": 360,
+   "h": 360,
+   "x": 540,
+   "y": 174
+  }
+ },
+ {
+  "file": "door-enhanced-wide-980x692.png",
+  "name": "door",
+  "style": "enhanced",
+  "zoom": "wide",
+  "size": "980x692",
+  "viewBox": "-52 -52 104 104",
+  "position": {
+   "place": "L1:R13:C3",
+   "level": 1,
+   "row": 13,
+   "col": 3,
+   "facing": "S",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "door"
+   }
+  ],
+  "drawn": [
+   "d2.floor:floor",
+   "d2.ceiling:ceiling",
+   "d2.left:wall",
+   "d2.right:wall",
+   "d2.front:wall",
+   "d2.front.door:door",
+   "d1.floor:floor",
+   "d1.ceiling:ceiling",
+   "d1.left:wall",
+   "d1.right:wall",
+   "d0.floor:floor",
+   "d0.ceiling:ceiling",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [
+   "d2.floor:flag",
+   "d2.ceiling:flag",
+   "d2.left:mortar",
+   "d2.right:mortar",
+   "d2.front:mortar",
+   "d2.front.door:plank",
+   "d2.front.door:band",
+   "d1.floor:flag",
+   "d1.ceiling:flag",
+   "d1.left:mortar",
+   "d1.right:mortar",
+   "d0.floor:flag",
+   "d0.ceiling:flag",
+   "d0.left:mortar",
+   "d0.right:mortar"
+  ],
+  "svg": {
+   "w": 234,
+   "h": 234,
+   "x": 373,
+   "y": 134
+  }
+ },
+ {
+  "file": "door-enhanced-wide-1440x900.png",
+  "name": "door",
+  "style": "enhanced",
+  "zoom": "wide",
+  "size": "1440x900",
+  "viewBox": "-52 -52 104 104",
+  "position": {
+   "place": "L1:R13:C3",
+   "level": 1,
+   "row": 13,
+   "col": 3,
+   "facing": "S",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "door"
+   }
+  ],
+  "drawn": [
+   "d2.floor:floor",
+   "d2.ceiling:ceiling",
+   "d2.left:wall",
+   "d2.right:wall",
+   "d2.front:wall",
+   "d2.front.door:door",
+   "d1.floor:floor",
+   "d1.ceiling:ceiling",
+   "d1.left:wall",
+   "d1.right:wall",
+   "d0.floor:floor",
+   "d0.ceiling:ceiling",
+   "d0.left:wall",
+   "d0.right:wall"
+  ],
+  "details": [
+   "d2.floor:flag",
+   "d2.ceiling:flag",
+   "d2.left:mortar",
+   "d2.right:mortar",
+   "d2.front:mortar",
+   "d2.front.door:plank",
+   "d2.front.door:band",
+   "d1.floor:flag",
+   "d1.ceiling:flag",
+   "d1.left:mortar",
+   "d1.right:mortar",
+   "d0.floor:flag",
+   "d0.ceiling:flag",
+   "d0.left:mortar",
+   "d0.right:mortar"
+  ],
+  "svg": {
+   "w": 360,
+   "h": 360,
+   "x": 540,
+   "y": 174
+  }
+ },
+ {
+  "file": "dark-ahead-classic-standard-980x692.png",
+  "name": "dark-ahead",
+  "style": "classic",
+  "zoom": "standard",
+  "size": "980x692",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R9:C9",
+   "level": 1,
+   "row": 9,
+   "col": 9,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": true,
+  "corridor": [
+   {
+    "left": "open",
+    "right": "open",
+    "front": "open",
+    "leftAhead": "wall",
+    "rightAhead": "open"
+   },
+   {
+    "left": "wall",
+    "right": "open",
+    "front": "open",
+    "rightAhead": "open"
+   },
+   {
+    "left": "wall",
+    "right": "open",
+    "front": "open",
+    "rightAhead": "wall"
+   }
+  ],
+  "drawn": [
+   "d3.void:void",
+   "d2.left:wall",
+   "d2.rightAhead:wall",
+   "d1.left:wall",
+   "d0.leftAhead:wall"
+  ],
+  "details": [],
+  "svg": {
+   "w": 234,
+   "h": 234,
+   "x": 373,
+   "y": 134
+  }
+ },
+ {
+  "file": "dark-ahead-classic-standard-1440x900.png",
+  "name": "dark-ahead",
+  "style": "classic",
+  "zoom": "standard",
+  "size": "1440x900",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R9:C9",
+   "level": 1,
+   "row": 9,
+   "col": 9,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": true,
+  "corridor": [
+   {
+    "left": "open",
+    "right": "open",
+    "front": "open",
+    "leftAhead": "wall",
+    "rightAhead": "open"
+   },
+   {
+    "left": "wall",
+    "right": "open",
+    "front": "open",
+    "rightAhead": "open"
+   },
+   {
+    "left": "wall",
+    "right": "open",
+    "front": "open",
+    "rightAhead": "wall"
+   }
+  ],
+  "drawn": [
+   "d3.void:void",
+   "d2.left:wall",
+   "d2.rightAhead:wall",
+   "d1.left:wall",
+   "d0.leftAhead:wall"
+  ],
+  "details": [],
+  "svg": {
+   "w": 360,
+   "h": 360,
+   "x": 540,
+   "y": 174
+  }
+ },
+ {
+  "file": "dark-ahead-enhanced-standard-980x692.png",
+  "name": "dark-ahead",
+  "style": "enhanced",
+  "zoom": "standard",
+  "size": "980x692",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R9:C9",
+   "level": 1,
+   "row": 9,
+   "col": 9,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": true,
+  "corridor": [
+   {
+    "left": "open",
+    "right": "open",
+    "front": "open",
+    "leftAhead": "wall",
+    "rightAhead": "open"
+   },
+   {
+    "left": "wall",
+    "right": "open",
+    "front": "open",
+    "rightAhead": "open"
+   },
+   {
+    "left": "wall",
+    "right": "open",
+    "front": "open",
+    "rightAhead": "wall"
+   }
+  ],
+  "drawn": [
+   "d3.void:void",
+   "d2.floor:floor",
+   "d2.rightFloor:floor",
+   "d2.ceiling:ceiling",
+   "d2.rightCeiling:ceiling",
+   "d2.left:wall",
+   "d2.rightAhead:wall",
+   "d1.floor:floor",
+   "d1.rightFloor:floor",
+   "d1.ceiling:ceiling",
+   "d1.rightCeiling:ceiling",
+   "d1.left:wall",
+   "d0.floor:floor",
+   "d0.leftFloor:floor",
+   "d0.rightFloor:floor",
+   "d0.ceiling:ceiling",
+   "d0.leftCeiling:ceiling",
+   "d0.rightCeiling:ceiling",
+   "d0.leftAhead:wall"
+  ],
+  "details": [
+   "d2.floor:flag",
+   "d2.rightFloor:flag",
+   "d2.ceiling:flag",
+   "d2.rightCeiling:flag",
+   "d2.left:mortar",
+   "d2.rightAhead:mortar",
+   "d1.floor:flag",
+   "d1.rightFloor:flag",
+   "d1.ceiling:flag",
+   "d1.rightCeiling:flag",
+   "d1.left:mortar",
+   "d0.floor:flag",
+   "d0.leftFloor:flag",
+   "d0.rightFloor:flag",
+   "d0.ceiling:flag",
+   "d0.leftCeiling:flag",
+   "d0.rightCeiling:flag",
+   "d0.leftAhead:mortar"
+  ],
+  "svg": {
+   "w": 234,
+   "h": 234,
+   "x": 373,
+   "y": 134
+  }
+ },
+ {
+  "file": "dark-ahead-enhanced-standard-1440x900.png",
+  "name": "dark-ahead",
+  "style": "enhanced",
+  "zoom": "standard",
+  "size": "1440x900",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R9:C9",
+   "level": 1,
+   "row": 9,
+   "col": 9,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": true,
+  "corridor": [
+   {
+    "left": "open",
+    "right": "open",
+    "front": "open",
+    "leftAhead": "wall",
+    "rightAhead": "open"
+   },
+   {
+    "left": "wall",
+    "right": "open",
+    "front": "open",
+    "rightAhead": "open"
+   },
+   {
+    "left": "wall",
+    "right": "open",
+    "front": "open",
+    "rightAhead": "wall"
+   }
+  ],
+  "drawn": [
+   "d3.void:void",
+   "d2.floor:floor",
+   "d2.rightFloor:floor",
+   "d2.ceiling:ceiling",
+   "d2.rightCeiling:ceiling",
+   "d2.left:wall",
+   "d2.rightAhead:wall",
+   "d1.floor:floor",
+   "d1.rightFloor:floor",
+   "d1.ceiling:ceiling",
+   "d1.rightCeiling:ceiling",
+   "d1.left:wall",
+   "d0.floor:floor",
+   "d0.leftFloor:floor",
+   "d0.rightFloor:floor",
+   "d0.ceiling:ceiling",
+   "d0.leftCeiling:ceiling",
+   "d0.rightCeiling:ceiling",
+   "d0.leftAhead:wall"
+  ],
+  "details": [
+   "d2.floor:flag",
+   "d2.rightFloor:flag",
+   "d2.ceiling:flag",
+   "d2.rightCeiling:flag",
+   "d2.left:mortar",
+   "d2.rightAhead:mortar",
+   "d1.floor:flag",
+   "d1.rightFloor:flag",
+   "d1.ceiling:flag",
+   "d1.rightCeiling:flag",
+   "d1.left:mortar",
+   "d0.floor:flag",
+   "d0.leftFloor:flag",
+   "d0.rightFloor:flag",
+   "d0.ceiling:flag",
+   "d0.leftCeiling:flag",
+   "d0.rightCeiling:flag",
+   "d0.leftAhead:mortar"
+  ],
+  "svg": {
+   "w": 360,
+   "h": 360,
+   "x": 540,
+   "y": 174
+  }
+ },
+ {
+  "file": "standing-in-dark-classic-standard-980x692.png",
+  "name": "standing-in-dark",
+  "style": "classic",
+  "zoom": "standard",
+  "size": "980x692",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R19:C10",
+   "level": 1,
+   "row": 19,
+   "col": 10,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": true,
+  "corridor": [],
+  "drawn": [
+   "d0.void:void"
+  ],
+  "details": [],
+  "svg": {
+   "w": 234,
+   "h": 234,
+   "x": 373,
+   "y": 134
+  }
+ },
+ {
+  "file": "standing-in-dark-classic-standard-1440x900.png",
+  "name": "standing-in-dark",
+  "style": "classic",
+  "zoom": "standard",
+  "size": "1440x900",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R19:C10",
+   "level": 1,
+   "row": 19,
+   "col": 10,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": true,
+  "corridor": [],
+  "drawn": [
+   "d0.void:void"
+  ],
+  "details": [],
+  "svg": {
+   "w": 360,
+   "h": 360,
+   "x": 540,
+   "y": 174
+  }
+ },
+ {
+  "file": "standing-in-dark-enhanced-standard-980x692.png",
+  "name": "standing-in-dark",
+  "style": "enhanced",
+  "zoom": "standard",
+  "size": "980x692",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R19:C10",
+   "level": 1,
+   "row": 19,
+   "col": 10,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": true,
+  "corridor": [],
+  "drawn": [
+   "d0.void:void"
+  ],
+  "details": [],
+  "svg": {
+   "w": 234,
+   "h": 234,
+   "x": 373,
+   "y": 134
+  }
+ },
+ {
+  "file": "standing-in-dark-enhanced-standard-1440x900.png",
+  "name": "standing-in-dark",
+  "style": "enhanced",
+  "zoom": "standard",
+  "size": "1440x900",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R19:C10",
+   "level": 1,
+   "row": 19,
+   "col": 10,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": true,
+  "corridor": [],
+  "drawn": [
+   "d0.void:void"
+  ],
+  "details": [],
+  "svg": {
+   "w": 360,
+   "h": 360,
+   "x": 540,
+   "y": 174
+  }
+ },
+ {
+  "file": "hidden-door-unlit-classic-standard-980x692.png",
+  "name": "hidden-door-unlit",
+  "style": "classic",
+  "zoom": "standard",
+  "size": "980x692",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R17:C12",
+   "level": 1,
+   "row": 17,
+   "col": 12,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "wall"
+   }
+  ],
+  "drawn": [
+   "d0.left:wall",
+   "d0.right:wall",
+   "d0.front:wall"
+  ],
+  "details": [],
+  "svg": {
+   "w": 234,
+   "h": 234,
+   "x": 373,
+   "y": 134
+  }
+ },
+ {
+  "file": "hidden-door-unlit-classic-standard-1440x900.png",
+  "name": "hidden-door-unlit",
+  "style": "classic",
+  "zoom": "standard",
+  "size": "1440x900",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R17:C12",
+   "level": 1,
+   "row": 17,
+   "col": 12,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "wall"
+   }
+  ],
+  "drawn": [
+   "d0.left:wall",
+   "d0.right:wall",
+   "d0.front:wall"
+  ],
+  "details": [],
+  "svg": {
+   "w": 360,
+   "h": 360,
+   "x": 540,
+   "y": 174
+  }
+ },
+ {
+  "file": "hidden-door-unlit-enhanced-standard-980x692.png",
+  "name": "hidden-door-unlit",
+  "style": "enhanced",
+  "zoom": "standard",
+  "size": "980x692",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R17:C12",
+   "level": 1,
+   "row": 17,
+   "col": 12,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "wall"
+   }
+  ],
+  "drawn": [
+   "d0.floor:floor",
+   "d0.ceiling:ceiling",
+   "d0.left:wall",
+   "d0.right:wall",
+   "d0.front:wall"
+  ],
+  "details": [
+   "d0.floor:flag",
+   "d0.ceiling:flag",
+   "d0.left:mortar",
+   "d0.right:mortar",
+   "d0.front:mortar"
+  ],
+  "svg": {
+   "w": 234,
+   "h": 234,
+   "x": 373,
+   "y": 134
+  }
+ },
+ {
+  "file": "hidden-door-unlit-enhanced-standard-1440x900.png",
+  "name": "hidden-door-unlit",
+  "style": "enhanced",
+  "zoom": "standard",
+  "size": "1440x900",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R17:C12",
+   "level": 1,
+   "row": 17,
+   "col": 12,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "wall"
+   }
+  ],
+  "drawn": [
+   "d0.floor:floor",
+   "d0.ceiling:ceiling",
+   "d0.left:wall",
+   "d0.right:wall",
+   "d0.front:wall"
+  ],
+  "details": [
+   "d0.floor:flag",
+   "d0.ceiling:flag",
+   "d0.left:mortar",
+   "d0.right:mortar",
+   "d0.front:mortar"
+  ],
+  "svg": {
+   "w": 360,
+   "h": 360,
+   "x": 540,
+   "y": 174
+  }
+ },
+ {
+  "file": "hidden-door-lit-classic-standard-980x692.png",
+  "name": "hidden-door-lit",
+  "style": "classic",
+  "zoom": "standard",
+  "size": "980x692",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R17:C12",
+   "level": 1,
+   "row": 17,
+   "col": 12,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "door"
+   }
+  ],
+  "drawn": [
+   "d0.left:wall",
+   "d0.right:wall",
+   "d0.front:wall",
+   "d0.front.door:door"
+  ],
+  "details": [],
+  "svg": {
+   "w": 234,
+   "h": 234,
+   "x": 373,
+   "y": 134
+  }
+ },
+ {
+  "file": "hidden-door-lit-classic-standard-1440x900.png",
+  "name": "hidden-door-lit",
+  "style": "classic",
+  "zoom": "standard",
+  "size": "1440x900",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R17:C12",
+   "level": 1,
+   "row": 17,
+   "col": 12,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "door"
+   }
+  ],
+  "drawn": [
+   "d0.left:wall",
+   "d0.right:wall",
+   "d0.front:wall",
+   "d0.front.door:door"
+  ],
+  "details": [],
+  "svg": {
+   "w": 360,
+   "h": 360,
+   "x": 540,
+   "y": 174
+  }
+ },
+ {
+  "file": "hidden-door-lit-enhanced-standard-980x692.png",
+  "name": "hidden-door-lit",
+  "style": "enhanced",
+  "zoom": "standard",
+  "size": "980x692",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R17:C12",
+   "level": 1,
+   "row": 17,
+   "col": 12,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "door"
+   }
+  ],
+  "drawn": [
+   "d0.floor:floor",
+   "d0.ceiling:ceiling",
+   "d0.left:wall",
+   "d0.right:wall",
+   "d0.front:wall",
+   "d0.front.door:door"
+  ],
+  "details": [
+   "d0.floor:flag",
+   "d0.ceiling:flag",
+   "d0.left:mortar",
+   "d0.right:mortar",
+   "d0.front:mortar",
+   "d0.front.door:plank",
+   "d0.front.door:band"
+  ],
+  "svg": {
+   "w": 234,
+   "h": 234,
+   "x": 373,
+   "y": 134
+  }
+ },
+ {
+  "file": "hidden-door-lit-enhanced-standard-1440x900.png",
+  "name": "hidden-door-lit",
+  "style": "enhanced",
+  "zoom": "standard",
+  "size": "1440x900",
+  "viewBox": "-40 -40 80 80",
+  "position": {
+   "place": "L1:R17:C12",
+   "level": 1,
+   "row": 17,
+   "col": 12,
+   "facing": "N",
+   "stranded": 0
+  },
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "door"
+   }
+  ],
+  "drawn": [
+   "d0.floor:floor",
+   "d0.ceiling:ceiling",
+   "d0.left:wall",
+   "d0.right:wall",
+   "d0.front:wall",
+   "d0.front.door:door"
+  ],
+  "details": [
+   "d0.floor:flag",
+   "d0.ceiling:flag",
+   "d0.left:mortar",
+   "d0.right:mortar",
+   "d0.front:mortar",
+   "d0.front.door:plank",
+   "d0.front.door:band"
+  ],
+  "svg": {
+   "w": 360,
+   "h": 360,
+   "x": 540,
+   "y": 174
+  }
+ }
+]

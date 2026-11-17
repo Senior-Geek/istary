@@ -923,7 +923,7 @@ shows no bar. `View.PartyBar` carries AC as well.
 - **The screen** (`DungeonScreen.svelte`): the first-person picture
   (`MazeView.svelte`), the messages, the actions with the terminal's keys,
   and the shared party bar (C0-5).
-- **The picture (M-ART-1A.1)** is drawn from `View.Dungeon` alone, in three
+- **The picture (M-ART-1A.1, 1A.2)** is drawn from `View.Dungeon` alone, in three
   pure steps:
   - `lib/mazeScene.js` reads only its `phase`, `corridor`, `dark` and
     `spells`. It returns the surfaces seen, relative to the party (stable
@@ -932,14 +932,26 @@ shows no bar. `View.PartyBar` carries AC as well.
   - `lib/mazeProjection.js` places them in DRAWMAZE's stepped geometry,
     with its door proportions, in painting order. Where the view ends
     unseen, it adds a void.
-  - `lib/mazeStyle.js` says how a style paints each kind. Classic is the
-    only style so far.
+  - `lib/mazeStyle.js` says how a style paints each kind; it imports
+    nothing. **Classic** is the Wizardry wireframe. **Enhanced** (M-ART-1A.2)
+    paints the same primitives, floors and ceilings too, as stone: a fog
+    darkening with distance (a gradient across each receding surface), the
+    last square fading into the void where the view ends unseen, masonry,
+    flagstones and one generic door (wood, a stone frame, planks, two iron
+    bands). Every detail is placed between its own polygon's corners, so it
+    never leaves its surface. The styles agree on every wall, door, opening,
+    coordinate and the painting order.
+  - The **zoom** (Close, Standard, Wide: `zooms` there) is the picture's
+    viewBox alone, between the party's own square's far and near planes.
 
   How far the party sees, darkness and hidden doors stay the engine's
   `Sight`. `gui/maze_scene_fixture_test.go` records synthetic corridors
   checked against `Sight` (`testdata/maze-scenes.json`) for the frontend's
   tests. `lib/dungeon.js` keeps `scene` as a wrapper over the projection.
-  Evidence is in `docs/design/maze-perspective/review/m-art-1a-1/`.
+  Until Settings (M-ART-1A.3), the style and zoom are chosen in the view's
+  corner (`lib/mazeLook.svelte.js`): for the window's session, never saved,
+  with no Session call; Enhanced at Standard to start. Evidence is in
+  `docs/design/maze-perspective/review/m-art-1a-1/` and `.../m-art-1a-2/`.
 - **Not yet:** rescue and recovery (M6b-4). Camp is in the GUI since M6b-3B
   (below), except Disband and MALOR.
 
