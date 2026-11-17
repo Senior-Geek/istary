@@ -116,8 +116,8 @@ function webpSize(buf) {
   return [buf.readUIntLE(24, 3) + 1, buf.readUIntLE(27, 3) + 1]
 }
 
-test('ART-2A: the Castle, the Edge of Town, (ART-3B-1) the Tavern, (ART-3B-2B) the Inn and (ART-3B-3B) Boltac’s have their pictures; every other place its themed panel', () => {
-  const art = ['castle', 'edge', 'tavern', 'inn', 'trading']
+test('ART-2A: the Castle, the Edge of Town, (ART-3B-1) the Tavern, (ART-3B-2B) the Inn, (ART-3B-3B) Boltac’s and (ART-3C) the Training Grounds have their pictures; every other place its themed panel', () => {
+  const art = ['castle', 'edge', 'tavern', 'inn', 'trading', 'training']
   for (const [place, s] of Object.entries(scenes)) {
     assert.ok(s.alt, place)
     assert.ok(!!emblemFor(place) !== !!s.emblem, `${place}: its emblem (ART-3B-0) or, without one, a symbol`)

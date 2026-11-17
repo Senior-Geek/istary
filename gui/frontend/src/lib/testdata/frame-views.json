@@ -1200,7 +1200,102 @@
    "note": ""
   },
   "expedition": false,
-  "real": false
+  "real": false,
+  "story": {
+   "title": "The Training Grounds",
+   "blocks": [
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "Beyond the walls of Trebor's castle",
+       "italic": true
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "The sound of clashing steel carries across the dusty training grounds. Beneath the castle's towering battlements, recruits of every race practice their trades. Swords strike wooden targets, arrows whistle through the air, and a young mage struggles to control a flame dancing between her fingers."
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "Overseeing this confusion stands a broad-shouldered dwarf with an iron-grey beard, an immaculate uniform, and a magnificent double-headed battle axe resting casually across one shoulder."
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "Sergeant Major Brannock Ironheel.",
+       "bold": true
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "Veteran of more campaigns than anyone cares to remember, Brannock has trained generations of adventurers for the service of Trebor. His medals are polished, his boots immaculate, and his patience legendary for its absence."
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "\"So, you're the new commander, eh? Well, I've got fighters, priests, thieves, and mages for you to look over. Some promising specimens among 'em. Some I'd hesitate to trust with a spoon.\""
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "\"You choose 'em, Commander. I'll see they're properly prepared. But remember, a fine-looking recruit doesn't necessarily make a fine adventurer.\""
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "He shifts his enormous double-headed axe."
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "\"Once you've selected your people, take 'em to Gilgamesh. He'll help you assemble your party. After that, what happens underground is your responsibility.\""
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "He pauses, then adds:"
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "\"And Commander? Try to bring 'em back. I hate training replacements.\""
+      }
+     ]
+    }
+   ]
+  }
  },
  {
   "case": "settings",

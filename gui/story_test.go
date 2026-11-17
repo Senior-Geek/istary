@@ -23,11 +23,11 @@ func TestTheStoryFilesLoad(t *testing.T) {
 	}); err != nil {
 		t.Fatal(err)
 	}
-	want := []string{"content/boltac/story.md", "content/castle/introduction.md", "content/castle/story.md", "content/edge-of-town/story.md", "content/inn/story.md", "content/tavern/story.md"}
+	want := []string{"content/boltac/story.md", "content/castle/introduction.md", "content/castle/story.md", "content/edge-of-town/story.md", "content/inn/story.md", "content/tavern/story.md", "content/training-grounds/story.md"}
 	if !reflect.DeepEqual(files, want) {
 		t.Fatalf("the built-in story files: %v, not %v", files, want)
 	}
-	for _, name := range []string{"boltac/story", "castle/introduction", "castle/story", "edge-of-town/story", "inn/story", "tavern/story"} {
+	for _, name := range []string{"boltac/story", "castle/introduction", "castle/story", "edge-of-town/story", "inn/story", "tavern/story", "training-grounds/story"} {
 		st := stories[name]
 		if st == nil || len(st.Blocks) == 0 {
 			t.Fatalf("%s: no story", name)
@@ -210,6 +210,46 @@ func TestTheApprovedBoltacStoryIsKept(t *testing.T) {
 	}
 }
 
+// approvedPlace checks that place's story is its approved text in doc,
+// word for word: the title, then paragraphs only (no challenge), the
+// first in italics and the one at named in bold.
+func approvedPlace(t *testing.T, place, folder, doc string, paragraphs, named int, name string) *Story {
+	t.Helper()
+	approved := approvedText(t, doc)
+	if len(approved) != paragraphs+1 {
+		t.Fatalf("%s: %d approved paragraphs, not a title and %d", doc, len(approved), paragraphs)
+	}
+	st := storyFor(place, true)
+	if st != stories[folder+"/story"] || storyFor(place, false) != st {
+		t.Fatalf("%s: its story is not %s's", place, folder)
+	}
+	if want := plain(inline(approved[0])); st.Title != want {
+		t.Fatalf("title %q, not %q", st.Title, want)
+	}
+	if len(st.Blocks) != paragraphs {
+		t.Fatalf("%d blocks, not %d", len(st.Blocks), paragraphs)
+	}
+	for i, b := range st.Blocks {
+		if want := inline(approved[i+1]); b.Kind != "paragraph" || !reflect.DeepEqual(b.Text, want) {
+			t.Fatalf("paragraph %d: %s %+v, not %+v", i+1, b.Kind, b.Text, want)
+		}
+	}
+	if b := st.Blocks[0]; len(b.Text) != 1 || !b.Text[0].Italic {
+		t.Fatalf("the line under the title is not in italics: %+v", b.Text)
+	}
+	if b := st.Blocks[named]; len(b.Text) != 1 || !b.Text[0].Bold || b.Text[0].Text != name {
+		t.Fatalf("%s is not named in bold: %+v", name, b.Text)
+	}
+	return st
+}
+
+// ART-3C: the Training Grounds' story is its approved text, word for word:
+// its title, eleven paragraphs (Sergeant Major Brannock Ironheel named in
+// bold), and no challenge. It is in content/training-grounds/.
+func TestTheApprovedTrainingGroundsStoryIsKept(t *testing.T) {
+	approvedPlace(t, "training", "training-grounds", "../docs/design/art3/training-grounds/README.md", 11, 3, "Sergeant Major Brannock Ironheel.")
+}
+
 func TestStoryMarkdown(t *testing.T) {
 	r := func(text string) StoryRun { return StoryRun{Text: text} }
 	b := func(text string) StoryRun { return StoryRun{Text: text, Bold: true} }
@@ -305,7 +345,14 @@ func TestTheStoryForEachPlace(t *testing.T) {
 	v := fine(t, s.NewGame(1))
 	is(v, "castle/story")
 	is(fine(t, s.Navigate("edge")), "edge-of-town/story")
-	is(fine(t, s.Navigate("training")), "")
+	is(fine(t, s.Navigate("training")), "training-grounds/story") // ART-3C: its own
+	// While a character is being created, no story: the story box is not
+	// drawn over creation.
+	s.StartCreation("NEWCOMER")
+	is(s.State(), "")
+	is(s.AnswerCreate(true), "")
+	s.DiscardCreation()
+	is(s.State(), "training-grounds/story")
 	is(fine(t, s.ReturnToCastle()), "castle/story")
 	is(fine(t, s.Navigate("tavern")), "tavern/story") // ART-3B-1: its own
 	is(fine(t, s.ReturnToCastle()), "castle/story")

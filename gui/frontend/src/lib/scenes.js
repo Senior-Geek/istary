@@ -14,7 +14,8 @@
 // src/assets/scenes/<place>.webp (the masters are kept outside Git; ART-2A's
 // in images/Artwork Samples/, the Tavern's (ART-3B-1) in images/Tavern/,
 // the Inn's (ART-3B-2B) in images/Inn/, Boltac's (ART-3B-3B) in
-// images/Artwork Samples/Trading_Post/, untracked) and set its src as castle's is:
+// images/Artwork Samples/Trading_Post/, the Training Grounds' (ART-3C) in
+// images/Artwork Samples/Training_Ground/, untracked) and set its src as castle's is:
 // new URL(..., import.meta.url) is an asset to Vite and an ordinary URL to
 // the Node tests. The picture is shown whole only with the panels hidden;
 // keep what matters away from the right edge (the actions) and the bottom
@@ -58,10 +59,12 @@ export const scenes = {
     focus: '50% 50%',
     alt: 'Outside the castle walls: the gatehouse, the Training Grounds on one side and the guarded entrance to the maze on the other',
   },
+  // The Training Grounds' picture keeps its right edge (ART-3C): Brannock
+  // stands at the right; at 1440x900 his face is just clear of the actions.
   training: {
-    src: null,
-    focus: '50% 55%',
-    alt: 'The Training Grounds: a tournament field outside the castle walls',
+    src: new URL('../assets/scenes/training.webp', import.meta.url).href,
+    focus: '100% 50%',
+    alt: "The Training Grounds: Sergeant Major Brannock Ironheel, a grey-bearded dwarf with a double-headed axe on his shoulder and medals on his chest; behind him recruits at practice, a fighter at a straw target, an archer, a young mage with a flame between her hands, beneath the castle walls",
   },
   settings: { src: null, focus: '50% 50%', alt: 'Settings', emblem: glyph('⚙') },
   maze: { src: null, focus: '50% 50%', alt: 'The maze' },

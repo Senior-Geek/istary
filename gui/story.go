@@ -58,11 +58,12 @@ var stories = loadStories(storyFiles)
 
 // storyFolders are the places with stories, and their folders in content/.
 var storyFolders = map[string]string{
-	"castle":  "castle",
-	"edge":    "edge-of-town",
-	"tavern":  "tavern",
-	"inn":     "inn",
-	"trading": "boltac",
+	"castle":   "castle",
+	"edge":     "edge-of-town",
+	"tavern":   "tavern",
+	"inn":      "inn",
+	"trading":  "boltac",
+	"training": "training-grounds",
 }
 
 func loadStories(files fs.FS) map[string]*Story {

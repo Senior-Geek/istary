@@ -333,12 +333,15 @@ async function main() {
         const wi = await wayIssues()
         check(wi.issues.length === 0, `${place}: ${wi.ways.length ? `each destination's (and the maze's) emblem before its name, 22 px, centred, in the gold; the button's height and name as without it (${wi.ways.join(', ')})` : 'no destination buttons'}${wi.issues.length ? ': ' + wi.issues.join('; ') : ''}`)
         if (place === 'castle' || place === 'edge') check(wi.ways.length === (place === 'castle' ? 5 : 3), `${place}: its destinations${place === 'edge' ? ' and Enter the Maze' : ''} are there (${wi.ways.length})`)
-        if (!['castle', 'edge', 'tavern', 'inn', 'trading'].includes(place)) check(await js(`(() => { const f = document.querySelector('${A} .fallback'); const e = f && f.querySelector('.emblem'); return !!e && (${place === 'settings'} ? e.tagName === 'SPAN' : e.tagName === 'svg' && e.dataset.emblem === '${place}' && e.getBoundingClientRect().width >= 32) })()`), `${place}: its themed panel shows ${place === 'settings' ? 'its symbol' : 'its emblem'}`)
+        if (!['castle', 'edge', 'tavern', 'inn', 'trading', 'training'].includes(place)) check(await js(`(() => { const f = document.querySelector('${A} .fallback'); const e = f && f.querySelector('.emblem'); return !!e && (${place === 'settings'} ? e.tagName === 'SPAN' : e.tagName === 'svg' && e.dataset.emblem === '${place}' && e.getBoundingClientRect().width >= 32) })()`), `${place}: its themed panel shows ${place === 'settings' ? 'its symbol' : 'its emblem'}`)
         const t = await toggle()
         check(place === 'trading' ? t === '' : t === 'Show sheet', `${place}: the sheet toggle ${place === 'trading' ? 'is not offered at Boltac’s' : 'reads Show sheet, in the top bar'}`)
         await shot(place)
       }
-      await goto('training')
+      // At a place without a picture (Settings, since the Training Grounds
+      // has one, ART-3C): the information takes the bar's room. An
+      // illustrated place gives it to its panels (the scenes suite).
+      await goto('settings')
       const withParty = await rect(C)
       await clickText('Hide party')
       const without = await rect(C)
@@ -419,7 +422,7 @@ async function main() {
       await goto('castle'); await loaded()
       const first = await shownLook()
       check(fileLook()?.panels === undefined && first.panels === 'slate' && first.story === 'parchment' && first.artwork === 'full' && first.img && first.filter === 'none', `the defaults: Slate panels, a Parchment story box, the whole picture (${JSON.stringify(first)})`)
-      for (const place of ['castle', 'edge', 'tavern', 'inn', 'trading']) {
+      for (const place of ['castle', 'edge', 'tavern', 'inn', 'trading', 'training']) {
         await goto(place); await loaded()
         let a = await art(place)
         if (!check(a && a.place === place && a.loaded && a.nw === 1920 && a.nh === 1080, `${place}: its picture is loaded (${a?.nw}x${a?.nh})`)) continue
@@ -493,7 +496,7 @@ async function main() {
       check((await view()).location === 'edge' && (await art('edge'))?.place === 'edge', 'The Edge of Town: outside the walls, its own picture')
       await clickText('← Castle Esc', '.frame .head')
       check((await view()).location === 'castle' && (await art('castle'))?.place === 'castle', '← Castle: back in the courtyard, its own picture')
-      await goto('temple')
+      await goto('settings')
       check(!(await js(`!!document.querySelector('.backdrop')`)) && !!(await js(`document.querySelector('${A} figure.scene:not(.view)')`)) && !(await buttons('.frame .head')).includes('Hide panels'), 'a place without artwork keeps its themed panel, and no Hide panels')
       await goto('castle')
       await clickSlot(0)
@@ -623,6 +626,32 @@ async function main() {
       check((await view()).location === 'trading' && !(await rect(STORY)), 'closed, Boltac’s is not opened again on return')
       await clickText('Story', '.frame .head')
       check(!!(await rect(STORY)) && await storyShown(boltacStory), 'Story opens Boltac’s again')
+      // The Training Grounds (ART-3C), the same way: its own story on its
+      // first visit, titled, with no challenge; closed, not opened again on
+      // return; Story opens it. While
+      // a character is being created, there is no story box and no Story:
+      // creation is never under it.
+      for (const [label, place, via] of [['The Training Grounds', 'training', 'The Edge of Town']]) {
+        const enter = async () => { await clickText('← Castle Esc', '.frame .head'); if (via) await clickText(via, B); await clickText(label, B) }
+        await enter()
+        const story = (await view()).story
+        check((await view()).location === place && !!(await rect(STORY)) && story?.title === label && await storyShown(story) && await js(`document.querySelector('${STORY} h3')?.textContent.trim()`) === label && !(await js(`!!document.querySelector('${STORY} .challenge')`)), `${label}, first visited: its own story open, titled “${story?.title}”, with no challenge`)
+        bad = await controls()
+        check(bad.length === 0, `${place}: the story box covers no control${bad.length ? ': ' + bad.join(', ') : ''}`)
+        if (place === 'training') {
+          await typeInto('#newname', 'Story')
+          await clickText('Create', B)
+          bad = await controls()
+          check((await view()).screen === 'confirmCreate' && !(await rect(STORY)) && !(await buttons('.frame .head')).includes('Story') && bad.length === 0, `training: creating a character, no story box and no Story; every control in view and uncovered${bad.length ? ': ' + bad.join(', ') : ''}`)
+          await clickText('No', B)
+          check((await view()).screen === 'roster' && !(await view()).creation && !!(await rect(STORY)) && await storyShown(story), `training: creation declined, the roster and the story box again (${(await view()).screen})`)
+        }
+        await js(`document.querySelector('${STORY} .close').click()`); await sleep(400)
+        await enter()
+        check((await view()).location === place && !(await rect(STORY)), `closed, ${label}’s is not opened again on return`)
+        await clickText('Story', '.frame .head')
+        check(!!(await rect(STORY)) && await storyShown(story), `Story opens ${label}’s again`)
+      }
       await clickText('← Castle Esc', '.frame .head')
       await clickText("The Adventurer's Inn", B)
       check((await view()).location === 'inn' && !!(await rect(STORY)) && await storyShown(innStory), 'the Inn’s is as it was left, open')
@@ -681,7 +710,7 @@ async function main() {
       // every control is in view and uncovered, and none disabled by it.
       const combos = []
       for (const panels of LOOKS.panels) for (const story of LOOKS.story) for (const artwork of LOOKS.artwork) combos.push({ panels, story, artwork })
-      for (const place of ['castle', 'edge', 'tavern', 'inn', 'trading']) {
+      for (const place of ['castle', 'edge', 'tavern', 'inn', 'trading', 'training']) {
         await setLook({ panels: 'slate', story: 'parchment', artwork: 'full' }, place)
         const base = await layoutNow(), enabled = await js(`[...document.querySelectorAll('.frame button')].filter((b) => !b.disabled).length`)
         await setLook({ panels: 'slate', story: 'parchment', artwork: 'hidden' }, place)
@@ -720,7 +749,7 @@ async function main() {
       await clickText('The Edge of Town', B); await esc()
       check((await view()).location === 'castle', 'Escape still goes Back')
       await setLook({ panels: 'slate', story: 'parchment', artwork: 'full' }, 'castle')
-      await goto('temple')
+      await goto('settings')
       check(await js(`!document.querySelector('[data-appearance]') && !document.querySelector('.backdrop') && !!document.querySelector('${A} figure.scene:not(.view) .fallback .emblem')`), 'a place without artwork is as it was')
 
       // Long information at an illustrated place keeps the room a place
