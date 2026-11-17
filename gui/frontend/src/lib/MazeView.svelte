@@ -4,21 +4,24 @@
   // scene (mazeScene.js) takes what Go saw (the corridor, darkness and
   // light), the projection (mazeProjection.js) places it, and the style
   // (mazeStyle.js) says how each part is painted: Classic, the Wizardry
-  // wireframe, or Enhanced, the same surfaces as stone. It keeps no state
-  // and takes no input; each new view redraws it.
+  // wireframe, or Enhanced, the same surfaces as stone. The zoom is only
+  // the picture's frame. It keeps no state and takes no input; each new view
+  // redraws it.
   //
   // Props:
   //   dungeon   view.dungeon
   //   style     'classic' or 'enhanced'
-  import { viewBox, perspective, points } from './mazeProjection.js'
-  import { styles, painted, segmentsPath } from './mazeStyle.js'
+  //   zoom      'close', 'standard' or 'wide'
+  import { perspective, points } from './mazeProjection.js'
+  import { styles, zooms, painted, segmentsPath } from './mazeStyle.js'
 
-  let { dungeon, style = 'classic' } = $props()
+  let { dungeon, style = 'classic', zoom = 'standard' } = $props()
 
   const drawn = $derived(painted(perspective(dungeon), styles[style] ?? styles.classic))
+  const frame = $derived(zooms[zoom] ?? zooms.standard)
 </script>
 
-<svg {viewBox} class="maze-view {styles[style] ? style : 'classic'}" role="img" aria-label="The corridor ahead">
+<svg viewBox={frame} class="maze-view {styles[style] ? style : 'classic'}" role="img" aria-label="The corridor ahead">
   {#if drawn.some((p) => p.tone)}
     <defs>
       {#each drawn as p (p.id)}

@@ -1,12 +1,12 @@
-// The Enhanced style (mazeStyle.js, M-ART-1A.2), over the views recorded
-// from Go (testdata/maze-scenes.json) and over every corridor shape: one
-// geometry, two styles.
+// The Enhanced style and the zoom presets (mazeStyle.js, M-ART-1A.2), over
+// the views recorded from Go (testdata/maze-scenes.json) and over every
+// corridor shape: one geometry, two styles, three frames.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { mazeScene } from './mazeScene.js'
-import { perspective, far, near } from './mazeProjection.js'
-import { classic, enhanced, styles, painted, fog, shade, background, recede, segmentsPath } from './mazeStyle.js'
+import { perspective, far, near, viewBox } from './mazeProjection.js'
+import { classic, enhanced, styles, painted, fog, shade, background, recede, zooms, defaultLook, segmentsPath } from './mazeStyle.js'
 
 const cases = JSON.parse(readFileSync(new URL('./testdata/maze-scenes.json', import.meta.url)))
 const byId = Object.fromEntries(cases.map((c) => [c.id, c]))
@@ -114,8 +114,8 @@ test('every opening stays open: nothing of the corridor’s own is drawn across 
 // (details are on their own surface, so their surface stands for them).
 const topAt = (drawn, pt) => drawn.reduce((top, x) => (strictly(pt, x.points) ? x : top), null)
 
-test('in Enhanced too, nearer surfaces cover farther ones, over more than the picture', () => {
-  const [x0, w] = [-52, 104]
+test('in Enhanced too, nearer surfaces cover farther ones, over the widest frame', () => {
+  const [x0, , w] = zooms.wide.split(' ').map(Number)
   const views = [...cases.map((c) => [c.id, c.dungeon]), ...[...corridors(300)].map((c, i) => [`random ${i}`, maze(c)])]
   for (const [id, dungeon] of views) {
     const e = painted(perspective(dungeon), enhanced)
@@ -291,4 +291,56 @@ test('styles never change the scene, the projection or the view they are given',
     assert.deepEqual(dungeon, c.dungeon, c.id)
   }
   assert.deepEqual(styles, { classic, enhanced })
+  assert.deepEqual(defaultLook, { style: 'enhanced', zoom: 'standard' })
+})
+
+test('the zoom presets: square frames about the vanishing point, between the party’s own square’s planes', () => {
+  assert.deepEqual(Object.keys(zooms), ['close', 'standard', 'wide'])
+  assert.equal(zooms.standard, viewBox)
+  const halves = Object.values(zooms).map((z) => {
+    const [x, y, w, h] = z.split(' ').map(Number)
+    assert.deepEqual([x, y, w], [-w / 2, -h / 2, h], z)
+    return w / 2
+  })
+  assert.deepEqual(halves, [36, 40, 52])
+  for (const h of halves) {
+    // Everything past the party's own square is always in view, whole...
+    assert.ok(h > far(0), `${h}`)
+    // ...at least 4 units of that square's sides (a wall, a door's jamb or
+    // an opening beside the party) are in view...
+    assert.ok(h - far(0) >= 4, `${h}`)
+    // ...and nothing beside or behind the party is ever framed.
+    assert.ok(h < near(0), `${h}`)
+  }
+})
+
+test('every zoom frames the same drawing: the nearest walls, openings and doors in every frame', () => {
+  const frames = Object.values(zooms).map((z) => z.split(' ').map(Number)[2] / 2)
+  for (const [id, dungeon] of allViews()) {
+    const e = painted(perspective(dungeon), enhanced)
+    for (const x of e) {
+      if (x.kind === 'void') continue
+      for (const h of frames) {
+        const pts = x.points
+        const inFrame = (p) => Math.abs(p[0]) <= h + 1e-9 && Math.abs(p[1]) <= h + 1e-9
+        if (x.depth >= 1 && x.lane === 0) {
+          // The corridor past the party's square, whole: its walls, doors,
+          // floors and ceilings.
+          assert.ok(pts.every(inFrame), `${id} ${x.id} at ${h}`)
+        }
+        if (x.depth >= 1 && x.kind === 'door') {
+          // A door beside the corridor (in a side wall, or ahead of a side
+          // square) is in view at least to its middle; at depth 1 one ahead
+          // of a side square reaches past every frame, as in Classic.
+          const mid = pts.reduce(([a, b], [px, py]) => [a + px / 4, b + py / 4], [0, 0])
+          assert.ok(inFrame(mid), `${id} ${x.id} at ${h}`)
+        }
+        if (x.depth === 0 && x.face === 'side' && x.kind === 'wall') {
+          // A wall beside the party: a strip of it at every zoom.
+          const strip = [x.lane * (far(0) + 2), 0]
+          assert.ok(Math.abs(strip[0]) <= h && strictly(strip, pts), `${id} ${x.id} at ${h}`)
+        }
+      }
+    }
+  }
 })

@@ -2,7 +2,11 @@
   // The dungeon screen (M6a; real expeditions M6b-1). It renders view.dungeon (Go's app.DungeonView)
   // and calls Session.DungeonAction with one of the actions Go lists; it
   // keeps no maze state. The picture is MazeView's (M-ART-1A.1): the
-  // Classic wireframe of the corridor Go describes, and nothing else.
+  // corridor Go describes, and nothing else, as the Classic wireframe or in
+  // Enhanced stone (M-ART-1A.2), at one of three zooms. Which, is chosen
+  // in the view's corner while Enhanced is reviewed (mazeLook.svelte.js):
+  // presentation alone, never saved, and no Session call. The buttons let
+  // go of the focus when clicked, so the keys still reach the maze.
   //
   // Inspect (R-2) lists each character found in the party's area, with a
   // Pick up button (keys 1-9) while the party has room, or the reason not.
@@ -29,6 +33,7 @@
   import PartyBar from './PartyBar.svelte'
   import { scene, actions, keyAction, expeditionTag, suggested } from './dungeon.js'
   import MazeView from './MazeView.svelte'
+  import { look } from './mazeLook.svelte.js'
   import CampScreen from './CampScreen.svelte'
   import { pickLabel, placeMark } from './camp.js'
   import Condition from './Condition.svelte'
@@ -54,6 +59,15 @@
   const inCamp = $derived(d.phase === 'camp' && !!view.camp)
   const minimapShown = $derived(view.settings?.minimapVisible ?? true)
   let mapOpen = $state(false)
+
+  const looks = {
+    style: [['classic', 'Classic'], ['enhanced', 'Enhanced']],
+    zoom: [['close', 'Close'], ['standard', 'Standard'], ['wide', 'Wide']],
+  }
+  function choose(key, value, e) {
+    look[key] = value
+    e.currentTarget.blur() // the keys go back to the maze
+  }
 
   function closeMap() {
     mapOpen = false
@@ -110,13 +124,19 @@
   {:else}
   <section class="stage">
     {#if d.phase === 'maze'}
-      <MazeView dungeon={d} />
+      <MazeView dungeon={d} style={look.style} zoom={look.zoom} />
       {#if d.viewport?.length}
         <div class="viewport">{#each d.viewport as t, i (i)}<p>{t}</p>{/each}</div>
       {/if}
       {#if d.dark && !shapes.length && !d.viewport?.length}
         <div class="viewport muted"><p>darkness</p></div>
       {/if}
+      <div class="look" role="group" aria-label="The maze picture's style and zoom">
+        {#each Object.entries(looks) as [key, options] (key)}
+          <span class="set">{#each options as [value, label] (value)}<button class="small" aria-pressed={look[key] === value}
+            onclick={(e) => choose(key, value, e)}>{label}</button>{/each}</span>
+        {/each}
+      </div>
       {#if minimapShown && view.minimap}
         <div class="minimap" aria-label="Minimap"><MapSvg view={view.minimap} label="The squares around the party" /></div>
       {/if}
@@ -232,6 +252,14 @@
   .minimap { position: absolute; top: 8px; right: 8px; height: min(168px, calc(100% - 16px), 26cqw); aspect-ratio: 1;
     background: rgba(0, 0, 0, 0.55); border: 1px solid rgba(79, 209, 106, 0.3); border-radius: 6px; padding: 4px;
     pointer-events: none; }
+  /* The style and zoom (for review, M-ART-1A.2): the view's lower left corner,
+     clear of the picture (centred) and the minimap (upper right). */
+  .look { position: absolute; left: 8px; bottom: 8px; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+  .look .set { display: inline-flex; }
+  .look button { padding: 1px 7px; border-radius: 0; background: rgba(0, 0, 0, 0.55); }
+  .look button:first-child { border-radius: 4px 0 0 4px; }
+  .look button:last-child { border-radius: 0 4px 4px 0; }
+  .look button[aria-pressed='true'] { color: var(--accent); border-color: var(--accent); }
   .camp { font: 700 28px ui-monospace, Menlo, monospace; letter-spacing: 6px; color: var(--muted); }
   .messages { min-height: 52px; font-family: ui-monospace, Menlo, monospace; text-align: center; }
   .messages p { margin: 2px 0; color: #f2c14e; }

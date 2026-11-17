@@ -170,6 +170,24 @@ export const enhanced = { wall: 'wall', door: 'door', void: 'void', floor: 'floo
 
 export const styles = { classic, enhanced }
 
+// The zoom presets (M-ART-1A.2): only the picture's frame, a square viewBox
+// centred where the corridor vanishes. The projection, the scene and what
+// is drawn are the same at every zoom. Every frame lies between the
+// party's own square's far plane (|x| = far(0) = 32, so everything past it
+// stays in view) and its near plane (near(0) = 64, so nothing is shown
+// beside or behind the party), and leaves at least 4 units of the party's
+// own square's sides in view, so a wall or an opening beside the party is
+// seen at every zoom. Close was to be -30 -30 60 60; that hides both sides
+// of the party's square, so it is -36 -36 72 72.
+export const zooms = {
+  close: '-36 -36 72 72',
+  standard: '-40 -40 80 80',
+  wide: '-52 -52 104 104',
+}
+
+// The provisional appearance (until Settings, M-ART-1A.3).
+export const defaultLook = { style: 'enhanced', zoom: 'standard' }
+
 // segmentsPath renders detail segments as one SVG path.
 const n = (v) => +v.toFixed(3)
 export const segmentsPath = (segments) => segments.map(([[x1, y1], [x2, y2]]) => `M${n(x1)} ${n(y1)}L${n(x2)} ${n(y2)}`).join('')
