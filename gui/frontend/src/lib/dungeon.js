@@ -2,62 +2,20 @@
 // view.dungeon (app.DungeonView); no rule is decided here. What is seen, what
 // is legal and what a step does are all Go's.
 
-// The first-person picture is a simple wireframe in the proportions of the
-// Classic view, on a square viewBox centred on 0 (-40..40). Square d of the
-// corridor runs from its near plane (half-size near(d)) to its far plane
-// (half-size far(d)); each square is half the size of the one before.
-export const viewBox = '-40 -40 80 80'
-export const far = (d) => 32 / 2 ** d
-export const near = (d) => 2 * far(d)
+// The first-person picture is drawn by MazeView (M-ART-1A.1) from the
+// perspective scene (mazeScene.js) and its projection (mazeProjection.js),
+// in the proportions of the Classic view. scene and points are kept here for
+// the screen and the tests that use them: scene(corridor) is the walls and
+// doors of a corridor, in painting order (farthest square first), each
+// { kind: 'wall' | 'door', points, depth }.
+import { perspective, points, viewBox, far, near } from './mazeProjection.js'
 
-// A wall seen from the corridor is "wall" or "door"; "open" draws nothing.
-const solid = (w) => w === 'wall' || w === 'door'
+export { points, viewBox, far, near }
 
-// side returns the trapezoid of a side wall (sign -1 left, +1 right) and, for
-// a door, its outline within the wall.
-function side(d, sign, kind) {
-  const n = near(d), f = far(d)
-  const shapes = [{ kind: 'wall', points: [[sign * n, -n], [sign * f, -f], [sign * f, f], [sign * n, n]] }]
-  if (kind === 'door') {
-    // From a quarter to three quarters along the wall, two thirds high.
-    const at = (t) => n - t * (n - f)
-    const a = at(0.25), b = at(0.75)
-    shapes.push({ kind: 'door', points: [[sign * a, a], [sign * a, -a / 3], [sign * b, -b / 3], [sign * b, b]] })
-  }
-  return shapes
-}
-
-// front returns a wall facing the party, centred at x = cx.
-function front(d, cx, kind) {
-  const f = far(d)
-  const shapes = [{ kind: 'wall', points: [[cx - f, -f], [cx + f, -f], [cx + f, f], [cx - f, f]] }]
-  if (kind === 'door') {
-    const w = f / 2
-    shapes.push({ kind: 'door', points: [[cx - w, f], [cx - w, -f / 3], [cx + w, -f / 3], [cx + w, f]] })
-  }
-  return shapes
-}
-
-// scene turns the corridor into shapes to draw, in painting order: farthest
-// square first, so each square's filled walls cover whatever lies behind them
-// (a wall ahead of a far side opening reaches out behind the nearer side
-// walls). Within a square the shapes never overlap; a door follows its wall.
-export function scene(corridor = []) {
-  const out = []
-  corridor.forEach((sq, d) => {
-    const f = far(d), shapes = []
-    if (solid(sq.left)) shapes.push(...side(d, -1, sq.left))
-    else if (solid(sq.leftAhead)) shapes.push(...front(d, -2 * f, sq.leftAhead))
-    if (solid(sq.right)) shapes.push(...side(d, 1, sq.right))
-    else if (solid(sq.rightAhead)) shapes.push(...front(d, 2 * f, sq.rightAhead))
-    if (solid(sq.front)) shapes.push(...front(d, 0, sq.front))
-    out.unshift(...shapes.map((s) => ({ ...s, depth: d })))
-  })
-  return out
-}
-
-// points renders a shape's points for an SVG polygon.
-export const points = (shape) => shape.points.map(([x, y]) => `${x},${y}`).join(' ')
+export const scene = (corridor = []) =>
+  perspective({ phase: 'maze', corridor })
+    .filter((p) => p.kind === 'wall' || p.kind === 'door')
+    .map(({ kind, points, depth }) => ({ kind, points, depth }))
 
 // The dungeon actions: label, key hint, and the keys that perform them. The
 // keys follow the terminal (F/L/R/K/C/I, A/W/D) plus the arrow keys.
