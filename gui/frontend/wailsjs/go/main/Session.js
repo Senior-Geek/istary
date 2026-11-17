@@ -238,6 +238,10 @@ export function SetAppearance(arg1, arg2, arg3) {
   return window['go']['main']['Session']['SetAppearance'](arg1, arg2, arg3);
 }
 
+export function SetMazeLook(arg1, arg2) {
+  return window['go']['main']['Session']['SetMazeLook'](arg1, arg2);
+}
+
 export function SetMinimapVisible(arg1) {
   return window['go']['main']['Session']['SetMinimapVisible'](arg1);
 }

@@ -3,10 +3,12 @@
   // and calls Session.DungeonAction with one of the actions Go lists; it
   // keeps no maze state. The picture is MazeView's (M-ART-1A.1): the
   // corridor Go describes, and nothing else, as the Classic wireframe or in
-  // Enhanced stone (M-ART-1A.2), at one of three zooms. Which, is chosen
-  // in the view's corner while Enhanced is reviewed (mazeLook.svelte.js):
-  // presentation alone, never saved, and no Session call. The buttons let
-  // go of the focus when clicked, so the keys still reach the maze.
+  // Enhanced stone (M-ART-1A.2), at one of three zooms. Which is a window
+  // setting (M-ART-1A.3: view.settings, Session.SetMazeLook, also in
+  // Settings), chosen in the view's top left corner: presentation alone,
+  // never a game action. A button clicked lets go of the focus, so the keys
+  // reach the maze at once; from the keyboard the focus stays on it. The
+  // picture is the largest square the view holds (see .picture).
   //
   // Inspect (R-2) lists each character found in the party's area, with a
   // Pick up button (keys 1-9) while the party has room, or the reason not.
@@ -33,7 +35,7 @@
   import PartyBar from './PartyBar.svelte'
   import { scene, actions, keyAction, expeditionTag, suggested } from './dungeon.js'
   import MazeView from './MazeView.svelte'
-  import { look } from './mazeLook.svelte.js'
+  import { mazeLooks, mazeLookOf } from './mazeStyle.js'
   import CampScreen from './CampScreen.svelte'
   import { pickLabel, placeMark } from './camp.js'
   import Condition from './Condition.svelte'
@@ -60,13 +62,12 @@
   const minimapShown = $derived(view.settings?.minimapVisible ?? true)
   let mapOpen = $state(false)
 
-  const looks = {
-    style: [['classic', 'Classic'], ['enhanced', 'Enhanced']],
-    zoom: [['close', 'Close'], ['standard', 'Standard'], ['wide', 'Wide']],
-  }
+  const look = $derived(mazeLookOf(view.settings))
+  const lookNames = { style: 'Maze style', zoom: 'Maze zoom' }
   function choose(key, value, e) {
-    look[key] = value
-    e.currentTarget.blur() // the keys go back to the maze
+    const next = { ...look, [key]: value }
+    if (e.detail) e.currentTarget.blur() // clicked: the keys go back to the maze
+    call(S.SetMazeLook, next.style, next.zoom)
   }
 
   function closeMap() {
@@ -131,10 +132,10 @@
       {#if d.dark && !shapes.length && !d.viewport?.length}
         <div class="viewport muted"><p>darkness</p></div>
       {/if}
-      <div class="look" role="group" aria-label="The maze picture's style and zoom">
-        {#each Object.entries(looks) as [key, options] (key)}
-          <span class="set">{#each options as [value, label] (value)}<button class="small" aria-pressed={look[key] === value}
-            onclick={(e) => choose(key, value, e)}>{label}</button>{/each}</span>
+      <div class="look" role="group" aria-label="The maze picture">
+        {#each Object.entries(mazeLooks) as [key, options] (key)}
+          <span class="set" role="group" aria-label={lookNames[key]} title="{lookNames[key]} (also in Settings)">{#each options as o (o.id)}<button class="small"
+            aria-pressed={look[key] === o.id} disabled={busy} onclick={(e) => choose(key, o.id, e)}>{o.label}</button>{/each}</span>
         {/each}
       </div>
       {#if minimapShown && view.minimap}
@@ -244,7 +245,7 @@
   .tag.real { color: var(--accent); border-color: var(--accent); }
   /* The view (M-ART-1A.3): its own size is the grid's, so the picture can
      be sized from it (container units), in width and height. */
-  .stage { position: relative; container-type: size; display: grid; place-items: center; min-height: 0; border-radius: 8px; padding: 6px;
+  .stage { --corner: 184px; position: relative; container-type: size; display: grid; place-items: center; min-height: 0; border-radius: 8px; padding: 6px;
     background: #0d0c0b; border: 1px solid var(--line); }
   .viewport { position: absolute; inset: 0; display: grid; place-content: center; text-align: center;
     font: 700 16px ui-monospace, Menlo, monospace; color: #fff; text-shadow: 0 0 6px #000; pointer-events: none; }
@@ -254,14 +255,16 @@
   .minimap { position: absolute; top: 8px; right: 8px; height: min(168px, calc(100% - 16px), 26cqw); aspect-ratio: 1;
     background: rgba(0, 0, 0, 0.55); border: 1px solid rgba(79, 209, 106, 0.3); border-radius: 6px; padding: 4px;
     pointer-events: none; }
-  /* The style and zoom (for review, M-ART-1A.2): the view's lower left corner,
-     clear of the picture (centred) and the minimap (upper right). */
-  .look { position: absolute; left: 8px; bottom: 8px; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+  /* The picture's style and zoom (M-ART-1A.3): the view's upper left
+     corner, within the column kept for it (--corner), as the minimap is
+     in the upper right. */
+  .look { position: absolute; left: 8px; top: 8px; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; max-width: calc(var(--corner) - 8px); }
   .look .set { display: inline-flex; }
-  .look button { padding: 1px 7px; border-radius: 0; background: rgba(0, 0, 0, 0.55); }
+  .look button { padding: 2px 8px; border-radius: 0; margin: 0; }
+  .look button + button { margin-left: -1px; }
   .look button:first-child { border-radius: 4px 0 0 4px; }
   .look button:last-child { border-radius: 0 4px 4px 0; }
-  .look button[aria-pressed='true'] { color: var(--accent); border-color: var(--accent); }
+  .look button[aria-pressed='true'] { color: var(--accent); border-color: var(--accent); position: relative; }
   .camp { font: 700 28px ui-monospace, Menlo, monospace; letter-spacing: 6px; color: var(--muted); }
   .messages { min-height: 52px; font-family: ui-monospace, Menlo, monospace; text-align: center; }
   .messages p { margin: 2px 0; color: #f2c14e; }
@@ -270,7 +273,7 @@
   /* The picture: the largest square the view holds, less a column on each
      side for what sits in its corners (the style and zoom on the left, the
      minimap on the right: neither ever covers it), and at most 720px. */
-  .picture { --corner: 184px; width: min(100cqh, 100cqw - 2 * var(--corner), 720px); aspect-ratio: 1; }
+  .picture { width: min(100cqh, 100cqw - 2 * var(--corner), 720px); aspect-ratio: 1; }
   /* The movement pad and the other commands share a line where they fit
      (wrapping where they do not), so the view keeps the height. */
   .commands { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px 24px; }

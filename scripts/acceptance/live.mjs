@@ -1328,25 +1328,34 @@ async function main() {
         `the maze picture: square, centred in the view, ${Math.round(lay.svg?.w)}px (at least ${least}, at most 720)`)
       check(apart(lay.svg, lay.mini) && apart(lay.svg, lay.look) && lay.doc[0] <= W && lay.doc[1] <= H && lay.cmds.b <= H && (!lay.party || lay.party.b <= H),
         `the picture clear of the minimap and the style and zoom; the commands and the party in the window, no page scrolling (${JSON.stringify({ mini: lay.mini, look: lay.look, doc: lay.doc })})`)
+      const gameWas = sha(GAME), placeWas = (await view()).position
       await js(`(() => { window.__calls = []; window.__orig = {}; const S = ${S}; for (const k of Object.keys(S)) { const f = (window.__orig[k] = S[k]); S[k] = (...a) => { window.__calls.push(k); return f(...a) } } })()`)
-      const settingsWas = sha(SETTINGS_FILE)
+      const fileMaze = () => { try { const f = JSON.parse(readFileSync(SETTINGS_FILE, 'utf8')); return [f.mazeStyle, f.mazeZoom].join(' ') } catch { return null } }
       const lookClick = async (label) => {
         const b = await js(`(() => { const b = [...document.querySelectorAll('.stage .look button')].find((b) => b.innerText.trim() === ${JSON.stringify(label)}); if (!b) return null; const r = b.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 } })()`)
         if (!b) return false
-        await mouse('mousePressed', b.x, b.y); await mouse('mouseReleased', b.x, b.y); await sleep(250)
+        await mouse('mousePressed', b.x, b.y); await mouse('mouseReleased', b.x, b.y); await sleep(300)
         return true
       }
       check(await lookClick('Classic') && await lookClick('Wide'), 'Classic and Wide are in the view’s corner')
       pic = await picture()
       const calls = await js('window.__calls')
-      check(pic.style === 'classic' && pic.zoom === 'wide' && pic.same && pic.focus && calls.length === 0 && sha(SETTINGS_FILE) === settingsWas,
-        `Classic at Wide: drawn as the modules give, the keys back with the maze, no Session call (${calls.join(',') || 'none'}), no setting changed`)
+      const placeNow = JSON.parse(await js(`window.__orig.State().then((v) => JSON.stringify(v))`)).position
+      // A window setting (M-ART-1A.3): one SetMazeLook a click, kept in gui-settings.json; nothing of the game.
+      check(pic.style === 'classic' && pic.zoom === 'wide' && pic.same && pic.focus && calls.join() === 'SetMazeLook,SetMazeLook' && fileMaze() === 'classic wide' &&
+        sha(GAME) === gameWas && placeNow?.place === placeWas?.place && placeNow?.facing === placeWas?.facing,
+        `Classic at Wide: drawn as the modules give, the keys back with the maze, SetMazeLook alone (${calls.join(',') || 'none'}), kept (${fileMaze()}); the party where it was and the save unchanged`)
       await press('ArrowRight'); await sleep(400)
       const turned = await picture()
-      check(turned.facing !== pic.facing && turned.same, `a key after the clicks still turns the party, and the picture follows (${pic.facing} -> ${turned.facing})`)
-      await lookClick('Enhanced'); await lookClick('Standard')
+      check(turned.facing !== pic.facing && turned.same && turned.style === 'classic' && turned.zoom === 'wide', `a key after the clicks still turns the party, and the picture follows in the look chosen (${pic.facing} -> ${turned.facing})`)
       await js(`(() => { for (const [k, f] of Object.entries(window.__orig ?? {})) ${S}[k] = f; delete window.__orig })()`)
       await js(`${S}.AbandonPractice()`)
+      // Settings shows the look chosen in the maze, and chooses it too.
+      await goto('settings')
+      const radios = () => js(`[...document.querySelectorAll('input[name^="maze-"]:checked')].map((i) => i.value).join(' ')`)
+      check(await radios() === 'classic wide', `Settings shows the maze look chosen in the maze (${await radios()})`)
+      for (const v of ['enhanced', 'standard']) { await js(`document.querySelector('input[name^="maze-"][value="${v}"]').click()`); await sleep(300) }
+      check(await radios() === 'enhanced standard' && fileMaze() === 'enhanced standard', `and chooses it: Enhanced at Standard again, kept (${fileMaze()})`)
       await goto('edge')
       pv = JSON.parse(await js(`${S}.PracticeEncounter(true).then((v) => JSON.stringify(v))`))
       check(!pv.error && pv.screen === 'combat', `a practice encounter with a chest starts through its Session method (${pv.error || pv.screen})`)

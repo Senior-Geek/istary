@@ -2180,6 +2180,8 @@ export namespace main {
 	    panels: string;
 	    story: string;
 	    artwork: string;
+	    mazeStyle: string;
+	    mazeZoom: string;
 	    note: string;
 	
 	    static createFrom(source: any = {}) {
@@ -2193,6 +2195,8 @@ export namespace main {
 	        this.panels = source["panels"];
 	        this.story = source["story"];
 	        this.artwork = source["artwork"];
+	        this.mazeStyle = source["mazeStyle"];
+	        this.mazeZoom = source["mazeZoom"];
 	        this.note = source["note"];
 	    }
 	}

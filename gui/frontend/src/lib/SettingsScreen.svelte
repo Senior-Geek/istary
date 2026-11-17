@@ -10,8 +10,11 @@
   // once. They are the window's settings (Session.SetAppearance, kept in
   // gui-settings.json): the same in every game, and in none of them.
   //
-  // With no game open (NAV-1A, view.game 0) only the appearance is here:
-  // the roster tools are a game's.
+  // And the maze picture (M-ART-1A.3): its style and zoom
+  // (Session.SetMazeLook), the same settings the dungeon's view chooses.
+  //
+  // With no game open (NAV-1A, view.game 0) only the appearance and the maze
+  // picture are here: the roster tools are a game's.
   //
   // Props:
   //   view     the Go View (view.location is "settings")
@@ -23,6 +26,7 @@
   import LocationFrame from './LocationFrame.svelte'
   import RestorePanel from './RestorePanel.svelte'
   import { looks, lookOf } from './scenes.js'
+  import { mazeLooks, mazeLookOf, defaultLook } from './mazeStyle.js'
 
   let { view, busy = false, call, onopen, onroster } = $props()
 
@@ -35,6 +39,16 @@
   const choose = (key, id) => {
     const next = { ...look, [key]: id }
     call(S.SetAppearance, next.panels, next.story, next.artwork)
+  }
+
+  const maze = $derived(mazeLookOf(view.settings))
+  const mazeParts = [
+    { key: 'style', legend: 'Style', hint: 'Enhanced draws stone, floors and ceilings; Classic, the original’s outlines.' },
+    { key: 'zoom', legend: 'Zoom', hint: 'How much of the corridor the picture frames. What the party sees is the same.' },
+  ]
+  const chooseMaze = (key, id) => {
+    const next = { ...maze, [key]: id }
+    call(S.SetMazeLook, next.style, next.zoom)
   }
 
   let resetting = $state(false) // reset confirmation open
@@ -84,6 +98,28 @@
               <label class="choice" class:on={look[p.key] === o.id}>
                 <input type="radio" name="look-{p.key}" value={o.id} checked={look[p.key] === o.id}
                   onchange={() => choose(p.key, o.id)} />{o.label}{#if o.id === looks[p.key][0].id}<span class="dflt"> (default)</span>{/if}
+              </label>
+            {/each}
+          </div>
+          <p class="muted hint">{p.hint}</p>
+        </fieldset>
+      {/each}
+    </div>
+  </section>
+
+  <section class="appearance" aria-labelledby="maze-title">
+    <h2 id="maze-title">Maze view</h2>
+    <p class="muted">The first-person picture of the maze. It is also chosen in the maze, at the picture's corner.
+      Kept for this window in every game; no game is changed.</p>
+    <div class="parts">
+      {#each mazeParts as p (p.key)}
+        <fieldset class="part" disabled={busy}>
+          <legend>{p.legend}</legend>
+          <div class="choices">
+            {#each mazeLooks[p.key] as o (o.id)}
+              <label class="choice" class:on={maze[p.key] === o.id}>
+                <input type="radio" name="maze-{p.key}" value={o.id} checked={maze[p.key] === o.id}
+                  onchange={() => chooseMaze(p.key, o.id)} />{o.label}{#if o.id === defaultLook[p.key]}<span class="dflt"> (default)</span>{/if}
               </label>
             {/each}
           </div>

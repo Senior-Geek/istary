@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"maps"
 	"math/rand"
 	"os"
@@ -270,6 +271,154 @@ func TestAppearanceFromOtherFiles(t *testing.T) {
 		v := reopened(t, s, dir).State()
 		if got := [3]string{v.Settings.Panels, v.Settings.Story, v.Settings.Artwork}; got != c.want || v.Settings.PartyVisible == c.hide || v.Settings.Note != "" {
 			t.Fatalf("%s: %+v", name, v.Settings)
+		}
+	}
+}
+
+// The maze picture's style and zoom (M-ART-1A.3) are the window's, like
+// the illustrated places' appearance: Enhanced at Standard until chosen;
+// kept in gui-settings.json (whole, atomically) and read again after a
+// restart; never in a game or its save, the same in every game; drawing no
+// random number. A value it does not know is refused and changes nothing.
+func TestMazeLookIsKept(t *testing.T) {
+	s, dir := newTestSession(t)
+	rosterWith(t, s, hero("WALKER", engine.Good, ""))
+	look := func(v View) [2]string { return [2]string{v.Settings.MazeStyle, v.Settings.MazeZoom} }
+	if v := s.State(); look(v) != [2]string{"enhanced", "standard"} {
+		t.Fatalf("defaults: %+v", v.Settings)
+	}
+	before := s.State()
+	game := without(t, dir, settingsFile)
+	for _, c := range [][2]string{{"classic", "wide"}, {"enhanced", "close"}, {"classic", "standard"}, {"enhanced", "wide"}} {
+		rand.Seed(17)
+		v := s.SetMazeLook(c[0], c[1])
+		next := rand.Int63()
+		rand.Seed(17)
+		if next != rand.Int63() {
+			t.Fatal("a random number was drawn")
+		}
+		if v.Error != "" || look(v) != c || v.Settings.Note != "" {
+			t.Fatalf("set %v: %q %+v", c, v.Error, v.Settings)
+		}
+		v.Settings = before.Settings
+		if !sameView(v, before) {
+			t.Fatalf("set %v: the view changed", c)
+		}
+		if !maps.Equal(game, without(t, dir, settingsFile)) {
+			t.Fatalf("set %v: changed another file in the save folder", c)
+		}
+	}
+	for _, bad := range [][2]string{{"wireframe", "wide"}, {"classic", "huge"}, {"", "standard"}, {"enhanced", ""}, {"Enhanced", "Standard"}} {
+		raw, _ := os.ReadFile(filepath.Join(dir, settingsFile))
+		v := s.SetMazeLook(bad[0], bad[1])
+		after, _ := os.ReadFile(filepath.Join(dir, settingsFile))
+		if v.Error == "" || look(v) != [2]string{"enhanced", "wide"} || !bytes.Equal(raw, after) {
+			t.Fatalf("set %v: %q %+v", bad, v.Error, v.Settings)
+		}
+	}
+	raw, _ := os.ReadFile(filepath.Join(dir, settingsFile))
+	if string(raw) != "{\n  \"version\": 1,\n  \"partyHidden\": false,\n  \"mazeStyle\": \"enhanced\",\n  \"mazeZoom\": \"wide\"\n}\n" {
+		t.Fatalf("settings file: %q", raw)
+	}
+	if roster, _ := os.ReadFile(filepath.Join(dir, "roster1.json")); bytes.Contains(roster, []byte("maze")) {
+		t.Fatal("the maze look is in the roster file")
+	}
+	if v := reopened(t, s, dir).State(); look(v) != [2]string{"enhanced", "wide"} || v.Settings.Note != "" {
+		t.Fatalf("after a restart: %+v", v.Settings)
+	}
+}
+
+// Settings files from before M-ART-1A.3 have no maze look: the defaults,
+// with no note, and the rest kept; a style or zoom this Istary does not know
+// is read as the default, the other kept.
+func TestMazeLookFromOtherFiles(t *testing.T) {
+	for name, c := range map[string]struct {
+		file string
+		want [2]string
+		hide bool
+	}{
+		"before ART-2C":     {"{\n  \"version\": 1,\n  \"partyHidden\": true\n}\n", [2]string{"enhanced", "standard"}, true},
+		"before M-ART-1A.3": {`{"version": 1, "panels": "dark", "story": "slate", "artwork": "subdued", "lastGame": 1}`, [2]string{"enhanced", "standard"}, false},
+		"unknown style":     {`{"version": 1, "mazeStyle": "photo", "mazeZoom": "close"}`, [2]string{"enhanced", "close"}, false},
+		"unknown zoom":      {`{"version": 1, "mazeStyle": "classic", "mazeZoom": "x4"}`, [2]string{"classic", "standard"}, false},
+	} {
+		s, dir := newTestSession(t)
+		os.WriteFile(filepath.Join(dir, settingsFile), []byte(c.file), 0o644)
+		v := reopened(t, s, dir).State()
+		if got := [2]string{v.Settings.MazeStyle, v.Settings.MazeZoom}; got != c.want || v.Settings.PartyVisible == c.hide || v.Settings.Note != "" {
+			t.Fatalf("%s: %+v", name, v.Settings)
+		}
+		if name == "before M-ART-1A.3" && [3]string{v.Settings.Panels, v.Settings.Story, v.Settings.Artwork} != [3]string{"dark", "slate", "subdued"} {
+			t.Fatalf("%s: the rest not kept: %+v", name, v.Settings)
+		}
+	}
+}
+
+// Out in the maze, choosing the picture's style and zoom is not a game
+// action: the party does not move or turn, no light is spent, the
+// exploration record, the corridor and the save are as they were, in a real
+// expedition and in combat alike.
+func TestMazeLookTouchesNothingOfTheGame(t *testing.T) {
+	rand.Seed(5)
+	s, dir := partySession(t, false)
+	if v := s.RealExpedition(); v.Error != "" {
+		t.Fatal(v.Error)
+	}
+	s.DungeonAction(app.ActLeaveCamp, 0)
+	s.DungeonAction(app.ActNo, 0)
+	g := s.ctrl.Game
+	g.LightLevel = 30
+	s.DungeonAction(app.ActForward, 0)
+	for _, phase := range []string{"maze", "combat"} {
+		if phase == "combat" {
+			for try := 0; try < 50 && (g.Combat == nil || len(g.Combat.Groups) == 0); try++ {
+				g.Combat = engine.NewCombat(g)
+			}
+			g.Phase = engine.PhaseCombat
+		}
+		before := s.State()
+		if want := map[string]string{"maze": "dungeon", "combat": "combat"}[phase]; before.Screen != want {
+			t.Fatalf("%s: on %q", phase, before.Screen)
+		}
+		save := without(t, dir, settingsFile)
+		x, y, facing, light, explored := g.PlayerX, g.PlayerY, g.Facing, g.LightLevel, fmt.Sprint(g.Exploration)
+		for _, c := range [][2]string{{"classic", "close"}, {"enhanced", "wide"}, {"classic", "standard"}} {
+			rand.Seed(9)
+			v := s.SetMazeLook(c[0], c[1])
+			next := rand.Int63()
+			rand.Seed(9)
+			if next != rand.Int63() {
+				t.Fatalf("%s: a random number was drawn", phase)
+			}
+			if v.Error != "" || v.Screen != before.Screen {
+				t.Fatalf("%s: %q on %q", phase, v.Error, v.Screen)
+			}
+			if g.PlayerX != x || g.PlayerY != y || g.Facing != facing || g.LightLevel != light || fmt.Sprint(g.Exploration) != explored {
+				t.Fatalf("%s: the game changed", phase)
+			}
+			v.Settings = before.Settings
+			if !sameView(v, before) {
+				t.Fatalf("%s: the view changed", phase)
+			}
+			if !maps.Equal(save, without(t, dir, settingsFile)) {
+				t.Fatalf("%s: the save folder changed", phase)
+			}
+		}
+	}
+}
+
+// The maze look is the library's, not a game's: choosing another game, or
+// starting one, keeps it.
+func TestMazeLookAcrossGames(t *testing.T) {
+	s, _ := newLibrary(t)
+	fine(t, s.NewGame(1))
+	if v := fine(t, s.SetMazeLook("classic", "close")); v.Settings.MazeStyle != "classic" {
+		t.Fatalf("%+v", v.Settings)
+	}
+	changeGame(t, s)
+	for _, v := range []View{fine(t, s.NewGame(2)), changeGame(t, s), fine(t, s.ContinueGame(1))} {
+		if [2]string{v.Settings.MazeStyle, v.Settings.MazeZoom} != [2]string{"classic", "close"} {
+			t.Fatalf("game %d: %+v", v.Game, v.Settings)
 		}
 	}
 }

@@ -185,8 +185,22 @@ export const zooms = {
   wide: '-52 -52 104 104',
 }
 
-// The provisional appearance (until Settings, M-ART-1A.3).
+// The maze picture's look (M-ART-1A.3): a window setting Go keeps in
+// gui-settings.json (Session.SetMazeLook, view.settings.mazeStyle and
+// .mazeZoom), chosen in the dungeon's view and in Settings. The options in
+// the order they are offered; the defaults, Enhanced at Standard.
 export const defaultLook = { style: 'enhanced', zoom: 'standard' }
+export const mazeLooks = {
+  style: [{ id: 'enhanced', label: 'Enhanced' }, { id: 'classic', label: 'Classic' }],
+  zoom: [{ id: 'close', label: 'Close' }, { id: 'standard', label: 'Standard' }, { id: 'wide', label: 'Wide' }],
+}
+
+// mazeLookOf is the look in Go's settings view: each part as Go says, or
+// its default if missing or unknown.
+export function mazeLookOf(settings) {
+  const pick = (k, v) => (mazeLooks[k].some((o) => o.id === v) ? v : defaultLook[k])
+  return { style: pick('style', settings?.mazeStyle), zoom: pick('zoom', settings?.mazeZoom) }
+}
 
 // segmentsPath renders detail segments as one SVG path.
 const n = (v) => +v.toFixed(3)

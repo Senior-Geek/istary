@@ -6,7 +6,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { mazeScene } from './mazeScene.js'
 import { perspective, far, near, viewBox } from './mazeProjection.js'
-import { classic, enhanced, styles, painted, fog, shade, background, recede, zooms, defaultLook, segmentsPath } from './mazeStyle.js'
+import { classic, enhanced, styles, painted, fog, shade, background, recede, zooms, defaultLook, mazeLooks, mazeLookOf, segmentsPath } from './mazeStyle.js'
 
 const cases = JSON.parse(readFileSync(new URL('./testdata/maze-scenes.json', import.meta.url)))
 const byId = Object.fromEntries(cases.map((c) => [c.id, c]))
@@ -343,4 +343,20 @@ test('every zoom frames the same drawing: the nearest walls, openings and doors 
       }
     }
   }
+})
+
+test('the look in Go’s settings: each part as Go says, its default if missing or unknown', () => {
+  assert.deepEqual(mazeLooks.style.map((o) => o.id), ['enhanced', 'classic'])
+  assert.deepEqual(mazeLooks.zoom.map((o) => o.id), ['close', 'standard', 'wide'])
+  assert.deepEqual(Object.keys(zooms), mazeLooks.zoom.map((o) => o.id))
+  assert.deepEqual(Object.keys(styles).sort(), mazeLooks.style.map((o) => o.id).sort())
+  for (const [settings, want] of [
+    [undefined, defaultLook],
+    [{}, defaultLook],
+    [{ mazeStyle: 'classic', mazeZoom: 'wide' }, { style: 'classic', zoom: 'wide' }],
+    [{ mazeStyle: 'photo', mazeZoom: 'close' }, { style: 'enhanced', zoom: 'close' }],
+    [{ mazeStyle: 'classic', mazeZoom: 'x4' }, { style: 'classic', zoom: 'standard' }],
+    [{ mazeStyle: 'Classic', mazeZoom: 'WIDE' }, defaultLook],
+    [{ mazeStyle: '__proto__', mazeZoom: 'toString' }, defaultLook],
+  ]) assert.deepEqual(mazeLookOf(settings), want, JSON.stringify(settings))
 })

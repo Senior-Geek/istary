@@ -117,6 +117,8 @@
    "panels": "slate",
    "story": "parchment",
    "artwork": "full",
+   "mazeStyle": "enhanced",
+   "mazeZoom": "standard",
    "note": ""
   },
   "departures": {
@@ -271,6 +273,8 @@
    "panels": "slate",
    "story": "parchment",
    "artwork": "full",
+   "mazeStyle": "enhanced",
+   "mazeZoom": "standard",
    "note": ""
   },
   "departures": {
@@ -405,6 +409,8 @@
    "panels": "slate",
    "story": "parchment",
    "artwork": "full",
+   "mazeStyle": "enhanced",
+   "mazeZoom": "standard",
    "note": ""
   },
   "departures": {
@@ -602,6 +608,8 @@
    "panels": "slate",
    "story": "parchment",
    "artwork": "full",
+   "mazeStyle": "enhanced",
+   "mazeZoom": "standard",
    "note": ""
   },
   "departures": {
@@ -823,6 +831,8 @@
    "panels": "slate",
    "story": "parchment",
    "artwork": "full",
+   "mazeStyle": "enhanced",
+   "mazeZoom": "standard",
    "note": ""
   },
   "departures": {
@@ -1052,6 +1062,8 @@
    "panels": "slate",
    "story": "parchment",
    "artwork": "full",
+   "mazeStyle": "enhanced",
+   "mazeZoom": "standard",
    "note": ""
   },
   "departures": {
@@ -1380,6 +1392,8 @@
    "panels": "slate",
    "story": "parchment",
    "artwork": "full",
+   "mazeStyle": "enhanced",
+   "mazeZoom": "standard",
    "note": ""
   },
   "departures": {
@@ -1507,6 +1521,8 @@
    "panels": "slate",
    "story": "parchment",
    "artwork": "full",
+   "mazeStyle": "enhanced",
+   "mazeZoom": "standard",
    "note": ""
   },
   "departures": {
@@ -1713,6 +1729,8 @@
    "panels": "slate",
    "story": "parchment",
    "artwork": "full",
+   "mazeStyle": "enhanced",
+   "mazeZoom": "standard",
    "note": ""
   },
   "departures": {
@@ -1844,6 +1862,8 @@
    "panels": "slate",
    "story": "parchment",
    "artwork": "full",
+   "mazeStyle": "enhanced",
+   "mazeZoom": "standard",
    "note": ""
   },
   "departures": {
@@ -1978,6 +1998,8 @@
    "panels": "slate",
    "story": "parchment",
    "artwork": "full",
+   "mazeStyle": "enhanced",
+   "mazeZoom": "standard",
    "note": ""
   },
   "departures": {
@@ -2089,6 +2111,8 @@
    "panels": "slate",
    "story": "parchment",
    "artwork": "full",
+   "mazeStyle": "enhanced",
+   "mazeZoom": "standard",
    "note": ""
   },
   "departures": {
@@ -2194,6 +2218,8 @@
    "panels": "slate",
    "story": "parchment",
    "artwork": "full",
+   "mazeStyle": "enhanced",
+   "mazeZoom": "standard",
    "note": ""
   },
   "departures": {
@@ -2296,6 +2322,8 @@
    "panels": "slate",
    "story": "parchment",
    "artwork": "full",
+   "mazeStyle": "enhanced",
+   "mazeZoom": "standard",
    "note": ""
   },
   "departures": {
@@ -2424,6 +2452,8 @@
    "panels": "slate",
    "story": "parchment",
    "artwork": "full",
+   "mazeStyle": "enhanced",
+   "mazeZoom": "standard",
    "note": ""
   },
   "departures": {
@@ -2638,6 +2668,8 @@
    "panels": "slate",
    "story": "parchment",
    "artwork": "full",
+   "mazeStyle": "enhanced",
+   "mazeZoom": "standard",
    "note": ""
   },
   "departures": {
@@ -2765,6 +2797,8 @@
    "panels": "slate",
    "story": "parchment",
    "artwork": "full",
+   "mazeStyle": "enhanced",
+   "mazeZoom": "standard",
    "note": ""
   },
   "departures": {

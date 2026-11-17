@@ -121,6 +121,8 @@ export function SaveNow():Promise<main.View>;
 
 export function SetAppearance(arg1:string,arg2:string,arg3:string):Promise<main.View>;
 
+export function SetMazeLook(arg1:string,arg2:string):Promise<main.View>;
+
 export function SetMinimapVisible(arg1:boolean):Promise<main.View>;
 
 export function SetName(arg1:string):Promise<main.View>;

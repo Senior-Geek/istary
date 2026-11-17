@@ -40,6 +40,10 @@ type Settings struct {
 	// LastGame is the slot of the game last chosen (NAV-1A, startup.go),
 	// opened again when Istary starts; 0 for none.
 	LastGame int `json:"lastGame,omitempty"`
+	// The maze picture (M-ART-1A.3): its style and its zoom. Empty is the
+	// default; a value this Istary does not know is read as the default.
+	MazeStyle string `json:"mazeStyle,omitempty"`
+	MazeZoom  string `json:"mazeZoom,omitempty"`
 }
 
 // The appearances an illustrated place can have (ART-2C), the default
@@ -48,6 +52,13 @@ var (
 	panelLooks = []string{"slate", "dark", "light"}
 	storyLooks = []string{"parchment", "dark", "slate"}
 	artworks   = []string{"full", "subdued", "hidden"}
+)
+
+// The maze picture's styles and zooms (M-ART-1A.3), the default first. Only
+// how the picture is drawn: what the party sees is the engine's alone.
+var (
+	mazeStyles = []string{"enhanced", "classic"}
+	mazeZooms  = []string{"standard", "close", "wide"}
 )
 
 // chosen is choice if it is one of options, and otherwise the default,
@@ -70,7 +81,11 @@ type SettingsView struct {
 	Panels  string `json:"panels"`
 	Story   string `json:"story"`
 	Artwork string `json:"artwork"`
-	Note    string `json:"note"`
+	// The maze picture (M-ART-1A.3), never empty: its style (enhanced or
+	// classic) and its zoom (standard, close or wide).
+	MazeStyle string `json:"mazeStyle"`
+	MazeZoom  string `json:"mazeZoom"`
+	Note      string `json:"note"`
 }
 
 func (s *Session) settingsPath() string {
@@ -161,6 +176,31 @@ func (s *Session) SetAppearance(panels, story, artwork string) View {
 	return s.view(nil)
 }
 
+// SetMazeLook sets the maze picture's style (enhanced or classic) and zoom
+// (standard, close or wide) and saves them, as SetPartyVisible does:
+// accepted anywhere, even out on an expedition or in combat, touching
+// nothing of the game (no step, no turn, no light spent, no save). A value
+// it does not know is refused and nothing changes.
+func (s *Session) SetMazeLook(style, zoom string) View {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.startErr != nil {
+		return s.view(nil)
+	}
+	if !slices.Contains(mazeStyles, style) {
+		return s.view(fmt.Errorf("there is no %q style for the maze picture", style))
+	}
+	if !slices.Contains(mazeZooms, zoom) {
+		return s.view(fmt.Errorf("there is no %q zoom for the maze picture", zoom))
+	}
+	s.prefs.MazeStyle, s.prefs.MazeZoom = style, zoom
+	s.prefsNote = ""
+	if err := s.saveSettings(); err != nil {
+		s.prefsNote = fmt.Sprintf("The window's settings could not be saved (%v); this choice holds until Istary closes.", err)
+	}
+	return s.view(nil)
+}
+
 func (s *Session) saveSettings() error {
 	st := s.prefs
 	st.Version = settingsFormat
@@ -180,6 +220,7 @@ func (s *Session) settingsView() SettingsView {
 	return SettingsView{
 		PartyVisible: !s.prefs.PartyHidden, MinimapVisible: !s.prefs.MinimapHidden,
 		Panels: chosen(s.prefs.Panels, panelLooks), Story: chosen(s.prefs.Story, storyLooks), Artwork: chosen(s.prefs.Artwork, artworks),
+		MazeStyle: chosen(s.prefs.MazeStyle, mazeStyles), MazeZoom: chosen(s.prefs.MazeZoom, mazeZooms),
 		Note: s.prefsNote,
 	}
 }
