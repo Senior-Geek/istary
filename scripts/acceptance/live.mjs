@@ -333,7 +333,7 @@ async function main() {
         const wi = await wayIssues()
         check(wi.issues.length === 0, `${place}: ${wi.ways.length ? `each destination's (and the maze's) emblem before its name, 22 px, centred, in the gold; the button's height and name as without it (${wi.ways.join(', ')})` : 'no destination buttons'}${wi.issues.length ? ': ' + wi.issues.join('; ') : ''}`)
         if (place === 'castle' || place === 'edge') check(wi.ways.length === (place === 'castle' ? 5 : 3), `${place}: its destinations${place === 'edge' ? ' and Enter the Maze' : ''} are there (${wi.ways.length})`)
-        if (!['castle', 'edge', 'tavern', 'inn', 'trading', 'training'].includes(place)) check(await js(`(() => { const f = document.querySelector('${A} .fallback'); const e = f && f.querySelector('.emblem'); return !!e && (${place === 'settings'} ? e.tagName === 'SPAN' : e.tagName === 'svg' && e.dataset.emblem === '${place}' && e.getBoundingClientRect().width >= 32) })()`), `${place}: its themed panel shows ${place === 'settings' ? 'its symbol' : 'its emblem'}`)
+        if (!['castle', 'edge', 'tavern', 'inn', 'trading', 'training', 'temple'].includes(place)) check(await js(`(() => { const f = document.querySelector('${A} .fallback'); const e = f && f.querySelector('.emblem'); return !!e && (${place === 'settings'} ? e.tagName === 'SPAN' : e.tagName === 'svg' && e.dataset.emblem === '${place}' && e.getBoundingClientRect().width >= 32) })()`), `${place}: its themed panel shows ${place === 'settings' ? 'its symbol' : 'its emblem'}`)
         const t = await toggle()
         check(place === 'trading' ? t === '' : t === 'Show sheet', `${place}: the sheet toggle ${place === 'trading' ? 'is not offered at Boltac’s' : 'reads Show sheet, in the top bar'}`)
         await shot(place)
@@ -422,7 +422,7 @@ async function main() {
       await goto('castle'); await loaded()
       const first = await shownLook()
       check(fileLook()?.panels === undefined && first.panels === 'slate' && first.story === 'parchment' && first.artwork === 'full' && first.img && first.filter === 'none', `the defaults: Slate panels, a Parchment story box, the whole picture (${JSON.stringify(first)})`)
-      for (const place of ['castle', 'edge', 'tavern', 'inn', 'trading', 'training']) {
+      for (const place of ['castle', 'edge', 'tavern', 'inn', 'trading', 'training', 'temple']) {
         await goto(place); await loaded()
         let a = await art(place)
         if (!check(a && a.place === place && a.loaded && a.nw === 1920 && a.nh === 1080, `${place}: its picture is loaded (${a?.nw}x${a?.nh})`)) continue
@@ -626,12 +626,12 @@ async function main() {
       check((await view()).location === 'trading' && !(await rect(STORY)), 'closed, Boltac’s is not opened again on return')
       await clickText('Story', '.frame .head')
       check(!!(await rect(STORY)) && await storyShown(boltacStory), 'Story opens Boltac’s again')
-      // The Training Grounds (ART-3C), the same way: its own story on its
-      // first visit, titled, with no challenge; closed, not opened again on
-      // return; Story opens it. While
+      // The Training Grounds (ART-3C) and the Temple (ART-3D), the same
+      // way: each its own story on its first visit, titled, with no
+      // challenge; closed, not opened again on return; Story opens it. While
       // a character is being created, there is no story box and no Story:
       // creation is never under it.
-      for (const [label, place, via] of [['The Training Grounds', 'training', 'The Edge of Town']]) {
+      for (const [label, place, via] of [['The Training Grounds', 'training', 'The Edge of Town'], ['The Temple of Cant', 'temple', null]]) {
         const enter = async () => { await clickText('← Castle Esc', '.frame .head'); if (via) await clickText(via, B); await clickText(label, B) }
         await enter()
         const story = (await view()).story
@@ -710,7 +710,7 @@ async function main() {
       // every control is in view and uncovered, and none disabled by it.
       const combos = []
       for (const panels of LOOKS.panels) for (const story of LOOKS.story) for (const artwork of LOOKS.artwork) combos.push({ panels, story, artwork })
-      for (const place of ['castle', 'edge', 'tavern', 'inn', 'trading', 'training']) {
+      for (const place of ['castle', 'edge', 'tavern', 'inn', 'trading', 'training', 'temple']) {
         await setLook({ panels: 'slate', story: 'parchment', artwork: 'full' }, place)
         const base = await layoutNow(), enabled = await js(`[...document.querySelectorAll('.frame button')].filter((b) => !b.disabled).length`)
         await setLook({ panels: 'slate', story: 'parchment', artwork: 'hidden' }, place)

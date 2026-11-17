@@ -58,15 +58,15 @@ test('a story’s HTML and script are text, never elements', () => {
   for (const src of [...sources('./'), read('../App.svelte')]) assert.ok(!/\{@html/.test(src), 'no {@html}')
 })
 
-test('the seven stories, from their files, as Go chose them for each place', () => {
+test('the eight stories, from their files, as Go chose them for each place', () => {
   const intro = at('no game, castle').story, castle = at('castle').story, edge = at('edge').story, tavern = at('tavern').story, inn = at('inn').story, boltac = at('trading').story
-  const training = at('training').story
-  assert.ok(intro && castle && edge && tavern && inn && boltac && training, 'the Castle with and without a game, the Edge, (ART-3B-1) the Tavern, (ART-3B-2B) the Inn, (ART-3B-3B) Boltac’s and (ART-3C) the Training Grounds have stories')
+  const training = at('training').story, temple = at('temple').story
+  assert.ok(intro && castle && edge && tavern && inn && boltac && training && temple, 'the Castle with and without a game, the Edge, (ART-3B-1) the Tavern, (ART-3B-2B) the Inn, (ART-3B-3B) Boltac’s, (ART-3C) the Training Grounds and (ART-3D) the Temple have stories')
   assert.notDeepEqual(intro, castle, 'with no game, the introduction; in a game, the Castle’s own')
   assert.deepEqual(at('no game, edge').story, edge, 'the Edge’s, with or without a game')
   for (const c of ['settings', 'no game, settings', 'real expedition', 'confirming a new character', 'creating']) assert.equal(at(c).story, undefined, `${c}: no story`)
   // Drawn whole: every block, and its text as Go read it.
-  for (const st of [intro, castle, edge, tavern, inn, boltac, training]) {
+  for (const st of [intro, castle, edge, tavern, inn, boltac, training, temple]) {
     const out = html(st)
     const text = st.blocks.map((b) => (b.text ? plain(b.text) : b.items.map(plain).join(''))).join('')
     assert.equal(decode(out), text)
@@ -97,15 +97,23 @@ test('the seven stories, from their files, as Go chose them for each place', () 
   assert.match(html(boltac), /cries <b>Boltac<\/b>, spreading his arms\./)
   assert.match(html(boltac), /<\/p><p class="challenge">Equip your adventurers, inspect unfamiliar treasures, and spend your gold wisely\. Boltac never forgets a customer — particularly one who still owes him money\.<\/p>$/)
   for (const other of [intro, castle, edge, tavern, inn]) assert.notDeepEqual(boltac, other)
-  // The Training Grounds' (ART-3C; its approved text is checked in Go):
-  // titled, a line in italics, Brannock in bold, no challenge.
+  // The Training Grounds' (ART-3C) and the Temple's (ART-3D), their approved
+  // texts checked in Go: titled, a line in italics, the place's master or
+  // keeper in bold, no challenge.
   assert.equal(training.title, 'The Training Grounds')
   assert.deepEqual(training.blocks.map((b) => b.kind), Array(11).fill('paragraph'))
   assert.match(html(training), /^<p><i>Beyond the walls of Trebor's castle<\/i><\/p>/)
   assert.match(html(training), /<p><b>Sergeant Major Brannock Ironheel\.<\/b><\/p>/)
   assert.match(html(training), /I hate training replacements\."<\/p>$/)
-  assert.doesNotMatch(html(training), /class="challenge"/)
-  for (const other of [intro, castle, edge, tavern, inn, boltac]) assert.notDeepEqual(training, other)
+  assert.equal(temple.title, 'The Temple of Cant')
+  assert.deepEqual(temple.blocks.map((b) => b.kind), Array(25).fill('paragraph'))
+  assert.match(html(temple), /^<p><i>Where darkness meets the promise of light<\/i><\/p>/)
+  assert.match(html(temple), /<p><b>Father Caelion, Keeper of the Veil\.<\/b><\/p>/)
+  assert.match(html(temple), /Petrification may be reversed, paralysis lifted/)
+  assert.doesNotMatch(html(temple), /poison/i, 'the Temple does not cure poison')
+  for (const st of [training, temple]) assert.doesNotMatch(html(st), /class="challenge"/)
+  for (const other of [intro, castle, edge, tavern, inn, boltac]) for (const st of [training, temple]) assert.notDeepEqual(st, other)
+  assert.notDeepEqual(training, temple)
 })
 
 test('the challenge is the story box’s gold, bold; an ordinary quote is not', () => {
@@ -119,7 +127,7 @@ test('the frame draws the View’s story; the places hold no story text', () => 
   const frame = read('./LocationFrame.svelte')
   assert.match(frame, /const storyHere = \$derived\(art && !!view\.story && !!panels\)/, 'a story box only where there is a story')
   assert.match(frame, /<StoryBox title=\{view\.story\.title \|\| here\}[\s\S]*?<StoryText story=\{view\.story\} \/><\/StoryBox>/)
-  for (const f of ['./CastleScreen.svelte', './EdgeScreen.svelte', './TavernScreen.svelte', './InnScreen.svelte', './TradingScreen.svelte', './SelectedCharacter.svelte', './TrainingScreen.svelte']) {
+  for (const f of ['./CastleScreen.svelte', './EdgeScreen.svelte', './TavernScreen.svelte', './InnScreen.svelte', './TradingScreen.svelte', './SelectedCharacter.svelte', './TrainingScreen.svelte', './TempleScreen.svelte']) {
     const src = read(f)
     assert.ok(!/snippet story|storyTitle|class="challenge"/.test(src), `${f}: no story of its own`)
   }

@@ -955,6 +955,324 @@
   }
  },
  {
+  "case": "temple",
+  "screen": "roster",
+  "location": "temple",
+  "exits": [
+   {
+    "dest": "castle",
+    "open": true,
+    "reason": ""
+   }
+  ],
+  "partyBar": [
+   {
+    "slot": 1,
+    "index": 0,
+    "name": "LEAD",
+    "class": "G-FIG",
+    "level": 1,
+    "ac": 10,
+    "hp": 8,
+    "maxHp": 8,
+    "status": "OK",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 2,
+    "index": 1,
+    "name": "SECOND",
+    "class": "G-FIG",
+    "level": 1,
+    "ac": 10,
+    "hp": 2,
+    "maxHp": 8,
+    "status": "OK",
+    "poisoned": true,
+    "front": true
+   },
+   {
+    "slot": 3,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "ac": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": true
+   },
+   {
+    "slot": 4,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "ac": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 5,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "ac": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": false
+   },
+   {
+    "slot": 6,
+    "index": -1,
+    "name": "",
+    "class": "",
+    "level": 0,
+    "ac": 0,
+    "hp": 0,
+    "maxHp": 0,
+    "status": "",
+    "poisoned": false,
+    "front": false
+   }
+  ],
+  "frontRow": 3,
+  "settings": {
+   "partyVisible": true,
+   "minimapVisible": true,
+   "panels": "slate",
+   "story": "parchment",
+   "artwork": "full",
+   "note": ""
+  },
+  "departures": {
+   "real": "",
+   "practice": ""
+  },
+  "return": {
+   "open": true,
+   "note": ""
+  },
+  "expedition": false,
+  "real": false,
+  "story": {
+   "title": "The Temple of Cant",
+   "blocks": [
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "Where darkness meets the promise of light",
+       "italic": true
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "The great doors close behind you with a deep, hollow echo."
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "Within the ancient Temple of Cant, towering columns of dark stone rise into vaulted ceilings lost in shadow. The air is cool and still, heavy with the fragrance of incense."
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "High above the altar, magnificent stained-glass windows depict the eternal passage between life and death. A hooded figure descends into darkness, while another rises toward a brilliant light."
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "A slender ribbon of incense smoke curls upward from a suspended bronze censer. As it passes through a shaft of violet light, it shimmers for a moment before disappearing into the shadows."
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "Beside a stone bier stands a tall elven priest, his long silver hair falling over robes of charcoal and silver. His angular features and high cheekbones speak of an ancient lineage, while his expression carries the quiet sorrow of one who has witnessed countless departures."
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "Father Caelion, Keeper of the Veil.",
+       "bold": true
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "He turns toward you, resting one hand upon his ceremonial staff."
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "\"Welcome, Commander, to the Temple of Cant.\""
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "His voice is gentle, yet carries effortlessly through the great sanctuary."
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "\"Here we tend those whom the darkness has touched. Petrification may be reversed, paralysis lifted, and even death itself may sometimes be persuaded to release its hold.\""
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "He gestures toward the stone bier."
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "\"Many have rested upon that stone. Some have risen again to walk beneath the sun. Others have passed beyond our reach.\""
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "His eyes turn toward the great stained-glass window."
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "\"Understand this, Commander. We are servants of Cant, not masters of life and death. We may petition for mercy, but we cannot command it.\""
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "For a moment, the sanctuary falls silent."
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "\"Even the most faithful prayer may fail. And each attempt to recall a departed soul carries its own peril. What was once flesh may become ashes, and what has become ashes may yet be lost forever.\""
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "He looks back at you."
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "\"Bring me your wounded and your fallen. We shall do all that is within our power.\""
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "A faint, knowing smile crosses his face."
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "\"And as for the offerings required by the Temple...\""
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "He pauses, glancing toward a discreetly placed collection chest."
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "\"Even those who serve eternity must attend to the expenses of the present.\""
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "The incense continues its slow ascent toward the light."
+      }
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": [
+      {
+       "text": "\"Now, Commander. Whom have you brought before Cant?\""
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
   "case": "edge",
   "screen": "roster",
   "location": "edge",

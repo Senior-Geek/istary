@@ -17,8 +17,7 @@ test('Boltac’s picture, a little right of centre, described for screen readers
   assert.equal(scenes.edge.focus, '50% 50%')
   assert.equal(scenes.tavern.focus, '50% 50%')
   assert.equal(scenes.inn.focus, '100% 50%')
-  // (ART-3C) the Training Grounds': castleArt.test.js.
-  assert.equal(scenes.temple.src, null, 'temple: no picture yet')
+  // (ART-3C, ART-3D) the Training Grounds' and the Temple's: castleArt.test.js.
 })
 
 test('over a picture, the Selected Character panel is glass, as the Actions panel is; nothing moves', () => {

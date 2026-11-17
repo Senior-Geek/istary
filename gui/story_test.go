@@ -23,11 +23,11 @@ func TestTheStoryFilesLoad(t *testing.T) {
 	}); err != nil {
 		t.Fatal(err)
 	}
-	want := []string{"content/boltac/story.md", "content/castle/introduction.md", "content/castle/story.md", "content/edge-of-town/story.md", "content/inn/story.md", "content/tavern/story.md", "content/training-grounds/story.md"}
+	want := []string{"content/boltac/story.md", "content/castle/introduction.md", "content/castle/story.md", "content/edge-of-town/story.md", "content/inn/story.md", "content/tavern/story.md", "content/temple/story.md", "content/training-grounds/story.md"}
 	if !reflect.DeepEqual(files, want) {
 		t.Fatalf("the built-in story files: %v, not %v", files, want)
 	}
-	for _, name := range []string{"boltac/story", "castle/introduction", "castle/story", "edge-of-town/story", "inn/story", "tavern/story", "training-grounds/story"} {
+	for _, name := range []string{"boltac/story", "castle/introduction", "castle/story", "edge-of-town/story", "inn/story", "tavern/story", "temple/story", "training-grounds/story"} {
 		st := stories[name]
 		if st == nil || len(st.Blocks) == 0 {
 			t.Fatalf("%s: no story", name)
@@ -248,6 +248,25 @@ func approvedPlace(t *testing.T, place, folder, doc string, paragraphs, named in
 // bold), and no challenge. It is in content/training-grounds/.
 func TestTheApprovedTrainingGroundsStoryIsKept(t *testing.T) {
 	approvedPlace(t, "training", "training-grounds", "../docs/design/art3/training-grounds/README.md", 11, 3, "Sergeant Major Brannock Ironheel.")
+}
+
+// ART-3D: the Temple's story is its approved text, word for word: its
+// title, twenty-five paragraphs (Father Caelion named in bold), and no
+// challenge. It names only what the Temple treats (engine/temple.go):
+// stone and paralysis, the dead and ashes, never poison.
+func TestTheApprovedTempleStoryIsKept(t *testing.T) {
+	st := approvedPlace(t, "temple", "temple", "../docs/design/art3/temple/README.md", 25, 6, "Father Caelion, Keeper of the Veil.")
+	var text []string
+	for _, b := range st.Blocks {
+		text = append(text, plain(b.Text))
+	}
+	all := strings.Join(text, " ")
+	if strings.Contains(strings.ToLower(all), "poison") {
+		t.Fatal("the Temple's story offers to cure poison; the Temple does not")
+	}
+	if !strings.Contains(all, "Petrification may be reversed, paralysis lifted, and even death itself may sometimes be persuaded to release its hold.") {
+		t.Fatal("the Temple's story does not name what it treats")
+	}
 }
 
 func TestStoryMarkdown(t *testing.T) {

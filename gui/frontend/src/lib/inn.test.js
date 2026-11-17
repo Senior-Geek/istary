@@ -15,7 +15,6 @@ test('the Inn’s picture, kept to its right edge, described for screen readers'
   assert.equal(scenes.castle.focus, '45% 50%')
   assert.equal(scenes.edge.focus, '50% 50%')
   assert.equal(scenes.tavern.focus, '50% 50%')
-  // (ART-3B-3B) Boltac's has its own since: boltac.test.js; (ART-3C) the
-  // Training Grounds': castleArt.test.js.
-  assert.equal(scenes.temple.src, null, 'temple: no picture yet')
+  // (ART-3B-3B) Boltac's has its own since: boltac.test.js; (ART-3C, ART-3D)
+  // the Training Grounds' and the Temple's: castleArt.test.js.
 })

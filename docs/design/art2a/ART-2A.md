@@ -103,7 +103,8 @@ own scene (the frame's `scene` snippet) is never illustrated.
   Tavern's was, in ART-3B-1: `docs/design/art3/tavern/README.md`; the
   Inn's in ART-3B-2B: `docs/design/art3/inn/README.md`; Boltac's in
   ART-3B-3B: `docs/design/art3/boltac/README.md`; the Training Grounds'
-  in ART-3C: `docs/design/art3/training-grounds/README.md`.) The frame
+  in ART-3C: `docs/design/art3/training-grounds/README.md`; and the
+  Temple's in ART-3D: `docs/design/art3/temple/README.md`.) The frame
   is ready for them: give a scene a `src`. Two places will need a look
   then:
   - Boltac's lays out C itself (`fill`);

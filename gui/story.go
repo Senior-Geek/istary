@@ -64,6 +64,7 @@ var storyFolders = map[string]string{
 	"inn":      "inn",
 	"trading":  "boltac",
 	"training": "training-grounds",
+	"temple":   "temple",
 }
 
 func loadStories(files fs.FS) map[string]*Story {

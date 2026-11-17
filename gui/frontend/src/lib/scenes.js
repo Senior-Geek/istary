@@ -14,8 +14,9 @@
 // src/assets/scenes/<place>.webp (the masters are kept outside Git; ART-2A's
 // in images/Artwork Samples/, the Tavern's (ART-3B-1) in images/Tavern/,
 // the Inn's (ART-3B-2B) in images/Inn/, Boltac's (ART-3B-3B) in
-// images/Artwork Samples/Trading_Post/, the Training Grounds' (ART-3C) in
-// images/Artwork Samples/Training_Ground/, untracked) and set its src as castle's is:
+// images/Artwork Samples/Trading_Post/, the Training Grounds' (ART-3C) and
+// the Temple's (ART-3D) in images/Artwork Samples/Training_Ground/ and
+// Temple/, untracked) and set its src as castle's is:
 // new URL(..., import.meta.url) is an asset to Vite and an ordinary URL to
 // the Node tests. The picture is shown whole only with the panels hidden;
 // keep what matters away from the right edge (the actions) and the bottom
@@ -53,7 +54,13 @@ export const scenes = {
     focus: '75% 50%',
     alt: "Boltac's Trading Post: Boltac, white-haired and shrewdly smiling, behind his counter with its open ledger, coins and scales, beneath the Trading Post's sign; a black cat with emerald eyes and a diamond on its collar asleep on a cushion, and armour, swords and bright potions all around",
   },
-  temple: { src: null, focus: '50% 45%', alt: 'The Temple of Cant' },
+  // The Temple's picture is a little right of centre (ART-3D): at 980x692
+  // it keeps Father Caelion's staff in view, and the stained glass whole.
+  temple: {
+    src: new URL('../assets/scenes/temple.webp', import.meta.url).href,
+    focus: '75% 50%',
+    alt: "The Temple of Cant: Father Caelion, a silver-haired elven priest in charcoal and silver robes, holding his staff beside a stone bier draped in violet; a bronze censer's smoke rising through violet light, and above the altar a stained-glass window of a hooded figure in darkness and another rising toward the light",
+  },
   edge: {
     src: new URL('../assets/scenes/edge.webp', import.meta.url).href,
     focus: '50% 50%',
