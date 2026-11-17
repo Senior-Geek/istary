@@ -25,7 +25,7 @@ test('a frontend change tests the frontend and builds it, and no Go', () => {
   assert.equal(p.frontend, true)
   assert.equal(p.frontendBuild, true)
   assert.equal(p.broad, false)
-  assert.deepEqual(p.live, ['layout', 'sheet', 'scenes', 'nav', 'startup'])
+  assert.deepEqual(p.live, ['layout', 'sheet', 'scenes', 'nav', 'resume', 'startup'])
 })
 
 test('combat in the frontend adds the combat live checks (COMBAT-1)', () => {
@@ -89,7 +89,7 @@ test('a story file is the GUI’s embedded data, not documentation (CONTENT-1A)'
   assert.deepEqual(p.files.map((f) => f.kind), ['embedded data', 'embedded data'])
   assert.equal(p.frontend && p.wailsBuild, true)
   assert.deepEqual(p.areas, ['town'])
-  assert.deepEqual(p.live, ['layout', 'sheet', 'scenes', 'nav', 'startup'])
+  assert.deepEqual(p.live, ['layout', 'sheet', 'scenes', 'nav', 'resume', 'startup'])
   assert.equal(p.gateRequired, false)
 })
 
@@ -110,7 +110,7 @@ test('an unknown file, the Go modules or the frontend dependencies broaden to ev
     assert.equal(p.goPackages.length, PKGS.length, f)
     assert.equal(p.frontend && p.wailsBuild && p.makeBuild, true, f)
     assert.ok(p.race.length === 3 && p.gateRequired, f)
-    assert.deepEqual(p.live, ['layout', 'creation', 'sheet', 'scenes', 'nav', 'startup', 'combat'], f)
+    assert.deepEqual(p.live, ['layout', 'creation', 'sheet', 'scenes', 'nav', 'resume', 'startup', 'combat'], f)
   }
 })
 

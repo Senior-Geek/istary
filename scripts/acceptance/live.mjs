@@ -9,7 +9,7 @@
 // the Training Grounds.
 //
 //   node scripts/acceptance/live.mjs --gui GUI_DIR --library DIR --out DIR
-//        [--size 980x692] [--suites layout,sheet,scenes,creation,combat,nav,startup] [--wails PATH] [--chrome PATH]
+//        [--size 980x692] [--suites layout,sheet,scenes,creation,combat,nav,resume,startup] [--wails PATH] [--chrome PATH]
 //
 // The library must have been written by TestWriteAcceptanceLibrary
 // (gui/acceptance_seed_test.go). Everything it starts (wails dev, the app,
@@ -38,12 +38,12 @@ const freePort = () => new Promise((r) => { const s = createServer().listen(0, '
 // --- Processes of our own -----------------------------------------------------------
 
 const groups = new Set()
-function start(cmd, args, opts, logFile) {
+function start(cmd, args, opts, logFile, flags = 'w') {
   const p = spawn(cmd, args, { ...opts, detached: true, stdio: ['ignore', 'pipe', 'pipe'] })
   groups.add(p.pid)
   // Recorded, so the level can check afterwards that none is left.
   appendFileSync(join(OUT, 'groups'), `${p.pid} ${cmd}\n`)
-  const log = createWriteStream(logFile)
+  const log = createWriteStream(logFile, { flags })
   p.stdout.pipe(log); p.stderr.pipe(log)
   p.on('exit', () => groups.delete(p.pid))
   return p
@@ -67,24 +67,42 @@ const passed = [], fails = [], problems = []
 const check = (ok, what) => { (ok ? passed : fails).push(what); console.log(`${ok ? 'ok  ' : 'FAIL'} ${what}`); return ok }
 
 async function main() {
-  // wails dev on a port of its own, on the scratch library.
-  const port = await freePort()
-  const URL = `http://127.0.0.1:${port}/`
+  // wails dev on a port of its own, on the scratch library. Started again
+  // (a new port, the same library) for a restart (the resume suite).
+  let URL, dev
   const devLog = join(OUT, 'wails-dev.log')
-  const dev = start(WAILS, ['dev', '-noreload', '-devserver', `127.0.0.1:${port}`], { cwd: GUI, env: { ...process.env, ISTARY_SAVE_DIR: LIB } }, devLog)
-  let ready = false
-  for (let i = 0; i < 240 && !ready; i++) {
-    await sleep(500)
-    const log = readFileSync(devLog, 'utf8')
-    ready = log.includes(`navigate to: http://127.0.0.1:${port}`) || log.includes(`navigate to: http://localhost:${port}`)
-    if (dev.exitCode !== null) break
+  async function startDev() {
+    const port = await freePort()
+    URL = `http://127.0.0.1:${port}/`
+    appendFileSync(devLog, '')
+    const from = readFileSync(devLog, 'utf8').length
+    dev = start(WAILS, ['dev', '-noreload', '-devserver', `127.0.0.1:${port}`], { cwd: GUI, env: { ...process.env, ISTARY_SAVE_DIR: LIB } }, devLog, 'a')
+    let ready = false
+    for (let i = 0; i < 240 && !ready; i++) {
+      await sleep(500)
+      const log = readFileSync(devLog, 'utf8').slice(from)
+      ready = log.includes(`navigate to: http://127.0.0.1:${port}`) || log.includes(`navigate to: http://localhost:${port}`)
+      if (dev.exitCode !== null) break
+    }
+    if (!check(ready, `wails dev is serving the window on port ${port}`)) throw new Error(`wails dev did not start: see ${devLog}`)
+    // The dev app opens a window of its own: hide it, found by its parent (ours).
+    try {
+      const pids = execFileSync('pgrep', ['-f', `${GUI}/build/bin/`], { encoding: 'utf8' }).trim().split('\n').filter(Boolean)
+      for (const pid of pids) execFileSync('osascript', ['-e', `tell application "System Events" to set visible of (first process whose unix id is ${pid}) to false`], { stdio: 'ignore' })
+    } catch {}
   }
-  if (!check(ready, `wails dev is serving the window on port ${port}`)) throw new Error(`wails dev did not start: see ${devLog}`)
-  // The dev app opens a window of its own: hide it, found by its parent (ours).
-  try {
-    const pids = execFileSync('pgrep', ['-f', `${GUI}/build/bin/`], { encoding: 'utf8' }).trim().split('\n').filter(Boolean)
-    for (const pid of pids) execFileSync('osascript', ['-e', `tell application "System Events" to set visible of (first process whose unix id is ${pid}) to false`], { stdio: 'ignore' })
-  } catch {}
+  // Istary closed (its own process group alone: Chrome stays) and opened again.
+  async function restartDev() {
+    const g = dev.pid
+    try { process.kill(-g, 'SIGTERM') } catch {}
+    for (let i = 0; i < 100 && alive(g); i++) await sleep(100)
+    try { process.kill(-g, 'SIGKILL') } catch {}
+    for (let i = 0; i < 30 && alive(g); i++) await sleep(100)
+    if (!check(!alive(g), 'Istary closed for a restart')) throw new Error('wails dev did not stop')
+    groups.delete(g)
+    await startDev()
+  }
+  await startDev()
 
   // Headless Chrome, on a profile and port of its own.
   const dbg = await freePort()
@@ -1364,6 +1382,113 @@ async function main() {
       await js(`${S}.AbandonPractice()`)
       await goto('castle')
       check((await view()).screen === 'roster' && sha(GAME) === before, 'practice ended; nothing of it was saved')
+    },
+
+    // M-ART-1A.3: a resumed expedition's notice. A real expedition, Istary
+    // closed in the maze and opened again: EXPEDITION RESUMED lies over the
+    // top of the view for about four seconds, between its corners, then
+    // fades and is gone; the picture is its full size all the while. Again,
+    // and a key turns the party: gone at once, and not back as the party
+    // walks. With reduced motion, gone without fading. Classic and
+    // Enhanced. The party then climbs out, by Camp and the stairs.
+    async resume() {
+      const NOTE = '.stage .resumed'
+      const lay = () => js(`(() => {
+        const r = (s) => { const b = document.querySelector(s)?.getBoundingClientRect(); return b && { x: b.x, y: b.y, w: b.width, h: b.height, r: b.right, b: b.bottom } }
+        const n = document.querySelector('${NOTE}'), nb = r('${NOTE}')
+        const under = nb && document.elementFromPoint(nb.x + nb.w / 2, nb.y + nb.h / 2)
+        return { svg: r('.stage svg.maze-view'), stage: r('.stage'), note: nb, mini: r('.stage .minimap'), look: r('.stage .look'), cmds: r('.dungeon .commands'),
+          text: n?.innerText.replace(/\\s+/g, ' ').trim() ?? '', fading: !!n?.classList.contains('fading'), events: n ? getComputedStyle(n).pointerEvents : null,
+          through: nb ? !n.contains(under) : null, color: n ? [getComputedStyle(n).color, getComputedStyle(n).backgroundColor] : null,
+          banner: [...document.querySelectorAll('.banner')].some((b) => /EXPEDITION RESUMED|returned to the dungeon/.test(b.innerText)),
+          style: ['classic', 'enhanced'].find((k) => document.querySelector('svg.maze-view')?.classList.contains(k)),
+          doc: [document.documentElement.scrollWidth, document.documentElement.scrollHeight] } })()`)
+      const apart = (a, b) => !a || !b || a.r <= b.x || b.r <= a.x || a.b <= b.y || b.b <= a.y
+      const sameBox = (a, b) => !!a && !!b && ['x', 'y', 'w', 'h'].every((k) => Math.abs(a[k] - b[k]) < 0.5)
+      const px = (l) => `${Math.round(l.svg?.w)}px`
+      // Opened again: the page loaded, and the moment the notice is first seen.
+      const reopened = async () => {
+        await restartDev()
+        await send('Page.navigate', { url: URL })
+        for (let i = 0; i < 400; i++) { await sleep(25); if (await js(`!!document.querySelector('${NOTE}')`).catch(() => false)) break }
+        return Date.now()
+      }
+      const until = async (cond, ms) => { const t = Date.now(); while (Date.now() - t < ms) { if (await cond()) return Date.now(); await sleep(25) } return 0 }
+      // The window's settings, the maze's look read as Go reads it (missing: the default).
+      const settingsNow = () => { const f = JSON.parse(readFileSync(SETTINGS_FILE, 'utf8')); return JSON.stringify({ ...f, mazeStyle: f.mazeStyle || 'enhanced', mazeZoom: f.mazeZoom || 'standard' }) }
+      const settingsWas = settingsNow()
+
+      // Out on a real expedition, in the maze, not up the stairs.
+      await goto('edge')
+      await clickText('Enter the Maze', B)
+      if (await js(`!!document.querySelector('.check-equipment')`)) await clickText('Continue into Maze', B)
+      if ((await view()).dungeon?.phase === 'camp') await js(`${S}.DungeonAction('leave-camp', 0)`)
+      if ((await view()).dungeon?.actions?.includes('no')) await js(`${S}.DungeonAction('no', 0)`)
+      await reload()
+      const base = await lay()
+      check((await view()).real && !base.note && !base.banner && base.svg, `the maze, before any restart: no resume notice; the picture ${px(base)}`)
+
+      // 1. Enhanced: shown, then gone by itself.
+      let t0 = await reopened()
+      let l = await lay()
+      const v = await view()
+      check(v.real && v.title === 'EXPEDITION RESUMED' && l.text === 'EXPEDITION RESUMED ' + v.notice && !l.banner,
+        `restarted: the expedition resumed, its notice over the view (“${l.text}”), not in the banners`)
+      check(sameBox(l.svg, base.svg) && l.svg.w >= (W <= 980 ? 330 : 540), `with the notice shown the picture keeps its full size (${px(l)}, as before ${px(base)})`)
+      check(l.note && apart(l.note, l.mini) && apart(l.note, l.look) && l.note.x >= l.stage.x && l.note.r <= l.stage.r && l.note.y >= l.stage.y && l.note.b <= l.svg.y + l.svg.h / 3 && l.doc[0] <= W && l.doc[1] <= H && l.cmds.b <= H,
+        `the notice at the top of the view, clear of the minimap and the style and zoom; nothing clipped or scrolled (${JSON.stringify({ note: l.note, mini: l.mini, look: l.look })})`)
+      check(l.events === 'none' && l.through === true, `the notice takes no input: what is under it gets the pointer (${l.events})`)
+      await shot('resume-shown-enhanced')
+      const early = await until(async () => !(await js(`!!document.querySelector('${NOTE}')`)), t0 + 3000 - Date.now())
+      check(!early && Date.now() - t0 >= 2990 && await js(`!!document.querySelector('${NOTE}:not(.fading)')`), 'still shown three seconds after it appeared')
+      const fadeSeen = await until(() => js(`!!document.querySelector('${NOTE}.fading')`), 2500)
+      const gone = await until(async () => !(await js(`!!document.querySelector('${NOTE}')`)), 2500)
+      const after = await lay()
+      check(fadeSeen && gone && gone - t0 >= 3900 && gone - t0 <= 5200, `then it fades and is gone by itself, ${gone ? ((gone - t0) / 1000).toFixed(2) : '?'}s after it appeared`)
+      check(!after.note && !after.banner && sameBox(after.svg, l.svg), `gone: the picture did not resize (${px(after)})`)
+      await shot('resume-dismissed-auto-enhanced')
+      await press('ArrowRight'); await press('ArrowLeft')
+      check(!(await lay()).note, 'and the party turning does not bring it back')
+
+      // 2. Classic: a key turns the party, and the notice is gone at once.
+      await js(`${S}.SetMazeLook('classic', 'standard')`)
+      t0 = await reopened()
+      l = await lay()
+      check(!!l.note && l.style === 'classic' && sameBox(l.svg, base.svg), `restarted in Classic: the notice shown, the picture ${px(l)}`)
+      await shot('resume-shown-classic')
+      const facing = (await view()).position?.facing
+      const pressed = Date.now()
+      await send('Input.dispatchKeyEvent', { type: 'rawKeyDown', key: 'ArrowRight', code: 'ArrowRight', windowsVirtualKeyCode: 39 })
+      await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'ArrowRight', code: 'ArrowRight', windowsVirtualKeyCode: 39 })
+      const at = await until(async () => !(await js(`!!document.querySelector('${NOTE}')`)), 1000)
+      l = await lay()
+      check(at && at - t0 < 3000 && (await view()).position?.facing !== facing && sameBox(l.svg, base.svg),
+        `a key turned the party (${facing} → ${(await view()).position?.facing}) and the notice went at once: ${at - pressed}ms after the key, ${((at - t0) / 1000).toFixed(2)}s after it appeared; the picture ${px(l)}`)
+      await shot('resume-dismissed-by-turn-classic')
+      for (const k of ['ArrowLeft', 'ArrowRight', 'ArrowLeft']) await press(k)
+      check(!(await lay()).note && !(await lay()).banner, 'walking on, it is not shown again')
+
+      // 3. Reduced motion: gone without fading.
+      await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] })
+      await js(`${S}.SetMazeLook('enhanced', 'standard')`)
+      t0 = await reopened()
+      check(!!(await lay()).note && await js(`getComputedStyle(document.querySelector('${NOTE}')).transitionDuration === '0s'`), 'with reduced motion: the notice shown, with no transition')
+      let faded = false
+      const off = await until(async () => { const s = await js(`(() => { const n = document.querySelector('${NOTE}'); return n ? (n.classList.contains('fading') ? 'fading' : 'shown') : 'gone' })()`); if (s === 'fading') faded = true; return s === 'gone' }, 6000)
+      check(off && !faded && off - t0 >= 3800 && off - t0 <= 4800, `and gone without fading, ${off ? ((off - t0) / 1000).toFixed(2) : '?'}s after it appeared`)
+      await send('Emulation.setEmulatedMedia', { features: [] })
+
+      // Home: Camp (C), out of it, and up the stairs; nothing of the window's settings changed.
+      await reload()
+      await send('Input.dispatchKeyEvent', { type: 'rawKeyDown', key: 'c', code: 'KeyC', text: 'c', windowsVirtualKeyCode: 67 })
+      await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'c', code: 'KeyC', windowsVirtualKeyCode: 67 })
+      await sleep(500)
+      check((await view()).dungeon?.phase === 'camp', 'C: Camp')
+      await js(`${S}.DungeonAction('leave-camp', 0)`)
+      const home = JSON.parse(await js(`${S}.DungeonAction('yes', 0).then((v) => JSON.stringify(v))`))
+      await reload()
+      check(!home.real && home.location === 'castle', `the party climbs out to the Castle (${home.location}${home.error ? ', ' + home.error : ''})`)
+      check(settingsNow() === settingsWas, `the window's settings are as they were, the look set back to Enhanced at Standard (${settingsNow()})`)
     },
   }
 

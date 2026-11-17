@@ -27,15 +27,21 @@
   // (AutomapPopup), which F10 or Escape closes. While it is open no key
   // reaches the maze, so looking at the map never takes a step.
   //
+  // A resumed expedition's notice (M-ART-1A.3, resumed: lib/resumeNotice.js)
+  // lies over the top of the view for a few seconds, between its corners:
+  // it takes no room, so the picture keeps its size, and no input.
+  //
   // Props:
-  //   view   the Go View (view.dungeon is the dungeon view)
-  //   busy   a request is running
-  //   call   (fn, ...args) => Promise   runs a Session method and stores the new view
+  //   view     the Go View (view.dungeon is the dungeon view)
+  //   busy     a request is running
+  //   call     (fn, ...args) => Promise   runs a Session method and stores the new view
+  //   resumed  { text, phase } the resume notice shown, if any (App)
   import * as S from '../../wailsjs/go/main/Session.js'
   import PartyBar from './PartyBar.svelte'
   import { scene, actions, keyAction, expeditionTag, suggested } from './dungeon.js'
   import MazeView from './MazeView.svelte'
   import { mazeLooks, mazeLookOf } from './mazeStyle.js'
+  import { resumedTitle } from './resumeNotice.js'
   import CampScreen from './CampScreen.svelte'
   import { pickLabel, placeMark } from './camp.js'
   import Condition from './Condition.svelte'
@@ -46,7 +52,7 @@
   import Emblem from './Emblem.svelte'
   import { where, whereTitle, strandedHint } from './position.js'
 
-  let { view, busy = false, call } = $props()
+  let { view, busy = false, call, resumed = null } = $props()
 
   const d = $derived(view.dungeon)
   const p = $derived(progress(d.inspect))
@@ -119,9 +125,16 @@
     {/if}
   </header>
 
+  {#snippet resumeNote()}
+    {#if resumed?.text}
+      <div class="resumed" class:fading={resumed.phase === 'fading'} role="status"><strong class="title">{resumedTitle}</strong>{resumed.text}</div>
+    {/if}
+  {/snippet}
+
   <div class="middle" class:maze={!inCamp} class:inspecting={d.prompt === 'inspect'}>
   {#if inCamp}
     <CampScreen bind:this={campScreen} {view} {busy} {call} />
+    {@render resumeNote()}
   {:else}
   <section class="stage">
     {#if d.phase === 'maze'}
@@ -144,6 +157,7 @@
     {:else}
       <div class="camp">CAMP</div>
     {/if}
+    {@render resumeNote()}
   </section>
 
   <section class="messages" aria-live="polite">
@@ -265,6 +279,17 @@
   .look button:first-child { border-radius: 4px 0 0 4px; }
   .look button:last-child { border-radius: 0 4px 4px 0; }
   .look button[aria-pressed='true'] { color: var(--accent); border-color: var(--accent); position: relative; }
+  /* The resume notice: over the top of the view, between the corners
+     (--corner, so never over the style and zoom or the minimap), in the
+     banners' colours; at Camp over the top of its screen. It takes no
+     room and no input. */
+  .resumed { position: absolute; z-index: 2; top: 8px; left: calc(var(--corner, 8px) + 8px); right: calc(var(--corner, 8px) + 8px); margin: 0 auto; width: fit-content; max-width: 460px;
+    padding: 6px 12px; border-radius: 4px; background: rgba(27, 42, 58, 0.94); color: #8ab4f8; border: 1px solid rgba(138, 180, 220, 0.35);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); font-size: 13px; line-height: 1.35; text-align: center; pointer-events: none; opacity: 1; transition: opacity 250ms ease-out; }
+  .resumed .title { display: block; letter-spacing: 0.06em; font-size: 12px; margin-bottom: 2px; }
+  .resumed.fading { opacity: 0; }
+  @media (prefers-reduced-motion: reduce) { .resumed { transition: none; } }
+  .middle:not(.maze) { position: relative; }
   .camp { font: 700 28px ui-monospace, Menlo, monospace; letter-spacing: 6px; color: var(--muted); }
   .messages { min-height: 52px; font-family: ui-monospace, Menlo, monospace; text-align: center; }
   .messages p { margin: 2px 0; color: #f2c14e; }

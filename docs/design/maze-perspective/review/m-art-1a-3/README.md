@@ -13,6 +13,9 @@ full release gate (it needs its own approval), and textures (M-ART-2).
   view's upper left corner and in Settings.
 - **I, transitions:** every way into and out of an encounter is checked in
   Go. The M-ART-1A.2 observation is explained and reproduced.
+- **The resume notice** (a correction after review): EXPEDITION RESUMED is
+  shown over the view for a few seconds, no longer as a banner that took
+  the picture's height (see [The resume notice](#the-resume-notice)).
 
 The pipeline is unchanged: `Sight()` → `View.Dungeon.Corridor` →
 `mazeScene.js` → `mazeProjection.js` → `MazeView.svelte`. Go's production
@@ -33,20 +36,21 @@ side for what sits in its corners, and at most 720px.
 
 Measured in the running app:
 
-| Window | Before | After, with the resume notice | After, without it |
-|---|---|---|---|
-| 980×692 | 234px | **286px** | 345px |
-| 1440×900 | 360px | **494px** | 553px |
-| 1920×1200 | 360px | **720px** (the cap) | 720px |
+| Window | Before | After |
+|---|---|---|
+| 980×692 | 234px | **345px** |
+| 1440×900 | 360px | **553px** |
+| 1920×1200 | 360px | **720px** (the cap) |
 
 - **No page scrolling at any size.** The header, the messages, the commands
   and the party bar are where they were. Text is not smaller.
 - **The minimap** is unchanged: 168px, north up, upper right, clear of the
   picture at every size (checked live). Its exploration rules are untouched,
   and F10 is as before.
-- **"Expedition resumed"** stays on screen once shown. It takes 71px of the
-  window's height, which costs the picture 59px at 980×692. Every shot here
-  shows it, because each was taken after the app resumed.
+- **The resume notice** takes none of it now (below). The scene shots
+  further down were taken before that correction, after the app resumed,
+  so they show the old banner and the picture 59px smaller at 980×692
+  (286px) and 1440×900 (494px).
 
 ## The look: a window setting
 
@@ -139,6 +143,52 @@ real `MazeView` for every maze view in it:
 A deliberately stale `MazeView` (one keeping its first picture) fails two of
 these tests.
 
+## The resume notice
+
+**Before:** Go's notice of a resumed expedition (headed EXPEDITION RESUMED,
+`View.Title`) was one of the window's banners. Go keeps it in every view
+until another notice replaces it, so it stayed for the whole expedition
+and took 71px of the window's height (59px of the picture at 980×692).
+
+**Now:** the page shows it over the top of the maze view
+(`lib/resumeNotice.js`, `DungeonScreen.svelte`), and never in the banners.
+Every other notice is a banner as before. Go is unchanged.
+- **Where:** centred at the top of the view, between its corners: clear of
+  the style and zoom and of the minimap at every size. At Camp, over the
+  top of its screen. It takes no room and no pointer input.
+- **Its text:** the whole notice, under its heading, in the banners' blue.
+- **How long:** four seconds, then a 250ms fade. With reduced motion, no
+  fade: gone at four seconds.
+- **Sooner:** the player's next successful action in the dungeon (a step,
+  a turn, a kick, Camp: `DungeonAction`, `CampAction`) or a change of the
+  maze's look (`SetMazeLook`), and leaving the dungeon screen (an
+  encounter, the Castle, another game). A refused action leaves it.
+- **Once:** once for each resume; never again on the later views that
+  still carry it, and again after the next resume.
+- **Only the page's timers:** Go, the Session, the save and the settings
+  are not involved. The timer is cleared when it is replaced or the page
+  closes, and one from an earlier showing does nothing.
+
+**Measured in the running app** (the `resume` live suite, a real
+expedition, Istary closed and started again):
+
+| Window | Picture before the restart | With the notice | After it is gone |
+|---|---|---|---|
+| 980×692 | 345px | 345px | 345px |
+| 1440×900 | 553px | 553px | 553px |
+
+- **Gone by itself** 4.26s (980×692) and 4.23s (1440×900) after it was
+  first seen; with reduced motion 3.98s and 4.00s, never fading.
+- **A key turning the party** dismissed it 29ms after the key at 1440×900.
+- **No page scrolling;** the notice clear of the minimap and the control.
+
+| Files (`resume/`, at 980×692 and 1440×900) | What |
+|---|---|
+| `resume-shown-enhanced-*.png` | just after the restart, Enhanced |
+| `resume-dismissed-auto-enhanced-*.png` | after four seconds, gone by itself |
+| `resume-shown-classic-*.png` | just after another restart, Classic |
+| `resume-dismissed-by-turn-classic-*.png` | a key turned the party: gone at once |
+
 ## Screenshots
 
 Taken from the running app (`wails dev`, headless Chrome, 2× pixels) on
@@ -204,14 +254,23 @@ drawn, with the layout's boxes.
   - **the controls:** `SetMazeLook` alone, kept, the party where it was,
     the save unchanged, a key still turns the party;
   - **Settings:** it shows, and chooses, the same look.
+- **The resume notice:**
+  - `resumeNotice.test.js`, on a fake clock: shown on a resume and still
+    before four seconds; fading, then gone; reduced motion; dismissed by a
+    successful action, not by a refused one; once for each resume; ended
+    by leaving the dungeon screen; no stale timer, none left when the page
+    closes; no Session call; over the view, no room, no input;
+  - the `resume` live suite (both sizes), as measured above.
 
 ## Observations and limitations
 
 - **The picture is the screen's focus now.** The masonry, flagstones and
   door planks read clearly at 494px. At 286px they are legible, and fine
   lines at depth 3 are faint.
-- **The resume notice** costs the picture 59px at 980×692 for as long as it
-  shows. It is unchanged here.
+- **The resume notice** is shown for four seconds. A long one (an
+  encounter lost to the closing, stranded adventurers) runs to three or
+  four lines over the top of the picture, and may be gone before it is
+  read; it is not kept anywhere else in the window.
 - **Settings at 980×692:** the Maze view section is below Appearance, inside
   the information panel's own scroll, as Settings already was. The page
   does not scroll.

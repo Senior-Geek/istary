@@ -960,8 +960,8 @@ shows no bar. `View.PartyBar` carries AC as well.
   width less a 184px column on each side for what sits in its corners (the
   style and zoom upper left, the minimap upper right, so neither covers it),
   and at most 720px. The commands share one line where they fit. Measured:
-  286px at 980x692 with the resume notice shown (345px without), 494px
-  (553px) at 1440x900, 720px at 1920x1200; no page scrolling.
+  345px at 980x692, 553px at 1440x900, 720px at 1920x1200; no page
+  scrolling. The resume notice lies over the view and takes none of it.
 
   **Its look is a window setting (M-ART-1A.3).** `gui-settings.json` keeps
   `mazeStyle` (enhanced, classic) and `mazeZoom` (standard, close, wide),
@@ -1086,7 +1086,13 @@ in the saved game, through the same dungeon, combat and chest operations.
   saved party that cannot go on (the app closed on the defeat screen) is
   stranded at the checkpoint before anything else (R-1, D-R). A
   resumed expedition's notice is headed EXPEDITION RESUMED (`View.Title`)
-  until the next action; a new one has no heading. A
+  until the next notice replaces it. The page shows it over the top of the
+  maze view, not in the banners (M-ART-1A.3, `lib/resumeNotice.js`): once
+  for each resume, for four seconds, then a 250ms fade (none with reduced
+  motion); the player's next successful dungeon action (`DungeonAction`,
+  `CampAction`, `SetMazeLook`) or leaving the dungeon screen ends it
+  sooner, a refused one does not. Only the page's timers: Go and the save
+  are not involved. A
   saved expedition that cannot be resumed is kept and shown
   (`View.Recovery`), with `ReturnExpeditionToCastle`.
 - **While the party is out** the Tavern, the Training Grounds, rename,

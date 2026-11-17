@@ -169,6 +169,7 @@ export function classify(files, pkgs, root) {
     if (areas.has('equipment') || areas.has('ui') || areas.has('town') || plan.broad) plan.live.push('sheet')
     if (areas.has('ui') || areas.has('town') || plan.broad) plan.live.push('scenes')
     if (areas.has('ui') || areas.has('town') || plan.broad) plan.live.push('nav')
+    if (areas.has('ui') || areas.has('town') || plan.broad) plan.live.push('resume')
     if (areas.has('ui') || areas.has('town') || plan.broad) plan.live.push('startup')
     if (areas.has('combat-maze') || plan.broad) plan.live.push('combat')
   }

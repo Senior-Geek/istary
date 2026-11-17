@@ -17,6 +17,7 @@
   import { loadGuide } from './lib/spellGuide.svelte.js'
   import { SHEET, available } from './lib/sheet.js'
   import { PANELS, illustrated, lookOf } from './lib/scenes.js'
+  import { resumeNotice, resumeNoticeOf } from './lib/resumeNotice.js'
   import CombatScreen from './lib/CombatScreen.svelte'
   import DungeonScreen from './lib/DungeonScreen.svelte'
   import LocationFrame from './lib/LocationFrame.svelte'
@@ -55,6 +56,14 @@
     }
   })
 
+  // The resumed expedition's notice (M-ART-1A.3): shown over the maze view
+  // for a few seconds, not in the banners (lib/resumeNotice.js). The
+  // player's actions there dismiss it once they succeed.
+  let resumed = $state({ text: '', phase: 'hidden' })
+  const resumeShown = resumeNotice({ onchange: (st) => { resumed = st } })
+  const dungeonActs = new Set([S.DungeonAction, S.CampAction, S.SetMazeLook])
+  $effect(() => () => resumeShown.destroy())
+
   async function call(fn, ...args) {
     busy = true
     try {
@@ -65,6 +74,7 @@
     } finally {
       busy = false
     }
+    resumeShown.see(view, dungeonActs.has(fn))
   }
 
   call(S.State)
@@ -179,8 +189,8 @@
           </div>
         {/if}
         <!-- At Boltac's and the Inn the receipt says it, saved or not, and at
-             the Tavern the gold's. -->
-        {#if view.notice && !view.shop?.last && !view.inn?.last && !view.gold && !view.temple?.last}<div class="banner notice">{#if view.title}<strong class="title">{view.title}</strong>{/if}{view.notice}</div>{/if}
+             the Tavern the gold's; a resumed expedition's, the maze view. -->
+        {#if view.notice && !view.shop?.last && !view.inn?.last && !view.gold && !view.temple?.last && !resumeNoticeOf(view)}<div class="banner notice">{#if view.title}<strong class="title">{view.title}</strong>{/if}{view.notice}</div>{/if}
         {#if view.settings?.note}<div class="banner error">{view.settings.note}</div>{/if}
       </div>
 
@@ -189,7 +199,7 @@
       {:else if view.screen === 'combat' && view.combat}
         <CombatScreen {view} {busy} {call} />
       {:else if view.screen === 'dungeon' && view.dungeon}
-        <div class="place"><DungeonScreen {view} {busy} {call} /></div>
+        <div class="place"><DungeonScreen {view} {busy} {call} {resumed} /></div>
       {:else}
         <div class="place">
           {#if view.location === 'castle'}

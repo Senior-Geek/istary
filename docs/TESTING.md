@@ -162,6 +162,18 @@ suites are:
   - Escape leaving neither the maze (a real expedition, entered with Enter
     the Maze, and a practice one) nor combat;
   - practice started through its Session methods, saving nothing.
+- **resume** (M-ART-1A.3), whenever a change reaches the town interface:
+  a real expedition, Istary closed in the maze and started again (its own
+  process alone, three times):
+  - EXPEDITION RESUMED over the top of the maze view, not in the banners,
+    clear of the minimap and the style and zoom, taking no pointer input;
+  - the picture its full size with the notice shown and after it goes,
+    with no page scrolling;
+  - shown for about four seconds, then fading and gone; a key turning the
+    party dismisses it at once, and walking on does not bring it back;
+  - with reduced motion, no transition and no fade;
+  - in Enhanced and Classic; the party home by Camp and the stairs, and
+    the window's settings as they were.
 - **startup** (NAV-1A), whenever a change reaches the town interface:
   - game selection's ← Castle (Esc), to the Castle with no game open;
   - with no game: the Castle's picture, only the Edge of Town open, the
