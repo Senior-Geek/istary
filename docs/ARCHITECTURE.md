@@ -923,15 +923,16 @@ shows no bar. `View.PartyBar` carries AC as well.
 - **The screen** (`DungeonScreen.svelte`): the first-person picture
   (`MazeView.svelte`), the messages, the actions with the terminal's keys,
   and the shared party bar (C0-5).
-- **The picture (M-ART-1A.1, 1A.2)** is drawn from `View.Dungeon` alone, in three
-  pure steps:
+- **The picture (M-ART-1A)** is drawn from `View.Dungeon` alone, in three
+  pure steps (`Sight()` → `View.Dungeon.Corridor` → scene → projection →
+  `MazeView.svelte`):
   - `lib/mazeScene.js` reads only its `phase`, `corridor`, `dark` and
     `spells`. It returns the surfaces seen, relative to the party (stable
     ids `d<depth>.<place>`, lane, face, wall or door), the openings, and
     what ends the view (wall, door, dark, or the sight's limit).
   - `lib/mazeProjection.js` places them in DRAWMAZE's stepped geometry,
     with its door proportions, in painting order. Where the view ends
-    unseen, it adds a void.
+    unseen, it adds a void. One projection for every style.
   - `lib/mazeStyle.js` says how a style paints each kind; it imports
     nothing. **Classic** is the Wizardry wireframe. **Enhanced** (M-ART-1A.2)
     paints the same primitives, floors and ceilings too, as stone: a fog
@@ -941,17 +942,54 @@ shows no bar. `View.PartyBar` carries AC as well.
     bands). Every detail is placed between its own polygon's corners, so it
     never leaves its surface. The styles agree on every wall, door, opening,
     coordinate and the painting order.
-  - The **zoom** (Close, Standard, Wide: `zooms` there) is the picture's
-    viewBox alone, between the party's own square's far and near planes.
+  - The **zoom** (Close `-36 -36 72 72`, Standard `-40 -40 80 80`, Wide
+    `-52 -52 104 104`: `zooms` there) is the picture's viewBox alone,
+    between the party's own square's far and near planes: the same
+    surfaces at every zoom.
 
-  How far the party sees, darkness and hidden doors stay the engine's
-  `Sight`. `gui/maze_scene_fixture_test.go` records synthetic corridors
-  checked against `Sight` (`testdata/maze-scenes.json`) for the frontend's
-  tests. `lib/dungeon.js` keeps `scene` as a wrapper over the projection.
-  Until Settings (M-ART-1A.3), the style and zoom are chosen in the view's
-  corner (`lib/mazeLook.svelte.js`): for the window's session, never saved,
-  with no Session call; Enhanced at Standard to start. Evidence is in
-  `docs/design/maze-perspective/review/m-art-1a-1/` and `.../m-art-1a-2/`.
+  **What it may know.** How far the party sees, darkness and hidden doors
+  stay the engine's `Sight`; the picture reads no map, position or
+  exploration record, so neither a style, a zoom nor a larger picture can
+  show anything Go did not report. `gui/maze_scene_fixture_test.go` records
+  synthetic corridors checked against `Sight` (`testdata/maze-scenes.json`)
+  for the frontend's tests. `lib/dungeon.js` keeps `scene` as a wrapper over
+  the projection.
+
+  **Its size (M-ART-1A.3).** The dungeon screen's view (`.stage`) is a size
+  container; the picture is the largest square it holds: its height, its
+  width less a 184px column on each side for what sits in its corners (the
+  style and zoom upper left, the minimap upper right, so neither covers it),
+  and at most 720px. The commands share one line where they fit. Measured:
+  286px at 980x692 with the resume notice shown (345px without), 494px
+  (553px) at 1440x900, 720px at 1920x1200; no page scrolling.
+
+  **Its look is a window setting (M-ART-1A.3).** `gui-settings.json` keeps
+  `mazeStyle` (enhanced, classic) and `mazeZoom` (standard, close, wide),
+  omitted while the defaults, Enhanced at Standard; a missing or unknown
+  value is read as the default, so earlier files still load. They are the
+  library's, the same in every game, never in a game or its save.
+  `Session.SetMazeLook` sets them and touches nothing of the game (no step,
+  turn, light, save or random number), in the maze or in combat. The view's
+  corner and Settings' Maze view both choose them, through that call, and
+  show what `view.settings` says, so they always agree.
+
+  **Across phases.** The dungeon screen draws the picture in the maze phase
+  and Camp's screen in Camp; combat has its own screen. Go shows the dungeon
+  screen in no other phase, and after an encounter (escape, victory, its
+  chest, a restart) the party is back in the maze with the corridor of where
+  it stands (`gui/maze_transitions_test.go`, every way out; recorded for the
+  frontend in `testdata/maze-transitions.json`). The page learns a new view
+  only from its own calls, so the backend driven from outside the page
+  (as a test harness can) leaves the page on its last view until its next
+  call.
+
+  **Next (M-ART-2).** Textures and artwork by environment, for Enhanced:
+  castle masonry on levels 1-3, underground mines on 4-6, deep caverns on
+  7-10. They are presentation themes on the same scene and projection: a
+  texture fills a surface the projection gives, never adds one.
+
+  Evidence is in `docs/design/maze-perspective/review/m-art-1a-1/`,
+  `.../m-art-1a-2/` and `.../m-art-1a-3/`.
 - **Not yet:** rescue and recovery (M6b-4). Camp is in the GUI since M6b-3B
   (below), except Disband and MALOR.
 

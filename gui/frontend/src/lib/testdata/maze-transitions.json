@@ -1,0 +1,275 @@
+[
+ {
+  "when": "the look chosen: Classic at Close",
+  "screen": "roster",
+  "mazeStyle": "classic",
+  "mazeZoom": "close"
+ },
+ {
+  "when": "set out",
+  "screen": "dungeon",
+  "phase": "camp",
+  "place": "L1:R19:C0",
+  "facing": "N",
+  "mazeStyle": "classic",
+  "mazeZoom": "close"
+ },
+ {
+  "when": "leave Camp",
+  "screen": "dungeon",
+  "phase": "maze",
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "open",
+    "front": "open",
+    "rightAhead": "wall"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   }
+  ],
+  "place": "L1:R19:C0",
+  "facing": "N",
+  "mazeStyle": "classic",
+  "mazeZoom": "close"
+ },
+ {
+  "when": "not up the stairs",
+  "screen": "dungeon",
+  "phase": "maze",
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "open",
+    "front": "open",
+    "rightAhead": "wall"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   }
+  ],
+  "place": "L1:R19:C0",
+  "facing": "N",
+  "mazeStyle": "classic",
+  "mazeZoom": "close"
+ },
+ {
+  "when": "a step onto a fight square",
+  "screen": "combat",
+  "combat": "opening",
+  "mazeStyle": "classic",
+  "mazeZoom": "close"
+ },
+ {
+  "when": "escaping",
+  "screen": "combat",
+  "combat": "orders",
+  "mazeStyle": "classic",
+  "mazeZoom": "close"
+ },
+ {
+  "when": "escaping",
+  "screen": "combat",
+  "combat": "confirm",
+  "mazeStyle": "classic",
+  "mazeZoom": "close"
+ },
+ {
+  "when": "escaping",
+  "screen": "combat",
+  "combat": "playback",
+  "mazeStyle": "classic",
+  "mazeZoom": "close"
+ },
+ {
+  "when": "escaping",
+  "screen": "dungeon",
+  "phase": "maze",
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   }
+  ],
+  "place": "L1:R18:C0",
+  "facing": "N",
+  "mazeStyle": "classic",
+  "mazeZoom": "close"
+ },
+ {
+  "when": "a turn after the escape",
+  "screen": "dungeon",
+  "phase": "maze",
+  "corridor": [
+   {
+    "left": "open",
+    "right": "open",
+    "front": "wall",
+    "leftAhead": "wall",
+    "rightAhead": "open"
+   }
+  ],
+  "place": "L1:R18:C0",
+  "facing": "E",
+  "mazeStyle": "classic",
+  "mazeZoom": "close"
+ },
+ {
+  "when": "an encounter guarding a chest",
+  "screen": "combat",
+  "combat": "opening",
+  "mazeStyle": "classic",
+  "mazeZoom": "close"
+ },
+ {
+  "when": "fighting",
+  "screen": "combat",
+  "combat": "orders",
+  "mazeStyle": "classic",
+  "mazeZoom": "close"
+ },
+ {
+  "when": "fighting",
+  "screen": "combat",
+  "combat": "confirm",
+  "mazeStyle": "classic",
+  "mazeZoom": "close"
+ },
+ {
+  "when": "fighting",
+  "screen": "combat",
+  "combat": "playback",
+  "mazeStyle": "classic",
+  "mazeZoom": "close"
+ },
+ {
+  "when": "fighting",
+  "screen": "combat",
+  "combat": "chest",
+  "mazeStyle": "classic",
+  "mazeZoom": "close"
+ },
+ {
+  "when": "fighting",
+  "screen": "combat",
+  "combat": "victory",
+  "mazeStyle": "classic",
+  "mazeZoom": "close"
+ },
+ {
+  "when": "fighting",
+  "screen": "dungeon",
+  "phase": "maze",
+  "corridor": [
+   {
+    "left": "open",
+    "right": "open",
+    "front": "wall",
+    "leftAhead": "wall",
+    "rightAhead": "open"
+   }
+  ],
+  "place": "L1:R18:C0",
+  "facing": "E",
+  "mazeStyle": "classic",
+  "mazeZoom": "close"
+ },
+ {
+  "when": "restarted",
+  "screen": "dungeon",
+  "phase": "maze",
+  "corridor": [
+   {
+    "left": "open",
+    "right": "open",
+    "front": "wall",
+    "leftAhead": "wall",
+    "rightAhead": "open"
+   }
+  ],
+  "place": "L1:R18:C0",
+  "facing": "E",
+  "mazeStyle": "classic",
+  "mazeZoom": "close"
+ },
+ {
+  "when": "Camp",
+  "screen": "dungeon",
+  "phase": "camp",
+  "place": "L1:R18:C0",
+  "facing": "E",
+  "mazeStyle": "classic",
+  "mazeZoom": "close"
+ },
+ {
+  "when": "out of Camp",
+  "screen": "dungeon",
+  "phase": "maze",
+  "corridor": [
+   {
+    "left": "open",
+    "right": "open",
+    "front": "wall",
+    "leftAhead": "wall",
+    "rightAhead": "open"
+   }
+  ],
+  "place": "L1:R18:C0",
+  "facing": "E",
+  "mazeStyle": "classic",
+  "mazeZoom": "close"
+ },
+ {
+  "when": "a turn",
+  "screen": "dungeon",
+  "phase": "maze",
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   }
+  ],
+  "place": "L1:R18:C0",
+  "facing": "N",
+  "mazeStyle": "classic",
+  "mazeZoom": "close"
+ },
+ {
+  "when": "a step",
+  "screen": "dungeon",
+  "phase": "maze",
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   }
+  ],
+  "place": "L1:R17:C0",
+  "facing": "N",
+  "mazeStyle": "classic",
+  "mazeZoom": "close"
+ }
+]
