@@ -1313,6 +1313,21 @@ async function main() {
       })()`)
       let pic = await picture()
       check(pic.style === 'enhanced' && pic.zoom === 'standard' && pic.same && pic.n > 0, `the maze picture: Enhanced at Standard, drawn as the shared modules give (${JSON.stringify(pic)})`)
+      // Its size (M-ART-1A.3): the largest square the view holds, centred,
+      // at least 280px at the smallest window and 480px at 1440x900, at
+      // most 720px; never under the minimap or the style and zoom control;
+      // and the page does not scroll.
+      const lay = await js(`(() => {
+        const r = (s) => { const b = document.querySelector(s)?.getBoundingClientRect(); return b && { x: b.x, y: b.y, w: b.width, h: b.height, r: b.right, b: b.bottom } }
+        return { svg: r('.stage svg.maze-view'), stage: r('.stage'), mini: r('.stage .minimap'), look: r('.stage .look'), cmds: r('.dungeon .commands'), party: r('.dungeon .partyarea'),
+          doc: [document.documentElement.scrollWidth, document.documentElement.scrollHeight] } })()`)
+      const apart = (a, b) => !a || !b || a.r <= b.x || b.r <= a.x || a.b <= b.y || b.b <= a.y
+      const least = W <= 980 ? 280 : 480
+      check(lay.svg && Math.abs(lay.svg.w - lay.svg.h) < 1 && lay.svg.w >= least && lay.svg.w <= 720 &&
+        Math.abs(lay.svg.x + lay.svg.w / 2 - (lay.stage.x + lay.stage.w / 2)) <= 1 && lay.svg.y >= lay.stage.y && lay.svg.b <= lay.stage.b,
+        `the maze picture: square, centred in the view, ${Math.round(lay.svg?.w)}px (at least ${least}, at most 720)`)
+      check(apart(lay.svg, lay.mini) && apart(lay.svg, lay.look) && lay.doc[0] <= W && lay.doc[1] <= H && lay.cmds.b <= H && (!lay.party || lay.party.b <= H),
+        `the picture clear of the minimap and the style and zoom; the commands and the party in the window, no page scrolling (${JSON.stringify({ mini: lay.mini, look: lay.look, doc: lay.doc })})`)
       await js(`(() => { window.__calls = []; window.__orig = {}; const S = ${S}; for (const k of Object.keys(S)) { const f = (window.__orig[k] = S[k]); S[k] = (...a) => { window.__calls.push(k); return f(...a) } } })()`)
       const settingsWas = sha(SETTINGS_FILE)
       const lookClick = async (label) => {

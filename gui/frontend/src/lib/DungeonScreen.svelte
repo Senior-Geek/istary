@@ -124,7 +124,7 @@
   {:else}
   <section class="stage">
     {#if d.phase === 'maze'}
-      <MazeView dungeon={d} style={look.style} zoom={look.zoom} />
+      <div class="picture"><MazeView dungeon={d} style={look.style} zoom={look.zoom} /></div>
       {#if d.viewport?.length}
         <div class="viewport">{#each d.viewport as t, i (i)}<p>{t}</p>{/each}</div>
       {/if}
@@ -242,7 +242,9 @@
   .tag { font-size: 11px; border: 1px solid var(--line); border-radius: 9px; padding: 1px 8px; color: var(--muted); }
   .tag.spell { color: #f2c14e; border-color: #6b5a2c; }
   .tag.real { color: var(--accent); border-color: var(--accent); }
-  .stage { position: relative; container-type: inline-size; display: grid; place-items: center; min-height: 0; border-radius: 8px; padding: 10px;
+  /* The view (M-ART-1A.3): its own size is the grid's, so the picture can
+     be sized from it (container units), in width and height. */
+  .stage { position: relative; container-type: size; display: grid; place-items: center; min-height: 0; border-radius: 8px; padding: 6px;
     background: #0d0c0b; border: 1px solid var(--line); }
   .viewport { position: absolute; inset: 0; display: grid; place-content: center; text-align: center;
     font: 700 16px ui-monospace, Menlo, monospace; color: #fff; text-shadow: 0 0 6px #000; pointer-events: none; }
@@ -265,7 +267,13 @@
   .messages p { margin: 2px 0; color: #f2c14e; }
   .messages p.muted { color: var(--muted); }
   .messages p.hint { color: #ff8a7a; font-size: 13px; }
-  .commands { display: grid; gap: 8px; justify-items: center; }
+  /* The picture: the largest square the view holds, less a column on each
+     side for what sits in its corners (the style and zoom on the left, the
+     minimap on the right: neither ever covers it), and at most 720px. */
+  .picture { --corner: 184px; width: min(100cqh, 100cqw - 2 * var(--corner), 720px); aspect-ratio: 1; }
+  /* The movement pad and the other commands share a line where they fit
+     (wrapping where they do not), so the view keeps the height. */
+  .commands { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px 24px; }
   .pad, .row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
   kbd { font: 600 11px ui-monospace, Menlo, monospace; border: 1px solid var(--line); border-radius: 3px; padding: 0 4px; }
   .small { font-size: 11px; }

@@ -38,3 +38,27 @@ test('the style and zoom are chosen without the backend, are never saved, and gi
   assert.ok(!/wailsjs|Session|localStorage|settings/i.test(state.replace(/\/\/.*$/gm, '')))
   assert.match(state, /export const look = \$state\(\{ \.\.\.defaultLook \}\)/)
 })
+
+test('the picture takes the view’s space: a square from its height and width, clear of its corners, at most 720px', () => {
+  const screen = readFileSync(new URL('./DungeonScreen.svelte', import.meta.url), 'utf8')
+  const view = readFileSync(new URL('./MazeView.svelte', import.meta.url), 'utf8')
+  const rule = (src, sel) => src.match(new RegExp(`\\n  ${sel.replace(/\./g, '\\.')} \\{([^}]*)\\}`))?.[1] ?? ''
+  // The view is a size container: the picture is sized from it, not from a constant.
+  assert.match(rule(screen, '.stage'), /container-type: size/)
+  const picture = rule(screen, '.picture')
+  assert.match(picture, /--corner: 184px/)
+  assert.match(picture, /width: min\(100cqh, 100cqw - 2 \* var\(--corner\), 720px\)/)
+  assert.match(picture, /aspect-ratio: 1/)
+  assert.match(screen, /<div class="picture"><MazeView /)
+  // MazeView fills it; no cap of its own any more.
+  assert.match(rule(view, '.maze-view'), /width: 100%; height: 100%/)
+  assert.ok(!/360px/.test(view))
+  // The corners: the minimap is never wider than the column kept for it
+  // (168px and its 8px margin, within 184px), so it never reaches the picture.
+  const minimap = rule(screen, '.minimap')
+  assert.match(minimap, /right: 8px/)
+  assert.match(minimap, /height: min\(168px, calc\(100% - 16px\), 26cqw\); aspect-ratio: 1/)
+  assert.ok(168 + 8 <= 184)
+  // The commands share a line where they fit.
+  assert.match(rule(screen, '.commands'), /display: flex; flex-wrap: wrap/)
+})

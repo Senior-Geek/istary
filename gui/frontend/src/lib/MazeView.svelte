@@ -45,8 +45,9 @@
 </svg>
 
 <style>
-  /* The size the dungeon screen gave its picture: square, at most 360px. */
-  .maze-view { height: 100%; max-height: 360px; max-width: 100%; aspect-ratio: 1; }
+  /* The size the dungeon screen gives it (a square: DungeonScreen's
+     .picture), whole. */
+  .maze-view { display: block; width: 100%; height: 100%; }
   .classic polygon { fill: none; stroke: #d8d2c4; stroke-width: 0.6; vector-effect: non-scaling-stroke; }
   /* Walls are filled, so a nearer one hides what lies behind it. */
   .classic polygon.wall { fill: #1b1915; }
