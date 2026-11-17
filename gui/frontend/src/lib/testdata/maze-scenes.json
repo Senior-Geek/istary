@@ -1,0 +1,3014 @@
+[
+ {
+  "id": "G01",
+  "title": "Straight corridor",
+  "facing": "North",
+  "light": true,
+  "depths": 5,
+  "ends": "limit",
+  "dungeon": {
+   "phase": "maze",
+   "party": [
+    {
+     "slot": 1,
+     "name": "AGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 2,
+     "name": "BGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 3,
+     "name": "CGUI",
+     "class": "N-THI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 4,
+     "name": "DGUI",
+     "class": "N-PRI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 5,
+     "name": "EGUI",
+     "class": "N-MAG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 6,
+     "name": "FGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    }
+   ],
+   "corridor": [
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    }
+   ],
+   "dark": false,
+   "viewport": null,
+   "lines": null,
+   "more": false,
+   "prompt": "",
+   "buttons": null,
+   "found": null,
+   "spells": [
+    "LIGHT"
+   ],
+   "actions": [
+    "forward",
+    "left",
+    "right",
+    "kick",
+    "camp",
+    "inspect"
+   ]
+  }
+ },
+ {
+  "id": "G02",
+  "title": "Dead end",
+  "facing": "North",
+  "light": true,
+  "depths": 3,
+  "ends": "wall",
+  "dungeon": {
+   "phase": "maze",
+   "party": [
+    {
+     "slot": 1,
+     "name": "AGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 2,
+     "name": "BGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 3,
+     "name": "CGUI",
+     "class": "N-THI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 4,
+     "name": "DGUI",
+     "class": "N-PRI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 5,
+     "name": "EGUI",
+     "class": "N-MAG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 6,
+     "name": "FGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    }
+   ],
+   "corridor": [
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "wall"
+    }
+   ],
+   "dark": false,
+   "viewport": null,
+   "lines": null,
+   "more": false,
+   "prompt": "",
+   "buttons": null,
+   "found": null,
+   "spells": [
+    "LIGHT"
+   ],
+   "actions": [
+    "forward",
+    "left",
+    "right",
+    "kick",
+    "camp",
+    "inspect"
+   ]
+  }
+ },
+ {
+  "id": "G03",
+  "title": "Left opening",
+  "facing": "North",
+  "light": true,
+  "depths": 5,
+  "ends": "limit",
+  "dungeon": {
+   "phase": "maze",
+   "party": [
+    {
+     "slot": 1,
+     "name": "AGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 2,
+     "name": "BGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 3,
+     "name": "CGUI",
+     "class": "N-THI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 4,
+     "name": "DGUI",
+     "class": "N-PRI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 5,
+     "name": "EGUI",
+     "class": "N-MAG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 6,
+     "name": "FGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    }
+   ],
+   "corridor": [
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "open",
+     "right": "wall",
+     "front": "open",
+     "leftAhead": "wall"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    }
+   ],
+   "dark": false,
+   "viewport": null,
+   "lines": null,
+   "more": false,
+   "prompt": "",
+   "buttons": null,
+   "found": null,
+   "spells": [
+    "LIGHT"
+   ],
+   "actions": [
+    "forward",
+    "left",
+    "right",
+    "kick",
+    "camp",
+    "inspect"
+   ]
+  }
+ },
+ {
+  "id": "G04",
+  "title": "Right opening onto a passage that goes on",
+  "facing": "North",
+  "light": true,
+  "depths": 5,
+  "ends": "limit",
+  "dungeon": {
+   "phase": "maze",
+   "party": [
+    {
+     "slot": 1,
+     "name": "AGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 2,
+     "name": "BGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 3,
+     "name": "CGUI",
+     "class": "N-THI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 4,
+     "name": "DGUI",
+     "class": "N-PRI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 5,
+     "name": "EGUI",
+     "class": "N-MAG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 6,
+     "name": "FGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    }
+   ],
+   "corridor": [
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "open",
+     "front": "open",
+     "rightAhead": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    }
+   ],
+   "dark": false,
+   "viewport": null,
+   "lines": null,
+   "more": false,
+   "prompt": "",
+   "buttons": null,
+   "found": null,
+   "spells": [
+    "LIGHT"
+   ],
+   "actions": [
+    "forward",
+    "left",
+    "right",
+    "kick",
+    "camp",
+    "inspect"
+   ]
+  }
+ },
+ {
+  "id": "G05",
+  "title": "Corner turning right",
+  "facing": "North",
+  "light": true,
+  "depths": 2,
+  "ends": "wall",
+  "dungeon": {
+   "phase": "maze",
+   "party": [
+    {
+     "slot": 1,
+     "name": "AGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 2,
+     "name": "BGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 3,
+     "name": "CGUI",
+     "class": "N-THI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 4,
+     "name": "DGUI",
+     "class": "N-PRI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 5,
+     "name": "EGUI",
+     "class": "N-MAG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 6,
+     "name": "FGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    }
+   ],
+   "corridor": [
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "open",
+     "front": "wall",
+     "rightAhead": "wall"
+    }
+   ],
+   "dark": false,
+   "viewport": null,
+   "lines": null,
+   "more": false,
+   "prompt": "",
+   "buttons": null,
+   "found": null,
+   "spells": [
+    "LIGHT"
+   ],
+   "actions": [
+    "forward",
+    "left",
+    "right",
+    "kick",
+    "camp",
+    "inspect"
+   ]
+  }
+ },
+ {
+  "id": "G06",
+  "title": "T-junction",
+  "facing": "North",
+  "light": true,
+  "depths": 2,
+  "ends": "wall",
+  "dungeon": {
+   "phase": "maze",
+   "party": [
+    {
+     "slot": 1,
+     "name": "AGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 2,
+     "name": "BGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 3,
+     "name": "CGUI",
+     "class": "N-THI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 4,
+     "name": "DGUI",
+     "class": "N-PRI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 5,
+     "name": "EGUI",
+     "class": "N-MAG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 6,
+     "name": "FGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    }
+   ],
+   "corridor": [
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "open",
+     "right": "open",
+     "front": "wall",
+     "leftAhead": "wall",
+     "rightAhead": "wall"
+    }
+   ],
+   "dark": false,
+   "viewport": null,
+   "lines": null,
+   "more": false,
+   "prompt": "",
+   "buttons": null,
+   "found": null,
+   "spells": [
+    "LIGHT"
+   ],
+   "actions": [
+    "forward",
+    "left",
+    "right",
+    "kick",
+    "camp",
+    "inspect"
+   ]
+  }
+ },
+ {
+  "id": "G07",
+  "title": "Four-way intersection",
+  "facing": "North",
+  "light": true,
+  "depths": 4,
+  "ends": "wall",
+  "dungeon": {
+   "phase": "maze",
+   "party": [
+    {
+     "slot": 1,
+     "name": "AGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 2,
+     "name": "BGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 3,
+     "name": "CGUI",
+     "class": "N-THI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 4,
+     "name": "DGUI",
+     "class": "N-PRI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 5,
+     "name": "EGUI",
+     "class": "N-MAG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 6,
+     "name": "FGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    }
+   ],
+   "corridor": [
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "open",
+     "right": "open",
+     "front": "open",
+     "leftAhead": "wall",
+     "rightAhead": "wall"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "wall"
+    }
+   ],
+   "dark": false,
+   "viewport": null,
+   "lines": null,
+   "more": false,
+   "prompt": "",
+   "buttons": null,
+   "found": null,
+   "spells": [
+    "LIGHT"
+   ],
+   "actions": [
+    "forward",
+    "left",
+    "right",
+    "kick",
+    "camp",
+    "inspect"
+   ]
+  }
+ },
+ {
+  "id": "G08",
+  "title": "Door ahead",
+  "facing": "North",
+  "light": true,
+  "depths": 3,
+  "ends": "door",
+  "dungeon": {
+   "phase": "maze",
+   "party": [
+    {
+     "slot": 1,
+     "name": "AGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 2,
+     "name": "BGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 3,
+     "name": "CGUI",
+     "class": "N-THI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 4,
+     "name": "DGUI",
+     "class": "N-PRI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 5,
+     "name": "EGUI",
+     "class": "N-MAG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 6,
+     "name": "FGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    }
+   ],
+   "corridor": [
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "door"
+    }
+   ],
+   "dark": false,
+   "viewport": null,
+   "lines": null,
+   "more": false,
+   "prompt": "",
+   "buttons": null,
+   "found": null,
+   "spells": [
+    "LIGHT"
+   ],
+   "actions": [
+    "forward",
+    "left",
+    "right",
+    "kick",
+    "camp",
+    "inspect"
+   ]
+  }
+ },
+ {
+  "id": "G09",
+  "title": "Door on the left",
+  "facing": "North",
+  "light": true,
+  "depths": 4,
+  "ends": "wall",
+  "dungeon": {
+   "phase": "maze",
+   "party": [
+    {
+     "slot": 1,
+     "name": "AGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 2,
+     "name": "BGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 3,
+     "name": "CGUI",
+     "class": "N-THI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 4,
+     "name": "DGUI",
+     "class": "N-PRI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 5,
+     "name": "EGUI",
+     "class": "N-MAG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 6,
+     "name": "FGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    }
+   ],
+   "corridor": [
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "door",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "wall"
+    }
+   ],
+   "dark": false,
+   "viewport": null,
+   "lines": null,
+   "more": false,
+   "prompt": "",
+   "buttons": null,
+   "found": null,
+   "spells": [
+    "LIGHT"
+   ],
+   "actions": [
+    "forward",
+    "left",
+    "right",
+    "kick",
+    "camp",
+    "inspect"
+   ]
+  }
+ },
+ {
+  "id": "G10",
+  "title": "Doors right, left and ahead",
+  "facing": "North",
+  "light": true,
+  "depths": 4,
+  "ends": "door",
+  "dungeon": {
+   "phase": "maze",
+   "party": [
+    {
+     "slot": 1,
+     "name": "AGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 2,
+     "name": "BGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 3,
+     "name": "CGUI",
+     "class": "N-THI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 4,
+     "name": "DGUI",
+     "class": "N-PRI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 5,
+     "name": "EGUI",
+     "class": "N-MAG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 6,
+     "name": "FGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    }
+   ],
+   "corridor": [
+    {
+     "left": "wall",
+     "right": "door",
+     "front": "open"
+    },
+    {
+     "left": "door",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "open",
+     "right": "wall",
+     "front": "open",
+     "leftAhead": "door"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "door"
+    }
+   ],
+   "dark": false,
+   "viewport": null,
+   "lines": null,
+   "more": false,
+   "prompt": "",
+   "buttons": null,
+   "found": null,
+   "spells": [
+    "LIGHT"
+   ],
+   "actions": [
+    "forward",
+    "left",
+    "right",
+    "kick",
+    "camp",
+    "inspect"
+   ]
+  }
+ },
+ {
+  "id": "G11-N",
+  "title": "Facing North",
+  "facing": "North",
+  "light": false,
+  "depths": 1,
+  "ends": "wall",
+  "dungeon": {
+   "phase": "maze",
+   "party": [
+    {
+     "slot": 1,
+     "name": "AGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 2,
+     "name": "BGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 3,
+     "name": "CGUI",
+     "class": "N-THI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 4,
+     "name": "DGUI",
+     "class": "N-PRI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 5,
+     "name": "EGUI",
+     "class": "N-MAG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 6,
+     "name": "FGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    }
+   ],
+   "corridor": [
+    {
+     "left": "open",
+     "right": "door",
+     "front": "wall",
+     "leftAhead": "wall"
+    }
+   ],
+   "dark": false,
+   "viewport": null,
+   "lines": null,
+   "more": false,
+   "prompt": "",
+   "buttons": null,
+   "found": null,
+   "spells": null,
+   "actions": [
+    "forward",
+    "left",
+    "right",
+    "kick",
+    "camp",
+    "inspect"
+   ]
+  }
+ },
+ {
+  "id": "G11-E",
+  "title": "Facing East",
+  "facing": "East",
+  "light": false,
+  "depths": 1,
+  "ends": "door",
+  "dungeon": {
+   "phase": "maze",
+   "party": [
+    {
+     "slot": 1,
+     "name": "AGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 2,
+     "name": "BGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 3,
+     "name": "CGUI",
+     "class": "N-THI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 4,
+     "name": "DGUI",
+     "class": "N-PRI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 5,
+     "name": "EGUI",
+     "class": "N-MAG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 6,
+     "name": "FGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    }
+   ],
+   "corridor": [
+    {
+     "left": "wall",
+     "right": "open",
+     "front": "door",
+     "rightAhead": "wall"
+    }
+   ],
+   "dark": false,
+   "viewport": null,
+   "lines": null,
+   "more": false,
+   "prompt": "",
+   "buttons": null,
+   "found": null,
+   "spells": null,
+   "actions": [
+    "forward",
+    "left",
+    "right",
+    "kick",
+    "camp",
+    "inspect"
+   ]
+  }
+ },
+ {
+  "id": "G11-S",
+  "title": "Facing South",
+  "facing": "South",
+  "light": false,
+  "depths": 2,
+  "ends": "wall",
+  "dungeon": {
+   "phase": "maze",
+   "party": [
+    {
+     "slot": 1,
+     "name": "AGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 2,
+     "name": "BGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 3,
+     "name": "CGUI",
+     "class": "N-THI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 4,
+     "name": "DGUI",
+     "class": "N-PRI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 5,
+     "name": "EGUI",
+     "class": "N-MAG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 6,
+     "name": "FGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    }
+   ],
+   "corridor": [
+    {
+     "left": "door",
+     "right": "open",
+     "front": "open",
+     "rightAhead": "wall"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "wall"
+    }
+   ],
+   "dark": false,
+   "viewport": null,
+   "lines": null,
+   "more": false,
+   "prompt": "",
+   "buttons": null,
+   "found": null,
+   "spells": null,
+   "actions": [
+    "forward",
+    "left",
+    "right",
+    "kick",
+    "camp",
+    "inspect"
+   ]
+  }
+ },
+ {
+  "id": "G11-W",
+  "title": "Facing West",
+  "facing": "West",
+  "light": false,
+  "depths": 2,
+  "ends": "wall",
+  "dungeon": {
+   "phase": "maze",
+   "party": [
+    {
+     "slot": 1,
+     "name": "AGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 2,
+     "name": "BGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 3,
+     "name": "CGUI",
+     "class": "N-THI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 4,
+     "name": "DGUI",
+     "class": "N-PRI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 5,
+     "name": "EGUI",
+     "class": "N-MAG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 6,
+     "name": "FGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    }
+   ],
+   "corridor": [
+    {
+     "left": "open",
+     "right": "wall",
+     "front": "open",
+     "leftAhead": "wall"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "wall"
+    }
+   ],
+   "dark": false,
+   "viewport": null,
+   "lines": null,
+   "more": false,
+   "prompt": "",
+   "buttons": null,
+   "found": null,
+   "spells": null,
+   "actions": [
+    "forward",
+    "left",
+    "right",
+    "kick",
+    "camp",
+    "inspect"
+   ]
+  }
+ },
+ {
+  "id": "G12-edge",
+  "title": "Corridor across the east edge",
+  "facing": "East",
+  "light": true,
+  "depths": 5,
+  "ends": "wall",
+  "dungeon": {
+   "phase": "maze",
+   "party": [
+    {
+     "slot": 1,
+     "name": "AGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 2,
+     "name": "BGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 3,
+     "name": "CGUI",
+     "class": "N-THI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 4,
+     "name": "DGUI",
+     "class": "N-PRI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 5,
+     "name": "EGUI",
+     "class": "N-MAG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 6,
+     "name": "FGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    }
+   ],
+   "corridor": [
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "door",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "open",
+     "right": "wall",
+     "front": "wall",
+     "leftAhead": "wall"
+    }
+   ],
+   "dark": false,
+   "viewport": null,
+   "lines": null,
+   "more": false,
+   "prompt": "",
+   "buttons": null,
+   "found": null,
+   "spells": [
+    "LIGHT"
+   ],
+   "actions": [
+    "forward",
+    "left",
+    "right",
+    "kick",
+    "camp",
+    "inspect"
+   ]
+  }
+ },
+ {
+  "id": "G12-inside",
+  "title": "The same corridor inside the level",
+  "facing": "East",
+  "light": true,
+  "depths": 5,
+  "ends": "wall",
+  "dungeon": {
+   "phase": "maze",
+   "party": [
+    {
+     "slot": 1,
+     "name": "AGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 2,
+     "name": "BGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 3,
+     "name": "CGUI",
+     "class": "N-THI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 4,
+     "name": "DGUI",
+     "class": "N-PRI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 5,
+     "name": "EGUI",
+     "class": "N-MAG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 6,
+     "name": "FGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    }
+   ],
+   "corridor": [
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "door",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "open",
+     "right": "wall",
+     "front": "wall",
+     "leftAhead": "wall"
+    }
+   ],
+   "dark": false,
+   "viewport": null,
+   "lines": null,
+   "more": false,
+   "prompt": "",
+   "buttons": null,
+   "found": null,
+   "spells": [
+    "LIGHT"
+   ],
+   "actions": [
+    "forward",
+    "left",
+    "right",
+    "kick",
+    "camp",
+    "inspect"
+   ]
+  }
+ },
+ {
+  "id": "V01",
+  "title": "No magical light",
+  "facing": "North",
+  "light": false,
+  "depths": 2,
+  "ends": "limit",
+  "dungeon": {
+   "phase": "maze",
+   "party": [
+    {
+     "slot": 1,
+     "name": "AGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 2,
+     "name": "BGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 3,
+     "name": "CGUI",
+     "class": "N-THI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 4,
+     "name": "DGUI",
+     "class": "N-PRI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 5,
+     "name": "EGUI",
+     "class": "N-MAG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 6,
+     "name": "FGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    }
+   ],
+   "corridor": [
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    }
+   ],
+   "dark": false,
+   "viewport": null,
+   "lines": null,
+   "more": false,
+   "prompt": "",
+   "buttons": null,
+   "found": null,
+   "spells": null,
+   "actions": [
+    "forward",
+    "left",
+    "right",
+    "kick",
+    "camp",
+    "inspect"
+   ]
+  }
+ },
+ {
+  "id": "V02",
+  "title": "Magical light",
+  "facing": "North",
+  "light": true,
+  "depths": 5,
+  "ends": "limit",
+  "dungeon": {
+   "phase": "maze",
+   "party": [
+    {
+     "slot": 1,
+     "name": "AGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 2,
+     "name": "BGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 3,
+     "name": "CGUI",
+     "class": "N-THI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 4,
+     "name": "DGUI",
+     "class": "N-PRI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 5,
+     "name": "EGUI",
+     "class": "N-MAG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 6,
+     "name": "FGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    }
+   ],
+   "corridor": [
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    }
+   ],
+   "dark": false,
+   "viewport": null,
+   "lines": null,
+   "more": false,
+   "prompt": "",
+   "buttons": null,
+   "found": null,
+   "spells": [
+    "LIGHT"
+   ],
+   "actions": [
+    "forward",
+    "left",
+    "right",
+    "kick",
+    "camp",
+    "inspect"
+   ]
+  }
+ },
+ {
+  "id": "V03",
+  "title": "QUICK plot with light",
+  "facing": "North",
+  "light": true,
+  "quickPlot": true,
+  "depths": 3,
+  "ends": "limit",
+  "dungeon": {
+   "phase": "maze",
+   "party": [
+    {
+     "slot": 1,
+     "name": "AGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 2,
+     "name": "BGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 3,
+     "name": "CGUI",
+     "class": "N-THI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 4,
+     "name": "DGUI",
+     "class": "N-PRI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 5,
+     "name": "EGUI",
+     "class": "N-MAG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 6,
+     "name": "FGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    }
+   ],
+   "corridor": [
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    }
+   ],
+   "dark": false,
+   "viewport": null,
+   "lines": null,
+   "more": false,
+   "prompt": "",
+   "buttons": null,
+   "found": null,
+   "spells": [
+    "LIGHT"
+   ],
+   "actions": [
+    "forward",
+    "left",
+    "right",
+    "kick",
+    "camp",
+    "inspect"
+   ]
+  }
+ },
+ {
+  "id": "V04",
+  "title": "A wall ahead, a corridor behind it",
+  "facing": "North",
+  "light": true,
+  "depths": 2,
+  "ends": "wall",
+  "dungeon": {
+   "phase": "maze",
+   "party": [
+    {
+     "slot": 1,
+     "name": "AGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 2,
+     "name": "BGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 3,
+     "name": "CGUI",
+     "class": "N-THI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 4,
+     "name": "DGUI",
+     "class": "N-PRI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 5,
+     "name": "EGUI",
+     "class": "N-MAG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 6,
+     "name": "FGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    }
+   ],
+   "corridor": [
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "wall"
+    }
+   ],
+   "dark": false,
+   "viewport": null,
+   "lines": null,
+   "more": false,
+   "prompt": "",
+   "buttons": null,
+   "found": null,
+   "spells": [
+    "LIGHT"
+   ],
+   "actions": [
+    "forward",
+    "left",
+    "right",
+    "kick",
+    "camp",
+    "inspect"
+   ]
+  }
+ },
+ {
+  "id": "V05",
+  "title": "A door ahead, a corridor behind it",
+  "facing": "North",
+  "light": true,
+  "depths": 2,
+  "ends": "door",
+  "dungeon": {
+   "phase": "maze",
+   "party": [
+    {
+     "slot": 1,
+     "name": "AGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 2,
+     "name": "BGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 3,
+     "name": "CGUI",
+     "class": "N-THI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 4,
+     "name": "DGUI",
+     "class": "N-PRI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 5,
+     "name": "EGUI",
+     "class": "N-MAG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 6,
+     "name": "FGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    }
+   ],
+   "corridor": [
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "door"
+    }
+   ],
+   "dark": false,
+   "viewport": null,
+   "lines": null,
+   "more": false,
+   "prompt": "",
+   "buttons": null,
+   "found": null,
+   "spells": [
+    "LIGHT"
+   ],
+   "actions": [
+    "forward",
+    "left",
+    "right",
+    "kick",
+    "camp",
+    "inspect"
+   ]
+  }
+ },
+ {
+  "id": "V06",
+  "title": "Hidden door ahead, without light",
+  "facing": "North",
+  "light": false,
+  "depths": 2,
+  "ends": "wall",
+  "dungeon": {
+   "phase": "maze",
+   "party": [
+    {
+     "slot": 1,
+     "name": "AGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 2,
+     "name": "BGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 3,
+     "name": "CGUI",
+     "class": "N-THI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 4,
+     "name": "DGUI",
+     "class": "N-PRI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 5,
+     "name": "EGUI",
+     "class": "N-MAG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 6,
+     "name": "FGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    }
+   ],
+   "corridor": [
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "wall"
+    }
+   ],
+   "dark": false,
+   "viewport": null,
+   "lines": null,
+   "more": false,
+   "prompt": "",
+   "buttons": null,
+   "found": null,
+   "spells": null,
+   "actions": [
+    "forward",
+    "left",
+    "right",
+    "kick",
+    "camp",
+    "inspect"
+   ]
+  }
+ },
+ {
+  "id": "V06-wall",
+  "title": "A plain wall ahead, without light (V06's twin)",
+  "facing": "North",
+  "light": false,
+  "depths": 2,
+  "ends": "wall",
+  "dungeon": {
+   "phase": "maze",
+   "party": [
+    {
+     "slot": 1,
+     "name": "AGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 2,
+     "name": "BGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 3,
+     "name": "CGUI",
+     "class": "N-THI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 4,
+     "name": "DGUI",
+     "class": "N-PRI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 5,
+     "name": "EGUI",
+     "class": "N-MAG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 6,
+     "name": "FGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    }
+   ],
+   "corridor": [
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "wall"
+    }
+   ],
+   "dark": false,
+   "viewport": null,
+   "lines": null,
+   "more": false,
+   "prompt": "",
+   "buttons": null,
+   "found": null,
+   "spells": null,
+   "actions": [
+    "forward",
+    "left",
+    "right",
+    "kick",
+    "camp",
+    "inspect"
+   ]
+  }
+ },
+ {
+  "id": "V07",
+  "title": "Hidden door ahead, with light",
+  "facing": "North",
+  "light": true,
+  "depths": 2,
+  "ends": "door",
+  "dungeon": {
+   "phase": "maze",
+   "party": [
+    {
+     "slot": 1,
+     "name": "AGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 2,
+     "name": "BGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 3,
+     "name": "CGUI",
+     "class": "N-THI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 4,
+     "name": "DGUI",
+     "class": "N-PRI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 5,
+     "name": "EGUI",
+     "class": "N-MAG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 6,
+     "name": "FGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    }
+   ],
+   "corridor": [
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "door"
+    }
+   ],
+   "dark": false,
+   "viewport": null,
+   "lines": null,
+   "more": false,
+   "prompt": "",
+   "buttons": null,
+   "found": null,
+   "spells": [
+    "LIGHT"
+   ],
+   "actions": [
+    "forward",
+    "left",
+    "right",
+    "kick",
+    "camp",
+    "inspect"
+   ]
+  }
+ },
+ {
+  "id": "V08",
+  "title": "A dark square two ahead, a door beyond it",
+  "facing": "North",
+  "light": true,
+  "depths": 2,
+  "ends": "dark",
+  "dungeon": {
+   "phase": "maze",
+   "party": [
+    {
+     "slot": 1,
+     "name": "AGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 2,
+     "name": "BGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 3,
+     "name": "CGUI",
+     "class": "N-THI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 4,
+     "name": "DGUI",
+     "class": "N-PRI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 5,
+     "name": "EGUI",
+     "class": "N-MAG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 6,
+     "name": "FGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    }
+   ],
+   "corridor": [
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    }
+   ],
+   "dark": true,
+   "viewport": null,
+   "lines": null,
+   "more": false,
+   "prompt": "",
+   "buttons": null,
+   "found": null,
+   "spells": [
+    "LIGHT"
+   ],
+   "actions": [
+    "forward",
+    "left",
+    "right",
+    "kick",
+    "camp",
+    "inspect"
+   ]
+  }
+ },
+ {
+  "id": "V09",
+  "title": "Standing in a dark square",
+  "facing": "North",
+  "light": true,
+  "depths": 0,
+  "ends": "dark",
+  "dungeon": {
+   "phase": "maze",
+   "party": [
+    {
+     "slot": 1,
+     "name": "AGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 2,
+     "name": "BGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 3,
+     "name": "CGUI",
+     "class": "N-THI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 4,
+     "name": "DGUI",
+     "class": "N-PRI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 5,
+     "name": "EGUI",
+     "class": "N-MAG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 6,
+     "name": "FGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    }
+   ],
+   "corridor": null,
+   "dark": true,
+   "viewport": null,
+   "lines": null,
+   "more": false,
+   "prompt": "",
+   "buttons": null,
+   "found": null,
+   "spells": [
+    "LIGHT"
+   ],
+   "actions": [
+    "forward",
+    "left",
+    "right",
+    "kick",
+    "camp",
+    "inspect"
+   ]
+  }
+ },
+ {
+  "id": "V10",
+  "title": "The corridor goes on past the light, to a door",
+  "facing": "North",
+  "light": true,
+  "depths": 5,
+  "ends": "limit",
+  "dungeon": {
+   "phase": "maze",
+   "party": [
+    {
+     "slot": 1,
+     "name": "AGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 2,
+     "name": "BGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 3,
+     "name": "CGUI",
+     "class": "N-THI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 4,
+     "name": "DGUI",
+     "class": "N-PRI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 5,
+     "name": "EGUI",
+     "class": "N-MAG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 6,
+     "name": "FGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    }
+   ],
+   "corridor": [
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    }
+   ],
+   "dark": false,
+   "viewport": null,
+   "lines": null,
+   "more": false,
+   "prompt": "",
+   "buttons": null,
+   "found": null,
+   "spells": [
+    "LIGHT"
+   ],
+   "actions": [
+    "forward",
+    "left",
+    "right",
+    "kick",
+    "camp",
+    "inspect"
+   ]
+  }
+ },
+ {
+  "id": "V11",
+  "title": "Explored with light, now seen without",
+  "facing": "North",
+  "light": false,
+  "depths": 2,
+  "ends": "limit",
+  "dungeon": {
+   "phase": "maze",
+   "party": [
+    {
+     "slot": 1,
+     "name": "AGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 2,
+     "name": "BGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 3,
+     "name": "CGUI",
+     "class": "N-THI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 4,
+     "name": "DGUI",
+     "class": "N-PRI",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 5,
+     "name": "EGUI",
+     "class": "N-MAG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    },
+    {
+     "slot": 6,
+     "name": "FGUI",
+     "class": "N-FIG",
+     "ac": 10,
+     "hp": 14,
+     "maxHp": 14,
+     "status": "OK",
+     "poisoned": false
+    }
+   ],
+   "corridor": [
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    },
+    {
+     "left": "wall",
+     "right": "wall",
+     "front": "open"
+    }
+   ],
+   "dark": false,
+   "viewport": null,
+   "lines": null,
+   "more": false,
+   "prompt": "",
+   "buttons": null,
+   "found": null,
+   "spells": null,
+   "actions": [
+    "forward",
+    "left",
+    "right",
+    "kick",
+    "camp",
+    "inspect"
+   ]
+  }
+ }
+]
