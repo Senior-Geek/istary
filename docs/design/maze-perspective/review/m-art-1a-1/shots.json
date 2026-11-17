@@ -1,0 +1,305 @@
+[
+ {
+  "shot": "straight-lit",
+  "place": "L1:R18:C0",
+  "facing": "N",
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   }
+  ],
+  "drawn": [
+   "d5.void:void",
+   "d4.left:wall",
+   "d4.right:wall",
+   "d3.left:wall",
+   "d3.right:wall",
+   "d2.left:wall",
+   "d2.right:wall",
+   "d1.left:wall",
+   "d1.right:wall",
+   "d0.left:wall",
+   "d0.right:wall"
+  ]
+ },
+ {
+  "shot": "straight-unlit",
+  "place": "L1:R18:C0",
+  "facing": "N",
+  "spells": [],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   }
+  ],
+  "drawn": [
+   "d2.void:void",
+   "d1.left:wall",
+   "d1.right:wall",
+   "d0.left:wall",
+   "d0.right:wall"
+  ]
+ },
+ {
+  "shot": "dead-end",
+  "place": "L1:R15:C18",
+  "facing": "N",
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "wall"
+   }
+  ],
+  "drawn": [
+   "d2.left:wall",
+   "d2.right:wall",
+   "d2.front:wall",
+   "d1.left:wall",
+   "d1.right:wall",
+   "d0.left:wall",
+   "d0.right:wall"
+  ]
+ },
+ {
+  "shot": "t-junction",
+  "place": "L1:R12:C3",
+  "facing": "N",
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "open",
+    "right": "open",
+    "front": "wall",
+    "leftAhead": "wall",
+    "rightAhead": "wall"
+   }
+  ],
+  "drawn": [
+   "d1.leftAhead:wall",
+   "d1.rightAhead:wall",
+   "d1.front:wall",
+   "d0.left:wall",
+   "d0.right:wall"
+  ]
+ },
+ {
+  "shot": "four-way",
+  "place": "L1:R9:C8",
+  "facing": "E",
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "open",
+    "right": "open",
+    "front": "open",
+    "leftAhead": "open",
+    "rightAhead": "open"
+   },
+   {
+    "left": "open",
+    "right": "open",
+    "front": "wall",
+    "leftAhead": "wall",
+    "rightAhead": "open"
+   }
+  ],
+  "drawn": [
+   "d2.leftAhead:wall",
+   "d2.front:wall",
+   "d0.left:wall",
+   "d0.right:wall"
+  ]
+ },
+ {
+  "shot": "door",
+  "place": "L1:R13:C3",
+  "facing": "S",
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "open"
+   },
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "door"
+   }
+  ],
+  "drawn": [
+   "d2.left:wall",
+   "d2.right:wall",
+   "d2.front:wall",
+   "d2.front.door:door",
+   "d1.left:wall",
+   "d1.right:wall",
+   "d0.left:wall",
+   "d0.right:wall"
+  ]
+ },
+ {
+  "shot": "dark-ahead",
+  "place": "L1:R9:C9",
+  "facing": "N",
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": true,
+  "corridor": [
+   {
+    "left": "open",
+    "right": "open",
+    "front": "open",
+    "leftAhead": "wall",
+    "rightAhead": "open"
+   },
+   {
+    "left": "wall",
+    "right": "open",
+    "front": "open",
+    "rightAhead": "open"
+   },
+   {
+    "left": "wall",
+    "right": "open",
+    "front": "open",
+    "rightAhead": "wall"
+   }
+  ],
+  "drawn": [
+   "d3.void:void",
+   "d2.left:wall",
+   "d2.rightAhead:wall",
+   "d1.left:wall",
+   "d0.leftAhead:wall"
+  ]
+ },
+ {
+  "shot": "standing-in-dark",
+  "place": "L1:R19:C10",
+  "facing": "N",
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": true,
+  "corridor": [],
+  "drawn": [
+   "d0.void:void"
+  ]
+ },
+ {
+  "shot": "hidden-door-unlit",
+  "place": "L1:R17:C12",
+  "facing": "N",
+  "spells": [],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "wall"
+   }
+  ],
+  "drawn": [
+   "d0.left:wall",
+   "d0.right:wall",
+   "d0.front:wall"
+  ]
+ },
+ {
+  "shot": "hidden-door-lit",
+  "place": "L1:R17:C12",
+  "facing": "N",
+  "spells": [
+   "LIGHT"
+  ],
+  "dark": false,
+  "corridor": [
+   {
+    "left": "wall",
+    "right": "wall",
+    "front": "door"
+   }
+  ],
+  "drawn": [
+   "d0.left:wall",
+   "d0.right:wall",
+   "d0.front:wall",
+   "d0.front.door:door"
+  ]
+ }
+]

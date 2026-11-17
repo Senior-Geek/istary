@@ -1,8 +1,8 @@
 <script>
   // The dungeon screen (M6a; real expeditions M6b-1). It renders view.dungeon (Go's app.DungeonView)
   // and calls Session.DungeonAction with one of the actions Go lists; it
-  // keeps no maze state. The picture is a simple wireframe of the corridor
-  // Go describes, not the Classic renderer.
+  // keeps no maze state. The picture is MazeView's (M-ART-1A.1): the
+  // Classic wireframe of the corridor Go describes, and nothing else.
   //
   // Inspect (R-2) lists each character found in the party's area, with a
   // Pick up button (keys 1-9) while the party has room, or the reason not.
@@ -27,7 +27,8 @@
   //   call   (fn, ...args) => Promise   runs a Session method and stores the new view
   import * as S from '../../wailsjs/go/main/Session.js'
   import PartyBar from './PartyBar.svelte'
-  import { viewBox, scene, points, actions, keyAction, expeditionTag, suggested } from './dungeon.js'
+  import { scene, actions, keyAction, expeditionTag, suggested } from './dungeon.js'
+  import MazeView from './MazeView.svelte'
   import CampScreen from './CampScreen.svelte'
   import { pickLabel, placeMark } from './camp.js'
   import Condition from './Condition.svelte'
@@ -109,11 +110,7 @@
   {:else}
   <section class="stage">
     {#if d.phase === 'maze'}
-      <svg {viewBox} class="view" role="img" aria-label="The corridor ahead">
-        {#each shapes as s, i (i)}
-          <polygon class={s.kind} points={points(s)} />
-        {/each}
-      </svg>
+      <MazeView dungeon={d} />
       {#if d.viewport?.length}
         <div class="viewport">{#each d.viewport as t, i (i)}<p>{t}</p>{/each}</div>
       {/if}
@@ -227,10 +224,6 @@
   .tag.real { color: var(--accent); border-color: var(--accent); }
   .stage { position: relative; container-type: inline-size; display: grid; place-items: center; min-height: 0; border-radius: 8px; padding: 10px;
     background: #0d0c0b; border: 1px solid var(--line); }
-  .view { height: 100%; max-height: 360px; max-width: 100%; aspect-ratio: 1; }
-  .view polygon { fill: none; stroke: #d8d2c4; stroke-width: 0.6; vector-effect: non-scaling-stroke; }
-  .view polygon.wall { fill: #1b1915; }
-  .view polygon.door { stroke: #f2c14e; stroke-width: 1.4; }
   .viewport { position: absolute; inset: 0; display: grid; place-content: center; text-align: center;
     font: 700 16px ui-monospace, Menlo, monospace; color: #fff; text-shadow: 0 0 6px #000; pointer-events: none; }
   .viewport p { margin: 2px 0; }

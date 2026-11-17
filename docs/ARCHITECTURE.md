@@ -920,10 +920,26 @@ shows no bar. `View.PartyBar` carries AC as well.
   walk goes on, with its losses, in the practice game only.
 - **The end:** when the party is back in town (the stairs, or perished) or
   the expedition is abandoned, the practice game is discarded.
-- **The screen** (`DungeonScreen.svelte`): a wireframe of the corridor
-  (`lib/dungeon.js`), the messages, the actions with the terminal's keys,
-  and the shared party bar (C0-5). It is a placeholder, not the Classic
-  renderer.
+- **The screen** (`DungeonScreen.svelte`): the first-person picture
+  (`MazeView.svelte`), the messages, the actions with the terminal's keys,
+  and the shared party bar (C0-5).
+- **The picture (M-ART-1A.1)** is drawn from `View.Dungeon` alone, in three
+  pure steps:
+  - `lib/mazeScene.js` reads only its `phase`, `corridor`, `dark` and
+    `spells`. It returns the surfaces seen, relative to the party (stable
+    ids `d<depth>.<place>`, lane, face, wall or door), the openings, and
+    what ends the view (wall, door, dark, or the sight's limit).
+  - `lib/mazeProjection.js` places them in DRAWMAZE's stepped geometry,
+    with its door proportions, in painting order. Where the view ends
+    unseen, it adds a void.
+  - `lib/mazeStyle.js` says how a style paints each kind. Classic is the
+    only style so far.
+
+  How far the party sees, darkness and hidden doors stay the engine's
+  `Sight`. `gui/maze_scene_fixture_test.go` records synthetic corridors
+  checked against `Sight` (`testdata/maze-scenes.json`) for the frontend's
+  tests. `lib/dungeon.js` keeps `scene` as a wrapper over the projection.
+  Evidence is in `docs/design/maze-perspective/review/m-art-1a-1/`.
 - **Not yet:** rescue and recovery (M6b-4). Camp is in the GUI since M6b-3B
   (below), except Disband and MALOR.
 
